@@ -5,7 +5,7 @@ import "./globals.css";
 const atkinsonHyperlegible = Atkinson_Hyperlegible({
     variable: "--font-atkinson",
     weight: ["400", "700"],
-    subsets: ["latin"]
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -17,7 +17,8 @@ export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
-}>) {
+}>)
+{
     return (
         <html lang="es">
             <body
