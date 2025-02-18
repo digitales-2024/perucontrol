@@ -4,7 +4,8 @@ import "./globals.css";
 
 const atkinsonHyperlegible = Atkinson_Hyperlegible({
     variable: "--font-atkinson",
-    weight: ["400", "700"]
+    weight: ["400", "700"],
+    subsets: ["latin"]
 });
 
 export const metadata: Metadata = {
