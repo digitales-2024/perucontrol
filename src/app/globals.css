@@ -80,8 +80,8 @@ body {
     --accent-foreground: hsl(210 40% 98%);
     --destructive: hsl(355.92, 100%, 28.82%);
     --destructive-foreground: hsl(5.85, 100%, 91.96%);
-    --border: 217.2 32.6% 17.5%;
-    --input: hsl(217.2 32.6% 17.5%);
+    --border: hsl(217.2 32.6% 17.5%);
+    --input: hsl(234.55, 5.16%, 58.24%);
     --ring: hsl(224.3 76.3% 48%);
     --chart-1: hsl(220 70% 50%);
     --chart-2: hsl(160 60% 45%);
