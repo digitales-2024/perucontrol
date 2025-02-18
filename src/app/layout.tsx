@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const atkinsonHyperlegible = Atkinson_Hyperlegible({
     variable: "--font-atkinson",
     weight: ["400", "700"],
-    subsets: ["latin"]
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -17,13 +18,21 @@ export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
-}>) {
+}>)
+{
     return (
-        <html lang="es">
+        <html lang="es" suppressHydrationWarning>
             <body
                 className={`${atkinsonHyperlegible.variable} antialiased`}
             >
-                {children}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );
