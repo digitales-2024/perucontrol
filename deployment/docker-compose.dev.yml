@@ -1,10 +1,10 @@
 services:
   perucontrol-backend-develop:
-    image: docker.io/digitalesacide/perucontrol-backend-develop
+    image: docker.io/digitalesacide/perucontrol-backend-develop:0
     container_name: perucontrol-backend-develop
     restart: unless-stopped
     depends_on:
-      trazo-dev-db:
+      perucontrol-db-develop:
         condition: service_started
     environment:
       DATABASE_URL: "${DATABASE_URL}"
@@ -15,20 +15,20 @@ services:
       - perucontrol-network-develop
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.trazo-dev-api.rule=Host(`perucontrol-backend-develop.acide.win`)"
-      - "traefik.http.routers.trazo-dev-api.entrypoints=websecure"
-      - "traefik.http.routers.trazo-dev-api.tls=true"
-      - "traefik.http.routers.trazo-dev-api.tls.certresolver=dns-cloudflare"
-      - "traefik.http.routers.trazo-dev-api.tls.domains[0].main=acide.win"
-      - "traefik.http.routers.trazo-dev-api.tls.domains[0].sans=*.acide.win"
-      - "traefik.http.services.trazo-dev-api.loadbalancer.server.port=${PORT}"
+      - "traefik.http.routers.perucontrol-backend-develop.rule=Host(`perucontrol-backend-develop.acide.win`)"
+      - "traefik.http.routers.perucontrol-backend-develop.entrypoints=websecure"
+      - "traefik.http.routers.perucontrol-backend-develop.tls=true"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.perucontrol-backend-develop.loadbalancer.server.port=${PORT}"
 
   perucontrol-frontend-develop:
-    image: docker.io/digitalesacide/perucontrol-frontend-develop
+    image: docker.io/digitalesacide/perucontrol-frontend-develop:0
     container_name: perucontrol-frontend-develop
     restart: unless-stopped
     depends_on:
-      trazo-dev-api:
+      perucontrol-backend-develop:
         condition: service_started
     environment:
       NODE_ENV: "${NODE_ENV}"
@@ -37,13 +37,13 @@ services:
       - perucontrol-network-develop
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.trazo-dev-api.rule=Host(`perucontrol-frontend-develop.acide.win`)"
-      - "traefik.http.routers.trazo-dev-admin.entrypoints=websecure"
-      - "traefik.http.routers.trazo-dev-admin.tls=true"
-      - "traefik.http.routers.trazo-dev-admin.tls.certresolver=dns-cloudflare"
-      - "traefik.http.routers.trazo-dev-admin.tls.domains[0].main=acide.win"
-      - "traefik.http.routers.trazo-dev-admin.tls.domains[0].sans=*.acide.win"
-      - "traefik.http.services.trazo-dev-admin.loadbalancer.server.port=3000"
+      - "traefik.http.routers.perucontrol-frontend-develop.rule=Host(`perucontrol-frontend-develop.acide.win`)"
+      - "traefik.http.routers.perucontrol-frontend-develop.entrypoints=websecure"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls=true"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.perucontrol-frontend-develop.loadbalancer.server.port=3000"
 
   perucontrol-db-develop:
     image: postgres:latest
