@@ -3,7 +3,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode })
@@ -12,7 +11,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <SidebarTrigger />
                 {children}
             </SidebarInset>
         </SidebarProvider>
