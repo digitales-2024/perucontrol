@@ -1,0 +1,68 @@
+services:
+  perucontrol-backend-develop:
+    image: docker.io/digitalesacide/perucontrol-backend-develop
+    container_name: perucontrol-backend-develop
+    restart: unless-stopped
+    depends_on:
+      trazo-dev-db:
+        condition: service_started
+    environment:
+      DATABASE_URL: "${DATABASE_URL}"
+      WEB_URL: "${WEB_URL}"
+      WEB_DOMAIN: "${WEB_DOMAIN}"
+    networks:
+      - proxy
+      - perucontrol-network-develop
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.trazo-dev-api.rule=Host(`perucontrol-backend-develop.acide.win`)"
+      - "traefik.http.routers.trazo-dev-api.entrypoints=websecure"
+      - "traefik.http.routers.trazo-dev-api.tls=true"
+      - "traefik.http.routers.trazo-dev-api.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.trazo-dev-api.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.trazo-dev-api.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.trazo-dev-api.loadbalancer.server.port=${PORT}"
+
+  perucontrol-frontend-develop:
+    image: docker.io/digitalesacide/perucontrol-frontend-develop
+    container_name: perucontrol-frontend-develop
+    restart: unless-stopped
+    depends_on:
+      trazo-dev-api:
+        condition: service_started
+    environment:
+      NODE_ENV: "${NODE_ENV}"
+    networks:
+      - proxy
+      - perucontrol-network-develop
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.trazo-dev-api.rule=Host(`perucontrol-frontend-develop.acide.win`)"
+      - "traefik.http.routers.trazo-dev-admin.entrypoints=websecure"
+      - "traefik.http.routers.trazo-dev-admin.tls=true"
+      - "traefik.http.routers.trazo-dev-admin.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.trazo-dev-admin.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.trazo-dev-admin.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.trazo-dev-admin.loadbalancer.server.port=3000"
+
+  perucontrol-db-develop:
+    image: postgres:latest
+    container_name: perucontrol-db-develop
+    restart: unless-stopped
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    volumes:
+      # store db data in a volume
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - perucontrol-network-develop
+
+networks:
+  proxy:
+    external: true
+  perucontrol-network-develop:
+    driver: bridge
+
