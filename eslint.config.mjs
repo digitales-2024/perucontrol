@@ -43,6 +43,14 @@ const eslintConfig = [
             "quotes": ["error", "double"],
             "semi": ["error", "always"],
             "semi-spacing": ["error", { "before": false, "after": true }],
+            "camelcase": [
+                "error",
+                {
+                    "ignoreDestructuring": true,
+                    "ignoreImports": true,
+                    "ignoreGlobals": true,
+                },
+            ],
             "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
             "prefer-const": "error",
             "no-const-assign": "error",
