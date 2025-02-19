@@ -6,8 +6,6 @@ export const ACCESS_TOKEN_KEY = "pc_access_token";
 export const REFRESH_TOKEN_KEY = "pc_refresh_token";
 
 const PUBLIC_ROUTES = ["/login", "/update-password"];
-// Rutas que no queremos guardar como última URL visitada
-const EXCLUDED_REDIRECT_ROUTES = ["/", "/login"];
 
 export async function middleware(request: NextRequest)
 {
@@ -21,9 +19,8 @@ export async function middleware(request: NextRequest)
     {
         devlog("public route, is auth, redirect...");
 
-        const lastVisitedUrl = request.cookies.get("last_url")?.value ?? "/";
+        const lastVisitedUrl = "/";
         const nextResponse = NextResponse.redirect(new URL(lastVisitedUrl, request.url));
-        nextResponse.cookies.delete("lastUrl");
         return nextResponse;
     }
     if (PUBLIC_ROUTES.includes(pathname) && !isAuthenticated)
@@ -116,13 +113,8 @@ function logoutAndRedirectLogin(request: NextRequest)
     devlog("nuking cookies and redirecting to login\n\n");
 
     const response = NextResponse.redirect(new URL("/login", request.url));
-    const lastUrl = EXCLUDED_REDIRECT_ROUTES.includes(request.nextUrl.pathname)
-        ? "/"
-        : request.nextUrl.pathname;
-
     response.cookies.delete(ACCESS_TOKEN_KEY);
     response.cookies.delete(REFRESH_TOKEN_KEY);
-    response.cookies.set("lastUrl", lastUrl);
     return response;
 }
 
