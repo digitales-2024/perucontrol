@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
     BugOff,
-    Command,
     HandCoins,
     PieChart,
     Settings2,
@@ -22,6 +22,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const data = {
     user: {
@@ -95,19 +96,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <a href="#">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <Command className="size-4" />
+                            <Link href="/" className="my-2">
+                                <div className="text-center w-full">
+                                    <Image
+                                        className="inline-block"
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        width={80}
+                                        height={80}
+                                    />
                                 </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">
-                                        Acme Inc
-                                    </span>
-                                    <span className="truncate text-xs">
-                                        Enterprise
-                                    </span>
-                                </div>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

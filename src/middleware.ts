@@ -170,7 +170,7 @@ function devlog(message: string)
 
 export const config = {
     matcher: [
-        "/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml).*)",
+        "/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml|portada.webp).*)",
     ],
 };
 
