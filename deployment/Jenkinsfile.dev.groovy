@@ -35,7 +35,7 @@ pipeline {
         ESCAPED_REGISTRY_URL = "${REGISTRY_URL}\\/${REGISTRY_USER}\\/${REGISTRY_REPO}"
 
         // Docker buid arguments
-        INTERNAL_BACKEND_URL = "http://trazo-dev-api:5000/api/v1"
+        INTERNAL_BACKEND_URL = "http://perucontrol-backend-develop:8080"
 
         // SSH command
         SSH_COM = "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
