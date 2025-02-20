@@ -13,15 +13,6 @@ services:
     networks:
       - proxy
       - perucontrol-network-develop
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.perucontrol-backend-develop.rule=Host(`perucontrol-backend-develop.acide.win`)"
-      - "traefik.http.routers.perucontrol-backend-develop.entrypoints=websecure"
-      - "traefik.http.routers.perucontrol-backend-develop.tls=true"
-      - "traefik.http.routers.perucontrol-backend-develop.tls.certresolver=dns-cloudflare"
-      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].main=acide.win"
-      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].sans=*.acide.win"
-      - "traefik.http.services.perucontrol-backend-develop.loadbalancer.server.port=${PORT}"
 
   perucontrol-frontend-develop:
     image: docker.io/digitalesacide/perucontrol-frontend-develop:0
