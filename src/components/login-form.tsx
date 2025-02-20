@@ -49,10 +49,10 @@ export function LoginForm({
             >
                 <div className="flex flex-col items-center gap-2 text-center">
                     <h1 className="text-2xl font-bold">
-                        Inicia sesión
+                        Bienvenido
                     </h1>
                     <p className="text-balance text-sm text-muted-foreground">
-                        Necesitas iniciar sesión para ingresar al sistema.
+                        Ingresa tu correo electrónico y contraseña
                     </p>
                 </div>
                 <div className="grid gap-6">

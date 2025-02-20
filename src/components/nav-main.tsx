@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuAction,
     SidebarMenuButton,
@@ -22,23 +21,20 @@ import {
 export function NavMain({
     items,
 }: {
-  items: {
-    title: string
-    url: string
-    icon: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
+    items: {
+        title: string
+        url: string
+        icon: LucideIcon
+        isActive?: boolean
+        items?: {
+            title: string
+            url: string
+        }[]
     }[]
-  }[]
 })
 {
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>
-Platform
-            </SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
@@ -57,7 +53,7 @@ Platform
                                         <SidebarMenuAction className="data-[state=open]:rotate-90">
                                             <ChevronRight />
                                             <span className="sr-only">
-Toggle
+                                                Toggle
                                             </span>
                                         </SidebarMenuAction>
                                     </CollapsibleTrigger>

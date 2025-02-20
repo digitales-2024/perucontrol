@@ -1,9 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 
 import { Result } from "./utils/result";
-
-export const ACCESS_TOKEN_KEY = "pc_access_token";
-export const REFRESH_TOKEN_KEY = "pc_refresh_token";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
 
 const PUBLIC_ROUTES = ["/login", "/update-password"];
 
@@ -172,15 +170,7 @@ function devlog(message: string)
 
 export const config = {
     matcher: [
-        /*
-         * Coincide con todas las rutas excepto:
-         * 1. /api (rutas API)
-         * 2. /_next (archivos estáticos de Next.js)
-         * 3. /_static (si tienes una carpeta static)
-         * 4. /_vercel (archivos internos de Vercel)
-         * 5. /favicon.ico, /sitemap.xml, etc.
-         */
-        "/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml).*)",
+        "/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml|portada.webp).*)",
     ],
 };
 
