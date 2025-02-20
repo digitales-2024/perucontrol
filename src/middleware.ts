@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 
-import { Result } from "../utils/result";
+import { Result } from "./utils/result";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
 
 const PUBLIC_ROUTES = ["/login", "/update-password"];

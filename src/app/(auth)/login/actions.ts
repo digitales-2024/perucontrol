@@ -30,20 +30,21 @@ export async function LoginAction(email: string, password: string)
             expires: Date.now() + (data.refreshExpiresIn * 1000),
             path: "/",
         });
-
-        redirect("/");
     }
     catch (result)
     {
+        console.log(result);
+
         if (result instanceof TypeError)
         {
             console.log(result.cause);
         }
 
-        console.log(result);
-
+        // @ts-expect-error ...
         if (result?.status === 401) return { error: "Credenciales incorrectos" };
 
         return { error: "Error iniciando sesión" };
     }
+
+    redirect("/");
 }

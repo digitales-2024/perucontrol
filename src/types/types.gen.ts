@@ -24,6 +24,18 @@ export type LoginResponse = {
     refreshExpiresIn: number;
 };
 
+export type NotFoundResult = {
+    statusCode?: number;
+};
+
+export type ProblemDetails = {
+    type?: string | null;
+    title?: string | null;
+    status?: number | null;
+    detail?: string | null;
+    instance?: string | null;
+};
+
 export type TermsAndConditions = {
     name: string;
     content: string;
@@ -90,11 +102,20 @@ export type PostApiClientData = {
     url: "/api/Client";
 };
 
+export type PostApiClientErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostApiClientError = PostApiClientErrors[keyof PostApiClientErrors];
+
 export type PostApiClientResponses = {
     /**
-     * OK
+     * Created
      */
-    200: Client;
+    201: Client;
 };
 
 export type PostApiClientResponse = PostApiClientResponses[keyof PostApiClientResponses];
@@ -108,12 +129,23 @@ export type DeleteApiClientByIdData = {
     url: "/api/Client/{id}";
 };
 
+export type DeleteApiClientByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteApiClientByIdError = DeleteApiClientByIdErrors[keyof DeleteApiClientByIdErrors];
+
 export type DeleteApiClientByIdResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type DeleteApiClientByIdResponse = DeleteApiClientByIdResponses[keyof DeleteApiClientByIdResponses];
 
 export type GetApiClientByIdData = {
     body?: never;
@@ -123,6 +155,15 @@ export type GetApiClientByIdData = {
     query?: never;
     url: "/api/Client/{id}";
 };
+
+export type GetApiClientByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetApiClientByIdError = GetApiClientByIdErrors[keyof GetApiClientByIdErrors];
 
 export type GetApiClientByIdResponses = {
     /**
@@ -142,12 +183,27 @@ export type PatchApiClientByIdData = {
     url: "/api/Client/{id}";
 };
 
+export type PatchApiClientByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PatchApiClientByIdError = PatchApiClientByIdErrors[keyof PatchApiClientByIdErrors];
+
 export type PatchApiClientByIdResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type PatchApiClientByIdResponse = PatchApiClientByIdResponses[keyof PatchApiClientByIdResponses];
 
 export type PatchApiClientByIdReactivateData = {
     body?: never;
@@ -158,12 +214,23 @@ export type PatchApiClientByIdReactivateData = {
     url: "/api/Client/{id}/reactivate";
 };
 
+export type PatchApiClientByIdReactivateErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PatchApiClientByIdReactivateError = PatchApiClientByIdReactivateErrors[keyof PatchApiClientByIdReactivateErrors];
+
 export type PatchApiClientByIdReactivateResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type PatchApiClientByIdReactivateResponse = PatchApiClientByIdReactivateResponses[keyof PatchApiClientByIdReactivateResponses];
 
 export type GetApiTermsAndConditionsData = {
     body?: never;
@@ -188,11 +255,20 @@ export type PostApiTermsAndConditionsData = {
     url: "/api/TermsAndConditions";
 };
 
+export type PostApiTermsAndConditionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostApiTermsAndConditionsError = PostApiTermsAndConditionsErrors[keyof PostApiTermsAndConditionsErrors];
+
 export type PostApiTermsAndConditionsResponses = {
     /**
-     * OK
+     * Created
      */
-    200: TermsAndConditions;
+    201: TermsAndConditions;
 };
 
 export type PostApiTermsAndConditionsResponse = PostApiTermsAndConditionsResponses[keyof PostApiTermsAndConditionsResponses];
@@ -206,12 +282,23 @@ export type DeleteApiTermsAndConditionsByIdData = {
     url: "/api/TermsAndConditions/{id}";
 };
 
+export type DeleteApiTermsAndConditionsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteApiTermsAndConditionsByIdError = DeleteApiTermsAndConditionsByIdErrors[keyof DeleteApiTermsAndConditionsByIdErrors];
+
 export type DeleteApiTermsAndConditionsByIdResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type DeleteApiTermsAndConditionsByIdResponse = DeleteApiTermsAndConditionsByIdResponses[keyof DeleteApiTermsAndConditionsByIdResponses];
 
 export type GetApiTermsAndConditionsByIdData = {
     body?: never;
@@ -221,6 +308,15 @@ export type GetApiTermsAndConditionsByIdData = {
     query?: never;
     url: "/api/TermsAndConditions/{id}";
 };
+
+export type GetApiTermsAndConditionsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetApiTermsAndConditionsByIdError = GetApiTermsAndConditionsByIdErrors[keyof GetApiTermsAndConditionsByIdErrors];
 
 export type GetApiTermsAndConditionsByIdResponses = {
     /**
@@ -240,12 +336,27 @@ export type PatchApiTermsAndConditionsByIdData = {
     url: "/api/TermsAndConditions/{id}";
 };
 
+export type PatchApiTermsAndConditionsByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PatchApiTermsAndConditionsByIdError = PatchApiTermsAndConditionsByIdErrors[keyof PatchApiTermsAndConditionsByIdErrors];
+
 export type PatchApiTermsAndConditionsByIdResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type PatchApiTermsAndConditionsByIdResponse = PatchApiTermsAndConditionsByIdResponses[keyof PatchApiTermsAndConditionsByIdResponses];
 
 export type PatchApiTermsAndConditionsByIdReactivateData = {
     body?: never;
@@ -256,12 +367,23 @@ export type PatchApiTermsAndConditionsByIdReactivateData = {
     url: "/api/TermsAndConditions/{id}/reactivate";
 };
 
+export type PatchApiTermsAndConditionsByIdReactivateErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PatchApiTermsAndConditionsByIdReactivateError = PatchApiTermsAndConditionsByIdReactivateErrors[keyof PatchApiTermsAndConditionsByIdReactivateErrors];
+
 export type PatchApiTermsAndConditionsByIdReactivateResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: void;
 };
+
+export type PatchApiTermsAndConditionsByIdReactivateResponse = PatchApiTermsAndConditionsByIdReactivateResponses[keyof PatchApiTermsAndConditionsByIdReactivateResponses];
 
 export type ClientOptions = {
     baseUrl: "http://localhost:5233" | (string & {});
