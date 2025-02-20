@@ -48,3 +48,11 @@ export async function LoginAction(email: string, password: string)
 
     redirect("/");
 }
+
+export async function LogoutAction()
+{
+    const cookieStore = await cookies();
+    cookieStore.delete(ACCESS_TOKEN_KEY);
+    cookieStore.delete(REFRESH_TOKEN_KEY);
+    redirect("/login");
+}
