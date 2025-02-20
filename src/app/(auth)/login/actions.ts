@@ -1,15 +1,15 @@
 "use server";
 
-import { postApiAuthLogin } from "@/types";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { backend } from "@/types/backend";
 
 export async function LoginAction(email: string, password: string)
 {
     try
     {
-        const result = await postApiAuthLogin({
+        const result = await backend.POST("/api/Auth/login", {
             body: { email, password },
             throwOnError: true,
         });
