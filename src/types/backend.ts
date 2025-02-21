@@ -21,7 +21,8 @@ type FetchResult<A, B> = {
     response: Response,
 }
 
-export type FetchError<T> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FetchError<T = any> = {
     statusCode: number;
     message: string;
     error: T;
@@ -43,18 +44,10 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     // get auth
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
-    if (jwt === undefined)
-    {
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null as Error,
-        });
-    }
 
     try
     {
-        const data = await fn({ headers: { Authorization: `Bearer ${jwt.value}` } });
+        const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
         if (data.response.ok)
         {
             return ok(data.data!);
@@ -69,6 +62,15 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
                     return err({
                         statusCode: data.response.status,
                         message: `${e.title}`,
+                        error: data.error,
+                    });
+                }
+
+                if (typeof e === "string")
+                {
+                    return err({
+                        statusCode: data.response.status,
+                        message: e,
                         error: data.error,
                     });
                 }
@@ -98,3 +100,4 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         });
     }
 }
+
