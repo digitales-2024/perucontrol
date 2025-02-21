@@ -8,6 +8,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginAction } from "@/app/(auth)/login/actions";
+import { toastWrapper } from "@/types/toasts";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
     email: z.string()
@@ -24,12 +26,19 @@ export function LoginForm({
     className,
 }: React.ComponentPropsWithoutRef<"form">)
 {
+    const router = useRouter();
+
     async function login(values: LoginSchema)
     {
-        const res = await LoginAction(values.email, values.password);
-        if (res)
+        const loginPromise = LoginAction(values.email, values.password);
+        toastWrapper(loginPromise, {
+            loading: "Iniciando sesión...",
+            success: "Sesión iniciada, redirigiendo...",
+        });
+        const [, error] = await loginPromise;
+        if (!error)
         {
-            alert(res.error);
+            router.push("/");
         }
     }
 

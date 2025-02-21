@@ -11,8 +11,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     const [user, err] = await wrapper((auth) => backend.GET("/api/User", auth));
     if (err)
     {
-        console.log(err);
-        return "No autorizado :c";
+        return (
+            <SidebarProvider>
+                <AppSidebar
+                    user={{
+                        username: "-",
+                        email: "-",
+                    }}
+                />
+                <SidebarInset>
+                    {children}
+                </SidebarInset>
+            </SidebarProvider>
+        );
     }
 
     return (
