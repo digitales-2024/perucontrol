@@ -11,7 +11,6 @@ export async function LoginAction(email: string, password: string)
     {
         const result = await backend.POST("/api/Auth/login", {
             body: { email, password },
-            throwOnError: true,
         });
 
         const cookieStore = await cookies();
