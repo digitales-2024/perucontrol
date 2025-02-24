@@ -1,0 +1,33 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+#
+# Dockerfile para DESARROLLO. Te da acceso a un shell,
+# desde el cual se ejecuta la aplicacion, crean migraciones,
+# actualiza la base de datos, etc.
+#
+
+#
+# Configurar docker para ejecutarse como el usuario,
+# no como root
+#
+ARG USER_ID
+ARG GROUP_ID
+RUN addgroup --gid $GROUP_ID developer && \
+    adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID developer && \
+    mkdir -p /app && \
+    chown developer:developer /app
+
+# Utilizar la carpeta /app dentro del contenedor
+WORKDIR /app
+USER developer
+
+# Instalar y configurar dotnet entity framework:
+# El ORM para aspnet
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/home/developer/.dotnet/tools"
+
+# Configurar puertos para desarrollo
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+ENTRYPOINT ["bash"]
+
