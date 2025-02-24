@@ -7,10 +7,7 @@
             "command": "dotnet",
             "args": [
                 "csharpier",
-                "${staged}"
-            ],
-            "include": [
-                "**/*.cs"
+                "."
             ]
         },
         {
@@ -19,9 +16,6 @@
             "command": "pnpm",
             "args": [
                 "lint-staged"
-            ],
-            "include": [
-                "**/*.cs"
             ]
         },
         {
