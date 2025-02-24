@@ -15,4 +15,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.0.*" />
   </ItemGroup>
+  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
+    <Exec Command="dotnet tool restore" StandardOutputImportance="Low" StandardErrorImportance="High" />
+    <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High" WorkingDirectory=".." />
+  </Target>
 </Project>

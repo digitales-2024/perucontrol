@@ -3,3 +3,5 @@
 
 # format backend
 dotnet husky run -n "Format with csharpier"
+# format frontend
+dotnet husky run -n "Format with eslint"
