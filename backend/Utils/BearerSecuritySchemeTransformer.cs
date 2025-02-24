@@ -43,7 +43,6 @@ sealed class BearerSecuritySchemeTransformer(
             // Add to components
             document.Components ??= new OpenApiComponents();
             document.Components.SecuritySchemes.Add("Bearer", bearerScheme);
-            document.SecurityRequirements.Add(securityRequirement);
         }
     }
 }

@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
-    "generate": "openapi-typescript http://localhost:5233/openapi/v1.json -o ./src/types/api.d.ts",
-    "prepare": "husky install || true"
+    "generate": "openapi-typescript http://localhost:5233/openapi/v1.json -o ./src/types/api.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -52,7 +51,6 @@
     "eslint-config-next": "15.1.7",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
-    "husky": "^8.0.3",
     "lint-staged": "^15.4.3",
     "openapi-typescript": "^7.6.1",
     "postcss": "^8.5.2",
