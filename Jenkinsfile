@@ -25,7 +25,7 @@ pipeline {
 			}
 			steps {
 				dir("backend") {
-					sh 'dotnet publish -c Release -r linux-musl-x64 -o out'
+					sh 'HUSKY=0 dotnet publish -c Release -r linux-musl-x64 -o out'
 				}
 			}
 		}
