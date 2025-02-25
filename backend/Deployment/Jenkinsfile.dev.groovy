@@ -44,7 +44,7 @@ pipeline {
     stages {
         stage("Build & push image") {
             steps {
-                dir("frontend") {
+                dir("backend") {
                     sh "cp Deployment/Dockerfile.alpine ./Dockerfile"
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
