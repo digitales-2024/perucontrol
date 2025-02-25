@@ -12,6 +12,7 @@ public class ClientController(DatabaseContext db, ILogger<ClientController> logg
     : AbstractCrudController<Client, ClientPatchDTO>(db)
 {
     [HttpGet("search-by-ruc/{ruc}")]
+    [EndpointSummary("Get business data by RUC")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SunatQueryResponse>> SearchByRuc(string ruc)
@@ -82,22 +83,22 @@ public class ClientController(DatabaseContext db, ILogger<ClientController> logg
                 switch (title)
                 {
                     case "Número de RUC:":
-                        {
-                            // value = "20493096436 - TAMATAMA S.A.C."
-                            var name = value.Substring(value.IndexOf("-") + 1).Trim();
-                            returnData.RazonSocial = name;
-                            break;
-                        }
+                    {
+                        // value = "20493096436 - TAMATAMA S.A.C."
+                        var name = value.Substring(value.IndexOf("-") + 1).Trim();
+                        returnData.RazonSocial = name;
+                        break;
+                    }
                     case "Nombre Comercial:":
-                        {
-                            returnData.Name = value;
-                            break;
-                        }
+                    {
+                        returnData.Name = value;
+                        break;
+                    }
                     case "Domicilio Fiscal:":
-                        {
-                            returnData.FiscalAddress = value;
-                            break;
-                        }
+                    {
+                        returnData.FiscalAddress = value;
+                        break;
+                    }
                 }
             }
 
@@ -105,43 +106,9 @@ public class ClientController(DatabaseContext db, ILogger<ClientController> logg
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"HTTP Error: {ex.StatusCode} - {ex.Message}");
+            logger.LogDebug($"HTTP Error when fetching SUNAT: {ex.StatusCode} - {ex.Message}");
             return NotFound();
         }
-    }
-
-    [HttpGet("parse-ruc/{ruc}")]
-    public ActionResult<IList<IList<string>>> ParseRucHtml()
-    {
-        // load html file
-        if (!System.IO.File.Exists("response.html"))
-        {
-            Console.WriteLine("file no exist :c");
-            return BadRequest();
-        }
-
-        var fileContent = System.IO.File.ReadAllText("response.html");
-        var doc = new HtmlDocument();
-        doc.LoadHtml(fileContent);
-
-        // .list-group : div containing the values
-        var listGroupElements = doc.DocumentNode.SelectNodes(
-            "//*[@class='list-group']//*[@class='list-group-item']"
-        );
-        if (listGroupElements == null)
-        {
-            Console.WriteLine(":c");
-            return NotFound();
-        }
-        Console.WriteLine($"Number of items :D {listGroupElements.Count}");
-
-        return Ok(
-            listGroupElements.Select(x =>
-            {
-                var (l, r) = ProcessSunatRow(x);
-                return new[] { l, r };
-            })
-        );
     }
 
     // receives an html node with shape:
