@@ -18,10 +18,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG INTERNAL_BACKEND_URL="/"
-ENV INTERNAL_BACKEND_URL=${INTERNAL_BACKEND_URL}
-
-RUN echo "INTERNAL_BACKEND_URL=$INTERNAL_BACKEND_URL" >> .env
 
 RUN npm i -g pnpm
 RUN pnpm run build
