@@ -5,9 +5,10 @@ para el proyecto Perucontrol.
 
 ## Build Status
 
-`develop`: ![status](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/badge/icon)
+`develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/)
 
-`staging`: ![status](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/badge/icon)
+`staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
+
 
 
 ## Husky
