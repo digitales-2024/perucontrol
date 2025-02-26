@@ -5,7 +5,6 @@
             "name": "Format with csharpier",
             "cwd": "backend",
             "command": "dotnet",
-            "stageChanges": true,
             "args": [
                 "csharpier",
                 "."

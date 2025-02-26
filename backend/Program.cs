@@ -15,31 +15,31 @@ builder.Services.AddControllers();
 
 // Database setup
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    {
-        var connectionString =
-            builder.Configuration.GetConnectionString("DefaultConnection")
-            ?? throw new Exception("DB connection string not found");
-        options.UseNpgsql(connectionString);
-    });
+{
+    var connectionString =
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new Exception("DB connection string not found");
+    options.UseNpgsql(connectionString);
+});
 
 // Configure Identity
 builder
     .Services.AddIdentityCore<User>(options =>
-        {
-            // Password settings
-            options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequiredLength = 8;
+    {
+        // Password settings
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 8;
 
-            // Email settings
-            options.User.RequireUniqueEmail = true;
+        // Email settings
+        options.User.RequireUniqueEmail = true;
 
-            // Lockout settings
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            options.Lockout.MaxFailedAccessAttempts = 5;
-        })
+        // Lockout settings
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddDefaultTokenProviders();
