@@ -28,17 +28,17 @@ const data = {
     navMain: [
         {
             title: "Dashboard",
-            url: "#",
+            url: "/",
             icon: PieChart,
         },
         {
             title: "Cotizaciones",
-            url: "#",
+            url: "/cotizaciones",
             icon: HandCoins,
         },
         {
             title: "Servicios",
-            url: "#",
+            url: "/servicios",
             icon: BugOff,
         },
         {
