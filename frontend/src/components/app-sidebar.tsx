@@ -19,7 +19,6 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
@@ -93,19 +92,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href="/" className="my-2">
-                                <div className="text-center w-full">
-                                    <Image
-                                        className="inline-block"
-                                        src="/logo.png"
-                                        alt="Logo"
-                                        width={80}
-                                        height={80}
-                                    />
-                                </div>
-                            </Link>
-                        </SidebarMenuButton>
+                        <Link href="/" className="my-2">
+                            <div className="text-center w-full">
+                                <Image
+                                    className="inline-block"
+                                    src="/logo.png"
+                                    alt="Logo"
+                                    width={160}
+                                    height={160}
+                                />
+                            </div>
+                        </Link>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

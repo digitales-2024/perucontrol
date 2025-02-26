@@ -44,14 +44,16 @@ pipeline {
     stages {
         stage("Build & push image") {
             steps {
-                sh "cp deployment/Dockerfile ."
-                script {
-                    withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                        def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "--build-arg INTERNAL_BACKEND_URL=${INTERNAL_BACKEND_URL} .")
-                        image.push()
+                dir("frontend") {
+                    sh "cp deployment/Dockerfile ."
+                    script {
+                        withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
+                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}")
+                            image.push()
+                        }
                     }
+                    sh "rm Dockerfile || true"
                 }
-                sh "rm Dockerfile || true"
             }
         }
         stage("Restart frontend service") {

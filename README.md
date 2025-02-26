@@ -3,6 +3,14 @@
 Este repositorio contiene tanto el backend y frontend
 para el proyecto Perucontrol.
 
+## Build Status
+
+`develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/)
+
+`staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
+
+
+
 ## Husky
 
 En la carpeta raiz, en `.husky` se encuentran los archivos
