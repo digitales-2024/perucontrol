@@ -25,21 +25,21 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 // Configure Identity
 builder
     .Services.AddIdentityCore<User>(options =>
-    {
-        // Password settings
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 8;
+        {
+            // Password settings
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequiredLength = 8;
 
-        // Email settings
-        options.User.RequireUniqueEmail = true;
+            // Email settings
+            options.User.RequireUniqueEmail = true;
 
-        // Lockout settings
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        options.Lockout.MaxFailedAccessAttempts = 5;
-    })
+            // Lockout settings
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            options.Lockout.MaxFailedAccessAttempts = 5;
+        })
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddDefaultTokenProviders();
