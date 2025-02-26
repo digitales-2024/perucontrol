@@ -1,7 +1,9 @@
 import * as z from "zod";
 
 export const clientSchema = z.object({
-    razonSocial: z.string().min(3, "La razón social es requerida"),
+    typeDocument: z.string().min(3, "El tipo de documento es requerido"),
+    typeDocumentValue: z.string().min(8, "El valor es requerido"),
+    razonSocial: z.string(),
     businessType: z.string().nonempty("El tipo de documento es requerido"),
     name: z.string().nonempty("El nombre es requerido"),
     fiscalAddress: z.string().nonempty("La dirección es requerida"),

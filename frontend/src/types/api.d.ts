@@ -45,13 +45,118 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UnauthorizedResult"];
-                        "application/json": components["schemas"]["UnauthorizedResult"];
-                        "text/json": components["schemas"]["UnauthorizedResult"];
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
                     };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RefreshRequest"];
+                    "text/json": components["schemas"]["RefreshRequest"];
+                    "application/*+json": components["schemas"]["RefreshRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LoginResponse"];
+                        "application/json": components["schemas"]["LoginResponse"];
+                        "text/json": components["schemas"]["LoginResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Client/search-by-ruc/{ruc}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get business data by RUC */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ruc: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SunatQueryResponse"];
+                        "application/json": components["schemas"]["SunatQueryResponse"];
+                        "text/json": components["schemas"]["SunatQueryResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -573,6 +678,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Gets info about the currently logged in user, based on the JWT token. */
         get: {
             parameters: {
                 query?: never;
@@ -641,7 +747,9 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Client: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -657,7 +765,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client2: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -673,7 +783,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client3: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -689,7 +801,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client4: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -756,6 +870,14 @@ export interface components {
             detail?: string | null;
             instance?: string | null;
         };
+        RefreshRequest: {
+            refreshToken: string;
+        };
+        SunatQueryResponse: {
+            razonSocial?: string | null;
+            name?: string | null;
+            fiscalAddress?: string | null;
+        };
         TermsAndConditions: {
             name: string;
             content: string;
@@ -770,10 +892,6 @@ export interface components {
         TermsAndConditionsPatchDTO: {
             name?: string | null;
             content?: string | null;
-        };
-        UnauthorizedResult: {
-            /** Format: int32 */
-            statusCode?: number;
         };
         UserReturn: {
             username: string;
