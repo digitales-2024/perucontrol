@@ -3,8 +3,21 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export function CreateCotizacion()
 {
@@ -83,10 +96,93 @@ function TermsAndConditions({ open, setOpen }: { open: boolean, setOpen: (v: boo
                         <div className="flex items-center justify-center pr-2 border-t">
                             <Trash />
                         </div>
+                    </div>
 
+                    <div className="pt-4">
+                        <h3 className="font-bold text-lg">
+                            Crear nueva plantilla
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                            Ingrese el nombre y condiciones de la plantilla
+                        </p>
+
+                        <CreateTermsForm onClose={setOpen} />
                     </div>
                 </DialogContent>
             </Dialog>
         </div>
+    );
+}
+
+const createTermsSchema = z.object({
+    name: z.string().min(2, { message: "El nombre no puede estar vacio" })
+        .max(100),
+    terms: z.string().min(2, { message: "Los terminos no pueden estar vacios" }),
+});
+type CreateTermsSchema = z.infer<typeof createTermsSchema>
+
+function CreateTermsForm({ onClose }: { onClose: (v: boolean) => void })
+{
+    const form = useForm<CreateTermsSchema>({
+        resolver: zodResolver(createTermsSchema),
+        defaultValues: {
+            name: "",
+            terms: "",
+        },
+    });
+
+    // 2. Define a submit handler.
+    function onSubmit(values: CreateTermsSchema)
+    {
+        // ✅ This will be type-safe and validated.
+        console.log(values);
+        console.log("✅");
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 pt-4">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Nombre de la plantilla
+                            </FormLabel>
+                            <FormControl>
+                                <Input placeholder="Nombre de la plantilla" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="terms"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Terminos
+                            </FormLabel>
+                            <FormControl>
+                                <Textarea rows={4} placeholder="Términos y condiciones" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                    <Button type="submit">
+                        Crear Plantilla
+                    </Button>
+                    <Button type="button" variant="secondary" onClick={() => onClose(false)}>
+                        Cancelar
+                    </Button>
+                </div>
+            </form>
+        </Form>
     );
 }
