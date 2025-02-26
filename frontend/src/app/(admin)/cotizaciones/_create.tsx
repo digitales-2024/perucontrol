@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -20,14 +20,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateTermsAndConditions } from "./actions";
 import { toastWrapper } from "@/types/toasts";
+import { components } from "@/types/api";
 
-export function CreateCotizacion()
+type TermsAndConditions = components["schemas"]["TermsAndConditions"];
+
+export function CreateCotizacion({ termsAndConditions }: { termsAndConditions: Array<TermsAndConditions> })
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
     return (
         <div>
-            <TermsAndConditions open={termsOpen} setOpen={setTermsOpen} />
+            <TermsAndConditions
+                open={termsOpen}
+                setOpen={setTermsOpen}
+                termsAndConditions={termsAndConditions}
+            />
             <Sheet>
                 <SheetTrigger asChild>
                     <Button>
@@ -65,7 +72,15 @@ export function CreateCotizacion()
     );
 }
 
-function TermsAndConditions({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void })
+function TermsAndConditions({
+    open,
+    setOpen,
+    termsAndConditions,
+}: {
+    open: boolean,
+    setOpen: (v: boolean) => void,
+    termsAndConditions: Array<TermsAndConditions>,
+})
 {
     return (
         <div>
@@ -89,15 +104,19 @@ function TermsAndConditions({ open, setOpen }: { open: boolean, setOpen: (v: boo
                         </p>
                         <div />
 
-                        <p className="py-2 px-2 border-t">
-                            Plantilla 1
-                        </p>
-                        <p className="py-2 overflow-y-hidden max-h-9 border-t">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
-                        <div className="flex items-center justify-center pr-2 border-t">
-                            <Trash />
-                        </div>
+                        {termsAndConditions.map((term, idx) => (
+                            <React.Fragment key={term.id ?? idx}>
+                                <p className="py-2 px-2 border-t">
+                                    {term.name}
+                                </p>
+                                <p className="py-2 overflow-y-hidden max-h-9 border-t">
+                                    {term.content}
+                                </p>
+                                <div className="flex items-center justify-center pr-2 border-t">
+                                    <Trash />
+                                </div>
+                            </React.Fragment>
+                        ))}
                     </div>
 
                     <div className="pt-4">

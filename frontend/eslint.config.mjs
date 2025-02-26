@@ -13,6 +13,11 @@ const compat = new FlatCompat({
 const eslintConfig = [
     ...compat.extends("next/core-web-vitals", "next/typescript"),
     {
+        rules: {
+            "@typescript-eslint/array-type": ["error", { default: "generic" }],
+        },
+    },
+    {
         files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
         plugins: {
             reactPlugin,

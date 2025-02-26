@@ -1,7 +1,16 @@
+import { backend, wrapper } from "@/types/backend";
 import { CreateCotizacion } from "./_create";
 
 export default async function CotizacionPage()
 {
+    // get all terms and conditions
+    const [data, err] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
+    if (err)
+    {
+        console.error(`error :c ${err.message}`);
+        throw err;
+    }
+
     return (
         <div>
             <h1 className="font-bold text-2xl">
@@ -12,7 +21,7 @@ export default async function CotizacionPage()
             </p>
 
             <div>
-                <CreateCotizacion />
+                <CreateCotizacion termsAndConditions={data} />
             </div>
 
         </div>
