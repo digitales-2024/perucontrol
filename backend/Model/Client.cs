@@ -4,6 +4,10 @@ namespace PeruControl.Model;
 
 public class Client : BaseModel
 {
+    [MinLength(8)]
+    [MaxLength(11)]
+    public required string DocumentNumber { get; set; }
+
     [MinLength(0)]
     [MaxLength(100)]
     public required string RazonSocial { get; set; }
