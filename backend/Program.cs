@@ -15,12 +15,12 @@ builder.Services.AddControllers();
 
 // Database setup
 builder.Services.AddDbContext<DatabaseContext>(options =>
-{
-    var connectionString =
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new Exception("DB connection string not found");
-    options.UseNpgsql(connectionString);
-});
+    {
+        var connectionString =
+            builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new Exception("DB connection string not found");
+        options.UseNpgsql(connectionString);
+    });
 
 // Configure Identity
 builder
