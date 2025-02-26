@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CreateTermsAndConditions } from "./actions";
+import { toastWrapper } from "@/types/toasts";
 
 export function CreateCotizacion()
 {
@@ -131,12 +133,21 @@ function CreateTermsForm({ onClose }: { onClose: (v: boolean) => void })
         },
     });
 
-    // 2. Define a submit handler.
-    function onSubmit(values: CreateTermsSchema)
+    async function onSubmit(values: CreateTermsSchema)
     {
-        // ✅ This will be type-safe and validated.
-        console.log(values);
-        console.log("✅");
+        const promise = CreateTermsAndConditions({
+            name: values.name,
+            content: values.terms,
+        });
+
+        toastWrapper(promise, {
+            success: "Términos y Condiciones creados con éxito",
+            loading: "Creando...",
+        });
+
+        await promise;
+
+        form.reset();
     }
 
     return (
