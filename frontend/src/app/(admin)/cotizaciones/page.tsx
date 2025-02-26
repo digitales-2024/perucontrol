@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { CreateCotizacion } from "./_create";
 
 export default async function CotizacionPage()
 {
@@ -11,9 +11,10 @@ export default async function CotizacionPage()
                 Gestiona las cotizaciones de la empresa
             </p>
 
-            <Button>
-                Nueva cotización
-            </Button>
+            <div>
+                <CreateCotizacion />
+            </div>
+
         </div>
     );
 }
