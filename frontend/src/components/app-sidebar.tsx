@@ -44,7 +44,7 @@ const data = {
         },
         {
             title: "Clientes",
-            url: "#",
+            url: "/clients",
             icon: Users,
         },
         {
