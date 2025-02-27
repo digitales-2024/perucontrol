@@ -4,6 +4,7 @@ import { backend, FetchError, wrapper } from "@/types/backend";
 import { ok, err, Result } from "@/utils/result";
 import { CreateClientSchema } from "./schemas";
 import { components } from "@/types/api";
+import { revalidatePath } from "next/cache";
 
 export async function registerClient(input: CreateClientSchema): Promise<Result<null, FetchError>>
 {
@@ -11,6 +12,8 @@ export async function registerClient(input: CreateClientSchema): Promise<Result<
         ...auth,
         body: input,
     }));
+
+    revalidatePath("/(admin)/clients", "page");
 
     if (error)
     {
