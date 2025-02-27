@@ -6,3 +6,13 @@ public class ClientLocation : BaseModel
 
     public required string Address { get; set; }
 }
+
+public class ClientLocationDTO : IMapToEntity<ClientLocation>
+{
+    public required string Address { get; set; }
+
+    public ClientLocation MapToEntity()
+    {
+        return new ClientLocation { Address = Address };
+    }
+}

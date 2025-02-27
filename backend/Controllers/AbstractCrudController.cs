@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
@@ -7,9 +6,10 @@ namespace PeruControl.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public abstract class AbstractCrudController<T, PatchDTO> : ControllerBase
+public abstract class AbstractCrudController<T, CreateDTO, PatchDTO> : ControllerBase
     where T : class, IEntity
-    where PatchDTO : class
+    where CreateDTO : class, IMapToEntity<T>
+    where PatchDTO : class, IEntityPatcher<T>
 {
     protected readonly DatabaseContext _context;
     protected readonly DbSet<T> _dbSet;
@@ -40,12 +40,13 @@ public abstract class AbstractCrudController<T, PatchDTO> : ControllerBase
     }
 
     // POST: api/[controller]
-    [EndpointSummary("Create one")]
+    [EndpointSummary("Create")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public virtual async Task<ActionResult<T>> Create([FromBody] T entity)
+    public virtual async Task<ActionResult<T>> Create([FromBody] CreateDTO createDTO)
     {
+        var entity = createDTO.MapToEntity();
         if (entity.Id == Guid.Empty)
         {
             entity.Id = Guid.NewGuid();
@@ -64,67 +65,16 @@ public abstract class AbstractCrudController<T, PatchDTO> : ControllerBase
     public virtual async Task<IActionResult> Patch(Guid id, [FromBody] PatchDTO patchDto)
     {
         var entity = await _dbSet.FindAsync(id);
+
         if (entity == null)
+        {
             return NotFound();
-
-        var errors = new List<string>();
-        var entityType = typeof(T);
-        var dtoProperties = typeof(PatchDTO).GetProperties(
-            BindingFlags.Public | BindingFlags.Instance
-        );
-
-        foreach (var dtoProp in dtoProperties)
-        {
-            var value = dtoProp.GetValue(patchDto);
-            if (value == null)
-                continue;
-
-            var entityProp = entityType.GetProperty(
-                dtoProp.Name,
-                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance
-            );
-
-            if (entityProp == null)
-            {
-                errors.Add($"Invalid property: {dtoProp.Name}");
-                continue;
-            }
-
-            if (!entityProp.CanWrite)
-            {
-                errors.Add($"Property {dtoProp.Name} is read-only");
-                continue;
-            }
-
-            try
-            {
-                // Handle nullable underlying types
-                var targetType =
-                    Nullable.GetUnderlyingType(entityProp.PropertyType) ?? entityProp.PropertyType;
-                var convertedValue = Convert.ChangeType(value, targetType);
-                entityProp.SetValue(entity, convertedValue);
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Error setting {dtoProp.Name}: {ex.Message}");
-            }
         }
 
-        if (errors.Count > 0)
-            return BadRequest(new { Errors = errors });
+        patchDto.ApplyPatch(entity);
+        await _context.SaveChangesAsync();
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await _dbSet.AnyAsync(e => e.Id == id))
-                return NotFound();
-            throw;
-        }
-
-        return NoContent();
+        return Ok(patchDto);
     }
 
     [EndpointSummary("Reactivate by id")]

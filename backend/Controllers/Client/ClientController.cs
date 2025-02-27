@@ -9,7 +9,7 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 public class ClientController(DatabaseContext db, ILogger<ClientController> logger)
-    : AbstractCrudController<Client, ClientPatchDTO>(db)
+    : AbstractCrudController<Client, ClientCreateDTO, ClientPatchDTO>(db)
 {
     [HttpGet("search-by-ruc/{ruc}")]
     [EndpointSummary("Get business data by RUC")]

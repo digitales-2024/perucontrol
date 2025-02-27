@@ -5,4 +5,8 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 public class TermsAndConditionsController(DatabaseContext db)
-    : AbstractCrudController<TermsAndConditions, TermsAndConditionsPatchDTO>(db) { }
+    : AbstractCrudController<
+        TermsAndConditions,
+        TermsAndConditionsCreateDTO,
+        TermsAndConditionsPatchDTO
+    >(db) { }
