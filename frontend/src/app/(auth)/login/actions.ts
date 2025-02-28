@@ -9,10 +9,9 @@ import { ok, err, Result } from "@/utils/result";
 export async function LoginAction(email: string, password: string)
     : Promise<Result<null, FetchError>>
 {
-    const loginPromise = wrapper(() => backend.POST("/api/Auth/login", {
+    const [data, error] = await wrapper(() => backend.POST("/api/Auth/login", {
         body: { email, password },
     }));
-    const [data, error] = await loginPromise;
     if (error)
     {
         console.log("got error:");

@@ -7,7 +7,7 @@ commit_msg=$(cat "$commit_msg_file" | tr -d '\r')
 # Conventional Commit Pattern
 # Format: <type>[(scope)]: <description>
 # Types: feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert
-commit_pattern='^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\([a-z0-9-]+\))?: .+'
+commit_pattern='^((Merge.*)|((feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\([a-z0-9-]+\))?: .+))$'
 
 if ! echo "$commit_msg" | grep -qE "$commit_pattern"; then
     echo "Error: Commit message format is invalid"
@@ -18,10 +18,10 @@ if ! echo "$commit_msg" | grep -qE "$commit_pattern"; then
     exit 1
 fi
 
-# Check first line length (recommended: max 72 characters)
+# Check first line length
 first_line=$(echo "$commit_msg" | head -n 1)
-if [ ${#first_line} -gt 72 ]; then
-    echo "Error: First line of commit message is too long (max 72 characters)"
+if [ ${#first_line} -gt 125 ]; then
+    echo "Error: First line of commit message is too long (max 125 characters)"
     echo "Length: ${#first_line} characters"
     exit 1
 fi

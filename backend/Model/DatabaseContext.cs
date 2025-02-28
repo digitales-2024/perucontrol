@@ -11,11 +11,16 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
 
+    /*public required DbSet<Quotation> Quotations { get; set; }*/
+    public required DbSet<Service> Services { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         PeruControl.Model.Client.SetUp<Client>(builder);
         PeruControl.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
+        /*PeruControl.Model.Quotation.SetUp<Quotation>(builder);*/
+        PeruControl.Model.Service.SetUp<Service>(builder);
     }
 
     public override int SaveChanges()

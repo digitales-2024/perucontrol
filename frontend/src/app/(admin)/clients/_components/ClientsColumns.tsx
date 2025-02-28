@@ -11,7 +11,7 @@ import { Client } from "../types/clients";
 import { DeleteClient } from "./DeleteClient";
 import { ViewClientDetails } from "./ViewClientsDetail";
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: Array<ColumnDef<Client>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (

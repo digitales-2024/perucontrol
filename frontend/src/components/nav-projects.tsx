@@ -28,11 +28,11 @@ import {
 export function NavProjects({
     projects,
 }: {
-  projects: {
+  projects: Array<{
     name: string
     url: string
     icon: LucideIcon
-  }[]
+  }>
 })
 {
     const { isMobile } = useSidebar();
