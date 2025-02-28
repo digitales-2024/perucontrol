@@ -29,8 +29,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     return (
         <SidebarProvider>
             <AppSidebar user={user} />
-            <SidebarInset>
-                {children}
+            <SidebarInset className="relative">
+                <div className="absolute z-10 top-0 left-0 w-full h-full bg-[url(/Isotipo.png)] bg-contain bg-no-repeat bg-center opacity-5" />
+                <div className="relative z-20 px-6 py-8">
+                    {children}
+                </div>
             </SidebarInset>
         </SidebarProvider>
     );

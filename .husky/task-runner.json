@@ -8,7 +8,8 @@
             "args": [
                 "csharpier",
                 "."
-            ]
+            ],
+            "include": [ "**/*.cs" ]
         },
         {
             "name": "Format with eslint",

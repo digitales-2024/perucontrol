@@ -20,8 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
+    columns: Array<ColumnDef<TData, TValue>>;
+    data: Array<TData>;
     globalFilter: string;
     setGlobalFilter: (value: string) => void;
     toolbarActions?: React.ReactNode;

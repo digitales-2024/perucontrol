@@ -52,43 +52,41 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         {
             return ok(data.data!);
         }
-        else
+
+        if (data.error)
         {
-            if (data.error)
+            const e = data.error as Error;
+            if (typeof e === "object" && e !== null && "title" in e)
             {
-                const e = data.error as Error;
-                if (typeof e === "object" && e !== null && "title" in e)
-                {
-                    return err({
-                        statusCode: data.response.status,
-                        message: `${e.title}`,
-                        error: data.error,
-                    });
-                }
-
-                if (typeof e === "string")
-                {
-                    return err({
-                        statusCode: data.response.status,
-                        message: e,
-                        error: data.error,
-                    });
-                }
-
                 return err({
                     statusCode: data.response.status,
-                    message: "Error: vacio",
+                    message: `${e.title}`,
                     error: data.error,
                 });
             }
-            else
+
+            if (typeof e === "string")
             {
                 return err({
                     statusCode: data.response.status,
-                    message: "Error: vacio",
-                    error: data.error!,
+                    message: e,
+                    error: data.error,
                 });
             }
+
+            return err({
+                statusCode: data.response.status,
+                message: "Error: vacio",
+                error: data.error,
+            });
+        }
+        else
+        {
+            return err({
+                statusCode: data.response.status,
+                message: "Error: vacio",
+                error: data.error!,
+            });
         }
     }
     catch
