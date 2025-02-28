@@ -15,7 +15,7 @@ public class Client : BaseModel
 
     [MinLength(0)]
     [MaxLength(100)]
-    public required string? RazonSocial { get; set; }
+    public string? RazonSocial { get; set; }
 
     [MinLength(0)]
     [MaxLength(100)]
@@ -57,7 +57,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
 
     [MinLength(0)]
     [MaxLength(100)]
-    public required string RazonSocial { get; set; }
+    public string? RazonSocial { get; set; }
 
     [MinLength(0)]
     [MaxLength(100)]
