@@ -1,0 +1,136 @@
+---
+title: Cronograma
+description: ""
+---
+import Uml from "@/components/uml.astro"
+import ClientUml from "@/components/client_uml.astro"
+
+<ClientUml code={`
+@startgantt
+language es
+printscale weekly zoom 5
+saturday are closed
+sunday are closed
+hide resources names
+today is colored in #f87171
+
+Project starts 2025-02-07
+
+
+[Planificación] requires 1 week and 1 days
+[Diseño de interfaces] starts 2025-02-12 and requires 3 days
+
+[Login] on {Victor} requires 2 days
+[Login] starts at [Planificación]'s end
+[Login] is colored in lightskyblue
+
+[Insumos] on {Victor} requires 2 days
+[Insumos] starts at [Login]'s end
+[Insumos] is colored in lightskyblue
+
+[T&C] on {Victor} requires 2 days
+[T&C] starts at [Insumos]'s end
+[T&C] is colored in lightskyblue
+
+[Clientes] on {Fernando} requires 1 week
+[Clientes] starts at [Planificación]'s end
+[Clientes] is colored in lightgreen
+
+[Cotizacion] on {Victor} requires 4 days
+[Cotizacion] starts at [T&C]'s end
+[Cotizacion] is colored in lightskyblue
+
+[Proyectos] on {Fernando} requires 1 week
+[Proyectos] starts at [Insumos]'s end
+[Proyectos] starts at [Clientes]'s end
+[Proyectos] is colored in lightgreen
+
+-- Segunda fase --
+
+[Ficha de operaciones] on {Victor} requires 3 days
+[Ficha de operaciones] starts at [Proyectos]'s end
+[Ficha de operaciones] is colored in lightskyblue
+
+[Certificados] on {Fernando} requires 3 days
+[Certificados] starts at [Proyectos]'s end
+[Certificados] is colored in lightgreen
+
+[Plagas] on {Fernando} requires 2 days
+[Plagas] starts at [Certificados]'s end
+[Plagas] is colored in lightgreen
+
+[Documentos] on {Victor} requires 1 week and 2 days
+[Documentos] starts at [Ficha de operaciones]'s end
+[Documentos] is colored in lightskyblue
+
+[Roedores] on {Fernando} requires 1 week
+[Roedores] starts at [Plagas]'s end
+[Roedores] is colored in lightgreen
+
+[Dashboard] requires 1 week
+[Dashboard] starts at [Roedores]'s end
+
+legend
+Leyenda:
+|= Color |= Persona |
+|<#lightgreen>| Fernando |
+|<#lightskyblue> | Victor |
+end legend
+
+
+@endgantt
+`} />
+
+
+## Cronograma real
+
+
+<ClientUml code={`
+@startgantt
+language es
+printscale weekly zoom 5
+saturday are closed
+sunday are closed
+hide resources names
+today is colored in #f87171
+
+Project starts 2025-02-07
+
+[Planificación] requires 1 week and 1 days
+[Diseño de interfaces] starts 2025-02-12 and requires 3 days
+
+[Configuracion] on {Fernando} requires 2 days
+[Configuracion] starts at [Planificación]'s end
+[Configuracion] is colored in lightgreen
+
+[Login] on {Fernando} requires 1 days
+[Login] starts at [Configuracion]'s end
+[Login] is colored in lightgreen
+
+[T&C BE] on {Fernando} requires 1 days
+[T&C BE] starts at [Login]'s end
+[T&C BE] is colored in lightgreen
+
+[Clientes] on {Fernando} requires 3 days
+[Clientes] starts at [T&C BE]'s end
+[Clientes] is colored in lightgreen
+
+[Clientes FE] on {Victor} starts on 2025-02-25 and requires 2 days
+[Clientes FE] is colored in lightskyblue
+
+[Cotizacion] on {Fernando} starts at [Clientes]'s end and requires 2 days
+[Cotizacion] is colored in lightgreen
+
+[T&C FE] on {Fernando} starts at [Clientes]'s end and requires 1 days
+[T&C FE] is colored in lightgreen
+
+
+legend
+Leyenda:
+|= Color |= Persona |
+|<#lightgreen>| Fernando |
+|<#lightskyblue> | Victor |
+end legend
+
+@endgantt
+`} />

@@ -1,0 +1,110 @@
+---
+title: Cotización
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+## Crear cotizacion
+
+<Uml code={`
+@startuml
+|Cotizacion|
+start
+
+:Crear cotizacion;
+:Formulario creación;
+
+if (Existe cliente?) then (si)
+else (no)
+	|Clientes|
+	:Crear cliente;
+endif
+
+|Cotizacion|
+:Selecciona cliente;
+:Selecciona tipo de servicio;
+:Ingresar descripción del servicio;
+:Ingresa area, m2, etc;
+
+if (Existen T&C?) then (si)
+else (no)
+	|T&C|
+	:Crear T&C;
+endif
+
+|Cotizacion|
+:Seleccionar T&C;
+
+if (Cliente no quiere IGV incluido?) then (si)
+	#pink:Marcar como cot. sin IGV;
+else (no)
+endif
+
+:Cotización registrada como pendiente*;
+#palegreen:Generar DOCX/PDF de cotización;
+
+end
+@enduml
+`} />
+
+
+## Aprobar cotización
+
+Cuando el cliente acepta la cotización:
+
+<Uml code={`
+@startuml
+|Cotizacion|
+start
+if (Existe cotizacion pendiente*?) then (si)
+else (no)
+	:Crear cotización;
+	end
+endif
+
+:Selecciona cotizacion;
+:Marca como aprobado;
+
+
+if (Crear proyecto automaticamente?) then (si)
+	|Proyecto|
+	:Crear proyecto;
+	end
+else (no)
+endif
+|Cotizacion|
+
+end
+@enduml
+`} />
+
+
+## Rechazar cotización
+
+Cuando el cliente no acepta la cotización.
+
+- ? Si una cotización esta pendiente, y no se aprueba tras X dias,
+  se rechaza automáticamente?
+- ? Si un cliente no vuelve a contactar a perucontrol respecto a
+  su cotización, esta cotización se mantiene pendiente indefinidamente?
+
+<Uml code={`
+@startuml
+|Cotizacion|
+start
+if (Existe cotizacion pendiente*?) then (si)
+	:Selecciona cotizacion;
+	:Marca como rechazado;
+end
+else (no)
+	:Crear cotización;
+	end
+endif
+
+@enduml
+`} />
+
+
+
+
+
