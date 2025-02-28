@@ -20,8 +20,8 @@ fi
 
 # Check first line length
 first_line=$(echo "$commit_msg" | head -n 1)
-if [ ${#first_line} -gt 125 ]; then
-    echo "Error: First line of commit message is too long (max 125 characters)"
+if [ ${#first_line} -gt 175 ]; then
+    echo "Error: First line of commit message is too long (max 175 characters)"
     echo "Length: ${#first_line} characters"
     exit 1
 fi

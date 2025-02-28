@@ -8,7 +8,7 @@ export type Client = {
     fiscalAddress: string;
     email: string;
     phoneNumber: string;
-    clientLocations: {
+    clientLocations: Array<{
         address: string;
-    }[];
+    }>;
 }
