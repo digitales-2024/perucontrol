@@ -78,7 +78,7 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center capitalize">
+            <span className="items-center flex justify-center text-center lowercase">
                 {row.original.razonSocial}
             </span>
         ),
@@ -102,7 +102,7 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center uppercase">
+            <span className="items-center flex justify-center text-center capitalize">
                 {row.original.businessType}
             </span>
         ),
@@ -126,20 +126,20 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center uppercase">
+            <span className="items-center text-center flex justify-center capitalize">
                 {row.original.name}
             </span>
         ),
     },
     {
-        accessorKey: "fiscalAddress",
+        accessorKey: "email",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-        Dirección fiscal
+        Correo Electrónico
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -150,8 +150,8 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center uppercase text-ellipsis text-center">
-                {row.original.fiscalAddress}
+            <span className="items-center flex justify-center text-ellipsis text-center">
+                {row.original.email}
             </span>
         ),
     },
