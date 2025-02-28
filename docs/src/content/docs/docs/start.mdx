@@ -1,0 +1,310 @@
+---
+title: Requerimientos funcionales
+description: Requerimientos funcionales basicos del sistema
+---
+import Uml from "@/components/uml.astro"
+
+
+## Inicio de sesión - Autenticación
+
+- usuario y contraseña
+- por el momento solo hay 2 cuentas,
+  habrán máximo 3 cuentas
+- las cuentas son internas, no hay cuentas para otro
+  personal, o que requiera permisos diferentes
+
+- usuario/contraseña? google? oauth?
+  contraseña unica via correo?
+
+
+## Autorización
+
+- 3 cuantas personas usaran el sistema
+- 1 solo tipo de usuario
+- no hay roles
+- no hay permisos
+- se prevee que solo 3 personas usarán el sistema
+
+
+## Dashboard?
+
+- Muestra un gráfico con cantidad de cotizaciones aceptadas/rechazadas
+- otros?
+
+## Gestion de clientes
+
+Cliente: persona natural o juridica que contrata un servicio con PeruControl
+
+- CRUD basico
+- Cliente se puede crear con RUC o DNI
+  - Si se crea con RUC, el sistema obtiene datos desde sunat
+  - Si se crea con DNI, se ingresa los datos
+- Al crear un cliente y es persona juridica, verificar si esta HABIDO
+- Los clientes tambien tienen un número
+  - ? este numero tiene un formato? es un autoincrement?
+- Datos:
+  - Razon social
+  - Ruc/dni
+  - Direccion
+  - Telefono
+  - Nombre de la persona
+  - Direcciones
+    - las empresas pueden tener varias direcciones: ejm. dirección de facturación,
+      direccion donde se realiza el servicio. Una empresa puede tener varios
+      locales, ubicaciones donde se realiza el servicio
+
+
+## Gestion de recursos
+
+- Solo insumos
+- Cada insumo tiene nombre y unidad de medida
+
+
+## Servicios
+
+La empresa tiene solo 4 tipos de servicios que ofrece:
+
+- fumigacion
+- desinfeccion
+- desinsectacion
+- desratizacion
+
+El sistema ofrece la opcion de crear servicios nuevos
+
+
+
+## Gestión de cotizaciónes (propuestas económicas)
+
+Algunas empresas solicitan cotizaciones antes de contratar un servicio
+- se les genera una cotización
+- debe jalar los datos existentes del modulo de clientes en la cotizacion
+- la cotizacion va ligada a un servicio
+  - una cotizacion puede ser para varios servicios
+- cada servicio tiene un detalle (descripcion) ingresado manualmente, especifico para
+  cada empresa.
+- la cotizacion contiene area, metros cuadrados, numero de ambientes
+- la cotizacion tiene "terminos y condiciones", ver seccion T&C
+- algunos clientes piden que la cotización no incluya IGV. en este caso
+  esto debe estar señalado EN ROJO en la cotización
+- la cotización genera un documento (pdf? word?), el cual se envia al cliente
+- la cotización puede ser pendiente, rechazada y aprobada
+
+
+### T&C
+
+- CRUD minimo
+- Cada cotizacion tiene una lista de terminos y condiciones
+- A cada cliente se le asigna un conjunto de estos
+- Hay "presets" de T&C que se repiten bastante
+- Al seleccionar un preset, luego pueden editarlo
+
+
+## Gestión de proyectos (servicios)
+
+El proyecto es el proceso en el cual se ejecuta uno (o varios??) de los
+servicios que ofrece la empresa
+
+- un proyecto puede abarcar varios servicios a la vez
+- Cuando una cotización se aprueba se puede continuar con el proyecto
+  - ? deberia ser automatico? cuando una cotizacion se aprueba automáticamente
+    se crea un proyecto?
+- Tambien se pueden crear proyectos sin una cotización
+- El proyecto registra:
+  - datos del cliente
+  - direccion del servicio, entre las varias direcciones que puede tener una empresa
+  - Algunos clientes generan un numero de "orden de servicio",
+    el cual se debe ingresar mas adelante cuando se genere la factura.
+    Se puede ingresar aqui de antemano?
+- ? que estados tiene el proyecto? ejm. aprobado, en ejecucion, terminado
+
+- Una vez el proyecto ha sido confirmado, y antes de que se ejecute, algunas empresas
+  requiren un documento indicando todo lo que PeruControl ingresará a sus instalaciones:
+  - Guia de remision
+
+- Una vez el proyecto ha concluido (se ha realizado el servicio) se
+  pueden generar documentos relacionados:
+  - Ficha de operaciones
+
+- Generalmente un proyecto solo consta de los servicios (fumigacion, etc)
+  que incluye todo: personal, transporte, insumos a utilizar, etc., de
+  tal modo que se factura por servicio y no itemizado
+
+### Guia de remisión
+
+- No considerado
+
+```plain
+- Documento que detalla los materiales que se  ingresan al lugar donde se realizara
+  el servicio
+- Algunos clientes (ejm mall aventura) requieren una "guia de remision" (nombre exacto pendiente)
+  que es una lista de todos los insumos y maquinas que van a ingresar al local.
+  Los insumos pueden ser generales (ejm. caja de herramientas)
+  o detallados (ejm. caja de herramientas, martillo, destornillador, etc)
+  Debe haber una interfaz para ingresar estos insumos y generar esta lista
+  - insumos ingresados
+  - maquinas/herramientas
+  - EPPs con ciertas empresas mas estrictas
+- ? cual es su formato?
+```
+
+
+### Ficha de operaciones
+
+- Cada proyecto puede generar una ficha de operaciones
+- Algunas veces, la ficha se genera completamente llena
+- Otras veces, se genera parcialmente llena y otro personal externo
+  la completa.
+
+- Una vez terminado (?) se genera el documento de "Ficha de operaciones"
+  - ? puede generarse la ficha de operaciones antes de que el servicio finalize?
+- La ficha de operaciones tiene un numero de cliente
+- La ficha de operaciones tiene un numero seriado
+  - ? Este numero es el mismo que ira en los certificados?
+- Contiene la información del documento
+- Las observaciones y recomendaciones son especificas para cada empresa,
+  se deben tipear en cada creacion de ficha de operaciones
+
+- En la ficha ingresan los insumos utilizados, su cantidad y su concentracion.
+  ejm. 50ml disuelto en 1L de agua
+
+- Datos de la ficha de operaciones
+  - Fecha: fecha en la que se realizo el servicio
+  - Hora de ingreso: extraer del cliente
+  - Hora de salida: extraer del cliente
+  - Razon social: extraer del cliente
+  - Dirección: extraer del proyecto
+  - Condicion sanitaria circundante - ingresar
+  - Áreas tratadas - ingresar
+  - Servicio realizado: extraer del proyecto
+
+  - ? Nro de certificado: el mismo numero a colocar en el certificado?
+  - Diagnóstico: insectos/roedores/otros - ingresar
+  - Método utilizado:
+    - ? Aspersion: O manual, o motor? puede ir vacio? pueden ir 2 a la vez?
+    - ? Nebulización: O frio, o caliente? puede ir vacio? pueden ir 2 a la vez?
+    - ? Nº de cebos: puede ir vacio? 0 por defecto?
+    - ? Nº de cebos repuestos: puede ir vacio? 0 por defecto?
+    - ? Nº de plancha total: puede ir vacio? 0 por defecto?
+    - ? Nº de jaula total: puede ir vacio? 0 por defecto?
+
+  - Productos utilizados
+    - Insecticida/Rodenticida/Desinfectante/otros: ingresar manualmente
+  - Cantidad y concentracion: ingresar manualmente
+  - Grado de infestacion: checkboxes
+  - Personal que intervino
+    - ? Ingresar manualmente? se deberia registrar al personal? otro modulo?
+  - Orden, limpieza, ... - ingresar manualmente
+
+
+
+## Certificados
+
+Una vez el servicio concluye se debe generar un certificado de saneamiento ambiental.
+El cliente quiere mantener 2 versiones del mismo certificado: digital y físico
+Algunos clientes piden certificados únicamente virtual, otros únicamente físicos,
+otros ambos.
+
+Algunos rubros como restaurantes **siempre** requieren cert. físicos
+
+PeruControl pasa auditorías por parte del MINSA, donde tiene que presentar
+los certificados emitidos.
+
+Los certificados digitales se generar con firmas, las firmas en formato png.
+Los certificados fisicos se generan sin firmas, para imprimirse y luego
+firmarse por perucontrol
+
+- Los certificados digitales y físicos tienen numeración diferente,
+  según su tipo
+
+
+- Los certificados son firmados por un consultor externo a la empresa
+  y por una persona de PeruControl
+- Los certificados solo tienen validez una vez firmados
+- Perucontrol actualmente genera los certificados en word?, los imprime,
+  los firma y los envía
+- Perucontrol quiere que las firmas se coloquen de forma virtual
+  (una img png con la firma) para despues imprimirse
+
+
+## Informes
+
+Finalmente, el sistema de generar varios informes segun los servicios ofrecidos.
+
+Estos informes son en su mayoría prosa, ingresada manualmente por el personal
+de perucontrol.
+
+
+### Generación y llenado parcial de plantillas
+
+El sistema debe generar una plantilla en word con la mayor cantidad de información
+posible ya ingresada, por ejemplo:
+
+- Datos de la empresa que recibió el servicio
+- Nombre del servicio
+- Fechas
+- ? otros ?
+
+- ? el número del informe (INFORME TECNICO # D-000XX-XXXX) tambien serializado?
+- ? tiene algún prefijo según el tipo de informe?
+- ? el código de documento en el pie de página, es por documento?
+- ? la versión de doc. en el pie de página? hay varias versiones?
+- ? cómo se obtiene la fecha de vigencia del doc.
+
+
+### Carga de imagenes - mapa de roedores, mapa murino
+
+Algunos informes incluyen imágenes, por ejemplo, un mapa del área desinfectada.
+Estas imagenes las elabora Perucontrol en un software aparte, y las debe ingresar
+al sistema, para que el sistema genere las plantillas de informe con estas imágenes
+
+- ? cuales informes?
+- ? donde va cada imagen?
+- ? estas imágenes se almacenan luego de que se generó el doc?
+  o se eliminan?
+
+
+## Llenado de excel - Registro de roedores
+
+Algunos servicios tienen como entregable un excel, "registro de roedores",
+en el cual se ingresa información.
+Se informó que este excel es siempre el mismo, asi que se puede ingresar
+la información mediante un formulario,
+y el sistema posteriormente generará el excel con estos datos.
+
+- ? codigo y version del documento?
+- ? como se calcula la fecha de vigencia?
+- ? las medidas correctivas varian?
+
+
+## Cronograma anual
+
+Perucontrol genera y envia archivos excel con un cronograma de cuando
+se van a realizar servicios.
+
+Cada cliente tiene su propio cronograma.
+
+? Hay 2 formatos de excel, uno con todo en una hoja, otro con
+  varios libros. hay mas formatos?
+
+En el cronograma el cliente detalla cada cuanto tiempo quiere que
+perucontrol realize un servicio (por ejm. una fumigacion).
+
+Cada cliente elije una frecuencia, por ejm:
+
+- Cada 2 meses
+- El 1er domingo de cada mes
+- quincenal
+- mensual
+- etc
+
+El sistema muestra un calendario donde se ven las fechas generales
+de los servicios, segun los cronogramas
+El sistema genera un excel con el cronograma, de clientes individuales
+
+
+## Registro de roedores
+
+- Perucontrol lleva un registro de control del servicio de ___ roedores
+- Llenan un excel con estas fechas
+
+

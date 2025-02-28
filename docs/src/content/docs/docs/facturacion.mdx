@@ -1,0 +1,29 @@
+---
+title: Facturación
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+> stub: se necesita más información
+
+## Crear factura
+
+<Uml code={`
+@startuml
+|Facturación|
+start
+
+:Crear factura;
+
+if (Tiene Nº de orden?) then (si)
+	:Incluir Nº de orden;
+else (no)
+endif
+
+:???;
+:Profit;
+
+end
+@enduml
+`} />
+
