@@ -1,0 +1,33 @@
+---
+const {code} = Astro.props;
+const plantuml_url = import.meta.env.VITE_PLANTUML_URL;
+
+async function encode_uml(code: string) {
+	const encoded_code_res = await fetch(`${plantuml_url}/coder`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "text/plain"
+		},
+		body: code,
+	});
+	const encoded_code = await encoded_code_res.text();
+	return encoded_code
+}
+
+const now = Date.now();
+const encoded_code = await encode_uml(code);
+const random = Math.random().toString(36).substring(2);
+const unique_id = `client_uml_${now}_${random}`;
+---
+
+<div id={unique_id} />
+
+<script is:inline define:vars={{ unique_id, plantuml_url, encoded_code }}>
+document.addEventListener("DOMContentLoaded", async () => {
+	console.log(":D happy", unique_id);
+	const svg_res = await fetch(plantuml_url + "/svg/" + encoded_code);
+	const svg = await svg_res.text();
+	const el = document.getElementById(unique_id);
+	el.innerHTML = svg;
+});
+</script>

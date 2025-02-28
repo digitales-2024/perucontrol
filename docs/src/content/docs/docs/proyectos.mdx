@@ -1,0 +1,108 @@
+---
+title: Proyectos
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+<Uml code={`
+@startuml
+:Usuario: -r-> (Crear proyecto)
+:Usuario: --> (Ver proyecto)
+(Ver proyecto) --> (Marcar como completado)
+(Ver proyecto) --> (Generar ficha de operaciones)
+(Ver proyecto) --> (Generar informe)
+@enduml
+`} />
+
+## Crear proyecto
+
+<Uml code={`
+@startuml;
+|Proyecto|
+start
+if (Crear proyecto sin cotización?) then (si)
+	:Crear proyecto;
+	:Obtener cliente;
+else (no)
+	if (Hay proyecto aprobado?) then (si)
+		:Selecctionar cotización;
+		:Crear proyecto;
+		:Obtener datos del cliente;
+	else (no)
+		|Cotización|
+		:Aprobar cotización;
+		end
+	endif
+endif
+
+|Proyecto|
+:Seleccionar dirección del servicio;
+:Seleccionar servicio(s) a realizar;
+
+if (Tiene orden de servicio?) then (si)
+	:Registrar Nº de orden;
+else (no)
+endif
+
+if (Registrar insumos*?) then (si)
+	:Registrar insumos;
+else (no)
+endif
+
+:Marcar proyecto como pendiente;
+
+end
+@enduml;
+`} />
+
+
+## Marcar como completado
+
+<Uml code={`
+@startuml
+start
+
+if (Hay proyecto pendiente?) then (si)
+	:Marcar como completado;
+	end
+else (no)
+	:Crear proyecto;
+	end
+endif
+@enduml
+`} />
+
+
+## Generar ficha de operaciones
+
+- ? la ficha de operaciones se puede generar antes de que el proyecto culmine?
+
+<Uml code={`
+@startuml
+start
+
+if (Hay proyecto completado?) then (si)
+	:Seleccionar proyecto;
+else (no)
+	:Marcar proyecto
+	como completado;
+	end
+endif
+
+:Obtener datos del cliente;
+:Ingresar datos de la ejecución del proyecto;
+:Generar Nº de proyecto/certificado;
+note left
+	Este número es el mismo
+	que el que irá en el
+	certificado?
+end note
+
+#palegreen:generar DOCX/PDF;
+
+end
+@enduml
+`} />
+
+
+
