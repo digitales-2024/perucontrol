@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Search } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Plus, Search, Trash2 } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
@@ -39,6 +39,12 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
     });
 
     const { reset, setValue } = form;
+
+    // Add this after your existing form fields, before the SheetFooter
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "clientLocations",
+    });
 
     useEffect(() =>
     {
@@ -101,7 +107,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="max-h-[85vh] h-full">
+                <ScrollArea className="max-h-[90vh] h-full overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
@@ -259,24 +265,9 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                             <FormLabel>
                                                 Giro del Negocio
                                             </FormLabel>
-                                            <Select value={ field.value } onValueChange={field.onChange}>
-                                                <FormControl className="mb-0">
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Seleccione el giro del negocio" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="giro1">
-                                                        Giro 1
-                                                    </SelectItem>
-                                                    <SelectItem value="giro2">
-                                                        Giro 2
-                                                    </SelectItem>
-                                                    <SelectItem value="giro3">
-                                                        Giro 3
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormControl>
+                                                <Input placeholder="Giro del Negocio" {...field} />
+                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />
@@ -314,6 +305,35 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                         </FormItem>
                                     )}
                                 />
+                                {/* Direcciones Adicionales */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <Button type="button" variant="outline" size="sm" className="mt-2 w-full" onClick={() => append({ address: "" })}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Agregar dirección
+                                        </Button>
+                                    </div>
+
+                                    {fields.map((field, index) => (
+                                        <div key={field.id} className="flex gap-2">
+                                            <FormField
+                                                control={form.control}
+                                                name={`clientLocations.${index}.address`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-1">
+                                                        <FormControl>
+                                                            <Input placeholder={`Dirección secundaria ${index}`} {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button type="button" variant="ghost" size="icon" className="h-10 w-10" onClick={() => remove(index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <SheetFooter>

@@ -308,7 +308,6 @@ export const CreateClient = () =>
                                         </FormItem>
                                     )}
                                 />
-
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <Button type="button" variant="outline" size="sm" className="mt-2 w-full" onClick={() => append({ address: "" })}>
