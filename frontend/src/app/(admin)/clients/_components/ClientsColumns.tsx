@@ -3,11 +3,14 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CreateClientSchema } from "../schemas";
+// import { CreateClientSchema } from "../schemas";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
+import { UpdateClientSheet } from "./UpdateClients";
+import { Client } from "../types/clients";
 
-export const columns: ColumnDef<CreateClientSchema>[] = [
+export const columns: ColumnDef<Client>[] = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
@@ -157,10 +160,17 @@ export const columns: ColumnDef<CreateClientSchema>[] = [
         header: "Acciones",
         cell: function Cell({ row })
         {
-            console.log(row);
+            const [setshowUpdateClient, setSetshowUpdateClient] = useState(false);
             return (
                 <div>
-                    <div />
+                    <div>
+                        {/* Actualizar cliente */}
+                        <UpdateClientSheet
+                            open={setshowUpdateClient}
+                            onOpenChange={setSetshowUpdateClient}
+                            client={row.original}
+                        />
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -178,7 +188,7 @@ export const columns: ColumnDef<CreateClientSchema>[] = [
                             <DropdownMenuItem>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setSetshowUpdateClient(true)}>
                                 Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem>
