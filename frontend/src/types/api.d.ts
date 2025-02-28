@@ -186,9 +186,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"][];
-                        "application/json": components["schemas"]["Client"][];
-                        "text/json": components["schemas"]["Client"][];
+                        "text/plain": Array<components["schemas"]["Client"]>;
+                        "application/json": Array<components["schemas"]["Client"]>;
+                        "text/json": Array<components["schemas"]["Client"]>;
                     };
                 };
             };
@@ -440,9 +440,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["TermsAndConditions"][];
-                        "application/json": components["schemas"]["TermsAndConditions"][];
-                        "text/json": components["schemas"]["TermsAndConditions"][];
+                        "text/plain": Array<components["schemas"]["TermsAndConditions"]>;
+                        "application/json": Array<components["schemas"]["TermsAndConditions"]>;
+                        "text/json": Array<components["schemas"]["TermsAndConditions"]>;
                     };
                 };
             };
@@ -754,7 +754,7 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations?: components["schemas"]["ClientLocation"][] | null;
+            clientLocations?: Array<components["schemas"]["ClientLocation"]> | null;
             phoneNumber: string;
             /** Format: uuid */
             id?: string;
@@ -790,7 +790,7 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations?: components["schemas"]["ClientLocation2"][] | null;
+            clientLocations?: Array<components["schemas"]["ClientLocation2"]> | null;
             phoneNumber: string;
             /** Format: uuid */
             id?: string;

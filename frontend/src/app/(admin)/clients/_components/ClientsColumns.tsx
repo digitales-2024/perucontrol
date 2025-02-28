@@ -10,7 +10,7 @@ import { UpdateClientSheet } from "./UpdateClients";
 import { Client } from "../types/clients";
 import { DeleteClient } from "./DeleteClient";
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: Array<ColumnDef<Client>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (

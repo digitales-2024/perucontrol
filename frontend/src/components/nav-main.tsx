@@ -21,16 +21,16 @@ import {
 export function NavMain({
     items,
 }: {
-    items: {
+    items: Array<{
         title: string
         url: string
         icon: LucideIcon
         isActive?: boolean
-        items?: {
+        items?: Array<{
             title: string
             url: string
-        }[]
-    }[]
+        }>
+    }>
 })
 {
     return (

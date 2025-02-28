@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250227150439_Add Service")]
+    partial class AddService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,6 +171,11 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<string>("DocumentNumber")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -197,18 +205,9 @@ namespace PeruControl.Migrations
                         .HasColumnType("character varying(24)");
 
                     b.Property<string>("RazonSocial")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<string>("TypeDocument")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<string>("TypeDocumentValue")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
 
                     b.HasKey("Id");
 
@@ -244,53 +243,6 @@ namespace PeruControl.Migrations
                     b.ToTable("ClientLocations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Quotation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<long>("Area")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("HasTaxes")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ServiceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<long>("SpacesCount")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("TermsAndConditions")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("Quotation");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Service", b =>
                 {
                     b.Property<Guid>("Id")
@@ -312,8 +264,7 @@ namespace PeruControl.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -481,35 +432,9 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Quotation", b =>
-                {
-                    b.HasOne("PeruControl.Model.Client", "Client")
-                        .WithMany("ClientToQuotations")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.Service", "Service")
-                        .WithMany("ServiceToQuotation")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Client", b =>
                 {
                     b.Navigation("ClientLocations");
-
-                    b.Navigation("ClientToQuotations");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.Service", b =>
-                {
-                    b.Navigation("ServiceToQuotation");
                 });
 #pragma warning restore 612, 618
         }
