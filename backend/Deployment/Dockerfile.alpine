@@ -19,7 +19,7 @@ COPY appsettings.json .
 RUN HUSKY=0 dotnet restore
 
 # Build binary
-RUN HUSKY=0 dotnet publish -c Release -r linux-musl-x64 -o out
+RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out
 # Create a EF bundle for migrating the db
 RUN HUSKY=0 dotnet-ef migrations bundle -r linux-musl-x64
 

@@ -7,7 +7,7 @@ import { CreateClientSchema } from "../schemas";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 
-export const columns: ColumnDef<CreateClientSchema>[] = [
+export const columns: Array<ColumnDef<CreateClientSchema>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
