@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace PeruControl.Model;
 
 public class ClientLocation : BaseModel
 {
+    [JsonIgnore]
     public virtual Client Client { get; set; } = null!;
 
     public required string Address { get; set; }

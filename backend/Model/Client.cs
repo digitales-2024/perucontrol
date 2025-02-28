@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
 public class Client : BaseModel
 {
-    [MinLength(8)]
-    [MaxLength(11)]
-    public required string DocumentNumber { get; set; }
-
     [MinLength(0)]
     [MaxLength(3)]
     public required string TypeDocument { get; set; }
@@ -44,14 +41,19 @@ public class Client : BaseModel
     public required string PhoneNumber { get; set; }
 
     // Reference properties
-    public virtual IList<Quotation> Quotations { get; set; } = new List<Quotation>();
+    [JsonIgnore]
+    public virtual IList<Quotation> ClientToQuotations { get; set; } = new List<Quotation>();
 }
 
 public class ClientCreateDTO : IMapToEntity<Client>
 {
+    [MinLength(0)]
+    [MaxLength(3)]
+    public required string TypeDocument { get; set; }
+
     [MinLength(8)]
     [MaxLength(11)]
-    public required string DocumentNumber { get; set; }
+    public required string TypeDocumentValue { get; set; }
 
     [MinLength(0)]
     [MaxLength(100)]
@@ -83,7 +85,8 @@ public class ClientCreateDTO : IMapToEntity<Client>
     {
         return new Client
         {
-            DocumentNumber = DocumentNumber,
+            TypeDocument = TypeDocument,
+            TypeDocumentValue = TypeDocumentValue,
             RazonSocial = RazonSocial,
             BusinessType = BusinessType,
             Name = Name,
@@ -117,8 +120,6 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     [MaxLength(50)]
     public string? Email { get; set; }
 
-    public ICollection<ClientLocationDTO>? ClientLocations { get; set; }
-
     [MinLength(6)]
     [MaxLength(24)]
     public string? PhoneNumber { get; set; }
@@ -137,7 +138,5 @@ public class ClientPatchDTO : IEntityPatcher<Client>
             entity.Email = Email;
         if (PhoneNumber != null)
             entity.PhoneNumber = PhoneNumber;
-        if (ClientLocations != null)
-            entity.ClientLocations = ClientLocations.Select(c => c.MapToEntity()).ToList();
     }
 }

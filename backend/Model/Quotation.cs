@@ -1,13 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
 public class Quotation : BaseModel
 {
+    [JsonIgnore]
     public virtual Client Client { get; set; } = null!;
 
-    /*public Service Service { get; set; } = null!;*/
+    [JsonIgnore]
+    public virtual Service Service { get; set; } = null!;
 
     public required string Description { get; set; }
 
@@ -30,10 +33,13 @@ public class Quotation : BaseModel
 
 public class QuotationCreateDTO : IMapToEntity<Quotation>
 {
-    public required int ClientId { get; set; }
+    public required Guid ClientId { get; set; }
+    public required Guid ServiceId { get; set; }
     public required string Description { get; set; }
+
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
     public required uint Area { get; set; }
+
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
     public required bool HasTaxes { get; set; }
@@ -41,7 +47,14 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 
     public Quotation MapToEntity()
     {
-        throw new NotImplementedException();
+        return new Quotation
+        {
+            Description = Description,
+            Area = Area,
+            SpacesCount = SpacesCount,
+            HasTaxes = HasTaxes,
+            TermsAndConditions = TermsAndConditions,
+        };
     }
 }
 
