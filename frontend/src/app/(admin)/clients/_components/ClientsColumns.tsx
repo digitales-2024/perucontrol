@@ -9,6 +9,7 @@ import { useState } from "react";
 import { UpdateClientSheet } from "./UpdateClients";
 import { Client } from "../types/clients";
 import { DeleteClient } from "./DeleteClient";
+import { ViewClientDetails } from "./ViewClientsDetail";
 
 export const columns: ColumnDef<Client>[] = [
     {
@@ -78,7 +79,7 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center lowercase">
+            <span className="flex justify-center lowercase">
                 {row.original.razonSocial}
             </span>
         ),
@@ -126,7 +127,7 @@ export const columns: ColumnDef<Client>[] = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center capitalize">
+            <span className="items-center text-center flex justify-center lowercase">
                 {row.original.name}
             </span>
         ),
@@ -160,22 +161,30 @@ export const columns: ColumnDef<Client>[] = [
         header: "Acciones",
         cell: function Cell({ row })
         {
-            const [setshowUpdateClient, setSetshowUpdateClient] = useState(false);
-            const [setsetShowDeleteClient, setSetsetShowDeleteClient] = useState(false);
+            const [showUpdateClient, setShowUpdateClient] = useState(false);
+            const [showDeleteClient, setShowDeleteClient] = useState(false);
+            const [showDetailClient, setShowDetailClient] = useState(false);
 
             return (
                 <div>
                     <div>
                         {/* Actualizar cliente */}
                         <UpdateClientSheet
-                            open={setshowUpdateClient}
-                            onOpenChange={setSetshowUpdateClient}
+                            open={showUpdateClient}
+                            onOpenChange={setShowUpdateClient}
                             client={row.original}
                         />
                         {/* Eliminar un cliente */}
                         <DeleteClient
-                            open={setsetShowDeleteClient}
-                            onOpenChange={setSetsetShowDeleteClient}
+                            open={showDeleteClient}
+                            onOpenChange={setShowDeleteClient}
+                            client={row.original}
+                            showTrigger={false}
+                        />
+                        {/* Ver Detalles de un cliente */}
+                        <ViewClientDetails
+                            open={showDetailClient}
+                            onOpenChange={setShowDetailClient}
                             client={row.original}
                             showTrigger={false}
                         />
@@ -194,13 +203,13 @@ export const columns: ColumnDef<Client>[] = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowDetailClient(true)}>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setSetshowUpdateClient(true)}>
+                            <DropdownMenuItem onSelect={() => setShowUpdateClient(true)}>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setSetsetShowDeleteClient(true)}>
+                            <DropdownMenuItem onSelect={() => setShowDeleteClient(true)}>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

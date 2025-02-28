@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Plus, Search } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Plus, Search, Trash2 } from "lucide-react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet ,SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import { Sheet ,SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { registerClient, searchClientByRuc } from "../actions";
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 export const CreateClient = () =>
 {
     const [typeDocument, setTypeDocument] = useState("");
+    const [open, setOpen] = useState(false);
 
     const form = useForm<CreateClientSchema>({
         resolver: zodResolver(clientSchema),
@@ -37,6 +38,12 @@ export const CreateClient = () =>
 
     const { reset, setValue } = form;
 
+    // Add this after your existing form fields, before the SheetFooter
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "clientLocations",
+    });
+
     const handleSearchByRuc = async(ruc: string) =>
     {
         const result = await searchClientByRuc(ruc);
@@ -56,18 +63,28 @@ export const CreateClient = () =>
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
+        console.log("Datos", JSON.stringify(input, null, 2));
         const result = registerClient(input);
         toast.promise(result, {
             loading: "Loading...",
-            success: "Client registered successfully!",
+            success: () =>
+            {
+                reset();
+                setOpen(false);
+                return "Client registered successfully!";
+            },
             error: "Error",
         });
-
-        reset();
     };
 
+    useEffect(() =>
+    {
+        if (!open) reset();
+        setTypeDocument("");
+    }, [open, reset]);
+
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <Button className="w-28 text-xs">
                     <Plus />
@@ -84,7 +101,7 @@ export const CreateClient = () =>
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="max-h-[85vh] h-full">
+                <ScrollArea className="max-h-[85vh] h-full overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
@@ -243,24 +260,9 @@ export const CreateClient = () =>
                                             <FormLabel>
                                                         Giro del Negocio
                                             </FormLabel>
-                                            <Select onValueChange={field.onChange}>
-                                                <FormControl className="mb-0">
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Seleccione el giro del negocio" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="giro1">
-                                                                Giro 1
-                                                    </SelectItem>
-                                                    <SelectItem value="giro2">
-                                                                Giro 2
-                                                    </SelectItem>
-                                                    <SelectItem value="giro3">
-                                                                Giro 3
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormControl>
+                                                <Input placeholder="Giro del Negocio" {...field} />
+                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />
@@ -306,14 +308,46 @@ export const CreateClient = () =>
                                         </FormItem>
                                     )}
                                 />
+
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <Button type="button" variant="outline" size="sm" className="mt-2 w-full" onClick={() => append({ address: "" })}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Agregar dirección
+                                        </Button>
+                                    </div>
+
+                                    {fields.map((field, index) => (
+                                        <div key={field.id} className="flex gap-2">
+                                            {index > 0 && (
+                                                <>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`clientLocations.${index}.address`}
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex-1">
+                                                                <FormControl>
+                                                                    <Input placeholder={`Dirección secundaria ${index}`} {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <Button type="button" variant="ghost" size="icon" className="h-10 w-10" onClick={() => remove(index)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+
+                                                </>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <SheetFooter>
-                                <SheetClose asChild>
-                                    <Button type="submit">
-                                                  Guardar
-                                    </Button>
-                                </SheetClose>
+                                <Button type="submit">
+                                    Guardar
+                                </Button>
                             </SheetFooter>
                         </form>
                     </Form>

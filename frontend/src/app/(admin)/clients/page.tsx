@@ -29,7 +29,7 @@ export default async function ClientsPage()
         clientLocations: client.clientLocations?.map((location) => ({   // Dando el formato correcto a la dirección
             address: location.address || "-",
         })) || [],
-        razonSocial: client.razonSocial ?? "-",  // Si no hay razon social, convertir el null a un string vacio
+        razonSocial: client.razonSocial || "-",  // Si no hay razon social, convertir el null a un string vacio
     }));
 
     return (
