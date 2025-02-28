@@ -1,5 +1,7 @@
 import { backend, wrapper } from "@/types/backend";
-import { CreateCotizacion } from "./_create";
+import { Shell } from "@/components/common/Shell";
+import { CreateQuotation } from "./_create";
+import { HeaderPage } from "@/components/common/HeaderPage";
 
 export default async function CotizacionPage()
 {
@@ -7,23 +9,15 @@ export default async function CotizacionPage()
     const [data, err] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
     if (err)
     {
-        console.error(`error :c ${err.message}`);
+        console.error(`error ${err.message}`);
         throw err;
     }
 
     return (
-        <div>
-            <h1 className="font-bold text-2xl">
-                Cotizaciones
-            </h1>
-            <p className="text-sm opacity-70">
-                Gestiona las cotizaciones de la empresa
-            </p>
+        <Shell>
+            <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
 
-            <div>
-                <CreateCotizacion termsAndConditions={data} />
-            </div>
-
-        </div>
+            <CreateQuotation termsAndConditions={data} />
+        </Shell>
     );
 }

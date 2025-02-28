@@ -7,7 +7,7 @@ commit_msg=$(cat "$commit_msg_file" | tr -d '\r')
 # Conventional Commit Pattern
 # Format: <type>[(scope)]: <description>
 # Types: feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert
-commit_pattern='^((Merge.*)|((feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\([a-z0-9-]+\))?: .+))$'
+commit_pattern='^((Merge.*)|((feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert|merge)(\([a-z0-9-]+\))?: .+))$'
 
 if ! echo "$commit_msg" | grep -qE "$commit_pattern"; then
     echo "Error: Commit message format is invalid"

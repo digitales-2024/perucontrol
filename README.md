@@ -5,9 +5,15 @@ para el proyecto Perucontrol.
 
 ## Build Status
 
-`develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/)
+- `develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/)
 
-`staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
+- `backend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-backend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-backend-develop-deploy/)
+
+- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-frontend-develop-deploy/)
+
+---
+
+- `staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
 
 
 
