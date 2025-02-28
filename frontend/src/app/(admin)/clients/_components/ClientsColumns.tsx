@@ -79,7 +79,7 @@ export const columns: Array<ColumnDef<Client>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="flex justify-center lowercase">
+            <span className="flex justify-center">
                 {row.original.razonSocial}
             </span>
         ),
@@ -103,7 +103,7 @@ export const columns: Array<ColumnDef<Client>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center capitalize">
+            <span className="items-center flex justify-center text-center">
                 {row.original.businessType}
             </span>
         ),
@@ -127,7 +127,7 @@ export const columns: Array<ColumnDef<Client>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center lowercase">
+            <span className="items-center text-center flex justify-center">
                 {row.original.name}
             </span>
         ),

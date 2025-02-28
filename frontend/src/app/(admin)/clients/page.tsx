@@ -26,8 +26,8 @@ export default async function ClientsPage()
     const formattedClients = activeClients.map((client) => ({
         ...client,
         id: client.id ?? "-", // Si no hay id convertir el null a un string vacio
-        clientLocations: client.clientLocations?.map((location) => ({   // Dando el formato correcto a la dirección
-            address: location.address || "-",
+        clientLocations: client.clientLocations?.filter((location) => location.address).map((location) => ({
+            address: location.address,
         })) || [],
         razonSocial: client.razonSocial || "-",  // Si no hay razon social, convertir el null a un string vacio
     }));
