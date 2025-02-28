@@ -1,0 +1,21 @@
+---
+const {code} = Astro.props;
+const plantuml_url = import.meta.env.VITE_PLANTUML_URL;
+
+async function code_to_uml(code: string) {
+	const encoded_code_res = await fetch(`${plantuml_url}/coder`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "text/plain"
+		},
+		body: code,
+	});
+	const encoded_code = await encoded_code_res.text();
+	const svg_res = await fetch(`${plantuml_url}/svg/${encoded_code}`)
+	const svg = await svg_res.text();
+	return svg;
+}
+
+const code_svg = await code_to_uml(code);
+---
+<Fragment set:html={code_svg} />

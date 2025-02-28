@@ -747,7 +747,9 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Client: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -763,7 +765,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client2: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -779,7 +783,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client3: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;
@@ -795,7 +801,9 @@ export interface components {
             modifiedAt?: string;
         };
         Client4: {
-            razonSocial: string;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial: string | null;
             businessType: string;
             name: string;
             fiscalAddress: string;

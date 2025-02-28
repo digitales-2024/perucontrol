@@ -86,7 +86,7 @@ const eslintConfig = [
             "operator-linebreak": "error",
             "eqeqeq": "error",
             "no-case-declarations": "error",
-            "no-nested-ternary": "error",
+            "no-nested-ternary": "off",
             "no-unneeded-ternary": "error",
             "no-mixed-operators": "error",
             "nonblock-statement-body-position": "error",

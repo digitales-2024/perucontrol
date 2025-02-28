@@ -1,0 +1,53 @@
+---
+title: Informes
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+Algunos informes pueden contener imágenes
+
+## Generación de informe
+
+<Uml code={`
+@startuml
+|Informes|
+start
+if (Proyecto completado?) then (si)
+else (no)
+	|Proyectos|
+	:Marcar proyecto
+	como completado;
+	end
+endif
+
+|Informes|
+:Obtener información
+de la empresa del
+proyecto;
+
+:Ingresar información;
+
+if (Incluye img?) then (si)
+	:Cargar imágenes;
+	:Incluir imágenes en DOCX;
+else (no)
+endif
+
+#palegreen:generar DOCX;
+
+if (Guardar img?) then (si)
+	|Cloudflare|
+	:Almacenar img;
+	:Generar URL;
+	|Informes|
+	:Alacenar URL en bd;
+else (no)
+endif
+
+end
+@enduml
+`} />
+
+
+
+

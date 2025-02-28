@@ -1,0 +1,39 @@
+---
+title: Clientes
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+## Crear cliente
+
+Los clientes se crean a partir de un número de RUC/DNI
+
+- ? solo se aceptan clientes habidos?
+- ? si el cliente no est habido, no permitir la creacion de un cliente?
+
+<Uml code={`
+@startuml
+|Clientes|
+start
+:Crear cliente;
+:Ingresa Nº de RUC/DNI;
+|SUNAT|
+:Obtener datos del contribuyente;
+:Verificar estado del contribuyente;
+
+if (Cliente habido?) then (si)
+	:Obtener datos;
+else (no)
+	#pink:Mostrar mensaje de advertencia;
+	end
+endif
+
+|Clientes|
+:Registrar datos de SUNAT;
+:Registrar multiples direcciones;
+
+end
+@enduml
+`} />
+
+

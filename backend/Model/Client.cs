@@ -9,8 +9,16 @@ public class Client : BaseModel
     public required string DocumentNumber { get; set; }
 
     [MinLength(0)]
+    [MaxLength(3)]
+    public required string TypeDocument { get; set; }
+
+    [MinLength(8)]
+    [MaxLength(11)]
+    public required string TypeDocumentValue { get; set; }
+
+    [MinLength(0)]
     [MaxLength(100)]
-    public required string RazonSocial { get; set; }
+    public required string? RazonSocial { get; set; }
 
     [MinLength(0)]
     [MaxLength(100)]
