@@ -3,11 +3,14 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CreateClientSchema } from "../schemas";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
+import { UpdateClientSheet } from "./UpdateClients";
+import { Client } from "../types/clients";
+import { DeleteClient } from "./DeleteClient";
 
-export const columns: Array<ColumnDef<CreateClientSchema>> = [
+export const columns: Array<ColumnDef<Client>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
@@ -75,7 +78,7 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center capitalize">
+            <span className="items-center flex justify-center text-center lowercase">
                 {row.original.razonSocial}
             </span>
         ),
@@ -99,7 +102,7 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center uppercase">
+            <span className="items-center flex justify-center text-center capitalize">
                 {row.original.businessType}
             </span>
         ),
@@ -123,20 +126,20 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center uppercase">
+            <span className="items-center text-center flex justify-center capitalize">
                 {row.original.name}
             </span>
         ),
     },
     {
-        accessorKey: "fiscalAddress",
+        accessorKey: "email",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-        Dirección fiscal
+        Correo Electrónico
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -147,8 +150,8 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center uppercase text-ellipsis text-center">
-                {row.original.fiscalAddress}
+            <span className="items-center flex justify-center text-ellipsis text-center">
+                {row.original.email}
             </span>
         ),
     },
@@ -157,10 +160,26 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
         header: "Acciones",
         cell: function Cell({ row })
         {
-            console.log(row);
+            const [setshowUpdateClient, setSetshowUpdateClient] = useState(false);
+            const [setsetShowDeleteClient, setSetsetShowDeleteClient] = useState(false);
+
             return (
                 <div>
-                    <div />
+                    <div>
+                        {/* Actualizar cliente */}
+                        <UpdateClientSheet
+                            open={setshowUpdateClient}
+                            onOpenChange={setSetshowUpdateClient}
+                            client={row.original}
+                        />
+                        {/* Eliminar un cliente */}
+                        <DeleteClient
+                            open={setsetShowDeleteClient}
+                            onOpenChange={setSetsetShowDeleteClient}
+                            client={row.original}
+                            showTrigger={false}
+                        />
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -178,10 +197,10 @@ export const columns: Array<ColumnDef<CreateClientSchema>> = [
                             <DropdownMenuItem>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setSetshowUpdateClient(true)}>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setSetsetShowDeleteClient(true)}>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

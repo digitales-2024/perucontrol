@@ -6,11 +6,11 @@ import { CreateClientSchema } from "./schemas";
 import { components } from "@/types/api";
 import { revalidatePath } from "next/cache";
 
-export async function registerClient(input: CreateClientSchema): Promise<Result<null, FetchError>>
+export async function registerClient(client: CreateClientSchema): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.POST("/api/Client", {
         ...auth,
-        body: input,
+        body: client,
     }));
 
     revalidatePath("/(admin)/clients", "page");
@@ -42,4 +42,47 @@ export async function searchClientByRuc(ruc: string): Promise<Result<SunatRespon
         return err(error);
     }
     return ok(data);
+}
+
+export async function updateClient(id: string, newClient: CreateClientSchema): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Client/{id}", {
+        ...auth,
+        body: newClient,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/clients", "page");
+
+    if (error)
+    {
+        console.log("Error updating client:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function deleteClient(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Client/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/clients", "page");
+
+    if (error)
+    {
+        console.log("Error deleting client:", error);
+        return err(error);
+    }
+    return ok(null);
 }
