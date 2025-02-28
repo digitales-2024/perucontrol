@@ -24,7 +24,7 @@ import { components } from "@/types/api";
 
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 
-export function CreateCotizacion({ termsAndConditions }: { termsAndConditions: Array<TermsAndConditions> })
+export function CreateQuotation({ termsAndConditions }: { termsAndConditions: Array<TermsAndConditions> })
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
