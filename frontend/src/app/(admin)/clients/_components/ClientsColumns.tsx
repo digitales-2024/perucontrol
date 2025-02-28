@@ -3,12 +3,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import { CreateClientSchema } from "../schemas";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import { UpdateClientSheet } from "./UpdateClients";
 import { Client } from "../types/clients";
+import { DeleteClient } from "./DeleteClient";
 
 export const columns: ColumnDef<Client>[] = [
     {
@@ -161,6 +161,8 @@ export const columns: ColumnDef<Client>[] = [
         cell: function Cell({ row })
         {
             const [setshowUpdateClient, setSetshowUpdateClient] = useState(false);
+            const [setsetShowDeleteClient, setSetsetShowDeleteClient] = useState(false);
+
             return (
                 <div>
                     <div>
@@ -169,6 +171,13 @@ export const columns: ColumnDef<Client>[] = [
                             open={setshowUpdateClient}
                             onOpenChange={setSetshowUpdateClient}
                             client={row.original}
+                        />
+                        {/* Eliminar un cliente */}
+                        <DeleteClient
+                            open={setsetShowDeleteClient}
+                            onOpenChange={setSetsetShowDeleteClient}
+                            client={row.original}
+                            showTrigger={false}
                         />
                     </div>
                     <DropdownMenu>
@@ -191,7 +200,7 @@ export const columns: ColumnDef<Client>[] = [
                             <DropdownMenuItem onSelect={() => setSetshowUpdateClient(true)}>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setSetsetShowDeleteClient(true)}>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

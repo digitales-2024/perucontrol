@@ -65,3 +65,24 @@ export async function updateClient(id: string, newClient: CreateClientSchema): P
     }
     return ok(null);
 }
+
+export async function deleteClient(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Client/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/clients", "page");
+
+    if (error)
+    {
+        console.log("Error deleting client:", error);
+        return err(error);
+    }
+    return ok(null);
+}

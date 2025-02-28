@@ -21,12 +21,15 @@ export default async function ClientsPage()
         );
     }
 
-    const formattedClients = clients.map((client) => ({
+    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+
+    const formattedClients = activeClients.map((client) => ({
         ...client,
-        clientLocations: client.clientLocations?.map((location) => ({   //Dando el formato correcto a la dirección
+        id: client.id ?? "-", // Si no hay id convertir el null a un string vacio
+        clientLocations: client.clientLocations?.map((location) => ({   // Dando el formato correcto a la dirección
             address: location.address || "-",
         })) || [],
-        razonSocial: client.razonSocial ?? "-",  //Convertir el null a un string vacio
+        razonSocial: client.razonSocial ?? "-",  // Si no hay razon social, convertir el null a un string vacio
     }));
 
     return (
