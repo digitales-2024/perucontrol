@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
     });
 
     return (
-        <div>
+        <div className="overflow-x-scroll">
             <div className="flex items-center justify-between py-4">
                 <Input
                     placeholder="Buscar..."
@@ -108,15 +108,15 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length}
                     {" "}
-de
+                    de
                     {table.getFilteredRowModel().rows.length}
                     {" "}
-fila(s) seleccionada(s).
+                    fila(s) seleccionada(s).
                 </div>
                 <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                         <p className="text-sm font-medium">
-Filas por página
+                            Filas por página
                         </p>
                         <Select
                             value={`${table.getState().pagination.pageSize}`}
@@ -143,7 +143,7 @@ Filas por página
                             {" "}
                             {table.getState().pagination.pageIndex + 1}
                             {" "}
-de
+                            de
                             {" "}
                             {table.getPageCount()}
                         </p>
@@ -155,7 +155,7 @@ de
                                 disabled={!table.getCanPreviousPage()}
                             >
                                 <span className="sr-only">
-Ir a la primera página
+                                    Ir a la primera página
                                 </span>
                                 <ChevronsLeft className="h-4 w-4" />
                             </Button>
@@ -166,7 +166,7 @@ Ir a la primera página
                                 disabled={!table.getCanPreviousPage()}
                             >
                                 <span className="sr-only">
-Ir a la página anterior
+                                    Ir a la página anterior
                                 </span>
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -177,7 +177,7 @@ Ir a la página anterior
                                 disabled={!table.getCanNextPage()}
                             >
                                 <span className="sr-only">
-Ir a la página siguiente
+                                    Ir a la página siguiente
                                 </span>
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
@@ -188,7 +188,7 @@ Ir a la página siguiente
                                 disabled={!table.getCanNextPage()}
                             >
                                 <span className="sr-only">
-Ir a la última página
+                                    Ir a la última página
                                 </span>
                                 <ChevronsRight className="h-4 w-4" />
                             </Button>
