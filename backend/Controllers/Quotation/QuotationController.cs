@@ -5,5 +5,4 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 public class QuotationController(DatabaseContext db)
-    : AbstractCrudController<Quotation, QuotationPatchDTO>(db)
-{ }
+    : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db) { }

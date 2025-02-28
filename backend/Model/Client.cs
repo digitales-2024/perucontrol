@@ -34,6 +34,9 @@ public class Client : BaseModel
     [MinLength(6)]
     [MaxLength(24)]
     public required string PhoneNumber { get; set; }
+
+    // Reference properties
+    public virtual IList<Quotation> Quotations { get; set; } = new List<Quotation>();
 }
 
 public class ClientCreateDTO : IMapToEntity<Client>
