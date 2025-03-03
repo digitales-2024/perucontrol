@@ -132,6 +132,7 @@ using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     await DatabaseSeeder.SeedDefaultUserAsync(app.Services, logger);
+    await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
 }
 
 app.UseAuthentication();
