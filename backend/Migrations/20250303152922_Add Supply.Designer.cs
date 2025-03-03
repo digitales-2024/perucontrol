@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250303152922_Add Supply")]
+    partial class AddSupply
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,53 +251,6 @@ namespace PeruControl.Migrations
                     b.ToTable("ClientLocations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Project", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("Area")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<long>("OrderNumber")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid?>("QuotationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<long>("SpacesCount")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("QuotationId");
-
-                    b.ToTable("Project");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Quotation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -508,21 +464,6 @@ namespace PeruControl.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectService", b =>
-                {
-                    b.Property<Guid>("ProjectsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ServicesId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ProjectsId", "ServicesId");
-
-                    b.HasIndex("ServicesId");
-
-                    b.ToTable("ProjectService");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -585,23 +526,6 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Project", b =>
-                {
-                    b.HasOne("PeruControl.Model.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.Quotation", "Quotation")
-                        .WithMany()
-                        .HasForeignKey("QuotationId");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Quotation");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Quotation", b =>
                 {
                     b.HasOne("PeruControl.Model.Client", "Client")
@@ -619,21 +543,6 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("ProjectService", b =>
-                {
-                    b.HasOne("PeruControl.Model.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.Service", null)
-                        .WithMany()
-                        .HasForeignKey("ServicesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PeruControl.Model.Client", b =>
