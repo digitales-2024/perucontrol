@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PeruControl.Controllers;
 using PeruControl.Model;
+using PeruControl.Utils;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -135,6 +136,7 @@ using (var scope = app.Services.CreateScope())
     await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
 }
 
+app.UseGlobalExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
