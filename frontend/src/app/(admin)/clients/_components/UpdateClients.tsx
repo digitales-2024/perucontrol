@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { toast } from "sonner";
-import { searchClientByRuc, updateClient } from "../actions";
+import { SearchClientByRuc, UpdateClient } from "../actions";
 import { Client } from "../types/clients";
 
 interface UpdateClientProps {
@@ -68,7 +68,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     const handleSearchByRuc = async(ruc: string) =>
     {
-        const result = await searchClientByRuc(ruc);
+        const result = await SearchClientByRuc(ruc);
         if (result)
         {
             const data = result;
@@ -85,7 +85,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const result = updateClient(client.id, input);
+        const result = UpdateClient(client.id, input);
         toast.promise(result, {
             loading: "Loading...",
             success: "Client updated successfully!",

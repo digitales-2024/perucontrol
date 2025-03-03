@@ -1,6 +1,6 @@
 import { backend, wrapper } from "@/types/backend";
 import { Shell } from "@/components/common/Shell";
-import { CreateQuotation } from "./_create";
+import { CreateQuotation } from "./_components/CreateQuotation";
 import { HeaderPage } from "@/components/common/HeaderPage";
 
 export default async function CotizacionPage()
@@ -13,11 +13,26 @@ export default async function CotizacionPage()
         throw err;
     }
 
+    // get all clients
+    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+
+    if (clientsError)
+    {
+        console.error("Error getting all clients:", clientsError);
+    }
+
+    // get all services
+    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
+
+    if (servicesError)
+    {
+        console.error("Error getting all clients:", servicesError);
+    }
+
     return (
         <Shell>
             <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-
-            <CreateQuotation termsAndConditions={data} />
+            <CreateQuotation termsAndConditions={data} clients={clients} services={services} />
         </Shell>
     );
 }
