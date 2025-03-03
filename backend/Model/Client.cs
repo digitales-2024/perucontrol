@@ -25,8 +25,8 @@ public class Client : BaseModel
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [MinLength(1)]
-    [MaxLength(100)]
+    [MinLength(1, ErrorMessage = "La dirección debe tener al menos 1 caracter")]
+    [MaxLength(100, ErrorMessage = "La dirección debe tener como máximo 100 caracteres")]
     public required string FiscalAddress { get; set; }
 
     [MinLength(3)]

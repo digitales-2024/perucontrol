@@ -12,6 +12,9 @@ public class Service : BaseModel
     // Reference properties
     [JsonIgnore]
     public virtual IList<Quotation> ServiceToQuotation { get; set; } = new List<Quotation>();
+
+    [JsonIgnore]
+    public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 }
 
 public class ServiceCreateDTO : IMapToEntity<Service>

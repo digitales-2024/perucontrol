@@ -20,6 +20,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Model.Client.SetUp<Client>(builder);
         PeruControl.Model.ClientLocation.SetUp<ClientLocation>(builder);
         PeruControl.Model.Quotation.SetUp<Quotation>(builder);
+        PeruControl.Model.Project.SetUp<Project>(builder);
         PeruControl.Model.Service.SetUp<Service>(builder);
         PeruControl.Model.Supply.SetUp<Supply>(builder);
         PeruControl.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
