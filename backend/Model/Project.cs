@@ -61,8 +61,29 @@ public class ProjectCreateDTO : IMapToEntity<Project>
 
 public class ProjectPatchDTO : IEntityPatcher<Project>
 {
+    [MinLength(1, ErrorMessage = "Debe ingresar una dirección")]
+    [MaxLength(100, ErrorMessage = "La dirección no puede tener más de 100 caracteres")]
+    public string? Address { get; set; }
+
+    [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
+    public uint? Area { get; set; }
+
+    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
+    public uint? SpacesCount { get; set; }
+
+    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
+    public uint? OrderNumber { get; set; }
+
     public void ApplyPatch(Project entity)
     {
-        throw new NotImplementedException();
+        // Look at all these null checks. In C we'd just memcpy and be done with it
+        if (Address != null)
+            entity.Address = Address;
+        if (Area != null)
+            entity.Area = Area.Value;
+        if (SpacesCount != null)
+            entity.SpacesCount = SpacesCount.Value;
+        if (OrderNumber != null)
+            entity.OrderNumber = OrderNumber.Value;
     }
 }
