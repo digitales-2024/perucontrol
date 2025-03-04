@@ -11,29 +11,124 @@ Los clientes se crean a partir de un número de RUC/DNI
 - ? solo se aceptan clientes habidos?
 - ? si el cliente no est habido, no permitir la creacion de un cliente?
 
+
+### Buscar cliente por RUC
+
 <Uml code={`
 @startuml
 |Clientes|
 start
-:Crear cliente;
 :Ingresa Nº de RUC/DNI;
-|SUNAT|
-:Obtener datos del contribuyente;
-:Verificar estado del contribuyente;
 
-if (Cliente habido?) then (si)
-	:Obtener datos;
+
+|Modulo SUNAT|
+:Buscar cliente por RUC;
+:Cargar página de
+busqueda de SUNAT;
+
+|SUNAT|
+:Genera cookies;
+
+|Modulo SUNAT|
+if (carga exitosa) then (si)
+	:Obtener cookies;
+	:Generar token de
+	seguridad SUNAT;
+	:Buscar empresa por RUC;
+
+	|SUNAT|
+	:Buscar cliente por RUC;
+	:Devuelve respuesta;
+
+	|Modulo SUNAT|
+	if (Respuesta exitosa) then (si)
+		:Obtener html;
+		:Parsear html;
+		:Buscar nodos de datos;
+		if (tiene razon social?) then (si)
+			:Agregar razon social;
+		endif
+		if (tiene nombre comercial?) then (si)
+			:Agregar nombre comercial;
+		endif
+		if (tiene direccion?) then (si)
+			:Agregar direccion;
+		endif
+		if (tiene actividad comercial?) then (si)
+			:Agregar actividad comercial;
+		endif
+	else (no)
+		:Devolver error;
+		(E)
+		detach
+	endif
 else (no)
-	#pink:Mostrar mensaje de advertencia;
-	end
+	:Devolver error;
+	(E)
+	detach
 endif
 
-|Clientes|
-:Registrar datos de SUNAT;
-:Registrar multiples direcciones;
 
+|Clientes|
+
+:Enviar datos encontrados;
+end
+
+(E)
+:Devolver error al cliente;
 end
 @enduml
 `} />
 
 
+### Crear cliente
+
+<Uml code={`
+@startuml
+
+|FE|
+start
+
+:Mostrar formulario;
+
+:Seleccionar documento;
+if (doc es RUC?) then (no)
+	:Ingresar DNI;
+	(A)
+	detach
+
+	(A)
+	:Ingresar Nombres
+	y Apellidos;
+	:Ingresar Direccion;
+	:Ingresar Giro;
+	:Ingresar Telefono;
+	:Ingresar Correo Electronico;
+	:Ingresar Direcciones
+	adicionales;
+else (si)
+	:Ingresar RUC;
+	:Buscar empresa;
+
+	|BE|
+	:Buscar cliente por RUC;
+
+	|FE|
+	if (Datos encontrados?) then (si)
+		:Llenar datos
+		en formulario;
+	else (no)
+		(A)
+		detach
+	endif
+endif
+
+|BE|
+:Crear cliente;
+
+|FE|
+:Cerrar dialog;
+
+end
+@enduml
+`} />
