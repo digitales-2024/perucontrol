@@ -3,54 +3,47 @@ import { Shell } from "@/components/common/Shell";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { QuotationDataTable } from "./_components/QuotationsDataTable";
 import { columns } from "./_components/QuotationColumns";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Quotation } from "./types/quotation";
 
-export default function CotizacionPage()
+export default async function CotizacionPage()
 {
-    const router = useRouter();
-    const [quotations, setQuotations] = useState<Array<Quotation>>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() =>
+    // get all quotations
+    const [quotationsData, err] = await wrapper((auth) => backend.GET("/api/Quotation", auth));
+    if (err)
     {
-        const fetchData = async() =>
-        {
-            try
-            {
-                // get all quotations
-                const [quotationsData, err] = await wrapper((auth) => backend.GET("/api/Quotation", auth));
-                if (err)
-                {
-                    console.error(`error ${err.message}`);
-                    throw err;
-                }
-                setQuotations(quotationsData);
-                setLoading(false);
-            }
-            catch (error)
-            {
-                router.push("/(admi)/cotizaciones/error");
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [router]);
+        console.error(`error ${err.message}`);
+        throw err;
+    }
 
-    if (loading)
+    // get all terms and conditions
+    const [terms, termsErr] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
+    if (termsErr)
     {
-        return (
-            <div>
-                Cargando ....
-            </div>
-        );
+        console.error(`error ${termsErr.message}`);
+        throw termsErr;
+    }
+
+    // get all clients
+    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+
+    if (clientsError)
+    {
+        console.error("Error getting all clients:", clientsError);
+        return null;
+    }
+
+    // get all services
+    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
+
+    if (servicesError)
+    {
+        console.error("Error getting all clients:", servicesError);
+        return null;
     }
 
     return (
         <Shell>
             <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-            <QuotationDataTable columns={columns} data={quotations} />
+            <QuotationDataTable columns={columns} data={quotationsData} terms={terms} clients={clients} services={services} />
         </Shell>
     );
 }

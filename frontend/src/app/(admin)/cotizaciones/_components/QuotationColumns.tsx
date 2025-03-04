@@ -5,9 +5,9 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { Quotation } from "../types/quotation";
+import { components } from "@/types/api";
 
-export const columns: Array<ColumnDef<Quotation>> = [
+export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
@@ -28,7 +28,7 @@ export const columns: Array<ColumnDef<Quotation>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center uppercase text-center">
-                {row.original.clientId}
+                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name }
             </span>
         ),
     },
@@ -99,13 +99,13 @@ export const columns: Array<ColumnDef<Quotation>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center">
+            <span className="flex justify-center">
                 {row.original.spacesCount}
             </span>
         ),
     },
     {
-        accessorKey: "name",
+        accessorKey: "hasTaxes",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -124,7 +124,7 @@ export const columns: Array<ColumnDef<Quotation>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
-                {row.original.hasTaxes}
+                {row.original.hasTaxes ? "SI" : "NO"}
             </span>
         ),
     },

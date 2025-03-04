@@ -1,5 +1,3 @@
-// "use client";
-
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,8 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
 
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
-type Clients = components["schemas"]["Client"]
-type Services = components["schemas"]["Service"]
+type Clients = components["schemas"]["ClientGetDTO"]
+type Services = components["schemas"]["ServiceGetDTO"]
 
 export function CreateQuotation({ termsAndConditions, clients, services }: { termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {

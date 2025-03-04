@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { CreateTermsAndConditions } from "../../app/(admin)/cotizaciones/actions";
 import { toastWrapper } from "@/types/toasts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CreateTermsAndConditions } from "../actions";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const createTermsSchema = z.object({
     name: z.string().min(2, { message: "El nombre no puede estar vacio" })
