@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 
 namespace PeruControl.Controllers;
@@ -34,5 +35,12 @@ public class QuotationController(DatabaseContext db)
         _dbSet.Add(entity);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+    }
+
+    [EndpointSummary("Get all")]
+    [HttpGet]
+    public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
+    {
+        return await _context.Quotations.Include(c => c.Client).Include(s => s.Service).ToListAsync();
     }
 }

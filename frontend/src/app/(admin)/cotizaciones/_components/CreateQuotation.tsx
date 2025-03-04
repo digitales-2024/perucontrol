@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -23,7 +23,7 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import TermsAndConditions from "../../../../components/terms&Conditions/TermsAndConditions";
+import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
 
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"]
