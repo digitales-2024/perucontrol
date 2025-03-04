@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 
 namespace PeruControl.Controllers;
@@ -39,8 +40,26 @@ public class QuotationController(DatabaseContext db)
 
     [EndpointSummary("Get all")]
     [HttpGet]
+    [ProducesResponseType<IEnumerable<QuotationGetDTO>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
     {
-        return await _context.Quotations.Include(c => c.Client).Include(s => s.Service).ToListAsync();
+        // TODO: fix dto, show in UI only the available fields
+        return await _context
+            .Quotations.Include(c => c.Client)
+            .Include(s => s.Service)
+            .ToListAsync();
+    }
+
+    [EndpointSummary("Get one by ID")]
+    [HttpGet("{id}")]
+    [ProducesResponseType<QuotationGetDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<ActionResult<Quotation>> GetById(Guid id)
+    {
+        var entity = await _dbSet
+            .Include(c => c.Client)
+            .Include(s => s.Service)
+            .FirstOrDefaultAsync(q => q.Id == id);
+        return entity == null ? NotFound() : Ok(entity);
     }
 }

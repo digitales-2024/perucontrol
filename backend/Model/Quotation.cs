@@ -6,10 +6,8 @@ namespace PeruControl.Model;
 
 public class Quotation : BaseModel
 {
-    [JsonIgnore]
     public virtual Client Client { get; set; } = null!;
 
-    [JsonIgnore]
     public virtual Service Service { get; set; } = null!;
 
     public required string Description { get; set; }
