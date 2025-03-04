@@ -6,7 +6,7 @@ using PeruControl.Model;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db)
+public class QuotationController(DatabaseContext db, QuotationService quotationService)
     : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -42,7 +42,6 @@ public class QuotationController(DatabaseContext db)
     [ProducesResponseType<IEnumerable<QuotationGetDTO>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
     {
-        // TODO: fix dto, show in UI only the available fields
         return await _context
             .Quotations.Include(c => c.Client)
             .Include(s => s.Service)
@@ -60,5 +59,28 @@ public class QuotationController(DatabaseContext db)
             .Include(s => s.Service)
             .FirstOrDefaultAsync(q => q.Id == id);
         return entity == null ? NotFound() : Ok(entity);
+    }
+
+    [EndpointSummary("Generate Excel")]
+    [HttpGet("{id}/gen-excel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateExcel()
+    {
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{{digesa_habilitacion}}", "322" },
+            { "serviceName", "Service Name" },
+            { "servicePrice", "100" }
+        };
+        var fileBytes = quotationService.GenerateQuotationFromTemplate(
+            placeholders,
+            "template.xlsx"
+        );
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "quotation.xlsx"
+        );
     }
 }
