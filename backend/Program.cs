@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PeruControl.Controllers;
 using PeruControl.Model;
+using PeruControl.Services;
 using PeruControl.Utils;
 using Scalar.AspNetCore;
 
@@ -97,11 +98,13 @@ builder.Services.AddOpenApi(options =>
 });
 
 // Register modules
-var modules = new IModule[] { new AuthModule(), new ClientModule(), new QuotationModule() };
+var modules = new IModule[] { new AuthModule(), new ClientModule() };
 foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
 }
+// Register global services
+builder.Services.AddScoped<ExcelTemplateService>();
 
 var app = builder.Build();
 

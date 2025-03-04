@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db, QuotationService quotationService)
+public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate)
     : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -73,7 +74,7 @@ public class QuotationController(DatabaseContext db, QuotationService quotationS
             { "serviceName", "Service Name" },
             { "servicePrice", "100" }
         };
-        var fileBytes = quotationService.GenerateQuotationFromTemplate(
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
             "template.xlsx"
         );

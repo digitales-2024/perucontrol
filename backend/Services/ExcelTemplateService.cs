@@ -2,11 +2,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
-namespace PeruControl.Controllers;
+namespace PeruControl.Services;
 
-public class QuotationService
+public class ExcelTemplateService
 {
-    public byte[] GenerateQuotationFromTemplate(
+    public byte[] GenerateExcelFromTemplate(
         Dictionary<string, string> placeholders,
         string templatePath
     )
