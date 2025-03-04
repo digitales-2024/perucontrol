@@ -105,6 +105,7 @@ foreach (var module in modules)
 }
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();
+builder.Services.AddScoped<WordTemplateService>();
 
 var app = builder.Build();
 

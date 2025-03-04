@@ -7,7 +7,7 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate)
+public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate, WordTemplateService wordTemplate)
     : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -70,9 +70,8 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     {
         var placeholders = new Dictionary<string, string>
         {
+            // sample values
             { "{{digesa_habilitacion}}", "322" },
-            { "serviceName", "Service Name" },
-            { "servicePrice", "100" }
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
@@ -84,4 +83,25 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             "quotation.xlsx"
         );
     }
+
+    /*[EndpointSummary("Generate Word")]*/
+    /*[HttpGet("{id}/gen-word")]*/
+    /*[ProducesResponseType(StatusCodes.Status200OK)]*/
+    /*[ProducesResponseType(StatusCodes.Status404NotFound)]*/
+    /*public IActionResult GenerateWord()*/
+    /*{*/
+    /*    var placeholders = new Dictionary<string, string>*/
+    /*    {*/
+    /*        { "{{nombre_empresa}}", "Empresa Cencosud" },*/
+    /*    };*/
+    /*    var fileBytes = wordTemplate.GenerateWordFromTemplate(*/
+    /*        placeholders,*/
+    /*        "template.docx"*/
+    /*    );*/
+    /*    return File(*/
+    /*        fileBytes,*/
+    /*        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",*/
+    /*        "my-template.docx"*/
+    /*    );*/
+    /*}*/
 }

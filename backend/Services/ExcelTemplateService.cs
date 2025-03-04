@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
@@ -26,7 +25,7 @@ public class ExcelTemplateService
             throw new Exception("Couldnt load spreadsheet");
         }
 
-        // Get the first worksheet - because who needs multiple sheets anyway?
+        // Get the first worksheet
         var workbookPart = newPackage.WorkbookPart;
         if (workbookPart == null)
         {
