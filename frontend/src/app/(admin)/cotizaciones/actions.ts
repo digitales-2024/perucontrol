@@ -75,3 +75,24 @@ export async function UpdateQuotation(id: string, newQuotation: CreateQuotationS
     }
     return ok(null);
 }
+
+export async function RemoveQuotation(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Quotation/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/cotizaciones", "page");
+
+    if (error)
+    {
+        console.log("Error deleting quotation:", error);
+        return err(error);
+    }
+    return ok(null);
+}

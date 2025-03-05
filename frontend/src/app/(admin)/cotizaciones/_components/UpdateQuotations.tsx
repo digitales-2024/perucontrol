@@ -29,7 +29,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
     const clientsOptions: Array<Option> =
             clients?.map((client) => ({
                 value: client.id || "",
-                label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
+                label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
             })) ?? [];
 
     const servicesOptions: Array<Option> =

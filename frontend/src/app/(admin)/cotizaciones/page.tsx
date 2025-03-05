@@ -41,11 +41,13 @@ export default async function CotizacionPage()
         return null;
     }
 
+    const activeQuotation = quotationsData.filter((quotation) => quotation.isActive);  // Filtrando las cotizaciones activas
+
     return (
         <QuotationProvider value={{ quotations: quotationsData, terms, clients, services }}>
             <Shell>
                 <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-                <QuotationDataTable columns={columns} data={quotationsData} />
+                <QuotationDataTable columns={columns} data={activeQuotation} />
             </Shell>
         </QuotationProvider>
     );
