@@ -55,6 +55,7 @@ export const CreateClient = () =>
             setValue("razonSocial", data[0].razonSocial || "");
             setValue("name", data[0].name || "");
             setValue("fiscalAddress", data[0].fiscalAddress || "");
+            setValue("businessType", data[0].businessType || "");
         }
         else
         {

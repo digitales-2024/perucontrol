@@ -1,75 +1,84 @@
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { GetTermsAndConditionsById, RegisterQuotation } from "../actions";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import React, { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
 import { toast } from "sonner";
+import { GetTermsAndConditionsById, UpdateQuotation } from "../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
-import { useQuotationContext } from "../context/QuotationContext";
+import { components } from "@/types/api";
 
-export function CreateQuotation()
+type Quotation = components["schemas"]["QuotationGetDTO"];
+type TermsAndConditions = components["schemas"]["TermsAndConditions"];
+type Clients = components["schemas"]["ClientGetDTO"]
+type Services = components["schemas"]["ServiceGetDTO"]
+
+export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void,termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {
-    const { terms, clients, services } = useQuotationContext();
     const [termsOpen, setTermsOpen] = useState(false);
-    const [open, setOpen] = useState(false);
 
     { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
-        clients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
-        })) ?? [];
+            clients?.map((client) => ({
+                value: client.id || "",
+                label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+            })) ?? [];
 
     const servicesOptions: Array<Option> =
-          services?.map((service) => ({
-              value: service.id || "",
-              label: service.name,
-          })) ?? [];
+              services?.map((service) => ({
+                  value: service.id || "",
+                  label: service.name,
+              })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
-            clientId: "",
-            serviceId: "",
-            description: "",
-            area: 0,
-            spacesCount: 0,
-            hasTaxes: false,
-            termsAndConditions: "",
+            clientId: quotation.client?.id || "",
+            serviceId: quotation.service?.id || "",
+            description: quotation.description || "",
+            area: quotation.area || 0,
+            spacesCount: quotation.spacesCount || 0,
+            hasTaxes: quotation.hasTaxes || false,
+            termsAndConditions: quotation.termsAndConditions || "",
         },
     });
 
     const { reset, setValue } = form;
 
+    useEffect(() =>
+    {
+        if (open)
+        {
+            form.reset({
+                clientId: quotation.client?.id || "",
+                serviceId: quotation.service?.id || "",
+                description: quotation.description || "",
+                area: quotation.area || 0,
+                spacesCount: quotation.spacesCount || 0,
+                hasTaxes: quotation.hasTaxes || false,
+                termsAndConditions: quotation.termsAndConditions || "",
+            });
+        }
+    }, [open, quotation, form]);
+
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const result = RegisterQuotation(input);
-        toast.promise(result , {
+        const result = UpdateQuotation(quotation.id!, input);
+        toast.promise(result, {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cotización registrada exitosamente";
-            },
+            success: "¡Cotización actualizada exitosamente!",
             error: "Error",
         });
+
+        reset();
     };
 
     const handleTermsChange = async(id: string) =>
@@ -88,12 +97,7 @@ export function CreateQuotation()
 
     return (
         <>
-            <Sheet open={open} onOpenChange={setOpen}>
-                <SheetTrigger asChild>
-                    <Button>
-                        Nueva cotización
-                    </Button>
-                </SheetTrigger>
+            <Sheet open={open} onOpenChange={onOpenChange}>
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle className="text-xl">
@@ -258,7 +262,7 @@ export function CreateQuotation()
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {
-                                                            terms.map((terms) => (
+                                                            termsAndConditions.map((terms) => (
                                                                 <SelectItem key={terms.id} value={terms.id ? terms.id : ""}>
                                                                     {terms.name}
                                                                 </SelectItem>
@@ -307,7 +311,7 @@ export function CreateQuotation()
                 <TermsAndConditions
                     open={termsOpen}
                     setOpen={setTermsOpen}
-                    termsAndConditions={terms}
+                    termsAndConditions={termsAndConditions}
                 />
             )}
         </>
