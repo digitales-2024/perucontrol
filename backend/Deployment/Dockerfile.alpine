@@ -11,6 +11,7 @@ COPY Controllers ./Controllers
 COPY Migrations ./Migrations
 COPY Model ./Model
 COPY Properties ./Properties
+COPY Services ./Services
 COPY Utils ./Utils
 COPY Program.cs .
 COPY PeruControl.csproj .

@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db)
+public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate, WordTemplateService wordTemplate)
     : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -42,7 +43,6 @@ public class QuotationController(DatabaseContext db)
     [ProducesResponseType<IEnumerable<QuotationGetDTO>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
     {
-        // TODO: fix dto, show in UI only the available fields
         return await _context
             .Quotations.Include(c => c.Client)
             .Include(s => s.Service)
@@ -61,4 +61,47 @@ public class QuotationController(DatabaseContext db)
             .FirstOrDefaultAsync(q => q.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
+
+    [EndpointSummary("Generate Excel")]
+    [HttpGet("{id}/gen-excel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateExcel()
+    {
+        var placeholders = new Dictionary<string, string>
+        {
+            // sample values
+            { "{{digesa_habilitacion}}", "322" },
+        };
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "template.xlsx"
+        );
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "quotation.xlsx"
+        );
+    }
+
+    /*[EndpointSummary("Generate Word")]*/
+    /*[HttpGet("{id}/gen-word")]*/
+    /*[ProducesResponseType(StatusCodes.Status200OK)]*/
+    /*[ProducesResponseType(StatusCodes.Status404NotFound)]*/
+    /*public IActionResult GenerateWord()*/
+    /*{*/
+    /*    var placeholders = new Dictionary<string, string>*/
+    /*    {*/
+    /*        { "{{nombre_empresa}}", "Empresa Cencosud" },*/
+    /*    };*/
+    /*    var fileBytes = wordTemplate.GenerateWordFromTemplate(*/
+    /*        placeholders,*/
+    /*        "template.docx"*/
+    /*    );*/
+    /*    return File(*/
+    /*        fileBytes,*/
+    /*        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",*/
+    /*        "my-template.docx"*/
+    /*    );*/
+    /*}*/
 }

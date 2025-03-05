@@ -72,43 +72,43 @@ public class ClientService(ILogger<ClientController> logger)
             switch (title)
             {
                 case "Número de RUC:":
-                    {
-                        // value = "20493096436 - TAMATAMA S.A.C."
-                        var name = value.Substring(value.IndexOf("-") + 1).Trim();
-                        returnData.RazonSocial = name;
-                        break;
-                    }
+                {
+                    // value = "20493096436 - TAMATAMA S.A.C."
+                    var name = value.Substring(value.IndexOf("-") + 1).Trim();
+                    returnData.RazonSocial = name;
+                    break;
+                }
                 case "Nombre Comercial:":
-                    {
-                        returnData.Name = value;
-                        break;
-                    }
+                {
+                    returnData.Name = value;
+                    break;
+                }
                 case "Domicilio Fiscal:":
-                    {
-                        returnData.FiscalAddress = value;
-                        break;
-                    }
+                {
+                    returnData.FiscalAddress = value;
+                    break;
+                }
                 case "Actividad(es) Económica(s):":
+                {
+                    // Principal - 5610 - ACTIVIDADES DE RESTAURANTES Y DE SERVICIO MÓVIL DE COMIDAS
+                    // get the pos of the second dash, and trim from there until the end
+                    var firstDash = value.IndexOf("-");
+                    if (firstDash == -1)
                     {
-                        // Principal - 5610 - ACTIVIDADES DE RESTAURANTES Y DE SERVICIO MÓVIL DE COMIDAS
-                        // get the pos of the second dash, and trim from there until the end
-                        var firstDash = value.IndexOf("-");
-                        if (firstDash == -1)
-                        {
-                            returnData.BusinessType = value;
-                            break;
-                        }
-                        var firstValueFiltered = value.Substring(firstDash + 1);
-                        var secondDash = firstValueFiltered.IndexOf("-");
-                        if (secondDash == -1)
-                        {
-                            returnData.BusinessType = value;
-                            break;
-                        }
-
-                        returnData.BusinessType = firstValueFiltered.Substring(secondDash + 1).Trim();
+                        returnData.BusinessType = value;
                         break;
                     }
+                    var firstValueFiltered = value.Substring(firstDash + 1);
+                    var secondDash = firstValueFiltered.IndexOf("-");
+                    if (secondDash == -1)
+                    {
+                        returnData.BusinessType = value;
+                        break;
+                    }
+
+                    returnData.BusinessType = firstValueFiltered.Substring(secondDash + 1).Trim();
+                    break;
+                }
             }
         }
 
