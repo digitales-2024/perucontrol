@@ -18,20 +18,27 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         [FromBody] QuotationCreateDTO createDto
     )
     {
-        // Verify the client exists before creating the quotation
         var client = await _context.Set<Client>().FindAsync(createDto.ClientId);
         if (client == null)
             return NotFound("Cliente no encontrado");
 
-        // Verify the service exists before creating the quotation
-        var service = await _context.Set<Service>().FindAsync(createDto.ServiceId);
-        if (service == null)
-            return NotFound("Servicio no encontrado");
+        var services = await _context
+            .Set<Service>()
+            .Where(s => createDto.ServiceIds.Contains(s.Id))
+            .ToListAsync();
+
+        var missingServiceIds = createDto.ServiceIds
+            .Except(services.Select(s => s.Id))
+            .ToList();
+        if (missingServiceIds.Any())
+        {
+            return NotFound("Algunos servicios no fueron encontrados");
+        }
 
         var entity = createDto.MapToEntity();
         entity.Id = Guid.NewGuid();
         entity.Client = client;
-        entity.Service = service;
+        entity.Services = services;
 
         _dbSet.Add(entity);
         await _context.SaveChangesAsync();
@@ -45,7 +52,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     {
         return await _context
             .Quotations.Include(c => c.Client)
-            .Include(s => s.Service)
+            .Include(s => s.Services)
             .ToListAsync();
     }
 
@@ -57,7 +64,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     {
         var entity = await _dbSet
             .Include(c => c.Client)
-            .Include(s => s.Service)
+            .Include(s => s.Services)
             .FirstOrDefaultAsync(q => q.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }

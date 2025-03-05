@@ -1,13 +1,24 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum QuotationStatus
+{
+    Pending,
+    Approved,
+    Rejected,
+}
 
 public class Quotation : BaseModel
 {
     public virtual Client Client { get; set; } = null!;
 
-    public virtual Service Service { get; set; } = null!;
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
     public required string Description { get; set; }
 
@@ -31,7 +42,10 @@ public class Quotation : BaseModel
 public class QuotationCreateDTO : IMapToEntity<Quotation>
 {
     public required Guid ClientId { get; set; }
-    public required Guid ServiceId { get; set; }
+
+    [MinLength(1)]
+    public required ICollection<Guid> ServiceIds { get; set; }
+
     public required string Description { get; set; }
 
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
@@ -47,6 +61,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
         return new Quotation
         {
             Description = Description,
+            Status = QuotationStatus.Pending,
             Area = Area,
             SpacesCount = SpacesCount,
             HasTaxes = HasTaxes,
@@ -58,8 +73,8 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 public class QuotationPatchDTO : IEntityPatcher<Quotation>
 {
     public string? Description { get; set; }
-    public int? Area { get; set; }
-    public int? SpacesCount { get; set; }
+    public uint? Area { get; set; }
+    public uint? SpacesCount { get; set; }
     public bool? HasTaxes { get; set; }
 
     public void ApplyPatch(Quotation entity)
