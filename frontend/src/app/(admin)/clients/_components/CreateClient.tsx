@@ -9,7 +9,7 @@ import { Sheet ,SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
-import { registerClient, searchClientByRuc } from "../actions";
+import { RegisterClient, SearchClientByRuc } from "../actions";
 import { toast } from "sonner";
 
 export const CreateClient = () =>
@@ -46,7 +46,8 @@ export const CreateClient = () =>
 
     const handleSearchByRuc = async(ruc: string) =>
     {
-        const result = await searchClientByRuc(ruc);
+        const result = await SearchClientByRuc(ruc);
+
         if (result)
         {
             const data = result;
@@ -63,15 +64,14 @@ export const CreateClient = () =>
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        console.log("Datos", JSON.stringify(input, null, 2));
-        const result = registerClient(input);
+        const result = RegisterClient(input);
         toast.promise(result, {
-            loading: "Loading...",
+            loading: "Cargando...",
             success: () =>
             {
                 reset();
                 setOpen(false);
-                return "Client registered successfully!";
+                return "Cliente registrado exitosamente!";
             },
             error: "Error",
         });

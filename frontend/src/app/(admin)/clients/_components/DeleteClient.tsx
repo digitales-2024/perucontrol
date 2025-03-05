@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Client } from "../types/clients";
-import { deleteClient } from "../actions";
+import { RemoveClient } from "../actions";
 
 interface DeleteClientProps {
   open: boolean;
@@ -25,7 +25,7 @@ export function DeleteClient({open, onOpenChange, client, showTrigger = true}: D
 
     const onDeleteClientsHandler = () =>
     {
-        deleteClient(client.id);
+        RemoveClient(client.id);
         onOpenChange(false);
     };
 

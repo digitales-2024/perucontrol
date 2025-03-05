@@ -6,7 +6,7 @@ import { CreateClientSchema } from "./schemas";
 import { components } from "@/types/api";
 import { revalidatePath } from "next/cache";
 
-export async function registerClient(client: CreateClientSchema): Promise<Result<null, FetchError>>
+export async function RegisterClient(client: CreateClientSchema): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.POST("/api/Client", {
         ...auth,
@@ -25,7 +25,7 @@ export async function registerClient(client: CreateClientSchema): Promise<Result
 
 type SunatResponse = components["schemas"]["SunatQueryResponse"]
 
-export async function searchClientByRuc(ruc: string): Promise<Result<SunatResponse, FetchError>>
+export async function SearchClientByRuc(ruc: string): Promise<Result<SunatResponse, FetchError>>
 {
     const [data, error] = await wrapper((auth) => backend.GET("/api/Client/search-by-ruc/{ruc}", {
         ...auth,
@@ -44,7 +44,7 @@ export async function searchClientByRuc(ruc: string): Promise<Result<SunatRespon
     return ok(data);
 }
 
-export async function updateClient(id: string, newClient: CreateClientSchema): Promise<Result<null, FetchError>>
+export async function UpdateClient(id: string, newClient: CreateClientSchema): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Client/{id}", {
         ...auth,
@@ -66,7 +66,7 @@ export async function updateClient(id: string, newClient: CreateClientSchema): P
     return ok(null);
 }
 
-export async function deleteClient(id: string): Promise<Result<null, FetchError>>
+export async function RemoveClient(id: string): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.DELETE("/api/Client/{id}", {
         ...auth,

@@ -1,23 +1,49 @@
 import { backend, wrapper } from "@/types/backend";
 import { Shell } from "@/components/common/Shell";
-import { CreateQuotation } from "./_create";
 import { HeaderPage } from "@/components/common/HeaderPage";
+import { QuotationDataTable } from "./_components/QuotationsDataTable";
+import { columns } from "./_components/QuotationColumns";
 
 export default async function CotizacionPage()
 {
-    // get all terms and conditions
-    const [data, err] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
+    // get all quotations
+    const [quotationsData, err] = await wrapper((auth) => backend.GET("/api/Quotation", auth));
     if (err)
     {
         console.error(`error ${err.message}`);
         throw err;
     }
 
+    // get all terms and conditions
+    const [terms, termsErr] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
+    if (termsErr)
+    {
+        console.error(`error ${termsErr.message}`);
+        throw termsErr;
+    }
+
+    // get all clients
+    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+
+    if (clientsError)
+    {
+        console.error("Error getting all clients:", clientsError);
+        return null;
+    }
+
+    // get all services
+    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
+
+    if (servicesError)
+    {
+        console.error("Error getting all clients:", servicesError);
+        return null;
+    }
+
     return (
         <Shell>
             <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-
-            <CreateQuotation termsAndConditions={data} />
+            <QuotationDataTable columns={columns} data={quotationsData} terms={terms} clients={clients} services={services} />
         </Shell>
     );
 }
