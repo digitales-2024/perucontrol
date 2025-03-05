@@ -81,7 +81,20 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
 
         if (patchDto.ServiceIds != null)
         {
-            var newServiceIds = patchDto.ServiceIds;
+            var newServiceIds = await _context.Services
+                .Where(s => patchDto.ServiceIds.Contains(s.Id))
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            // Check if we got all the IDs we were sent
+            if (newServiceIds.Count != patchDto.ServiceIds.Count)
+            {
+                var invalidIds = patchDto.ServiceIds
+                    .Except(newServiceIds)
+                    .ToList();
+
+                return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
+            }
 
             // Get services to remove (existing ones not in new list)
             var servicesToRemove = quotation.Services
