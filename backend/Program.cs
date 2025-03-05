@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PeruControl.Controllers;
 using PeruControl.Model;
+using PeruControl.Services;
 using PeruControl.Utils;
 using Scalar.AspNetCore;
 
@@ -102,6 +103,9 @@ foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
 }
+// Register global services
+builder.Services.AddScoped<ExcelTemplateService>();
+builder.Services.AddScoped<WordTemplateService>();
 
 var app = builder.Build();
 
