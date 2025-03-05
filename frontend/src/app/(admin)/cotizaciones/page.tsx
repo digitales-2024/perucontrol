@@ -3,6 +3,7 @@ import { Shell } from "@/components/common/Shell";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { QuotationDataTable } from "./_components/QuotationsDataTable";
 import { columns } from "./_components/QuotationColumns";
+import { QuotationProvider } from "./context/QuotationContext";
 
 export default async function CotizacionPage()
 {
@@ -41,9 +42,11 @@ export default async function CotizacionPage()
     }
 
     return (
-        <Shell>
-            <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-            <QuotationDataTable columns={columns} data={quotationsData} terms={terms} clients={clients} services={services} />
-        </Shell>
+        <QuotationProvider value={{ quotations: quotationsData, terms, clients, services }}>
+            <Shell>
+                <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
+                <QuotationDataTable columns={columns} data={quotationsData} />
+            </Shell>
+        </QuotationProvider>
     );
 }

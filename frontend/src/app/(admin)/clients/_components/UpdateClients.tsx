@@ -87,8 +87,8 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
     {
         const result = UpdateClient(client.id, input);
         toast.promise(result, {
-            loading: "Loading...",
-            success: "Client updated successfully!",
+            loading: "Cargando...",
+            success: "¡Cliente actualizado exitosamente!",
             error: "Error",
         });
 

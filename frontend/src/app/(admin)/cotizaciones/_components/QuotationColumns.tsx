@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
+import { useState } from "react";
+import { UpdateQuotationSheet } from "./UpdateQuotations";
+import { useQuotationContext } from "../context/QuotationContext";
 
 export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>> = [
     {
@@ -131,21 +134,25 @@ export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>>
     {
         id: "acciones",
         header: "Acciones",
-        cell: function Cell()
+        cell: function Cell({ row })
         {
-            // const [showUpdateClient, setShowUpdateClient] = useState(false);
+            const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
             // const [showDeleteClient, setShowDeleteClient] = useState(false);
             // const [showDetailClient, setShowDetailClient] = useState(false);
+            const { terms, clients, services } = useQuotationContext();
 
             return (
                 <div>
                     <div>
                         {/* Actualizar cotización */}
-                        {/* <UpdateClientSheet
-                            open={showUpdateClient}
-                            onOpenChange={setShowUpdateClient}
-                            client={row.original}
-                        /> */}
+                        <UpdateQuotationSheet
+                            open={showUpdateQuotation}
+                            onOpenChange={setShowUpdateQuotation}
+                            quotation={row.original}
+                            termsAndConditions={terms}
+                            clients={clients}
+                            services={services}
+                        />
                         {/* Eliminar una cotización */}
                         {/* <DeleteClient
                             open={showDeleteClient}
@@ -179,8 +186,7 @@ export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>>
                             <DropdownMenuItem>
                                 Ver
                             </DropdownMenuItem>
-                            {/* <DropdownMenuItem onSelect={() => setShowUpdateClient(true)}> */}
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
                                 Editar
                             </DropdownMenuItem>
                             {/* <DropdownMenuItem onSelect={() => setShowDeleteClient(true)}> */}
