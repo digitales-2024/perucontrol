@@ -36,17 +36,17 @@ export function CreateQuotation()
             label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
         })) ?? [];
 
-    const servicesOptions: Array<Option> =
+    /*     const servicesOptions: Array<Option> =
           services?.map((service) => ({
               value: service.id || "",
               label: service.name,
-          })) ?? [];
+          })) ?? []; */
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
             clientId: "",
-            serviceId: "",
+            serviceId: [],
             description: "",
             area: 0,
             spacesCount: 0,
@@ -142,26 +142,39 @@ export function CreateQuotation()
                                     <FormField
                                         control={form.control}
                                         name="serviceId"
-                                        render={({ field}) => (
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                    Servicio
+                                                  Servicio
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <AutoComplete
-                                                        options={servicesOptions}
-                                                        placeholder="Selecciona un servicio"
-                                                        emptyMessage="No se encontraron servicios"
-                                                        value={
-                                                            servicesOptions.find((option) => option.value ===
-                                                                    field.value) || undefined
-                                                        }
-                                                        onValueChange={(option) =>
-                                                        {
-                                                            field.onChange(option?.value || "");
-                                                        }}
-                                                    />
-                                                </FormControl>
+                                                <div className="space-y-2">
+                                                    {services.map((service) => (
+                                                        <FormItem
+                                                            key={service.id}
+                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                        >
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(service.id!)}
+                                                                    onCheckedChange={(checked) =>
+                                                                    {
+                                                                        if (checked)
+                                                                        {
+                                                                            field.onChange([...field.value, service.id]);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="text-sm font-normal">
+                                                                {service.name}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    ))}
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
