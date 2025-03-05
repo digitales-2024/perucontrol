@@ -69,6 +69,46 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         return entity == null ? NotFound() : Ok(entity);
     }
 
+    [EndpointSummary("Partial edit one by id")]
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
+    {
+        var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
+        if (quotation == null) return NotFound();
+
+        if (patchDto.ServiceIds != null)
+        {
+            var newServiceIds = patchDto.ServiceIds;
+
+            // Get services to remove (existing ones not in new list)
+            var servicesToRemove = quotation.Services
+                .Where(s => !newServiceIds.Contains(s.Id))
+                .ToList();
+
+            // Get services to add (new ones not in existing list)
+            var existingServiceIds = quotation.Services.Select(s => s.Id);
+            var servicesToAdd = await _context.Services
+                .Where(s => newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id))
+                .ToListAsync();
+
+            // Apply the changes
+            foreach (var service in servicesToRemove)
+                quotation.Services.Remove(service);
+
+            foreach (var service in servicesToAdd)
+                quotation.Services.Add(service);
+        }
+
+        patchDto.ApplyPatch(quotation);
+        await _context.SaveChangesAsync();
+
+        return Ok(quotation);
+    }
+
+
     [EndpointSummary("Generate Excel")]
     [HttpGet("{id}/gen-excel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,25 +130,4 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             "quotation.xlsx"
         );
     }
-
-    /*[EndpointSummary("Generate Word")]*/
-    /*[HttpGet("{id}/gen-word")]*/
-    /*[ProducesResponseType(StatusCodes.Status200OK)]*/
-    /*[ProducesResponseType(StatusCodes.Status404NotFound)]*/
-    /*public IActionResult GenerateWord()*/
-    /*{*/
-    /*    var placeholders = new Dictionary<string, string>*/
-    /*    {*/
-    /*        { "{{nombre_empresa}}", "Empresa Cencosud" },*/
-    /*    };*/
-    /*    var fileBytes = wordTemplate.GenerateWordFromTemplate(*/
-    /*        placeholders,*/
-    /*        "template.docx"*/
-    /*    );*/
-    /*    return File(*/
-    /*        fileBytes,*/
-    /*        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",*/
-    /*        "my-template.docx"*/
-    /*    );*/
-    /*}*/
 }

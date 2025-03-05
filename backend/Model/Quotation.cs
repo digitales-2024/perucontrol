@@ -72,6 +72,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 
 public class QuotationPatchDTO : IEntityPatcher<Quotation>
 {
+    public ICollection<Guid>? ServiceIds { get; set; }
     public string? Description { get; set; }
     public uint? Area { get; set; }
     public uint? SpacesCount { get; set; }
@@ -79,6 +80,9 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 
     public void ApplyPatch(Quotation entity)
     {
-        throw new NotImplementedException();
+        if (Description != null) entity.Description = Description;
+        if (Area != null) entity.Area = (uint)Area;
+        if (SpacesCount != null) entity.SpacesCount = (uint)SpacesCount;
+        if (HasTaxes != null) entity.HasTaxes = (bool)HasTaxes;
     }
 }
