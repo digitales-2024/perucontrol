@@ -7,7 +7,7 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate, WordTemplateService wordTemplate)
+public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate)
     : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
