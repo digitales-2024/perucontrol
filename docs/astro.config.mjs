@@ -18,6 +18,7 @@ export default defineConfig({
 						// Each item here is one entry in the navigation menu.
 						{ label: 'Inicio', slug: 'docs/start' },
 						{ label: 'Vista General', slug: 'docs/vista-general' },
+						{ label: 'CRUD', slug: 'docs/crud' },
 						{ label: 'Clientes', slug: 'docs/clientes' },
 						{ label: 'Cotizacion', slug: 'docs/cotizacion' },
 						{ label: 'Proyectos', slug: 'docs/proyectos' },
