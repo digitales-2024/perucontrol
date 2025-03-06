@@ -4,6 +4,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { components } from "@/types/api";
 import { Trash } from "lucide-react";
 import { useState } from "react";
+import { DeleteTermsAndConditions } from "../actions";
+import { toastWrapper } from "@/types/toasts";
 
 type Term = components["schemas"]["TermsAndConditions"];
 
@@ -13,9 +15,13 @@ export function TermsItem({ term }: {
 {
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const deleteTerm = () =>
+    const deleteTerm = async() =>
     {
-        console.log("deleting...");
+        const response = DeleteTermsAndConditions(term.id!);
+        toastWrapper(response, {
+            success: "Plantilla de Términos y Condiciones eliminada con éxito",
+            loading: "Eliminando...",
+        });
     };
 
     return (
