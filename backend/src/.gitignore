@@ -1,0 +1,37 @@
+[Bb]in/
+[Oo]bj/
+
+.vs/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+*.DS_Store
+Thumbs.db
+
+.idea/
+*.sln.iml
+.idea/**/workspace.xml
+
+appsettings.*.json
+!appsettings.json
+!appsettings.Example.json
+
+*.dbmdl
+*.jfm
+*.pfx
+*.publishsettings
+
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# build artifacts
+out
+
+# migration bundle
+efbundle
