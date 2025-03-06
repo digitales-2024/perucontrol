@@ -14,15 +14,14 @@ import { RemoveQuotation } from "../actions";
 import { components } from "@/types/api";
 
 interface DeleteClientProps {
-open: boolean;
-onOpenChange: (open: boolean) => void;
-quotation: components["schemas"]["QuotationGetDTO"],
-showTrigger?: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  quotation: components["schemas"]["QuotationGetDTO"],
+  showTrigger?: boolean;
 }
 
 export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = true}: DeleteClientProps)
 {
-
     const onDeleteQuotationHandler = () =>
     {
         RemoveQuotation(quotation.id!);
@@ -34,10 +33,10 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
             { showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                    Eliminar
+                        Eliminar
                     </Button>
                 </AlertDialogTrigger>
-            ) : null}
+            ) : null }
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -55,7 +54,7 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
                         aria-label="Delete selected rows"
                         onClick={onDeleteQuotationHandler}
                     >
-                        Continuar
+                      Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
