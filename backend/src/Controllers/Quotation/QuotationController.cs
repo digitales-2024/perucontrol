@@ -27,9 +27,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             .Where(s => createDto.ServiceIds.Contains(s.Id))
             .ToListAsync();
 
-        var missingServiceIds = createDto.ServiceIds
-            .Except(services.Select(s => s.Id))
-            .ToList();
+        var missingServiceIds = createDto.ServiceIds.Except(services.Select(s => s.Id)).ToList();
         if (missingServiceIds.Any())
         {
             return NotFound("Algunos servicios no fueron encontrados");
@@ -77,34 +75,35 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
     {
         var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
-        if (quotation == null) return NotFound();
+        if (quotation == null)
+            return NotFound();
 
         if (patchDto.ServiceIds != null)
         {
-            var newServiceIds = await _context.Services
-                .Where(s => patchDto.ServiceIds.Contains(s.Id))
+            var newServiceIds = await _context
+                .Services.Where(s => patchDto.ServiceIds.Contains(s.Id))
                 .Select(s => s.Id)
                 .ToListAsync();
 
             // Check if we got all the IDs we were sent
             if (newServiceIds.Count != patchDto.ServiceIds.Count)
             {
-                var invalidIds = patchDto.ServiceIds
-                    .Except(newServiceIds)
-                    .ToList();
+                var invalidIds = patchDto.ServiceIds.Except(newServiceIds).ToList();
 
                 return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
             }
 
             // Get services to remove (existing ones not in new list)
-            var servicesToRemove = quotation.Services
-                .Where(s => !newServiceIds.Contains(s.Id))
+            var servicesToRemove = quotation
+                .Services.Where(s => !newServiceIds.Contains(s.Id))
                 .ToList();
 
             // Get services to add (new ones not in existing list)
             var existingServiceIds = quotation.Services.Select(s => s.Id);
-            var servicesToAdd = await _context.Services
-                .Where(s => newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id))
+            var servicesToAdd = await _context
+                .Services.Where(s =>
+                    newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id)
+                )
                 .ToListAsync();
 
             // Apply the changes
@@ -121,7 +120,6 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         return Ok(quotation);
     }
 
-
     [EndpointSummary("Generate Excel")]
     [HttpGet("{id}/gen-excel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -133,10 +131,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             // sample values
             { "{{digesa_habilitacion}}", "322" },
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-            placeholders,
-            "template.xlsx"
-        );
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "template.xlsx");
         return File(
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
