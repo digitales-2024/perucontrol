@@ -16,12 +16,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
 import { components } from "@/types/api";
 
-type Quotation = components["schemas"]["QuotationGetDTO"];
+type Quotation = components["schemas"]["Quotation"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["ClientGetDTO"]
 type Services = components["schemas"]["ServiceGetDTO"]
 
-export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void,termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
+export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void, termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
@@ -32,17 +32,11 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                 label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
             })) ?? [];
 
-    const servicesOptions: Array<Option> =
-              services?.map((service) => ({
-                  value: service.id || "",
-                  label: service.name,
-              })) ?? [];
-
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
             clientId: quotation.client?.id || "",
-            serviceId: quotation.service?.id || "",
+            serviceIds: quotation.services?.map((service) => service.id) || [],
             description: quotation.description || "",
             area: quotation.area || 0,
             spacesCount: quotation.spacesCount || 0,
@@ -59,7 +53,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
         {
             form.reset({
                 clientId: quotation.client?.id || "",
-                serviceId: quotation.service?.id || "",
+                serviceIds: quotation.services?.map((service) => service.id) || [],
                 description: quotation.description || "",
                 area: quotation.area || 0,
                 spacesCount: quotation.spacesCount || 0,
@@ -79,6 +73,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
         });
 
         reset();
+        onOpenChange(false);
     };
 
     const handleTermsChange = async(id: string) =>
@@ -142,30 +137,43 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                         )}
                                     />
 
-                                    {/* Servicio */}
+                                    {/* Servicios */}
                                     <FormField
                                         control={form.control}
-                                        name="serviceId"
-                                        render={({ field}) => (
+                                        name="serviceIds"
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                    Servicio
+                                                  Servicios
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <AutoComplete
-                                                        options={servicesOptions}
-                                                        placeholder="Selecciona un servicio"
-                                                        emptyMessage="No se encontraron servicios"
-                                                        value={
-                                                            servicesOptions.find((option) => option.value ===
-                                                                    field.value) || undefined
-                                                        }
-                                                        onValueChange={(option) =>
-                                                        {
-                                                            field.onChange(option?.value || "");
-                                                        }}
-                                                    />
-                                                </FormControl>
+                                                <div className="space-y-2">
+                                                    {services.map((service) => (
+                                                        <FormItem
+                                                            key={service.id}
+                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                        >
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(service.id!)}
+                                                                    onCheckedChange={(checked) =>
+                                                                    {
+                                                                        if (checked)
+                                                                        {
+                                                                            field.onChange([...field.value, service.id]);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="text-sm font-normal">
+                                                                {service.name}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    ))}
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

@@ -12,7 +12,7 @@ import { useQuotationContext } from "../context/QuotationContext";
 import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { DeleteQuotation } from "./DeleteQuotation";
 
-export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
@@ -158,7 +158,7 @@ export const columns: Array<ColumnDef<components["schemas"]["QuotationGetDTO"]>>
                         {/* Eliminar una cotización */}
                         <DeleteQuotation
                             open={showDeleteQuotation}
-                            onOpenChange={setShowDetailQuotation}
+                            onOpenChange={setShowDeleteQuotation}
                             quotation={row.original}
                             showTrigger={false}
                         />

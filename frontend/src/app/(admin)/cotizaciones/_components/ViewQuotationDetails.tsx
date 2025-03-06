@@ -14,7 +14,7 @@ import { components } from "@/types/api";
 import { Check, X } from "lucide-react";
 
 interface ViewQuotationProps {
-  quotation: components["schemas"]["QuotationGetDTO"] | null;
+  quotation: components["schemas"]["Quotation"] | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -55,11 +55,13 @@ export function ViewQuotationDetails({
 
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground">
-                                  Servicio
+                                  Servicios
                                 </h3>
-                                <p className="text-base">
-                                    {quotation.service?.name}
-                                </p>
+                                {quotation.services?.map((quotation) => (
+                                    <p key={quotation.id} className="text-base mb-1">
+                                        {`- ${quotation.name}`}
+                                    </p>
+                                ))}
                             </div>
 
                             <Separator />
