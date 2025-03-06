@@ -1,3 +1,5 @@
+using PeruControl.Model;
+
 namespace PeruControl.Controllers;
 
 public class QuotationGetDTO : PeruControl.Model.BaseModel
@@ -5,6 +7,7 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public virtual ClientGetDTO Client { get; set; } = null!;
     public virtual ServiceGetDTO Service { get; set; } = null!;
     public required string Description { get; set; }
+    public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
     public required uint Area { get; set; }
     public required uint SpacesCount { get; set; }
     public required bool HasTaxes { get; set; }
@@ -21,6 +24,8 @@ public class ClientGetDTO : PeruControl.Model.BaseModel
     public required string FiscalAddress { get; set; }
     public required string Email { get; set; }
     public required string PhoneNumber { get; set; }
+    public required ICollection<ClientLocation> ClientLocations { get; set; } =
+        new List<ClientLocation>();
 }
 
 public class ServiceGetDTO : PeruControl.Model.BaseModel

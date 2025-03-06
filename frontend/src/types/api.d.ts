@@ -1847,6 +1847,7 @@ export interface components {
             fiscalAddress: string;
             email: string;
             phoneNumber: string;
+            clientLocations: Array<components["schemas"]["ClientLocation"]>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -1973,6 +1974,7 @@ export interface components {
             client?: components["schemas"]["ClientGetDTO"];
             service?: components["schemas"]["ServiceGetDTO"];
             description: string;
+            status: components["schemas"]["QuotationStatus"];
             /** Format: uint32 */
             area: number;
             /** Format: uint32 */
