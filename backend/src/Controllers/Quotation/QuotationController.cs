@@ -125,7 +125,10 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateState(Guid id, [FromBody] QuotationStatusPatchDTO patchDto)
+    public async Task<IActionResult> UpdateState(
+        Guid id,
+        [FromBody] QuotationStatusPatchDTO patchDto
+    )
     {
         var quotation = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
         if (quotation == null)
