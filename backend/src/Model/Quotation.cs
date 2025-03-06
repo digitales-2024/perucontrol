@@ -86,3 +86,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
         if (HasTaxes != null) entity.HasTaxes = (bool)HasTaxes;
     }
 }
+
+public class QuotationStatusPatchDTO
+{
+    public required QuotationStatus Status { get; set; }
+}
