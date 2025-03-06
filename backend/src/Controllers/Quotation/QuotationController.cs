@@ -120,6 +120,26 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         return Ok(quotation);
     }
 
+    [EndpointSummary("Update Quotation State")]
+    [HttpPatch("{id}/update-state")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateState(Guid id, [FromBody] QuotationStatusPatchDTO patchDto)
+    {
+        var quotation = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
+        if (quotation == null)
+        {
+            return NotFound();
+        }
+
+        // Actualizar el estado de la cotizacion y guardar en la base de datos
+        quotation.Status = patchDto.Status;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [EndpointSummary("Generate Excel")]
     [HttpGet("{id}/gen-excel")]
     [ProducesResponseType(StatusCodes.Status200OK)]

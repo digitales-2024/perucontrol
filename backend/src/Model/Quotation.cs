@@ -90,3 +90,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.HasTaxes = (bool)HasTaxes;
     }
 }
+
+public class QuotationStatusPatchDTO
+{
+    public required QuotationStatus Status { get; set; }
+}
