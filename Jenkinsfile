@@ -32,7 +32,7 @@ pipeline {
 		stage("Run e2e tests") {
 			agent {
 				docker {
-					image 'digitales/playwright-dotnet9-noble:latest'
+					image 'digitalesacide/playwright-dotnet9-noble:latest'
 					args '--ipc=host'
 				}
 			}
