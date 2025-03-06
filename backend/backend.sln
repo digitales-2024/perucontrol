@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeruControl", "src\PeruControl.csproj", "{040CE0F8-DB9C-43C2-A1C7-B2078DEB6126}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.E2E", "Tests.E2E\Tests.E2E.csproj", "{457E0E73-D409-422A-958D-80A8D3D29843}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,18 @@ Global
 		{040CE0F8-DB9C-43C2-A1C7-B2078DEB6126}.Release|x64.Build.0 = Release|Any CPU
 		{040CE0F8-DB9C-43C2-A1C7-B2078DEB6126}.Release|x86.ActiveCfg = Release|Any CPU
 		{040CE0F8-DB9C-43C2-A1C7-B2078DEB6126}.Release|x86.Build.0 = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|x64.Build.0 = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Debug|x86.Build.0 = Debug|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|x64.ActiveCfg = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|x64.Build.0 = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|x86.ActiveCfg = Release|Any CPU
+		{457E0E73-D409-422A-958D-80A8D3D29843}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
