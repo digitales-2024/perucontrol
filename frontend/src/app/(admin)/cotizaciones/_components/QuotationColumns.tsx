@@ -3,7 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
 import { useState } from "react";
@@ -11,6 +11,9 @@ import { UpdateQuotationSheet } from "./UpdateQuotations";
 import { useQuotationContext } from "../context/QuotationContext";
 import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { DeleteQuotation } from "./DeleteQuotation";
+import { Badge } from "@/components/ui/badge";
+import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
+import { AlertDialogRejectQuotation } from "./RejectQuotation";
 
 export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
     {
@@ -110,6 +113,42 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
         ),
     },
     {
+        accessorKey: "status",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+            Estado
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) => (
+            <span className="items-center text-center flex justify-center">
+                {row.original.status === "Pending" ? (
+                    <Badge variant="secondary">
+                        {row.original.status}
+                    </Badge>
+                ) : row.original.status === "Approved" ? (
+                    <Badge variant="approved">
+                        {row.original.status}
+                    </Badge>
+                ) : (
+                    <Badge variant="destructive">
+                        {row.original.status}
+                    </Badge>
+                )}
+            </span>
+        ),
+    },
+    {
         accessorKey: "hasTaxes",
         header: ({ column }) => (
             <Button
@@ -141,6 +180,8 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
             const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
             const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
             const [showDetailQuotation, setShowDetailQuotation] = useState(false);
+            const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
+            const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
             const { terms, clients, services } = useQuotationContext();
 
             return (
@@ -168,6 +209,20 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
                             onOpenChange={setShowDetailQuotation}
                             quotation={row.original}
                         />
+                        {/* Acceptar Cotizacion */}
+                        <AlertDialogAcceptQuotation
+                            open={showAcceptQuotaion}
+                            onOpenChange={setShowAcceptQuotaion}
+                            quotation={row.original}
+                            showTrigger={false}
+                        />
+                        {/* Rechazar Cotización */}
+                        <AlertDialogRejectQuotation
+                            open={showRejectQuotaion}
+                            onOpenChange={setShowRejectQuotaion}
+                            quotation={row.original}
+                            showTrigger={false}
+                        />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -183,6 +238,17 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>
+                                Acciones
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => setShowAcceptQuotaion(true)}>
+                                Aceptar cotización
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowRejectQuotaion(true)}>
+                                Rechazar cotización
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
                                 Ver
                             </DropdownMenuItem>
