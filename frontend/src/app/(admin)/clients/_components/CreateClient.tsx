@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Loader, Plus, Search, Trash2 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +16,7 @@ export const CreateClient = () =>
 {
     const [typeDocument, setTypeDocument] = useState("");
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const form = useForm<CreateClientSchema>({
         resolver: zodResolver(clientSchema),
@@ -46,6 +47,7 @@ export const CreateClient = () =>
 
     const handleSearchByRuc = async(ruc: string) =>
     {
+        setLoading(true);
         const result = await SearchClientByRuc(ruc);
 
         if (result)
@@ -61,6 +63,7 @@ export const CreateClient = () =>
         {
             console.error("Error searching client by RUC:", result);
         }
+        setLoading(false);
     };
 
     const onSubmit = async(input: CreateClientSchema) =>
@@ -154,8 +157,8 @@ export const CreateClient = () =>
                                                     <FormControl>
                                                         <div className="flex gap-2">
                                                             <Input placeholder="Ingrese el RUC" {...field} />
-                                                            <Button type="button" className="px-3" onClick={() => handleSearchByRuc(field.value)}>
-                                                                <Search />
+                                                            <Button type="button" className="px-3" onClick={() => handleSearchByRuc(field.value)} disabled={loading}>
+                                                                {loading ? <Loader className="animate-spin" /> : <Search />}
                                                             </Button>
                                                         </div>
                                                     </FormControl>

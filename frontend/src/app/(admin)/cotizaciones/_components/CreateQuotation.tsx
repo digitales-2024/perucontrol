@@ -33,20 +33,14 @@ export function CreateQuotation()
     const clientsOptions: Array<Option> =
         clients?.map((client) => ({
             value: client.id || "",
-            label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
+            label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
         })) ?? [];
-
-    /*     const servicesOptions: Array<Option> =
-          services?.map((service) => ({
-              value: service.id || "",
-              label: service.name,
-          })) ?? []; */
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
             clientId: "",
-            serviceId: [],
+            serviceIds: [],
             description: "",
             area: 0,
             spacesCount: 0,
@@ -141,13 +135,13 @@ export function CreateQuotation()
                                     {/* Servicio */}
                                     <FormField
                                         control={form.control}
-                                        name="serviceId"
+                                        name="serviceIds"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                  Servicio
+                                                  Servicios
                                                 </FormLabel>
-                                                <div className="space-y-2">
+                                                <div className="mt-2 grid grid-cols-1 space-y-2 md:grid-cols-2">
                                                     {services.map((service) => (
                                                         <FormItem
                                                             key={service.id}
@@ -192,7 +186,7 @@ export function CreateQuotation()
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Descripción del servicio..."
-                                                        className="resize-none min-h-[80px] border rounded-md"
+                                                        className="resize-none min-h-[150px] border rounded-md"
                                                         {...field}
                                                     />
                                                 </FormControl>

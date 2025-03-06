@@ -878,6 +878,53 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Quotation/{id}/gen-excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Generate Excel */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Quotation/{id}/reactivate": {
         parameters: {
             query?: never;
@@ -1893,7 +1940,8 @@ export interface components {
         };
         Quotation: {
             client?: components["schemas"]["Client"];
-            service?: components["schemas"]["Service"];
+            services?: Array<components["schemas"]["Service"]>;
+            status: components["schemas"]["QuotationStatus"];
             description: string;
             /** Format: uint32 */
             area: number;
@@ -1912,8 +1960,7 @@ export interface components {
         QuotationCreateDTO: {
             /** Format: uuid */
             clientId: string;
-            /** Format: uuid */
-            serviceId: string;
+            serviceIds: Array<string>;
             description: string;
             /** Format: uint32 */
             area: number;
@@ -1941,13 +1988,16 @@ export interface components {
             modifiedAt?: string;
         };
         QuotationPatchDTO: {
+            serviceIds?: Array<string> | null;
             description?: string | null;
-            /** Format: int32 */
+            /** Format: uint32 */
             area?: number | null;
-            /** Format: int32 */
+            /** Format: uint32 */
             spacesCount?: number | null;
             hasTaxes?: boolean | null;
         };
+        /** @enum {unknown} */
+        QuotationStatus: "Pending" | "Approved" | "Rejected";
         RefreshRequest: {
             refreshToken: string;
         };
