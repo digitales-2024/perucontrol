@@ -80,10 +80,14 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 
     public void ApplyPatch(Quotation entity)
     {
-        if (Description != null) entity.Description = Description;
-        if (Area != null) entity.Area = (uint)Area;
-        if (SpacesCount != null) entity.SpacesCount = (uint)SpacesCount;
-        if (HasTaxes != null) entity.HasTaxes = (bool)HasTaxes;
+        if (Description != null)
+            entity.Description = Description;
+        if (Area != null)
+            entity.Area = (uint)Area;
+        if (SpacesCount != null)
+            entity.SpacesCount = (uint)SpacesCount;
+        if (HasTaxes != null)
+            entity.HasTaxes = (bool)HasTaxes;
     }
 }
 

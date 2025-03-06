@@ -20,7 +20,7 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
+import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { useQuotationContext } from "../context/QuotationContext";
 
 export function CreateQuotation()
@@ -29,7 +29,7 @@ export function CreateQuotation()
     const [termsOpen, setTermsOpen] = useState(false);
     const [open, setOpen] = useState(false);
 
-    { /* Creando las opciones para el AutoComplete */}
+    { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
         clients?.map((client) => ({
             value: client.id || "",
@@ -54,7 +54,7 @@ export function CreateQuotation()
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
         const result = RegisterQuotation(input);
-        toast.promise(result , {
+        toast.promise(result, {
             loading: "Cargando...",
             success: () =>
             {
@@ -91,10 +91,10 @@ export function CreateQuotation()
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle className="text-xl">
-                                Nueva cotización
+                            Nueva cotización
                         </SheetTitle>
                         <SheetDescription>
-                                Agrega una nueva cotización.
+                            Agrega una nueva cotización.
                         </SheetDescription>
                     </SheetHeader>
 
@@ -107,7 +107,7 @@ export function CreateQuotation()
                                     <FormField
                                         control={form.control}
                                         name="clientId"
-                                        render={({ field}) => (
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
                                                     Cliente
@@ -119,7 +119,7 @@ export function CreateQuotation()
                                                         emptyMessage="No se encontraron clientes"
                                                         value={
                                                             clientsOptions.find((option) => option.value ===
-                                                                    field.value) || undefined
+                                                                field.value) || undefined
                                                         }
                                                         onValueChange={(option) =>
                                                         {
@@ -139,7 +139,7 @@ export function CreateQuotation()
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                  Servicios
+                                                    Servicios
                                                 </FormLabel>
                                                 <div className="mt-2 grid grid-cols-1 space-y-2 md:grid-cols-2">
                                                     {services.map((service) => (
@@ -181,7 +181,7 @@ export function CreateQuotation()
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                  Descripción
+                                                    Descripción
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Textarea
@@ -203,7 +203,7 @@ export function CreateQuotation()
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-base">
-                                                      Área m2
+                                                        Área m2
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="m2" className="border rounded-md" {...field} />
@@ -220,7 +220,7 @@ export function CreateQuotation()
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-base">
-                                                      Nro. de Ambientes
+                                                        Nro. de Ambientes
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="#" {...field} />
@@ -276,7 +276,7 @@ export function CreateQuotation()
                                             </Select>
 
                                             <Button type="button" variant="secondary" onClick={() => setTermsOpen(true)} className="w-full justify-start">
-                                              Plantillas de T&C
+                                                Plantillas de T&C
                                             </Button>
 
                                         </div>
