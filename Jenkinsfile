@@ -24,7 +24,7 @@ pipeline {
 				}
 			}
 			steps {
-				dir("backend") {
+				dir("backend/src") {
 					sh 'HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out'
 				}
 			}
