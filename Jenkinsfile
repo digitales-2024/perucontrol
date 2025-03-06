@@ -29,6 +29,26 @@ pipeline {
 				}
 			}
 		}
+		stage('Build e2e playwright image') {
+			steps {
+				dir("backend/Tests.E2E") {
+					sh 'docker build -t playwright-dotnet9:latest .'
+				}
+			}
+		}
+		stage("Run e2e tests") {
+			agent {
+				docker {
+					image 'playwright-dotnet9:latest'
+					args '--ipc=host'
+				}
+			}
+			steps {
+				dir("backend/Tests.E2E") {
+					sh 'dotnet test'
+				}
+			}
+		}
 	}
 }
 
