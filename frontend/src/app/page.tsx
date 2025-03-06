@@ -8,7 +8,7 @@ export default function Home()
     return (
         <AdminLayout>
             <Shell>
-                <HeaderPage title="Dashbard" description="Sistema de gestión de PeruControl - en desarrollo" />
+                <HeaderPage title="Dashboard" description="Sistema de gestión de PeruControl - en desarrollo" />
             </Shell>
             <div className="grid items-center justify-center">
                 <p>
