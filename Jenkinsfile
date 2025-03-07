@@ -29,6 +29,18 @@ pipeline {
 				}
 			}
 		}
+		stage("Run e2e tests") {
+			agent {
+				docker {
+					image 'digitalesacide/playwright-dotnet9-noble:latest'
+					args '--ipc=host'
+				}
+			}
+			steps {
+				dir("backend/Tests.E2E") {
+					sh 'dotnet test'
+				}
+			}
+		}
 	}
 }
-
