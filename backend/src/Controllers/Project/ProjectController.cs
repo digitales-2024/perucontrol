@@ -53,4 +53,31 @@ public class ProjectController(DatabaseContext db)
 
         return Created();
     }
+
+    [EndpointSummary("Get all")]
+    [HttpGet]
+    [ProducesResponseType<IEnumerable<ProjectSummary>>( StatusCodes.Status200OK)]
+    public override async Task<ActionResult<IEnumerable<Project>>> GetAll()
+    {
+        var projects = await _context
+          .Projects.Include(c => c.Client)
+          .Include(p => p.Services)
+          .Include(q => q.Quotation)
+          .ToListAsync();
+
+          var projectSummaries = projects.Select(p => new ProjectSummary
+          {
+              Id = p.Id,
+              Client = p.Client,
+              Services = p.Services,
+              Status = p.Status,
+              SpacesCount = p.SpacesCount,
+              OrderNumber = p.OrderNumber,
+              Area = p.Area,
+              Address = p.Address,
+              Quotation = p.Quotation
+          }).ToList();
+
+        return Ok(projectSummaries);
+    }
 }

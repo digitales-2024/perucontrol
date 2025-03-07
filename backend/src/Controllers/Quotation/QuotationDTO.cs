@@ -32,3 +32,14 @@ public class ServiceGetDTO : PeruControl.Model.BaseModel
 {
     public required string Name { get; set; }
 }
+
+public class QuotationSummary
+{
+    public virtual Client Client { get; set; } = null!;
+
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public required uint Area { get; set; }
+
+    public uint? SpacesCount { get; set; }
+}

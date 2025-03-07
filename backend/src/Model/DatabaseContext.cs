@@ -11,6 +11,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<Quotation> Quotations { get; set; }
     public required DbSet<Service> Services { get; set; }
+    public required DbSet<Project> Projects { get; set; }
     public required DbSet<Supply> Supplies { get; set; }
     public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
 
