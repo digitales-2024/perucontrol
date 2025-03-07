@@ -14,7 +14,7 @@ import { components } from "@/types/api";
 import { Check, X } from "lucide-react";
 
 interface ViewQuotationProps {
-  quotation: components["schemas"]["Quotation"] | null;
+  quotation: components["schemas"]["Quotation2"] | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -57,9 +57,9 @@ export function ViewQuotationDetails({
                                 <h3 className="text-sm font-medium text-muted-foreground">
                                   Servicios
                                 </h3>
-                                {quotation.services?.map((quotation) => (
-                                    <p key={quotation.id} className="text-base mb-1">
-                                        {`- ${quotation.name}`}
+                                {quotation.services?.map((service) => (
+                                    <p key={service.id} className="text-base mb-1">
+                                        {`- ${service.name}`}
                                     </p>
                                 ))}
                             </div>

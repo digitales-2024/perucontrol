@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
 
-type Quotation = components["schemas"]["Quotation"];
+type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["ClientGetDTO"]
 type Services = components["schemas"]["ServiceGetDTO"]
@@ -35,13 +35,13 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
-            clientId: quotation.client?.id || "",
-            serviceIds: quotation.services?.map((service) => service.id) || [],
-            description: quotation.description || "",
-            area: quotation.area || 0,
-            spacesCount: quotation.spacesCount || 0,
-            hasTaxes: quotation.hasTaxes || false,
-            termsAndConditions: quotation.termsAndConditions || "",
+            clientId: quotation?.client?.id || "",
+            serviceIds: quotation?.services?.map((service) => service.id) || [],
+            description: quotation?.description || "",
+            area: quotation?.area || 0,
+            spacesCount: quotation?.spacesCount || 0,
+            hasTaxes: quotation?.hasTaxes || false,
+            termsAndConditions: quotation?.termsAndConditions || "",
         },
     });
 
@@ -52,13 +52,13 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
         if (open)
         {
             form.reset({
-                clientId: quotation.client?.id || "",
-                serviceIds: quotation.services?.map((service) => service.id) || [],
-                description: quotation.description || "",
-                area: quotation.area || 0,
-                spacesCount: quotation.spacesCount || 0,
-                hasTaxes: quotation.hasTaxes || false,
-                termsAndConditions: quotation.termsAndConditions || "",
+                clientId: quotation?.client?.id || "",
+                serviceIds: quotation?.services?.map((service) => service.id) || [],
+                description: quotation?.description || "",
+                area: quotation?.area || 0,
+                spacesCount: quotation?.spacesCount || 0,
+                hasTaxes: quotation?.hasTaxes || false,
+                termsAndConditions: quotation?.termsAndConditions || "",
             });
         }
     }, [open, quotation, form]);

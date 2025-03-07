@@ -38,7 +38,7 @@ const data = {
         },
         {
             title: "Servicios",
-            url: "/servicios",
+            url: "/projects",
             icon: BugOff,
         },
         {

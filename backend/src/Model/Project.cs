@@ -4,6 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ProjectStatus
+{
+    Pending,
+    Approved,
+    Rejected,
+}
+
 public class Project : BaseModel
 {
     [JsonIgnore]
@@ -16,7 +24,11 @@ public class Project : BaseModel
     public virtual Quotation? Quotation { get; set; } = null!;
 
     public required string Address { get; set; }
+    
     public required uint Area { get; set; }
+
+    public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+
     public required uint SpacesCount { get; set; }
 
     public required uint OrderNumber { get; set; }
@@ -53,6 +65,7 @@ public class ProjectCreateDTO : IMapToEntity<Project>
         {
             Address = Address,
             Area = Area,
+            Status = ProjectStatus.Pending,
             SpacesCount = SpacesCount,
             OrderNumber = OrderNumber,
         };
@@ -86,4 +99,27 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
         if (OrderNumber != null)
             entity.OrderNumber = OrderNumber.Value;
     }
+}
+
+public class ProjectSummary : BaseModel
+{
+    public virtual Client Client { get; set; } = null!;
+
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public virtual Quotation? Quotation { get; set; } = null!;
+
+    public required string Address { get; set; }
+    
+    public required uint Area { get; set; }
+
+    public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+
+    public required uint SpacesCount { get; set; }
+
+    public required uint OrderNumber { get; set; }
+
+    // TODO: clarify supplies
+
+    // TODO: schedule
 }

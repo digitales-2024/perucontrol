@@ -3,19 +3,36 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
-import { useState } from "react";
-import { UpdateQuotationSheet } from "./UpdateQuotations";
-import { useQuotationContext } from "../context/QuotationContext";
-import { ViewQuotationDetails } from "./ViewQuotationDetails";
-import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
-import { AlertDialogRejectQuotation } from "./RejectQuotation";
 
-export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> = [
+    {
+        accessorKey: "orderNumber",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+              # Orden
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) => (
+            <span className="items-center flex justify-center uppercase text-center">
+                {row.original.orderNumber}
+            </span>
+        ),
+    },
     {
         accessorKey: "client",
         header: ({ column }) => (
@@ -35,44 +52,20 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="uppercase">
-                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name }
+            <span className="items-center flex justify-center text-center">
+                {row.original.client?.name}
             </span>
         ),
     },
     {
-        accessorKey: "description",
+        accessorKey: "state",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Descripción
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span>
-                {row.original?.description}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "area",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-                Área m2
+                Estado
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -84,56 +77,8 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
         cell: ({ row }) => (
             <span className="flex justify-center">
-                {row.original?.area}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "spacesCount",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-              Nro. de Ambientes
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.spacesCount}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-            Estado
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
                 {row.original?.status === "Pending" ? (
-                    <Badge variant="secondary">
+                    <Badge variant="default">
                         {row.original.status}
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
@@ -149,14 +94,38 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
     },
     {
-        accessorKey: "hasTaxes",
+        accessorKey: "area",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-            IGV
+              Área m2
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) => (
+            <span className="flex justify-center">
+                {row.original.area}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "spacesCount",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+            Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -168,61 +137,47 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
-                {row.original?.hasTaxes ? "SI" : "NO"}
+                {row.original.spacesCount}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "address",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+              Dirección
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) => (
+            <span className="items-center text-center flex justify-center">
+                {row.original.address}
             </span>
         ),
     },
     {
         id: "acciones",
         header: "Acciones",
-        cell: function Cell({ row })
+        cell: function Cell()
         {
-            const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
-            const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            const [showDetailQuotation, setShowDetailQuotation] = useState(false);
-            const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
-            const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
-            const { terms, clients, services } = useQuotationContext();
+            // const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
+            /* const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
+            const [showDetailQuotation, setShowDetailQuotation] = useState(false); */
 
             return (
                 <div>
                     <div>
-                        {/* Actualizar cotización */}
-                        <UpdateQuotationSheet
-                            open={showUpdateQuotation}
-                            onOpenChange={setShowUpdateQuotation}
-                            quotation={row.original}
-                            termsAndConditions={terms}
-                            clients={clients}
-                            services={services}
-                        />
-                        {/* Eliminar una cotización */}
-                        <DeleteQuotation
-                            open={showDeleteQuotation}
-                            onOpenChange={setShowDeleteQuotation}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
-                        {/* Ver Detalles de una cotización */}
-                        <ViewQuotationDetails
-                            open={showDetailQuotation}
-                            onOpenChange={setShowDetailQuotation}
-                            quotation={row.original}
-                        />
-                        {/* Acceptar Cotizacion */}
-                        <AlertDialogAcceptQuotation
-                            open={showAcceptQuotaion}
-                            onOpenChange={setShowAcceptQuotaion}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
-                        {/* Rechazar Cotización */}
-                        <AlertDialogRejectQuotation
-                            open={showRejectQuotaion}
-                            onOpenChange={setShowRejectQuotaion}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
+                        {/* Acciones */}
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -238,24 +193,13 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                Acciones
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowAcceptQuotaion(true)}>
-                                Aceptar cotización
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowRejectQuotaion(true)}>
-                                Rechazar cotización
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
+                            <DropdownMenuItem>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
+                            <DropdownMenuItem>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
+                            <DropdownMenuItem>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

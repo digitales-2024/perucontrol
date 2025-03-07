@@ -16,7 +16,7 @@ import { components } from "@/types/api";
 interface DeleteClientProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["QuotationGetDTO"],
+  quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
 }
 
@@ -24,7 +24,10 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
 {
     const onDeleteQuotationHandler = () =>
     {
-        RemoveQuotation(quotation.id!);
+        if (quotation)
+        {
+            RemoveQuotation(quotation.id!);
+        }
         onOpenChange(false);
     };
 
