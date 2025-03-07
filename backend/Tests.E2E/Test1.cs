@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using Microsoft.Playwright.MSTest;
 
 namespace Tests.E2E;
@@ -7,24 +6,22 @@ namespace Tests.E2E;
 [TestClass]
 public sealed class Test1 : PageTest
 {
-    [TestMethod]
-    public async Task TestMethod1()
-    {
-        await Page.GotoAsync("https://playwright.dev");
-
-        // Expect a title "to contain" a substring.
-        await Expect(Page).ToHaveTitleAsync(new Regex("Playwright"));
-    }
+    public readonly string BaseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? throw new InvalidOperationException("BASE_URL envvar is not set. It is needed to run the tests.");
 
     [TestMethod]
-    public async Task GetStartedLink()
+    public async Task TestLogin()
     {
-        await Page.GotoAsync("https://playwright.dev");
+        await Page.GotoAsync($"{BaseUrl}/login");
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Bienvenido" })).ToBeVisibleAsync();
 
-        // Click the get started link.
-        await Page.GetByRole(AriaRole.Link, new() { Name = "Get started" }).ClickAsync();
+        // fill login form
+        await Page.GetByLabel("Correo electrónico").FillAsync("admin@admin.com");
+        await Page.GetByLabel("Contraseña").FillAsync("Acide2025/1");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Iniciar sesión" }).ClickAsync();
 
-        // Expects page to have a heading with the name of Installation.
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Installation" })).ToBeVisibleAsync();
+        // wait for navigation
+        await Expect(Page).ToHaveURLAsync($"{BaseUrl}/");
+
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Dashboard" })).ToBeVisibleAsync();
     }
 }
