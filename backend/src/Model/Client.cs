@@ -113,7 +113,7 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     public string? Name { get; set; }
 
     [MinLength(1)]
-    [MaxLength(100)]
+    [MaxLength(150)]
     public string? FiscalAddress { get; set; }
 
     [MinLength(3)]
