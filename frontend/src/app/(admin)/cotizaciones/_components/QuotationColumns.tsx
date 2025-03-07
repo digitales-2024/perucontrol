@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
 
-export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
     {
-        accessorKey: "typeDocument",
+        accessorKey: "client",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -35,13 +35,13 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center uppercase text-center">
-                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name }
+            <span className="uppercase">
+                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name }
             </span>
         ),
     },
     {
-        accessorKey: "typeDocumentValue",
+        accessorKey: "description",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -59,13 +59,13 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center">
-                {row.original.description}
+            <span>
+                {row.original?.description}
             </span>
         ),
     },
     {
-        accessorKey: "razonSocial",
+        accessorKey: "area",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -84,12 +84,12 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
         ),
         cell: ({ row }) => (
             <span className="flex justify-center">
-                {row.original.area}
+                {row.original?.area}
             </span>
         ),
     },
     {
-        accessorKey: "businessType",
+        accessorKey: "spacesCount",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -108,7 +108,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
         ),
         cell: ({ row }) => (
             <span className="flex justify-center">
-                {row.original.spacesCount}
+                {row.original?.spacesCount}
             </span>
         ),
     },
@@ -132,17 +132,17 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
-                {row.original.status === "Pending" ? (
+                {row.original?.status === "Pending" ? (
                     <Badge variant="secondary">
                         {row.original.status}
                     </Badge>
-                ) : row.original.status === "Approved" ? (
+                ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
                         {row.original.status}
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
-                        {row.original.status}
+                        {row.original?.status}
                     </Badge>
                 )}
             </span>
@@ -168,7 +168,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
-                {row.original.hasTaxes ? "SI" : "NO"}
+                {row.original?.hasTaxes ? "SI" : "NO"}
             </span>
         ),
     },
@@ -200,7 +200,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
                         <DeleteQuotation
                             open={showDeleteQuotation}
                             onOpenChange={setShowDeleteQuotation}
-                            quotation={row.original}
+                            quotation={row?.original}
                             showTrigger={false}
                         />
                         {/* Ver Detalles de una cotización */}
@@ -213,14 +213,14 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation"]>> = [
                         <AlertDialogAcceptQuotation
                             open={showAcceptQuotaion}
                             onOpenChange={setShowAcceptQuotaion}
-                            quotation={row.original}
+                            quotation={row?.original}
                             showTrigger={false}
                         />
                         {/* Rechazar Cotización */}
                         <AlertDialogRejectQuotation
                             open={showRejectQuotaion}
                             onOpenChange={setShowRejectQuotaion}
-                            quotation={row.original}
+                            quotation={row?.original}
                             showTrigger={false}
                         />
                     </div>

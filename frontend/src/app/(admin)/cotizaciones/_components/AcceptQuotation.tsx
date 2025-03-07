@@ -18,7 +18,7 @@ import { components } from "@/types/api";
 interface AcceptQuotationProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["QuotationGetDTO"],
+  quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
 }
 
@@ -31,6 +31,10 @@ export function AlertDialogAcceptQuotation({
 {
     const handleUpdateStatus = () =>
     {
+        if (quotation)
+        {
+            UpdateStatus(quotation.id!, "Approved");
+        }
         UpdateStatus(quotation.id!, "Approved");
         onOpenChange(false);
     };
