@@ -85,30 +85,6 @@ export const columns: Array<ColumnDef<Client>> = [
         ),
     },
     {
-        accessorKey: "businessType",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-              Giro comercial
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center">
-                {row.original.businessType}
-            </span>
-        ),
-    },
-    {
         accessorKey: "name",
         header: ({ column }) => (
             <Button
@@ -129,6 +105,30 @@ export const columns: Array<ColumnDef<Client>> = [
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
                 {row.original.name}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "businessType",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+              Giro comercial
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) => (
+            <span className="items-center flex justify-center text-center truncate max-w-xs">
+                {row.original.businessType}
             </span>
         ),
     },

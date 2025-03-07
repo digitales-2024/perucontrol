@@ -6,7 +6,7 @@ import { CreateClientSchema } from "./schemas";
 import { components } from "@/types/api";
 import { revalidatePath } from "next/cache";
 
-export async function RegisterClient(client: CreateClientSchema): Promise<Result<null, FetchError>>
+export async function RegisterClient(client: components["schemas"]["ClientCreateDTO"]): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.POST("/api/Client", {
         ...auth,
