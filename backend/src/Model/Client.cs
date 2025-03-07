@@ -14,11 +14,11 @@ public class Client : BaseModel
     public required string TypeDocumentValue { get; set; }
 
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(150)]
     public string? RazonSocial { get; set; }
 
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(250)]
     public required string BusinessType { get; set; }
 
     [MinLength(1)]
@@ -26,7 +26,7 @@ public class Client : BaseModel
     public required string Name { get; set; }
 
     [MinLength(1, ErrorMessage = "La dirección debe tener al menos 1 caracter")]
-    [MaxLength(100, ErrorMessage = "La dirección debe tener como máximo 100 caracteres")]
+    [MaxLength(250, ErrorMessage = "La dirección debe tener como máximo 100 caracteres")]
     public required string FiscalAddress { get; set; }
 
     [MinLength(3)]
@@ -56,11 +56,11 @@ public class ClientCreateDTO : IMapToEntity<Client>
     public required string TypeDocumentValue { get; set; }
 
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(150)]
     public string? RazonSocial { get; set; }
 
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(250)]
     public required string BusinessType { get; set; }
 
     [MinLength(1)]
@@ -68,7 +68,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
     public required string Name { get; set; }
 
     [MinLength(1)]
-    [MaxLength(100)]
+    [MaxLength(250)]
     public required string FiscalAddress { get; set; }
 
     [MinLength(3)]
@@ -101,11 +101,11 @@ public class ClientCreateDTO : IMapToEntity<Client>
 public class ClientPatchDTO : IEntityPatcher<Client>
 {
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(150)]
     public string? RazonSocial { get; set; }
 
     [MinLength(0)]
-    [MaxLength(100)]
+    [MaxLength(250)]
     public string? BusinessType { get; set; }
 
     [MinLength(1)]
@@ -113,7 +113,7 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     public string? Name { get; set; }
 
     [MinLength(1)]
-    [MaxLength(150)]
+    [MaxLength(250)]
     public string? FiscalAddress { get; set; }
 
     [MinLength(3)]

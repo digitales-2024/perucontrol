@@ -18,6 +18,7 @@ export async function RegisterClient(client: components["schemas"]["ClientCreate
     if (error)
     {
         console.log("Error registering client:", error);
+        console.log(JSON.stringify(error, null, 2));
         return err(error);
     }
     return ok(null);
