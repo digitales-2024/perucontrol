@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
+import { Badge } from "@/components/ui/badge";
 
-export const columns: Array<ColumnDef<components["schemas"]["Project"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> = [
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
@@ -52,7 +53,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Project"]>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center text-center">
-                {row.original.client}
+                {row.original.client?.name}
             </span>
         ),
     },
@@ -76,7 +77,19 @@ export const columns: Array<ColumnDef<components["schemas"]["Project"]>> = [
         ),
         cell: ({ row }) => (
             <span className="flex justify-center">
-                {row.original.state}
+                {row.original?.status === "Pending" ? (
+                    <Badge variant="default">
+                        {row.original.status}
+                    </Badge>
+                ) : row.original?.status === "Approved" ? (
+                    <Badge variant="approved">
+                        {row.original.status}
+                    </Badge>
+                ) : (
+                    <Badge variant="destructive">
+                        {row.original?.status}
+                    </Badge>
+                )}
             </span>
         ),
     },
