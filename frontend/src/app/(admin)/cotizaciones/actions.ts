@@ -21,6 +21,26 @@ export async function CreateTermsAndConditions(body: components["schemas"]["Term
     return ok(null);
 }
 
+export async function DeleteTermsAndConditions(id: string)
+    : Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/TermsAndConditions/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+    if (error)
+    {
+        return err(error);
+    }
+
+    revalidatePath("/(admin)/cotizaciones", "page");
+    return ok(null);
+}
+
 export async function GetTermsAndConditionsById(id: string): Promise<Result<components["schemas"]["TermsAndConditions"], FetchError>>
 {
     const [data, error] = await wrapper((auth) => backend.GET("/api/TermsAndConditions/{id}", {

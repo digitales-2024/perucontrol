@@ -13,13 +13,13 @@ import { GetTermsAndConditionsById, UpdateQuotation } from "../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import TermsAndConditions from "../terms&Conditions/TermsAndConditions";
+import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
 
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["ClientGetDTO"]
-type Services = components["schemas"]["ServiceGetDTO"]
+type Services = components["schemas"]["Service"]
 
 export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void, termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {
@@ -98,10 +98,10 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle className="text-xl">
-                                Nueva cotización
+                            Nueva cotización
                         </SheetTitle>
                         <SheetDescription>
-                                Agrega una nueva cotización.
+                            Agrega una nueva cotización.
                         </SheetDescription>
                     </SheetHeader>
 
@@ -114,7 +114,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                     <FormField
                                         control={form.control}
                                         name="clientId"
-                                        render={({ field}) => (
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
                                                     Cliente
@@ -126,7 +126,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                                         emptyMessage="No se encontraron clientes"
                                                         value={
                                                             clientsOptions.find((option) => option.value ===
-                                                                    field.value) || undefined
+                                                                field.value) || undefined
                                                         }
                                                         onValueChange={(option) =>
                                                         {
@@ -146,7 +146,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                  Servicios
+                                                    Servicios
                                                 </FormLabel>
                                                 <div className="space-y-2">
                                                     {services.map((service) => (
@@ -188,7 +188,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                  Descripción
+                                                    Descripción
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Textarea
@@ -210,7 +210,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-base">
-                                                      Área m2
+                                                        Área m2
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="m2" className="border rounded-md" {...field} />
@@ -227,7 +227,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-base">
-                                                      Nro. de Ambientes
+                                                        Nro. de Ambientes
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="#" {...field} />
@@ -283,7 +283,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                             </Select>
 
                                             <Button type="button" variant="secondary" onClick={() => setTermsOpen(true)} className="w-full justify-start">
-                                              Plantillas de T&C
+                                                Plantillas de T&C
                                             </Button>
 
                                         </div>

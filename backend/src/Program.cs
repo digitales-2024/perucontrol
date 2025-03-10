@@ -103,6 +103,7 @@ foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
 }
+
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
