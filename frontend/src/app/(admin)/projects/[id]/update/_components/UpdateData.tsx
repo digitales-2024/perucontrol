@@ -9,16 +9,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { components } from "@/types/api";
 import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { clientDataSchema, ClientDataSchema } from "../../schemas";
-import { CreateProject } from "../../actions";
+import { clientDataSchema, ClientDataSchema } from "../../../schemas";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
+import { UpdateProject } from "../../../actions";
 
-interface ClientDataProps {
+interface ProjectProps {
+    id?: string;
+    client?: components["schemas"]["Client"];
+    services?: Array<components["schemas"]["Service"]>;
+    quotation?: components["schemas"]["Quotation"];
+    address: string;
+    area: number;
+    status: components["schemas"]["ProjectStatus"];
+    spacesCount: number;
+    modifiedAt?: string;
+}
+
+interface UpdateClientDataProps {
   clients: Array<components["schemas"]["Client"]>
   services: Array<components["schemas"]["Service"]>
   quotations: Array<components["schemas"]["Quotation2"]>
+  project: ProjectProps
 }
 
 // Mapa de iconos para servicios
@@ -29,27 +42,27 @@ const serviceIcons: Record<string, React.ReactNode> = {
     Desinfección: <Shield className="h-3 w-3" />,
 };
 
-export function ClientData({ clients, services, quotations }: ClientDataProps)
+export function UpdateClientData({ clients, services, quotations, project }: UpdateClientDataProps)
 {
-    const [quotation, setQuotation] = useState("");
-    const [showQuotation, setShowQuotation] = useState(true);
+    const [quotation, setQuotation] = useState(project.quotation?.id || "");
+    // const [showQuotation, setShowQuotation] = useState(true);
 
     const form = useForm<ClientDataSchema>({
         resolver: zodResolver(clientDataSchema),
         defaultValues: {
-            clientId: "",
-            quotationId: null,
-            services: [],
-            address: "",
-            area: 0,
-            spacesCount: 0,
+            clientId: project.client?.id || "",
+            quotationId: project.quotation?.id || null,
+            services: project.services?.map((service) => service.id) || [],
+            address: project.address || "",
+            area: project.area || 0,
+            spacesCount: project.spacesCount || 0,
         },
     });
 
-    const { reset, setValue } = form;
+    const { setValue } = form;
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
-    const activeQuotations = quotations.filter((quotation) => quotation?.isActive);
+    const activeQuotations = quotations.filter((quotation) => quotation?.isActive);   // Filtrando las cotizaciones activas
 
     { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
@@ -79,22 +92,12 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         }
     };
 
-    const handleClick = () =>
-    {
-        setShowQuotation(false);
-    };
-
     const onSubmit = (data: ClientDataSchema) =>
     {
-        console.log("Datos", JSON.stringify(data, null, 2));
-        const result = CreateProject(data);
+        const result = UpdateProject(project.id!, data);
         toast.promise(result , {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                return "Servicio registrado exitosamente";
-            },
+            success: "!Proyecto actualizado exitosamente!",
             error: "Error",
         });
     };
@@ -106,26 +109,20 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                     <CardTitle className="text-xl font-semibold">
                         Datos de cliente
                     </CardTitle>
-                    {showQuotation ? (
-                        <Button onClick={handleClick} className="bg-blue-600 hover:bg-blue-700">
-                            Obtener datos de una cotización
-                        </Button>
-                    ) : (
-                        <AutoComplete
-                            options={quotationsOptions}
-                            placeholder="Buscar cotización..."
-                            emptyMessage="No se encontraron clientes"
-                            value={
-                                quotationsOptions.find((option) => option.value ===
-                                        quotation) || undefined
-                            }
-                            onValueChange={(option) =>
-                            {
-                                setQuotation(option?.value || "");
-                                handleQuotationChange(option);
-                            }}
-                        />
-                    )}
+                    <AutoComplete
+                        options={quotationsOptions}
+                        placeholder="Buscar cotización..."
+                        emptyMessage="No se encontraron clientes"
+                        value={
+                            quotationsOptions.find((option) => option.value ===
+                                    quotation) || undefined
+                        }
+                        onValueChange={(option) =>
+                        {
+                            setQuotation(option?.value || "");
+                            handleQuotationChange(option);
+                        }}
+                    />
                 </div>
             </CardHeader>
             <CardContent>
@@ -270,7 +267,6 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                     </FormItem>
                                 )}
                             />
-
                         </div>
 
                         <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">

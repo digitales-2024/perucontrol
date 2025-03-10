@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/component
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> = [
     {
@@ -168,17 +169,11 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
     {
         id: "acciones",
         header: "Acciones",
-        cell: function Cell()
+        cell: function Cell({ row })
         {
-            // const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
-            /* const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            const [showDetailQuotation, setShowDetailQuotation] = useState(false); */
-
+            const projectId = row.original.id;
             return (
                 <div>
-                    <div>
-                        {/* Acciones */}
-                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -197,7 +192,9 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                                 Ver
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                Editar
+                                <Link href={`/projects/${projectId}/update/`}>
+                                    Editar
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 Eliminar
