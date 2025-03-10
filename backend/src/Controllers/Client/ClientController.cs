@@ -48,6 +48,36 @@ public class ClientController(
             return NotFound();
         }
     }
+
+    // Sobrescribiendo el método Delete para agregar las validaciones
+    [HttpDelete("{id}")]
+    public override async Task<IActionResult> Delete(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si el cliente está asociado a alguna cotización
+        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q => q.Client.Id == id);
+        // Verificar si el cliente está asociado a algún proyecto
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Client.Id == id);
+
+        if (isAssociatedWithQuotation)
+        {
+            return BadRequest("No se puede desactivar el cliente porque está asociado a una cotización.");
+        }
+        
+        if (isAssociatedWithProject)
+        {
+            return BadRequest("No se puede desactivar el cliente porque está asociado a un proyecto.");
+        }
+
+        entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }
 
 public class SunatQueryResponse

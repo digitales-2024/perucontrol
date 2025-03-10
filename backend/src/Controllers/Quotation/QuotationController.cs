@@ -47,7 +47,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
 
     [EndpointSummary("Get all")]
     [HttpGet]
-    [ProducesResponseType<IEnumerable<QuotationGetDTO>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<Quotation>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
     {
         return await _context
