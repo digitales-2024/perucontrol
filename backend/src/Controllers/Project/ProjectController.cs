@@ -80,4 +80,37 @@ public class ProjectController(DatabaseContext db)
 
         return Ok(projectSummaries);
     }
+
+    [EndpointSummary("Get one by Id")]
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ProjectSummary), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<ActionResult<Project>> GetById(Guid id)
+    {
+        var project = await _context
+          .Projects.Include(c => c.Client)
+          .Include(p => p.Services)
+          .Include(q => q.Quotation)
+          .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var projectSummary = new ProjectSummary
+        {
+            Id = project.Id,
+            Client = project.Client,
+            Services = project.Services,
+            Status = project.Status,
+            SpacesCount = project.SpacesCount,
+            OrderNumber = project.OrderNumber,
+            Area = project.Area,
+            Address = project.Address,
+            Quotation = project.Quotation
+        };
+
+        return Ok(projectSummary);
+    }
 }

@@ -161,4 +161,26 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             "quotation.xlsx"
         );
     }
+
+    [HttpDelete("{id}")]
+    public override async Task<IActionResult> Delete(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si la cotización esta asociada a un proyecto
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Quotation != null && p.Quotation.Id == id);
+
+        if (isAssociatedWithProject)
+        {
+            return BadRequest("No se puede eliminar la cotización porque está asociada a un proyecto.");
+        }
+
+        entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }
