@@ -24,6 +24,7 @@ export async function CreateProject(body: components["schemas"]["ProjectCreateDT
 
 export async function UpdateProject(id: string, newProject: components["schemas"]["ProjectPatchDTO"]): Promise<Result<null, FetchError>>
 {
+    console.log("Entro", JSON.stringify(newProject, null, 2));
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}", {
         ...auth,
         body: newProject,

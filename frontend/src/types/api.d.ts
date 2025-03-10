@@ -500,7 +500,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one by id */
+        /** Get one by Id */
         get: {
             parameters: {
                 query?: never;
@@ -572,7 +572,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Partial edit one by id */
+        /** Update project */
         patch: {
             parameters: {
                 query?: never;
@@ -1992,6 +1992,12 @@ export interface components {
             spacesCount: number;
         };
         ProjectPatchDTO: {
+            /** Format: uuid */
+            clientId?: string | null;
+            /** Format: uuid */
+            quotationId?: string | null;
+            /** @description Array of Service IDs */
+            services?: Array<string> | null;
             address?: string | null;
             /** Format: uint32 */
             area?: number | null;
@@ -2071,6 +2077,8 @@ export interface components {
             termsAndConditions: string;
         };
         QuotationPatchDTO: {
+            /** Format: uuid */
+            clientId?: string | null;
             serviceIds?: Array<string> | null;
             description?: string | null;
             /** Format: uint32 */
@@ -2078,6 +2086,7 @@ export interface components {
             /** Format: uint32 */
             spacesCount?: number | null;
             hasTaxes?: boolean | null;
+            termsAndConditions?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";
