@@ -24,7 +24,7 @@ public class Project : BaseModel
     public virtual Quotation? Quotation { get; set; } = null!;
 
     public required string Address { get; set; }
-    
+
     public required uint Area { get; set; }
 
     public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
@@ -110,7 +110,7 @@ public class ProjectSummary : BaseModel
     public virtual Quotation? Quotation { get; set; } = null!;
 
     public required string Address { get; set; }
-    
+
     public required uint Area { get; set; }
 
     public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;

@@ -19,7 +19,8 @@ namespace PeruControl.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(100)",
                 oldMaxLength: 100,
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "FiscalAddress",
@@ -29,7 +30,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(100)",
-                oldMaxLength: 100);
+                oldMaxLength: 100
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "BusinessType",
@@ -39,7 +41,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(100)",
-                oldMaxLength: 100);
+                oldMaxLength: 100
+            );
         }
 
         /// <inheritdoc />
@@ -54,7 +57,8 @@ namespace PeruControl.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(150)",
                 oldMaxLength: 150,
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "FiscalAddress",
@@ -64,7 +68,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(250)",
-                oldMaxLength: 250);
+                oldMaxLength: 250
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "BusinessType",
@@ -74,7 +79,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(250)",
-                oldMaxLength: 250);
+                oldMaxLength: 250
+            );
         }
     }
 }

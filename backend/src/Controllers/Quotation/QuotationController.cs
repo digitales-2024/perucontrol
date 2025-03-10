@@ -145,7 +145,11 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
 
     [EndpointSummary("Generate Excel")]
     [HttpGet("{id}/gen-excel")]
-    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    [ProducesResponseType(
+        typeof(FileContentResult),
+        StatusCodes.Status200OK,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateExcel()
     {
@@ -167,7 +171,10 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             { "{{termino_custom}}", "???" },
             { "{{doc_entregados}}", "???" },
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "Templates/cotizacion.xlsx");
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "Templates/cotizacion.xlsx"
+        );
         return File(
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
