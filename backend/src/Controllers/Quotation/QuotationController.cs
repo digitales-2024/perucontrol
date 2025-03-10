@@ -151,8 +151,18 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel()
+    public IActionResult GenerateExcel(Guid id)
     {
+        var quotation = _dbSet
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefault(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound($"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones.");
+        }
+
         var placeholders = new Dictionary<string, string>
         {
             { "{{digesa_habilitacion}}", "???" },
