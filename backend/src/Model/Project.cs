@@ -72,6 +72,12 @@ public class ProjectCreateDTO : IMapToEntity<Project>
 
 public class ProjectPatchDTO : IEntityPatcher<Project>
 {
+    public Guid? ClientId { get; set; }
+    public Guid? QuotationId { get; set; }
+
+    [Description("Array of Service IDs")]
+    public IList<Guid>? Services { get; set; } = null!;
+
     [MinLength(1, ErrorMessage = "Debe ingresar una dirección")]
     [MaxLength(100, ErrorMessage = "La dirección no puede tener más de 100 caracteres")]
     public string? Address { get; set; }

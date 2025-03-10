@@ -78,6 +78,16 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         if (quotation == null)
             return NotFound();
 
+        if (patchDto.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);
+            if (client == null)
+            {
+                return NotFound("Cliente no encontrado");
+            }
+            quotation.Client = client;
+        }
+
         if (patchDto.ServiceIds != null)
         {
             var newServiceIds = await _context

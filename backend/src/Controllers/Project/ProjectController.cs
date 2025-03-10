@@ -113,4 +113,80 @@ public class ProjectController(DatabaseContext db)
 
         return Ok(projectSummary);
     }
+
+    [EndpointSummary("Update project")]
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public override async Task<IActionResult> Patch(Guid id, [FromBody] ProjectPatchDTO patchDto)
+    {
+        var entity = await _dbSet.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        
+        if (patchDto.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);
+            if (client == null)
+            {
+                return NotFound("Cliente no encontrado");
+            }
+            entity.Client = client;
+        }
+
+        if (patchDto.QuotationId != null)
+        {
+            var quotation = await _context.Quotations.FindAsync(patchDto.QuotationId.Value);
+            if (quotation == null)
+            {
+                return NotFound("Cotización no encontrada");
+            }
+            entity.Quotation = quotation;
+        }
+
+        if (patchDto.Services != null)
+        {
+            var newServiceIds = await _context
+                .Services.Where(s => patchDto.Services.Contains(s.Id))
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            // Check if we got all the IDs we were sent
+            if (newServiceIds.Count != patchDto.Services.Count)
+            {
+                var invalidIds = patchDto.Services.Except(newServiceIds).ToList();
+
+                return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
+            }
+
+            // Get services to remove (existing ones not in new list)
+            var servicesToRemove = entity
+                .Services.Where(s => !newServiceIds.Contains(s.Id))
+                .ToList();
+
+            // Get services to add (new ones not in existing list)
+            var existingServiceIds = entity.Services.Select(s => s.Id);
+            var servicesToAdd = await _context
+                .Services.Where(s =>
+                    newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id)
+                )
+                .ToListAsync();
+
+            // Apply the changes
+            foreach (var service in servicesToRemove)
+                entity.Services.Remove(service);
+
+            foreach (var service in servicesToAdd)
+                entity.Services.Add(service);
+        }
+
+        patchDto.ApplyPatch(entity);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
