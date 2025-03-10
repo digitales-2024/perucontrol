@@ -4,14 +4,14 @@ import { backend, wrapper } from "@/types/backend";
 import { UpdateClientData } from "./_components/UpdateData";
 
 interface Props {
-    params: {
+    params: Promise<{
       id: string;
-    }
+    }>
 }
-
+/* { params }: { params: Promise<{ id: string }> }, */
 export default async function ProjectsPage({ params }: Props)
 {
-    const { id } = params;
+    const { id } = await params;
 
     // get all clients
     const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
