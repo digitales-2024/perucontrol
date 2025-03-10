@@ -7,7 +7,7 @@ interface QuotationContextProps {
   quotations: Array<components["schemas"]["QuotationGetDTO"]>;
   terms: Array<components["schemas"]["TermsAndConditions"]>;
   clients: Array<components["schemas"]["ClientGetDTO"]>;
-  services: Array<components["schemas"]["ServiceGetDTO"]>;
+  services: Array<components["schemas"]["Service"]>;
 }
 
 // Crear el contexto con un valor inicial opcional

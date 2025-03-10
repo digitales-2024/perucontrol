@@ -1,8 +1,0 @@
-export function CreateProject()
-{
-    return (
-        <>
-
-        </>
-    );
-}

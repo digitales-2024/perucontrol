@@ -83,7 +83,11 @@ export async function RemoveClient(id: string): Promise<Result<null, FetchError>
     if (error)
     {
         console.log("Error deleting client:", error);
-        return err(error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
     }
     return ok(null);
 }

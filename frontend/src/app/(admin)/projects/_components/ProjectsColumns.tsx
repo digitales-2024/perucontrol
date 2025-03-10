@@ -53,7 +53,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center text-center">
-                {row.original.client?.name}
+                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name }
             </span>
         ),
     },
