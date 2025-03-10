@@ -11,7 +11,7 @@ interface Props {
 
 export default async function ProjectsPage({ params }: Props)
 {
-    const { id } = await params;
+    const { id } = params;
 
     // get all clients
     const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
