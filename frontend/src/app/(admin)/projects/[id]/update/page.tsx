@@ -8,7 +8,7 @@ interface Props {
       id: string;
     }>
 }
-/* { params }: { params: Promise<{ id: string }> }, */
+
 export default async function ProjectsPage({ params }: Props)
 {
     const { id } = await params;
