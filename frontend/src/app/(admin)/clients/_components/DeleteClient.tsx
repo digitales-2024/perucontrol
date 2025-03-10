@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Client } from "../types/clients";
 import { RemoveClient } from "../actions";
+import { toast } from "sonner";
 
 interface DeleteClientProps {
   open: boolean;
@@ -23,10 +24,33 @@ interface DeleteClientProps {
 export function DeleteClient({open, onOpenChange, client, showTrigger = true}: DeleteClientProps)
 {
 
-    const onDeleteClientsHandler = () =>
+    const onDeleteClientsHandler = async() =>
     {
-        RemoveClient(client.id);
-        onOpenChange(false);
+        try
+        {
+            const result = await RemoveClient(client.id);
+            const error = result[1];
+            if (error)
+            {
+                throw new Error(error.message);
+            }
+            toast.success("Cliente eliminado exitosamente!");
+        }
+        catch (error: unknown)
+        {
+            if (error instanceof Error)
+            {
+                toast.error(error.message || "Error al eliminar el cliente");
+            }
+            else
+            {
+                toast.error("Error al eliminar el cliente");
+            }
+        }
+        finally
+        {
+            onOpenChange(false);
+        }
     };
 
     return (
