@@ -2112,7 +2112,7 @@ export interface components {
         };
         QuotationGetDTO: {
             client?: components["schemas"]["ClientGetDTO"];
-            service?: components["schemas"]["ServiceGetDTO"];
+            services?: Array<components["schemas"]["Service"]>;
             description: string;
             status: components["schemas"]["QuotationStatus"];
             /** Format: uint32 */
@@ -2158,16 +2158,6 @@ export interface components {
         };
         ServiceCreateDTO: {
             name: string;
-        };
-        ServiceGetDTO: {
-            name: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
         };
         ServicePatchDTO: {
             name?: string | null;

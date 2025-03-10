@@ -19,18 +19,20 @@ import { components } from "@/types/api";
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["ClientGetDTO"]
-type Services = components["schemas"]["ServiceGetDTO"]
+type Services = components["schemas"]["Service"]
 
 export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void, termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
-    { /* Creando las opciones para el AutoComplete */ }
+    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+
+    { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
-        clients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
-        })) ?? [];
+    activeClients?.map((client) => ({
+        value: client.id || "",
+        label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+    })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
