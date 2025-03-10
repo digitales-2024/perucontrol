@@ -18,7 +18,7 @@ import { components } from "@/types/api";
 
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
-type Clients = components["schemas"]["ClientGetDTO"]
+type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]
 
 export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void, termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
