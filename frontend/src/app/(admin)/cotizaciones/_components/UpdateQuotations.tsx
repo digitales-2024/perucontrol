@@ -25,12 +25,14 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
+    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+
     { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
-            clients?.map((client) => ({
-                value: client.id || "",
-                label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
-            })) ?? [];
+    activeClients?.map((client) => ({
+        value: client.id || "",
+        label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+    })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
