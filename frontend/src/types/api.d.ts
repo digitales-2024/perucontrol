@@ -966,7 +966,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": components["schemas"]["FileContentResult"];
+                    };
                 };
                 /** @description Not Found */
                 404: {
@@ -1959,6 +1961,20 @@ export interface components {
             email?: string | null;
             phoneNumber?: string | null;
         };
+        EntityTagHeaderValue: {
+            tag?: components["schemas"]["StringSegment"];
+            isWeak?: boolean;
+        } | null;
+        FileContentResult: {
+            /** Format: byte */
+            fileContents?: string;
+            contentType?: string | null;
+            fileDownloadName?: string | null;
+            /** Format: date-time */
+            lastModified?: string | null;
+            entityTag?: components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -2155,6 +2171,15 @@ export interface components {
         };
         ServicePatchDTO: {
             name?: string | null;
+        };
+        StringSegment: {
+            buffer?: string | null;
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int32 */
+            length?: number;
+            value?: string | null;
+            hasValue?: boolean;
         };
         SunatQueryResponse: {
             razonSocial?: string | null;

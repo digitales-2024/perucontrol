@@ -145,16 +145,29 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
 
     [EndpointSummary("Generate Excel")]
     [HttpGet("{id}/gen-excel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateExcel()
     {
         var placeholders = new Dictionary<string, string>
         {
-            // sample values
-            { "{{digesa_habilitacion}}", "322" },
+            { "{{digesa_habilitacion}}", "???" },
+            { "{{fecha_cotizacion}}", "???" },
+            { "{{nro_presupuesto}}", "???" },
+            { "{{nro_cliente}}", "???" },
+            { "{{validez_presupuesto}}", "???" },
+            { "{{nombre_cliente}}", "???" },
+            { "{{direccion_cliente}}", "???" },
+            { "{{adicional_cliente}}", "???" },
+            { "{{garantia}}", "???" },
+            { "{{cantidad_servicio}}", "???" },
+            { "{{nombre_servicio}}", "???" },
+            { "{{incluye_igv_str}}", "???" },
+            { "{{validez_dias}}", "???" },
+            { "{{termino_custom}}", "???" },
+            { "{{doc_entregados}}", "???" },
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "template.xlsx");
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "Templates/cotizacion.xlsx");
         return File(
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
