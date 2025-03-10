@@ -255,12 +255,14 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() =>
-                            {
-                                window.location.href = `/cotizaciones/${row.original.id!}`;
-                            }}
-                            >
-                                Descargar Cotización
+                            <DropdownMenuItem asChild>
+                                <a
+                                    href={`/cotizaciones/${row.original.id!}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Descargar Cotización
+                                </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
                                 Eliminar

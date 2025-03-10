@@ -163,22 +163,26 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             return NotFound($"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones.");
         }
 
+        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
+
         var placeholders = new Dictionary<string, string>
         {
-            { "{{digesa_habilitacion}}", "???" },
-            { "{{fecha_cotizacion}}", "???" },
-            { "{{nro_presupuesto}}", "???" },
-            { "{{nro_cliente}}", "???" },
+            { "{{digesa_habilitacion}}", "123-PROV" },
+            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
+            { "{{nro_presupuesto}}", "123-PROV" },
+            { "{{nro_cliente}}", "123-PROV" },
             { "{{validez_presupuesto}}", "???" },
-            { "{{nombre_cliente}}", "???" },
-            { "{{direccion_cliente}}", "???" },
-            { "{{adicional_cliente}}", "???" },
-            { "{{garantia}}", "???" },
-            { "{{cantidad_servicio}}", "???" },
-            { "{{nombre_servicio}}", "???" },
-            { "{{incluye_igv_str}}", "???" },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
+            { "{{adicional_cliente}}", "---" },
+            { "{{garantia}}", "-" },
+            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
+            { "{{nombre_servicio}}", serviceNamesStr },
+            { "{{incluye_igv_str}}", hasTaxes },
             { "{{validez_dias}}", "???" },
-            { "{{termino_custom}}", "???" },
+            { "{{termino_custom}}", quotation.TermsAndConditions },
             { "{{doc_entregados}}", "???" },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
