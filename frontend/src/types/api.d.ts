@@ -623,6 +623,70 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Project/{id}/update-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Project State */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectStatusPatchDTO"];
+                    "text/json": components["schemas"]["ProjectStatusPatchDTO"];
+                    "application/*+json": components["schemas"]["ProjectStatusPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Project/{id}/reactivate": {
         parameters: {
             query?: never;
@@ -1004,7 +1068,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get approved quotations not associated with a project */
+        /** Get approved and not associated project */
         get: {
             parameters: {
                 query?: never;
@@ -2068,6 +2132,9 @@ export interface components {
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Approved" | "Rejected";
+        ProjectStatusPatchDTO: {
+            status?: components["schemas"]["ProjectStatus"];
+        };
         ProjectSummary: {
             client?: components["schemas"]["Client"];
             services?: Array<components["schemas"]["Service"]>;
