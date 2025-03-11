@@ -133,16 +133,16 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
                 {row.original?.status === "Pending" ? (
-                    <Badge variant="secondary">
-                        {row.original.status}
+                    <Badge variant="default">
+                        Pendiente
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        {row.original.status}
+                        Aprovado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
-                        {row.original?.status}
+                        Rechazado
                     </Badge>
                 )}
             </span>

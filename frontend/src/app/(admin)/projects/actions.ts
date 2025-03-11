@@ -44,3 +44,24 @@ export async function UpdateProject(id: string, newProject: components["schemas"
     }
     return ok(null);
 }
+
+export async function RemoveProject(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error deleting project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
