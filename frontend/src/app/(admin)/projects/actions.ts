@@ -65,3 +65,30 @@ export async function RemoveProject(id: string): Promise<Result<null, FetchError
     }
     return ok(null);
 }
+
+type StatesQuotation = "Pending" | "Approved" | "Rejected";
+
+export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/update-state", {
+        ...auth,
+        body:
+        {
+            status: newStatus,
+        },
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/cotizaciones", "page");
+
+    if (error)
+    {
+        console.log("Error updating status:", error);
+        return err(error);
+    }
+    return ok(null);
+}

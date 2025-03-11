@@ -13,28 +13,29 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { UpdateStatus } from "../actions";
-import { components } from "@/types/api";
+import { Project } from "../types";
 
-interface RejectQuotationProps {
+interface AcceptProjectProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation2"],
+  project: Project,
   showTrigger?: boolean;
 }
 
-export function AlertDialogRejectQuotation({
+export function AlertDialogAcceptProject({
     open,
     onOpenChange,
-    quotation,
+    project,
     showTrigger = true,
-}: RejectQuotationProps)
+}: AcceptProjectProps)
 {
     const handleUpdateStatus = () =>
     {
-        if (quotation)
+        if (project)
         {
-            UpdateStatus(quotation.id!, "Rejected");
+            UpdateStatus(project.id!, "Approved");
         }
+        UpdateStatus(project.id!, "Approved");
         onOpenChange(false);
     };
 
@@ -43,7 +44,7 @@ export function AlertDialogRejectQuotation({
             { showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                        Rechazar cotización
+                        Aceptar proyecto
                     </Button>
                 </AlertDialogTrigger>
             ) : null }
@@ -53,7 +54,7 @@ export function AlertDialogRejectQuotation({
                         ¿Esta seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción actualizara el estado de la cotización.
+                        Esta acción actualizara el estado del proyecto.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

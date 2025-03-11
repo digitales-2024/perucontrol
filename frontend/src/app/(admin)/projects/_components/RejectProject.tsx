@@ -13,27 +13,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { UpdateStatus } from "../actions";
-import { components } from "@/types/api";
+import { Project } from "../types";
 
-interface RejectQuotationProps {
+interface RejectProjectProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation2"],
+  project: Project,
   showTrigger?: boolean;
 }
 
-export function AlertDialogRejectQuotation({
+export function AlertDialogRejectProject({
     open,
     onOpenChange,
-    quotation,
+    project,
     showTrigger = true,
-}: RejectQuotationProps)
+}: RejectProjectProps)
 {
     const handleUpdateStatus = () =>
     {
-        if (quotation)
+        if (project)
         {
-            UpdateStatus(quotation.id!, "Rejected");
+            UpdateStatus(project.id!, "Rejected");
         }
         onOpenChange(false);
     };

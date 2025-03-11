@@ -191,4 +191,27 @@ public class ProjectController(DatabaseContext db)
 
         return NoContent();
     }
+
+    [EndpointSummary("Update Project State")]
+    [HttpPatch("{id}/update-state")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateState(
+        Guid id,
+        [FromBody] ProjectStatusPatchDTO patchDto
+    )
+    {
+        var project = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        // Actualizar el estado del proyecto y guardar en la base de datos
+        project.Status = patchDto.Status;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

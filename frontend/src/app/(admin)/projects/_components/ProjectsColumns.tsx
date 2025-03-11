@@ -3,13 +3,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronUp, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useState } from "react";
 import { DeleteProject } from "./DeleteProject";
 import { Project } from "../types";
+import { AlertDialogAcceptProject } from "./AcceptProject";
+import { AlertDialogRejectProject } from "./RejectProject";
 
 export const columns: Array<ColumnDef<Project>> = [
     {
@@ -182,6 +184,8 @@ export const columns: Array<ColumnDef<Project>> = [
         header: "Acciones",
         cell: function Cell({ row })
         {
+            const [showAcceptProject, setShowAcceptProject] = useState(false);
+            const [showRejectProject, setShowRejectProject] = useState(false);
             const [showDeleteProject, setShowDeleteProject] = useState(false);
 
             const projectId = row.original.id;
@@ -192,6 +196,20 @@ export const columns: Array<ColumnDef<Project>> = [
                         <DeleteProject
                             open={showDeleteProject}
                             onOpenChange={setShowDeleteProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                        {/* Acceptar Proyecto */}
+                        <AlertDialogAcceptProject
+                            open={showAcceptProject}
+                            onOpenChange={setShowAcceptProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                        {/* Rechazar Proyecto */}
+                        <AlertDialogRejectProject
+                            open={showRejectProject}
+                            onOpenChange={setShowRejectProject}
                             project={row?.original}
                             showTrigger={false}
                         />
@@ -210,6 +228,17 @@ export const columns: Array<ColumnDef<Project>> = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>
+                                Acciones
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => setShowAcceptProject(true)}>
+                                Aceptar cotización
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowRejectProject(true)}>
+                                Rechazar cotización
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <Link href={`/projects/${projectId}/update/`}>
                                 <DropdownMenuItem>
                                     Editar
