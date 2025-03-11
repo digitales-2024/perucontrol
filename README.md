@@ -173,4 +173,9 @@ pnpm setup
   `pnpm run dev`
 
 
+## Pruebas
+
+### E2E
+
+Ver documentacion en carpeta backend
 

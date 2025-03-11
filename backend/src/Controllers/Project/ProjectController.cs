@@ -56,27 +56,29 @@ public class ProjectController(DatabaseContext db)
 
     [EndpointSummary("Get all")]
     [HttpGet]
-    [ProducesResponseType<IEnumerable<ProjectSummary>>( StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<ProjectSummary>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Project>>> GetAll()
     {
         var projects = await _context
-          .Projects.Include(c => c.Client)
-          .Include(p => p.Services)
-          .Include(q => q.Quotation)
-          .ToListAsync();
+            .Projects.Include(c => c.Client)
+            .Include(p => p.Services)
+            .Include(q => q.Quotation)
+            .ToListAsync();
 
-          var projectSummaries = projects.Select(p => new ProjectSummary
-          {
-              Id = p.Id,
-              Client = p.Client,
-              Services = p.Services,
-              Status = p.Status,
-              SpacesCount = p.SpacesCount,
-              OrderNumber = p.OrderNumber,
-              Area = p.Area,
-              Address = p.Address,
-              Quotation = p.Quotation
-          }).ToList();
+        var projectSummaries = projects
+            .Select(p => new ProjectSummary
+            {
+                Id = p.Id,
+                Client = p.Client,
+                Services = p.Services,
+                Status = p.Status,
+                SpacesCount = p.SpacesCount,
+                OrderNumber = p.OrderNumber,
+                Area = p.Area,
+                Address = p.Address,
+                Quotation = p.Quotation,
+            })
+            .ToList();
 
         return Ok(projectSummaries);
     }
@@ -88,10 +90,10 @@ public class ProjectController(DatabaseContext db)
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
         var project = await _context
-          .Projects.Include(c => c.Client)
-          .Include(p => p.Services)
-          .Include(q => q.Quotation)
-          .FirstOrDefaultAsync(p => p.Id == id);
+            .Projects.Include(c => c.Client)
+            .Include(p => p.Services)
+            .Include(q => q.Quotation)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
         {
@@ -108,7 +110,7 @@ public class ProjectController(DatabaseContext db)
             OrderNumber = project.OrderNumber,
             Area = project.Area,
             Address = project.Address,
-            Quotation = project.Quotation
+            Quotation = project.Quotation,
         };
 
         return Ok(projectSummary);
@@ -127,7 +129,6 @@ public class ProjectController(DatabaseContext db)
             return NotFound();
         }
 
-        
         if (patchDto.ClientId != null)
         {
             var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);

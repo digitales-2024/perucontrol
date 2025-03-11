@@ -89,8 +89,12 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
             });
         }
     }
-    catch
+    catch (e)
     {
+        if (process.env.NODE_ENV === "development")
+        {
+            console.error(e);
+        }
         return err({
             statusCode: 503,
             message: "Servidor no disponible",
