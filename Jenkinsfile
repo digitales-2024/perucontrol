@@ -4,10 +4,6 @@ pipeline {
 		// Change HOME, because default is usually root dir, and Jenkins user may not have write permissions in that dir
 		HOME = "${WORKSPACE}"
 	}
-	options {
-		// Create a volume for sharing NuGet packages
-		dockerVolumeBinding('/var/nuget-cache:/root/.nuget/packages')
-	}
 	stages {
 		stage("Build project") {
 			parallel {
