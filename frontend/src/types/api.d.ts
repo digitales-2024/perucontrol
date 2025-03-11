@@ -234,7 +234,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Deactivate by id */
         delete: {
             parameters: {
                 query?: never;
@@ -501,7 +500,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one by ID */
+        /** Get one by Id */
         get: {
             parameters: {
                 query?: never;
@@ -573,7 +572,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Partial edit one by id */
+        /** Update project */
         patch: {
             parameters: {
                 query?: never;
@@ -694,9 +693,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationGetDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationGetDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationGetDTO"]>;
+                        "text/plain": Array<components["schemas"]["Quotation2"]>;
+                        "application/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/json": Array<components["schemas"]["Quotation2"]>;
                     };
                 };
             };
@@ -793,7 +792,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Deactivate by id */
         delete: {
             parameters: {
                 query?: never;
@@ -1920,24 +1918,6 @@ export interface components {
             clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
             phoneNumber: string;
         };
-        ClientGetDTO: {
-            typeDocument: string;
-            typeDocumentValue: string;
-            razonSocial?: string | null;
-            businessType: string;
-            name: string;
-            fiscalAddress: string;
-            email: string;
-            phoneNumber: string;
-            clientLocations: Array<components["schemas"]["ClientLocation"]>;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
         ClientLocation: {
             address: string;
             /** Format: uuid */
@@ -1988,8 +1968,8 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: uint32 */
-            orderNumber: number;
+            /** Format: int32 */
+            orderNumber?: number;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2010,17 +1990,19 @@ export interface components {
             area: number;
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: uint32 */
-            orderNumber: number;
         };
         ProjectPatchDTO: {
+            /** Format: uuid */
+            clientId?: string | null;
+            /** Format: uuid */
+            quotationId?: string | null;
+            /** @description Array of Service IDs */
+            services?: Array<string> | null;
             address?: string | null;
             /** Format: uint32 */
             area?: number | null;
             /** Format: uint32 */
             spacesCount?: number | null;
-            /** Format: uint32 */
-            orderNumber?: number | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Approved" | "Rejected";
@@ -2034,7 +2016,7 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: uint32 */
+            /** Format: int32 */
             orderNumber: number;
             /** Format: uuid */
             id?: string;
@@ -2094,26 +2076,9 @@ export interface components {
             hasTaxes: boolean;
             termsAndConditions: string;
         };
-        QuotationGetDTO: {
-            client?: components["schemas"]["ClientGetDTO"];
-            services?: Array<components["schemas"]["Service"]>;
-            description: string;
-            status: components["schemas"]["QuotationStatus"];
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
-            hasTaxes: boolean;
-            termsAndConditions: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
         QuotationPatchDTO: {
+            /** Format: uuid */
+            clientId?: string | null;
             serviceIds?: Array<string> | null;
             description?: string | null;
             /** Format: uint32 */
@@ -2121,6 +2086,7 @@ export interface components {
             /** Format: uint32 */
             spacesCount?: number | null;
             hasTaxes?: boolean | null;
+            termsAndConditions?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";

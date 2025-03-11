@@ -21,3 +21,26 @@ export async function CreateProject(body: components["schemas"]["ProjectCreateDT
     }
     return ok(null);
 }
+
+export async function UpdateProject(id: string, newProject: components["schemas"]["ProjectPatchDTO"]): Promise<Result<null, FetchError>>
+{
+    console.log("Entro", JSON.stringify(newProject, null, 2));
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}", {
+        ...auth,
+        body: newProject,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error updateing project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
