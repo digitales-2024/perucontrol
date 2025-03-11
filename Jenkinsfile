@@ -31,7 +31,8 @@ pipeline {
 					}
 					steps {
 						dir("backend/src") {
-							sh 'HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out'
+							sh 'dotnet restore --locked-mode'
+							sh 'dotnet publish -c Release -r linux-musl-x64 -o out'
 						}
 					}
 				}
@@ -44,6 +45,7 @@ pipeline {
 					}
 					steps {
 						dir("backend/Tests.E2E") {
+							sh 'dotnet restore --locked-mode'
 							sh 'dotnet test'
 						}
 					}

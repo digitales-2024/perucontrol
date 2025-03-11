@@ -17,7 +17,7 @@ COPY Program.cs .
 COPY PeruControl.csproj .
 COPY appsettings.json .
 
-RUN HUSKY=0 dotnet restore
+RUN HUSKY=0 dotnet restore --locked-mode
 
 # Build binary
 RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out

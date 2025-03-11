@@ -14,6 +14,7 @@ import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
+import { QuotationDownload } from "./QuotationDownload";
 
 export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
     {
@@ -182,6 +183,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             const [showDetailQuotation, setShowDetailQuotation] = useState(false);
             const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
             const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
+            const [showDownload, setShowDownload] = useState(false);
             const { terms, clients, services } = useQuotationContext();
 
             return (
@@ -223,6 +225,12 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             quotation={row?.original}
                             showTrigger={false}
                         />
+                        {/* Descargar Cotización */}
+                        <QuotationDownload
+                            open={showDownload}
+                            onOpenChange={setShowDownload}
+                            quotationId={row.original.id!}
+                        />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -255,14 +263,8 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <a
-                                    href={`/cotizaciones/${row.original.id!}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Descargar Cotización
-                                </a>
+                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                                Descargar Cotización
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
                                 Eliminar
