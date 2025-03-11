@@ -1,15 +1,28 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronUp, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { components } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { components } from "@/types/api";
 
-export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> = [
+interface Project {
+  id: string;
+  area: number;
+  spacesCount: number;
+  orderNumber?: number;
+  status?: string;
+  address?: string;
+  client?: components["schemas"]["Client"];
+  services?: Array<components["schemas"]["Service"]>;
+  quotation?: components["schemas"]["Quotation"];
+  supplies?: Array<{ id: string; name: string; quantity: number; unit: string }>;
+}
+
+export const columns: Array<ColumnDef<Project>> = [
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
@@ -167,6 +180,15 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
         ),
     },
     {
+        id: "expander",
+        header: () => null,
+        cell: ({ row }) => (
+            <Button variant="ghost" onClick={row.getToggleExpandedHandler()} className="p-0 hover:bg-transparent">
+                {row.getIsExpanded() ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+        ),
+    },
+    {
         id: "acciones",
         header: "Acciones",
         cell: function Cell({ row })
@@ -188,9 +210,6 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                Ver
-                            </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link href={`/projects/${projectId}/update/`}>
                                     Editar
