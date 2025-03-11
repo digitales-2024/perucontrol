@@ -122,3 +122,8 @@ public class ProjectSummary : BaseModel
 
     // TODO: schedule
 }
+
+public class ProjectStatusPatchDTO
+{
+    public ProjectStatus Status { get; set; }
+}
