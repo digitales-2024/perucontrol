@@ -68,7 +68,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
     const clientsOptions: Array<Option> =
     activeClients?.map((client) => ({
         value: client.id || "",
-        label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
     })) ?? [];
 
     const quotationsOptions: Array<Option> =

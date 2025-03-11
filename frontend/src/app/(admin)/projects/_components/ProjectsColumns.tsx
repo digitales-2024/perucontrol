@@ -210,11 +210,11 @@ export const columns: Array<ColumnDef<Project>> = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                <Link href={`/projects/${projectId}/update/`}>
+                            <Link href={`/projects/${projectId}/update/`}>
+                                <DropdownMenuItem>
                                     Editar
-                                </Link>
-                            </DropdownMenuItem>
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem onSelect={() => setShowDeleteProject(true)}>
                                 Eliminar
                             </DropdownMenuItem>

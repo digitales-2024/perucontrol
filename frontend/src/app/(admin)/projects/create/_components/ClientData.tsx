@@ -50,17 +50,16 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const activeQuotations = quotations.filter((quotation) => quotation?.isActive); // Filtrando las cotizaciones activas
-    const ApprovedQuotations = activeQuotations.filter((quotation) => quotation.status === "Approved"); // Filtrando las cotizaciones aprobadas
 
     { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
     activeClients?.map((client) => ({
         value: client.id || "",
-        label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
     })) ?? [];
 
     const quotationsOptions: Array<Option> =
-    ApprovedQuotations?.map((quotation) => ({
+    activeQuotations?.map((quotation) => ({
         value: quotation?.id || "",
         label: quotation?.id || "",
     })) ?? [];
@@ -115,7 +114,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         <AutoComplete
                             options={quotationsOptions}
                             placeholder="Buscar cotización..."
-                            emptyMessage="No se encontraron clientes"
+                            emptyMessage="No se encontraron cotizaciones disponibles"
                             value={
                                 quotationsOptions.find((option) => option.value ===
                                         quotation) || undefined

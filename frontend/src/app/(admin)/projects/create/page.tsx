@@ -24,7 +24,7 @@ export default async function ProjectsPage()
     }
 
     // get all quotation
-    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation", {...auth}));
+    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", {...auth}));
 
     if (quotationsError)
     {
