@@ -20,20 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileUp } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { components } from "@/types/api";
-
-interface Project {
-  id: string;
-  area: number;
-  spacesCount: number;
-  orderNumber?: number;
-  status?: string;
-  address?: string;
-  client?: components["schemas"]["Client"];
-  services?: Array<components["schemas"]["Service"]>;
-  quotation?: components["schemas"]["Quotation"];
-  supplies?: Array<{ id: string; name: string; quantity: number; unit: string }>;
-}
+import { Project } from "../types";
 
 interface DataTableProps {
   columns: Array<ColumnDef<Project>>
