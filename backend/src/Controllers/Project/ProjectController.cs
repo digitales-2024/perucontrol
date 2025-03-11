@@ -90,10 +90,10 @@ public class ProjectController(DatabaseContext db)
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
         var project = await _context
-          .Projects.Include(c => c.Client)
-          .Include(p => p.Services)
-          .Include(q => q.Quotation)
-          .FirstOrDefaultAsync(p => p.Id == id);
+            .Projects.Include(c => c.Client)
+            .Include(p => p.Services)
+            .Include(q => q.Quotation)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
         {
@@ -110,7 +110,7 @@ public class ProjectController(DatabaseContext db)
             OrderNumber = project.OrderNumber,
             Area = project.Area,
             Address = project.Address,
-            Quotation = project.Quotation
+            Quotation = project.Quotation,
         };
 
         return Ok(projectSummary);
@@ -129,7 +129,6 @@ public class ProjectController(DatabaseContext db)
             return NotFound();
         }
 
-        
         if (patchDto.ClientId != null)
         {
             var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);

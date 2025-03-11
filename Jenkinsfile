@@ -34,6 +34,7 @@ pipeline {
 				docker {
 					image 'digitalesacide/playwright-dotnet9-noble:latest'
 					args '--ipc=host'
+					reuseNode true
 				}
 			}
 			steps {
