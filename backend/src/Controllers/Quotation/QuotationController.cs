@@ -230,4 +230,20 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
+    [EndpointSummary("Get approved and not associated project")]
+    [HttpGet("approved/not-associated")]
+    [ProducesResponseType(typeof(IEnumerable<Quotation>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Quotation>>> GetApprovedNotAssociated()
+    {
+        var approvedQuotations = await _context
+            .Quotations
+            .Include(c => c.Client)
+            .Include(s => s.Services)
+            .Where(q => q.Status == QuotationStatus.Approved)
+            .Where(q => !_context.Projects.Any(p => p.Quotation.Id == q.Id))
+            .ToListAsync();
+
+        return Ok(approvedQuotations);
+    }
 }
