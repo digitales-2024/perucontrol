@@ -154,17 +154,50 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     }
 
     [EndpointSummary("Generate Excel")]
-    [HttpGet("{id}/gen-excel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("{id}/gen-excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel()
+    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
     {
+        var quotation = _dbSet
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefault(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
+        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
+
         var placeholders = new Dictionary<string, string>
         {
-            // sample values
-            { "{{digesa_habilitacion}}", "322" },
+            { "{{digesa_habilitacion}}", "123-PROV" },
+            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
+            { "{{nro_presupuesto}}", "123-PROV" },
+            { "{{nro_cliente}}", "123-PROV" },
+            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
+            { "{{adicional_cliente}}", "--Provicional--" },
+            { "{{garantia}}", export.Guarantee },
+            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
+            { "{{nombre_servicio}}", serviceNamesStr },
+            { "{{incluye_igv_str}}", hasTaxes },
+            { "{{validez_dias}}", expiryDaysAmount.ToString() },
+            { "{{termino_custom}}", quotation.TermsAndConditions },
+            { "{{doc_entregados}}", export.Deliverables },
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "template.xlsx");
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "Templates/cotizacion.xlsx"
+        );
         return File(
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -182,11 +215,15 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         }
 
         // Verificar si la cotización esta asociada a un proyecto
-        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Quotation != null && p.Quotation.Id == id);
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p =>
+            p.Quotation != null && p.Quotation.Id == id
+        );
 
         if (isAssociatedWithProject)
         {
-            return BadRequest("No se puede eliminar la cotización porque está asociada a un proyecto.");
+            return BadRequest(
+                "No se puede eliminar la cotización porque está asociada a un proyecto."
+            );
         }
 
         entity.IsActive = false;

@@ -5,7 +5,7 @@ import { Loader, Plus, Search, Trash2 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet ,SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
@@ -92,16 +92,16 @@ export const CreateClient = () =>
             <SheetTrigger asChild>
                 <Button className="w-28 text-xs">
                     <Plus />
-                              Crear Nuevo
+                    Crear Nuevo
                 </Button>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>
-                                Nuevo Cliente
+                        Nuevo Cliente
                     </SheetTitle>
                     <SheetDescription>
-                              Llena todos los campos para crear un nuevo cliente
+                        Llena todos los campos para crear un nuevo cliente
                     </SheetDescription>
                 </SheetHeader>
 
@@ -117,7 +117,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem className="truncate">
                                             <FormLabel>
-                                                        Tipo de documento
+                                                Tipo de documento
                                             </FormLabel>
                                             <Select onValueChange={(value) =>
                                             {
@@ -132,10 +132,10 @@ export const CreateClient = () =>
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="ruc">
-                                                                    RUC
+                                                        RUC
                                                     </SelectItem>
                                                     <SelectItem value="dni">
-                                                                  DNI
+                                                        DNI
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -152,7 +152,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  RUC
+                                                        RUC
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="flex gap-2">
@@ -172,7 +172,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Razón Social
+                                                        Razón Social
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese la razón social" {...field} />
@@ -187,7 +187,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Nombre Comercial
+                                                        Nombre Comercial
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el nombre comercial" {...field} />
@@ -208,7 +208,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  DNI
+                                                        DNI
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el DNI" {...field} />
@@ -225,7 +225,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Nombres y Apellidos
+                                                        Nombres y Apellidos
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese los nombres y apellidos" {...field} />
@@ -245,7 +245,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                          Dirección
+                                                Dirección
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Dirección" {...field} />
@@ -262,7 +262,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem className="truncate">
                                             <FormLabel>
-                                                        Giro del Negocio
+                                                Giro del Negocio
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Giro del Negocio" {...field} />
@@ -278,7 +278,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel htmlFor="phoneNumber">
-                                                        Teléfono
+                                                Teléfono
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -299,7 +299,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel htmlFor="email">
-                                                          Correo Electrónico
+                                                Correo Electrónico
                                             </FormLabel>
                                             <FormControl>
                                                 <Input

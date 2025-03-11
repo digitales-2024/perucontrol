@@ -66,12 +66,16 @@ public class ClientController(
 
         if (isAssociatedWithQuotation)
         {
-            return BadRequest("No se puede desactivar el cliente porque está asociado a una cotización.");
+            return BadRequest(
+                "No se puede desactivar el cliente porque está asociado a una cotización."
+            );
         }
-        
+
         if (isAssociatedWithProject)
         {
-            return BadRequest("No se puede desactivar el cliente porque está asociado a un proyecto.");
+            return BadRequest(
+                "No se puede desactivar el cliente porque está asociado a un proyecto."
+            );
         }
 
         entity.IsActive = false;

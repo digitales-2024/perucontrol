@@ -78,7 +78,7 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     public uint? Area { get; set; }
     public uint? SpacesCount { get; set; }
     public bool? HasTaxes { get; set; }
-    
+
     [Column(TypeName = "TEXT")]
     public string? TermsAndConditions { get; set; }
 
@@ -94,7 +94,6 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.HasTaxes = (bool)HasTaxes;
         if (TermsAndConditions != null)
             entity.TermsAndConditions = TermsAndConditions;
-        
     }
 }
 

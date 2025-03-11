@@ -43,3 +43,10 @@ public class QuotationSummary
 
     public uint? SpacesCount { get; set; }
 }
+
+public class QuotationExportDto
+{
+    public required DateTime ValidUntil { get; set; }
+    public required string Guarantee { get; set; }
+    public required string Deliverables { get; set; }
+}
