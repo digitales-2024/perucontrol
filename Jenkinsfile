@@ -4,6 +4,10 @@ pipeline {
 		// Change HOME, because default is usually root dir, and Jenkins user may not have write permissions in that dir
 		HOME = "${WORKSPACE}"
 	}
+	options {
+		// Create a volume for sharing NuGet packages
+		dockerVolumeBinding('/var/nuget-cache:/root/.nuget/packages')
+	}
 	stages {
 		stage("Build project") {
 			parallel {
@@ -26,7 +30,7 @@ pipeline {
 					agent {
 						docker {
 							image 'mcr.microsoft.com/dotnet/sdk:9.0-alpine'
-							reuseNode true
+							args '-v nuget-cache:/root/.nuget/packages'
 						}
 					}
 					steps {
@@ -40,7 +44,6 @@ pipeline {
 						docker {
 							image 'digitalesacide/playwright-dotnet9-noble:latest'
 							args '--ipc=host'
-							reuseNode true
 						}
 					}
 					steps {
