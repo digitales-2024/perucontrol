@@ -947,8 +947,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /** Generate Excel */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -957,7 +959,13 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["QuotationExportDto"];
+                    "text/json": components["schemas"]["QuotationExportDto"];
+                    "application/*+json": components["schemas"]["QuotationExportDto"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -965,7 +973,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": components["schemas"]["FileContentResult"];
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
                     };
                 };
                 /** @description Not Found */
@@ -977,6 +987,42 @@ export interface paths {
                         "text/plain": components["schemas"]["ProblemDetails"];
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/approved/not-associated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get approved quotations not associated with a project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Quotation2"]>;
+                        "application/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/json": Array<components["schemas"]["Quotation2"]>;
                     };
                 };
             };
@@ -2091,6 +2137,12 @@ export interface components {
             spacesCount: number;
             hasTaxes: boolean;
             termsAndConditions: string;
+        };
+        QuotationExportDto: {
+            /** Format: date-time */
+            validUntil: string;
+            guarantee: string;
+            deliverables: string;
         };
         QuotationPatchDTO: {
             /** Format: uuid */

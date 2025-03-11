@@ -31,7 +31,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
     const clientsOptions: Array<Option> =
     activeClients?.map((client) => ({
         value: client.id || "",
-        label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
     })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({

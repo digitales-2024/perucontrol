@@ -16,7 +16,6 @@ export default async function ProjectsPage()
 
     const activeProjects = projects.filter((project) => project.isActive);  // Filtrando los proyectos activos
 
-    console.log(JSON.stringify(activeProjects, null, 2));
     const transformedProjects = activeProjects.map((project) => ({
         id: project.id || "ID no disponible", // Manejar el caso donde id puede ser undefined
         area: project.area,
