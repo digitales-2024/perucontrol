@@ -144,14 +144,10 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     }
 
     [EndpointSummary("Generate Excel")]
-    [HttpGet("{id}/gen-excel")]
-    [ProducesResponseType(
-        typeof(FileContentResult),
-        StatusCodes.Status200OK,
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )]
+    [HttpPost("{id}/gen-excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel(Guid id)
+    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
     {
         var quotation = _dbSet
             .Include(q => q.Client)
@@ -166,6 +162,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         var serviceNames = quotation.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
         var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
+        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
 
         var placeholders = new Dictionary<string, string>
         {
@@ -173,17 +170,17 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
             { "{{nro_presupuesto}}", "123-PROV" },
             { "{{nro_cliente}}", "123-PROV" },
-            { "{{validez_presupuesto}}", "???" },
+            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
             { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
             { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
-            { "{{adicional_cliente}}", "---" },
-            { "{{garantia}}", "-" },
+            { "{{adicional_cliente}}", "--Provicional--" },
+            { "{{garantia}}", export.Guarantee },
             { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
             { "{{nombre_servicio}}", serviceNamesStr },
             { "{{incluye_igv_str}}", hasTaxes },
-            { "{{validez_dias}}", "???" },
+            { "{{validez_dias}}", expiryDaysAmount.ToString() },
             { "{{termino_custom}}", quotation.TermsAndConditions },
-            { "{{doc_entregados}}", "???" },
+            { "{{doc_entregados}}", export.Deliverables },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
