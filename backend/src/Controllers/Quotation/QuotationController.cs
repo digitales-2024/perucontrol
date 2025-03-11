@@ -78,6 +78,16 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         if (quotation == null)
             return NotFound();
 
+        if (patchDto.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);
+            if (client == null)
+            {
+                return NotFound("Cliente no encontrado");
+            }
+            quotation.Client = client;
+        }
+
         if (patchDto.ServiceIds != null)
         {
             var newServiceIds = await _context
@@ -191,5 +201,27 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "quotation.xlsx"
         );
+    }
+
+    [HttpDelete("{id}")]
+    public override async Task<IActionResult> Delete(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si la cotización esta asociada a un proyecto
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Quotation != null && p.Quotation.Id == id);
+
+        if (isAssociatedWithProject)
+        {
+            return BadRequest("No se puede eliminar la cotización porque está asociada a un proyecto.");
+        }
+
+        entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }

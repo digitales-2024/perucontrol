@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -31,7 +32,8 @@ public class Project : BaseModel
 
     public required uint SpacesCount { get; set; }
 
-    public required uint OrderNumber { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int OrderNumber { get; set; }
 
     // TODO: clarify supplies
 
@@ -56,9 +58,6 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
 
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public required uint OrderNumber { get; set; }
-
     public Project MapToEntity()
     {
         return new Project
@@ -67,13 +66,18 @@ public class ProjectCreateDTO : IMapToEntity<Project>
             Area = Area,
             Status = ProjectStatus.Pending,
             SpacesCount = SpacesCount,
-            OrderNumber = OrderNumber,
         };
     }
 }
 
 public class ProjectPatchDTO : IEntityPatcher<Project>
 {
+    public Guid? ClientId { get; set; }
+    public Guid? QuotationId { get; set; }
+
+    [Description("Array of Service IDs")]
+    public IList<Guid>? Services { get; set; } = null!;
+
     [MinLength(1, ErrorMessage = "Debe ingresar una dirección")]
     [MaxLength(100, ErrorMessage = "La dirección no puede tener más de 100 caracteres")]
     public string? Address { get; set; }
@@ -84,9 +88,6 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public uint? SpacesCount { get; set; }
 
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public uint? OrderNumber { get; set; }
-
     public void ApplyPatch(Project entity)
     {
         // Look at all these null checks. In C we'd just memcpy and be done with it
@@ -96,8 +97,6 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
             entity.Area = Area.Value;
         if (SpacesCount != null)
             entity.SpacesCount = SpacesCount.Value;
-        if (OrderNumber != null)
-            entity.OrderNumber = OrderNumber.Value;
     }
 }
 
@@ -117,7 +116,7 @@ public class ProjectSummary : BaseModel
 
     public required uint SpacesCount { get; set; }
 
-    public required uint OrderNumber { get; set; }
+    public required int OrderNumber { get; set; }
 
     // TODO: clarify supplies
 

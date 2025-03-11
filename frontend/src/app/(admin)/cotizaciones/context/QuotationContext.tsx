@@ -4,9 +4,9 @@ import React, { createContext, useContext } from "react";
 import { components } from "@/types/api";
 
 interface QuotationContextProps {
-  quotations: Array<components["schemas"]["QuotationGetDTO"]>;
+  quotations: Array<components["schemas"]["Quotation2"]>;
   terms: Array<components["schemas"]["TermsAndConditions"]>;
-  clients: Array<components["schemas"]["ClientGetDTO"]>;
+  clients: Array<components["schemas"]["Client"]>;
   services: Array<components["schemas"]["Service"]>;
 }
 
