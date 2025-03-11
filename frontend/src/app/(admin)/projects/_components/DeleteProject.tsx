@@ -10,40 +10,40 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { RemoveQuotation } from "../actions";
-import { components } from "@/types/api";
+import { RemoveProject } from "../actions";
+import { Project } from "../types";
 import { toast } from "sonner";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation2"],
-  showTrigger?: boolean;
+open: boolean;
+onOpenChange: (open: boolean) => void;
+project: Project,
+showTrigger?: boolean;
 }
 
-export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = true}: DeleteClientProps)
+export function DeleteProject({open, onOpenChange, project, showTrigger = true}: DeleteClientProps)
 {
     const onDeleteQuotationHandler = async() =>
     {
         try
         {
-            const result = await RemoveQuotation(quotation.id!);
+            const result = await RemoveProject(project.id!);
             const error = result[1];
             if (error)
             {
                 throw new Error(error.message);
             }
-            toast.success("Cotización eliminada exitosamente!");
+            toast.success("Proyecto eliminado exitosamente!");
         }
         catch (error: unknown)
         {
             if (error instanceof Error)
             {
-                toast.error(error.message || "Error al eliminar la cotización");
+                toast.error(error.message || "Error al eliminar el proyecto");
             }
             else
             {
-                toast.error("Error al eliminar la cotización");
+                toast.error("Error al eliminar el proyecto");
             }
         }
         finally
@@ -57,28 +57,28 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
             { showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                        Eliminar
+                      Eliminar
                     </Button>
                 </AlertDialogTrigger>
             ) : null }
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        ¿Esta absolutamente seguro?
+                      ¿Esta absolutamente seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos de la cotización.
+                      Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del proyecto.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                        Cancelar
+                      Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         aria-label="Delete selected rows"
                         onClick={onDeleteQuotationHandler}
                     >
-                      Continuar
+                    Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -7,20 +7,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/component
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { components } from "@/types/api";
-
-interface Project {
-  id: string;
-  area: number;
-  spacesCount: number;
-  orderNumber?: number;
-  status?: string;
-  address?: string;
-  client?: components["schemas"]["Client"];
-  services?: Array<components["schemas"]["Service"]>;
-  quotation?: components["schemas"]["Quotation"];
-  supplies?: Array<{ id: string; name: string; quantity: number; unit: string }>;
-}
+import { useState } from "react";
+import { DeleteProject } from "./DeleteProject";
+import { Project } from "../types";
 
 export const columns: Array<ColumnDef<Project>> = [
     {
@@ -93,15 +82,15 @@ export const columns: Array<ColumnDef<Project>> = [
             <span className="flex justify-center">
                 {row.original?.status === "Pending" ? (
                     <Badge variant="default">
-                        {row.original.status}
+                        Pendiente
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        {row.original.status}
+                        Aprovado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
-                        {row.original?.status}
+                        Rechazado
                     </Badge>
                 )}
             </span>
@@ -193,9 +182,20 @@ export const columns: Array<ColumnDef<Project>> = [
         header: "Acciones",
         cell: function Cell({ row })
         {
+            const [showDeleteProject, setShowDeleteProject] = useState(false);
+
             const projectId = row.original.id;
             return (
                 <div>
+                    <div>
+                        {/* Eliminar una cotización */}
+                        <DeleteProject
+                            open={showDeleteProject}
+                            onOpenChange={setShowDeleteProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -215,7 +215,7 @@ export const columns: Array<ColumnDef<Project>> = [
                                     Editar
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowDeleteProject(true)}>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

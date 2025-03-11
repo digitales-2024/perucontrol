@@ -77,6 +77,7 @@ public class ProjectController(DatabaseContext db)
                 Area = p.Area,
                 Address = p.Address,
                 Quotation = p.Quotation,
+                IsActive = p.IsActive,
             })
             .ToList();
 

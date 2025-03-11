@@ -49,7 +49,8 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const { reset, setValue } = form;
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
-    const activeQuotations = quotations.filter((quotation) => quotation?.isActive);
+    const activeQuotations = quotations.filter((quotation) => quotation?.isActive); // Filtrando las cotizaciones activas
+    const ApprovedQuotations = activeQuotations.filter((quotation) => quotation.status === "Approved"); // Filtrando las cotizaciones aprobadas
 
     { /* Creando las opciones para el AutoComplete */}
     const clientsOptions: Array<Option> =
@@ -59,7 +60,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     })) ?? [];
 
     const quotationsOptions: Array<Option> =
-    activeQuotations?.map((quotation) => ({
+    ApprovedQuotations?.map((quotation) => ({
         value: quotation?.id || "",
         label: quotation?.id || "",
     })) ?? [];
