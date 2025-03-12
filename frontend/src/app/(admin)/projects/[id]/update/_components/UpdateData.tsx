@@ -10,10 +10,11 @@ import { components } from "@/types/api";
 import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../../schemas";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { UpdateProject } from "../../../actions";
+import { toastWrapper } from "@/types/toasts";
+import { redirect } from "next/navigation";
 
 interface ProjectProps {
     id?: string;
@@ -91,14 +92,17 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
         }
     };
 
-    const onSubmit = (data: ClientDataSchema) =>
+    const onSubmit = async(data: ClientDataSchema) =>
     {
-        const result = UpdateProject(project.id!, data);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(UpdateProject(project.id!, data), {
             loading: "Cargando...",
-            success: "!Proyecto actualizado exitosamente!",
-            error: "Error",
+            success: "Proyecto actualizado exitosamente",
         });
+        if (err !== null)
+        {
+            return;
+        }
+        redirect("./");
     };
 
     return (

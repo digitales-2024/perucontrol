@@ -8,13 +8,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
-import { toast } from "sonner";
 import { GetTermsAndConditionsById, UpdateQuotation } from "../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
+import { toastWrapper } from "@/types/toasts";
 
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
@@ -67,13 +67,14 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const result = UpdateQuotation(quotation.id!, input);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, input), {
             loading: "Cargando...",
             success: "¡Cotización actualizada exitosamente!",
-            error: "Error",
         });
-
+        if (err !== null)
+        {
+            return;
+        }
         reset();
         onOpenChange(false);
     };

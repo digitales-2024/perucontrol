@@ -12,55 +12,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { RemoveQuotation } from "../actions";
 import { components } from "@/types/api";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation2"],
-  showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    quotation: components["schemas"]["Quotation2"],
+    showTrigger?: boolean;
 }
 
-export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = true}: DeleteClientProps)
+export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = true }: DeleteClientProps)
 {
     const onDeleteQuotationHandler = async() =>
     {
-        try
+        const [, err] = await toastWrapper(RemoveQuotation(quotation.id!), {
+            loading: "Eliminando cotización...",
+            success: "Cotización eliminada exitosamente!",
+        });
+        if (err !== null)
         {
-            const result = await RemoveQuotation(quotation.id!);
-            const error = result[1];
-            if (error)
-            {
-                throw new Error(error.message);
-            }
-            toast.success("Cotización eliminada exitosamente!");
+            return;
         }
-        catch (error: unknown)
-        {
-            if (error instanceof Error)
-            {
-                toast.error(error.message || "Error al eliminar la cotización");
-            }
-            else
-            {
-                toast.error("Error al eliminar la cotización");
-            }
-        }
-        finally
-        {
-            onOpenChange(false);
-        }
+        onOpenChange(false);
     };
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            { showTrigger ? (
+            {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
                         Eliminar
                     </Button>
                 </AlertDialogTrigger>
-            ) : null }
+            ) : null}
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -78,7 +62,7 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
                         aria-label="Delete selected rows"
                         onClick={onDeleteQuotationHandler}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

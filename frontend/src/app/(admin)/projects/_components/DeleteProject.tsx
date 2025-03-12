@@ -12,73 +12,57 @@ import {
 import { Button } from "@/components/ui/button";
 import { RemoveProject } from "../actions";
 import { Project } from "../types";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 
 interface DeleteClientProps {
-open: boolean;
-onOpenChange: (open: boolean) => void;
-project: Project,
-showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    project: Project,
+    showTrigger?: boolean;
 }
 
-export function DeleteProject({open, onOpenChange, project, showTrigger = true}: DeleteClientProps)
+export function DeleteProject({ open, onOpenChange, project, showTrigger = true }: DeleteClientProps)
 {
     const onDeleteQuotationHandler = async() =>
     {
-        try
+        const [, err] = await toastWrapper(RemoveProject(project.id!), {
+            loading: "Eliminando proyecto...",
+            success: "Proyecto eliminado exitosamente!",
+        });
+        if (err !== null)
         {
-            const result = await RemoveProject(project.id!);
-            const error = result[1];
-            if (error)
-            {
-                throw new Error(error.message);
-            }
-            toast.success("Proyecto eliminado exitosamente!");
+            return;
         }
-        catch (error: unknown)
-        {
-            if (error instanceof Error)
-            {
-                toast.error(error.message || "Error al eliminar el proyecto");
-            }
-            else
-            {
-                toast.error("Error al eliminar el proyecto");
-            }
-        }
-        finally
-        {
-            onOpenChange(false);
-        }
+        onOpenChange(false);
     };
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            { showTrigger ? (
+            {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                      Eliminar
+                        Eliminar
                     </Button>
                 </AlertDialogTrigger>
-            ) : null }
+            ) : null}
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                      ¿Esta absolutamente seguro?
+                        ¿Esta absolutamente seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del proyecto.
+                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del proyecto.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                      Cancelar
+                        Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         aria-label="Delete selected rows"
                         onClick={onDeleteQuotationHandler}
                     >
-                    Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

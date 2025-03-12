@@ -11,9 +11,10 @@ import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../schemas";
 import { CreateProject } from "../../actions";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
+import { toastWrapper } from "@/types/toasts";
+import { redirect } from "next/navigation";
 
 interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
@@ -46,7 +47,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         },
     });
 
-    const { reset, setValue } = form;
+    const { setValue } = form;
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const activeQuotations = quotations.filter((quotation) => quotation?.isActive); // Filtrando las cotizaciones activas
@@ -83,18 +84,17 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         setShowQuotation(false);
     };
 
-    const onSubmit = (data: ClientDataSchema) =>
+    const onSubmit = async(data: ClientDataSchema) =>
     {
-        const result = CreateProject(data);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(CreateProject(data), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                return "Servicio registrado exitosamente";
-            },
-            error: "Error",
+            success: "Servicio registrado exitosamente",
         });
+        if (err !== null)
+        {
+            return;
+        }
+        redirect("./");
     };
 
     return (

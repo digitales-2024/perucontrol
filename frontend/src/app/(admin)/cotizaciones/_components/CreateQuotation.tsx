@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { GetTermsAndConditionsById, RegisterQuotation } from "../actions";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
-import { toast } from "sonner";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,6 +23,7 @@ import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { useQuotationContext } from "../context/QuotationContext";
 import { cn } from "@/lib/utils";
 import { Bug, SprayCanIcon as Spray, Rat, Shield, Check } from "lucide-react";
+import { toastWrapper } from "@/types/toasts";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -65,17 +65,16 @@ export function CreateQuotation()
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const result = RegisterQuotation(input);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(RegisterQuotation(input), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cotización registrada exitosamente";
-            },
-            error: "Error",
+            success: "Cotización registrada exitosamente",
         });
+        if (err !== null)
+        {
+            return;
+        }
+        reset();
+        setOpen(false);
     };
 
     const handleTermsChange = async(id: string) =>
