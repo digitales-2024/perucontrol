@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { RegisterClient, SearchClientByRuc } from "../actions";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 
 export const CreateClient = () =>
 {
@@ -39,7 +39,6 @@ export const CreateClient = () =>
 
     const { reset, setValue } = form;
 
-    // Add this after your existing form fields, before the SheetFooter
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: "clientLocations",
@@ -49,7 +48,7 @@ export const CreateClient = () =>
     {
         setLoading(true);
         const [data, error] = await SearchClientByRuc(ruc);
-        if (!!error)
+        if (error !== null)
         {
             console.error("Error searching client by RUC:", error);
         }
@@ -65,17 +64,17 @@ export const CreateClient = () =>
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const result = RegisterClient(input);
-        toast.promise(result, {
+        const [, error] = await toastWrapper(RegisterClient(input), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cliente registrado exitosamente!";
-            },
-            error: "Error",
+            success: "Cliente registrado exitosamente!",
         });
+        if (error !== null)
+        {
+            return;
+        }
+
+        reset();
+        setOpen(false);
     };
 
     useEffect(() =>
