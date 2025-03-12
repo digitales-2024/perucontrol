@@ -22,7 +22,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              # Orden
+                # Orden
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -46,7 +46,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Cliente
+                Cliente
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -58,7 +58,7 @@ export const columns: Array<ColumnDef<Project>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center text-center">
-                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name }
+                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
             </span>
         ),
     },
@@ -88,7 +88,7 @@ export const columns: Array<ColumnDef<Project>> = [
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        Aprovado
+                        Aprobado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
@@ -106,7 +106,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Área m2
+                Área m2
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -130,7 +130,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-            Nro. de Ambientes
+                Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -154,7 +154,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Dirección
+                Dirección
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (

@@ -28,10 +28,10 @@ interface ProjectProps {
 }
 
 interface UpdateClientDataProps {
-  clients: Array<components["schemas"]["Client"]>
-  services: Array<components["schemas"]["Service"]>
-  quotations: Array<components["schemas"]["Quotation2"]>
-  project: ProjectProps
+    clients: Array<components["schemas"]["Client"]>
+    services: Array<components["schemas"]["Service"]>
+    quotations: Array<components["schemas"]["Quotation2"]>
+    project: ProjectProps
 }
 
 // Mapa de iconos para servicios
@@ -64,23 +64,22 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const activeQuotations = quotations.filter((quotation) => quotation?.isActive);   // Filtrando las cotizaciones activas
 
-    { /* Creando las opciones para el AutoComplete */}
+    { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
-    activeClients?.map((client) => ({
-        value: client.id || "",
-        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
-    })) ?? [];
+        activeClients?.map((client) => ({
+            value: client.id || "",
+            label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
+        })) ?? [];
 
     const quotationsOptions: Array<Option> =
-    activeQuotations?.map((quotation) => ({
-        value: quotation?.id || "",
-        label: quotation?.id || "",
-    })) ?? [];
+        activeQuotations?.map((quotation) => ({
+            value: quotation?.id || "",
+            label: quotation?.id || "",
+        })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>
     {
         const selectedQuotation = quotations.find((q) => q?.id === option?.value);
-        console.log("Cotizacion", JSON.stringify(selectedQuotation, null, 2));
         if (selectedQuotation)
         {
             setValue("clientId", selectedQuotation.client?.id || "");
@@ -95,7 +94,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
     const onSubmit = (data: ClientDataSchema) =>
     {
         const result = UpdateProject(project.id!, data);
-        toast.promise(result , {
+        toast.promise(result, {
             loading: "Cargando...",
             success: "!Proyecto actualizado exitosamente!",
             error: "Error",
@@ -115,7 +114,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                         emptyMessage="No se encontraron clientes"
                         value={
                             quotationsOptions.find((option) => option.value ===
-                                    quotation) || undefined
+                                quotation) || undefined
                         }
                         onValueChange={(option) =>
                         {
@@ -144,7 +143,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                             emptyMessage="No se encontraron clientes"
                                             value={
                                                 clientsOptions.find((option) => option.value ===
-                                                        field.value) || undefined
+                                                    field.value) || undefined
                                             }
                                             onValueChange={(option) =>
                                             {
@@ -164,7 +163,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                      Dirección
+                                        Dirección
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
@@ -182,7 +181,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                          Área m2
+                                            Área m2
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -203,7 +202,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                          Nro. de ambientes
+                                            Nro. de ambientes
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -270,7 +269,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                         </div>
 
                         <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">
-                              Guardar
+                            Guardar
                         </Button>
                     </form>
                 </Form>
