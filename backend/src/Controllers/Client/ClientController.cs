@@ -31,6 +31,31 @@ public class ClientController(
         return entity == null ? NotFound() : Ok(entity);
     }
 
+    [EndpointSummary("Create")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public override async Task<ActionResult<Client>> Create([FromBody] ClientCreateDTO createDTO)
+    {
+        var duplicateExists = await _context.Clients.AnyAsync(c =>
+            c.TypeDocumentValue == createDTO.TypeDocumentValue
+        );
+        if (duplicateExists)
+        {
+            return BadRequest("Ya existe un cliente con el mismo Documento.");
+        }
+
+        var entity = createDTO.MapToEntity();
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = Guid.NewGuid();
+        }
+
+        _dbSet.Add(entity);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+    }
+
     [HttpGet("search-by-ruc/{ruc}")]
     [EndpointSummary("Get business data by RUC")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -39,6 +64,23 @@ public class ClientController(
     {
         try
         {
+            // first check if the ruc is already in the db, to not hit SUNAT unnecessarily
+            var client = await _context.Clients.FirstOrDefaultAsync(c =>
+                c.TypeDocumentValue == ruc
+            );
+            if (client != null)
+            {
+                return Ok(
+                    new SunatQueryResponse
+                    {
+                        RazonSocial = client.RazonSocial,
+                        Name = client.Name,
+                        FiscalAddress = client.FiscalAddress,
+                        BusinessType = client.BusinessType,
+                    }
+                );
+            }
+
             var data = await clientService.ScrapSunat(ruc);
             return Ok(data);
         }

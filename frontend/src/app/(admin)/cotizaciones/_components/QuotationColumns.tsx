@@ -139,7 +139,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        Aprovado
+                        Aprobado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">

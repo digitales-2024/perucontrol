@@ -5,18 +5,18 @@ import { Plus, Search, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
-import { toast } from "sonner";
 import { SearchClientByRuc, UpdateClient } from "../actions";
 import { Client } from "../types/clients";
+import { toastWrapper } from "@/types/toasts";
 
 interface UpdateClientProps {
-  client: Client;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+    client: Client;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }
 
 export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientProps)
@@ -26,15 +26,15 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
     const form = useForm<CreateClientSchema>({
         resolver: zodResolver(clientSchema),
         defaultValues: {
-            typeDocument: client.typeDocument || "",
-            typeDocumentValue: client.typeDocumentValue || "",
-            razonSocial: client.razonSocial || "",
-            businessType: client.businessType || "",
-            name: client.name || "",
-            fiscalAddress: client.fiscalAddress || "",
-            email: client.email || "",
-            clientLocations: client.clientLocations || [{ address: "" }],
-            phoneNumber: client.phoneNumber || "",
+            typeDocument: client.typeDocument ?? "",
+            typeDocumentValue: client.typeDocumentValue ?? "",
+            razonSocial: client.razonSocial ?? "",
+            businessType: client.businessType ?? "",
+            name: client.name ?? "",
+            fiscalAddress: client.fiscalAddress ?? "",
+            email: client.email ?? "",
+            clientLocations: client.clientLocations ?? [{ address: "" }],
+            phoneNumber: client.phoneNumber ?? "",
         },
     });
 
@@ -51,18 +51,18 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         if (open)
         {
             form.reset({
-                typeDocument: client.typeDocument || "",
-                typeDocumentValue: client.typeDocumentValue || "",
-                razonSocial: client.razonSocial || "",
-                businessType: client.businessType || "",
-                name: client.name || "",
-                fiscalAddress: client.fiscalAddress || "",
-                email: client.email || "",
-                clientLocations: client.clientLocations || [{ address: "" }],
-                phoneNumber: client.phoneNumber || "",
+                typeDocument: client.typeDocument ?? "",
+                typeDocumentValue: client.typeDocumentValue ?? "",
+                razonSocial: client.razonSocial ?? "",
+                businessType: client.businessType ?? "",
+                name: client.name ?? "",
+                fiscalAddress: client.fiscalAddress ?? "",
+                email: client.email ?? "",
+                clientLocations: client.clientLocations ?? [{ address: "" }],
+                phoneNumber: client.phoneNumber ?? "",
             });
 
-            setTypeDocument(client.typeDocument || "");
+            setTypeDocument(client.typeDocument ?? "");
         }
     }, [open, client, form]);
 
@@ -73,9 +73,9 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         {
             const data = result;
             // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial || "");
-            setValue("name", data[0].name || "");
-            setValue("fiscalAddress", data[0].fiscalAddress || "");
+            setValue("razonSocial", data[0].razonSocial ?? "");
+            setValue("name", data[0].name ?? "");
+            setValue("fiscalAddress", data[0].fiscalAddress ?? "");
         }
         else
         {
@@ -85,14 +85,16 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const result = UpdateClient(client.id, input);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(UpdateClient(client.id, input), {
             loading: "Cargando...",
             success: "¡Cliente actualizado exitosamente!",
-            error: "Error",
         });
-
+        if (err !== null)
+        {
+            return;
+        }
         reset();
+        onOpenChange(false);
     };
 
     return (
@@ -337,11 +339,9 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                             </div>
 
                             <SheetFooter>
-                                <SheetClose asChild>
-                                    <Button type="submit">
-                                        Guardar
-                                    </Button>
-                                </SheetClose>
+                                <Button type="submit">
+                                    Guardar
+                                </Button>
                             </SheetFooter>
                         </form>
                     </Form>

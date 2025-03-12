@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { RegisterClient, SearchClientByRuc } from "../actions";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 
 export const CreateClient = () =>
 {
@@ -39,7 +39,6 @@ export const CreateClient = () =>
 
     const { reset, setValue } = form;
 
-    // Add this after your existing form fields, before the SheetFooter
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: "clientLocations",
@@ -48,37 +47,34 @@ export const CreateClient = () =>
     const handleSearchByRuc = async(ruc: string) =>
     {
         setLoading(true);
-        const result = await SearchClientByRuc(ruc);
+        const [data, error] = await SearchClientByRuc(ruc);
+        if (error !== null)
+        {
+            console.error("Error searching client by RUC:", error);
+        }
 
-        if (result)
-        {
-            const data = result;
-            // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial || "");
-            setValue("name", data[0].name || "");
-            setValue("fiscalAddress", data[0].fiscalAddress || "");
-            setValue("businessType", data[0].businessType || "");
-        }
-        else
-        {
-            console.error("Error searching client by RUC:", result);
-        }
+        // Actualiza los campos del formulario con los datos obtenidos
+        setValue("razonSocial", data.razonSocial ?? "");
+        setValue("name", data.name ?? "");
+        setValue("fiscalAddress", data.fiscalAddress ?? "");
+        setValue("businessType", data.businessType ?? "");
+
         setLoading(false);
     };
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const result = RegisterClient(input);
-        toast.promise(result, {
+        const [, error] = await toastWrapper(RegisterClient(input), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cliente registrado exitosamente!";
-            },
-            error: "Error",
+            success: "Cliente registrado exitosamente!",
         });
+        if (error !== null)
+        {
+            return;
+        }
+
+        reset();
+        setOpen(false);
     };
 
     useEffect(() =>

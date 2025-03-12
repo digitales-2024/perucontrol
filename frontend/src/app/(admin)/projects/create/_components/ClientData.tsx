@@ -11,14 +11,15 @@ import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../schemas";
 import { CreateProject } from "../../actions";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
+import { toastWrapper } from "@/types/toasts";
+import { redirect } from "next/navigation";
 
 interface ClientDataProps {
-  clients: Array<components["schemas"]["Client"]>
-  services: Array<components["schemas"]["Service"]>
-  quotations: Array<components["schemas"]["Quotation2"]>
+    clients: Array<components["schemas"]["Client"]>
+    services: Array<components["schemas"]["Service"]>
+    quotations: Array<components["schemas"]["Quotation2"]>
 }
 
 // Mapa de iconos para servicios
@@ -46,36 +47,35 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         },
     });
 
-    const { reset, setValue } = form;
+    const { setValue } = form;
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const activeQuotations = quotations.filter((quotation) => quotation?.isActive); // Filtrando las cotizaciones activas
 
-    { /* Creando las opciones para el AutoComplete */}
+    { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
-    activeClients?.map((client) => ({
-        value: client.id || "",
-        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
-    })) ?? [];
+        activeClients?.map((client) => ({
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
+        })) ?? [];
 
     const quotationsOptions: Array<Option> =
-    activeQuotations?.map((quotation) => ({
-        value: quotation?.id || "",
-        label: quotation?.id || "",
-    })) ?? [];
+        activeQuotations?.map((quotation) => ({
+            value: quotation?.id ?? "",
+            label: quotation?.id ?? "",
+        })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>
     {
         const selectedQuotation = quotations.find((q) => q?.id === option?.value);
-        console.log("Cotizacion", JSON.stringify(selectedQuotation, null, 2));
         if (selectedQuotation)
         {
-            setValue("clientId", selectedQuotation.client?.id || "");
-            setValue("quotationId", selectedQuotation.id || null);
-            setValue("address", selectedQuotation.client?.fiscalAddress || "");
-            setValue("area", selectedQuotation.area || 0);
-            setValue("spacesCount", selectedQuotation.spacesCount || 0);
-            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) || []);
+            setValue("clientId", selectedQuotation.client?.id ?? "");
+            setValue("quotationId", selectedQuotation.id ?? null);
+            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
+            setValue("area", selectedQuotation.area ?? 0);
+            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
+            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? []);
         }
     };
 
@@ -84,19 +84,17 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         setShowQuotation(false);
     };
 
-    const onSubmit = (data: ClientDataSchema) =>
+    const onSubmit = async(data: ClientDataSchema) =>
     {
-        console.log("Datos", JSON.stringify(data, null, 2));
-        const result = CreateProject(data);
-        toast.promise(result , {
+        const [, err] = await toastWrapper(CreateProject(data), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                return "Servicio registrado exitosamente";
-            },
-            error: "Error",
+            success: "Servicio registrado exitosamente",
         });
+        if (err !== null)
+        {
+            return;
+        }
+        redirect("./");
     };
 
     return (
@@ -117,7 +115,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                             emptyMessage="No se encontraron cotizaciones disponibles"
                             value={
                                 quotationsOptions.find((option) => option.value ===
-                                        quotation) || undefined
+                                    quotation) ?? undefined
                             }
                             onValueChange={(option) =>
                             {
@@ -147,7 +145,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                             emptyMessage="No se encontraron clientes"
                                             value={
                                                 clientsOptions.find((option) => option.value ===
-                                                        field.value) || undefined
+                                                    field.value) ?? undefined
                                             }
                                             onValueChange={(option) =>
                                             {
@@ -167,7 +165,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                      Dirección
+                                        Dirección
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
@@ -185,7 +183,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                          Área m2
+                                            Área m2
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -206,7 +204,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                          Nro. de ambientes
+                                            Nro. de ambientes
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -254,7 +252,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                                         }}
                                                     >
                                                         <div className="mr-4">
-                                                            {serviceIcons[service.name] || <Bug className="h-6 w-6" />}
+                                                            {serviceIcons[service.name] ?? <Bug className="h-6 w-6" />}
                                                         </div>
                                                         <div>
                                                             <h3 className="text-sm font-medium">
@@ -274,7 +272,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         </div>
 
                         <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">
-                              Guardar
+                            Guardar
                         </Button>
                     </form>
                 </Form>

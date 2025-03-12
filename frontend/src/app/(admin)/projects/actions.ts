@@ -10,7 +10,6 @@ import { ACCESS_TOKEN_KEY } from "@/variables";
 
 export async function CreateProject(body: components["schemas"]["ProjectCreateDTO"]): Promise<Result<null, FetchError>>
 {
-    console.log("Projecto", JSON.stringify(body, null, 2));
     const [, error] = await wrapper((auth) => backend.POST("/api/Project", {
         ...auth,
         body,
@@ -27,7 +26,6 @@ export async function CreateProject(body: components["schemas"]["ProjectCreateDT
 
 export async function UpdateProject(id: string, newProject: components["schemas"]["ProjectPatchDTO"]): Promise<Result<null, FetchError>>
 {
-    console.log("Entro", JSON.stringify(newProject, null, 2));
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}", {
         ...auth,
         body: newProject,
