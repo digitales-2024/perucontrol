@@ -237,8 +237,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     public async Task<ActionResult<IEnumerable<Quotation>>> GetApprovedNotAssociated()
     {
         var approvedQuotations = await _context
-            .Quotations
-            .Include(c => c.Client)
+            .Quotations.Include(c => c.Client)
             .Include(s => s.Services)
             .Where(q => q.Status == QuotationStatus.Approved)
             .Where(q => !_context.Projects.Any(p => p.Quotation.Id == q.Id))

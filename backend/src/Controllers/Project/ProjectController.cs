@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectController(DatabaseContext db)
+public class ProjectController(DatabaseContext db, ExcelTemplateService excelTemplate)
     : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     [EndpointSummary("Create")]
@@ -197,10 +198,7 @@ public class ProjectController(DatabaseContext db)
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateState(
-        Guid id,
-        [FromBody] ProjectStatusPatchDTO patchDto
-    )
+    public async Task<IActionResult> UpdateState(Guid id, [FromBody] ProjectStatusPatchDTO patchDto)
     {
         var project = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
         if (project == null)
@@ -213,5 +211,72 @@ public class ProjectController(DatabaseContext db)
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [EndpointSummary("Generate Operations Sheet")]
+    [HttpPost("{id}/gen-operations-sheet")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateOperationsSheet(
+        Guid id,
+        [FromBody] ProjectOperationSheetExport export
+    )
+    {
+        var project = _dbSet
+            .Include(p => p.Client)
+            .Include(p => p.Services)
+            .FirstOrDefault(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound(
+                $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var serviceNames = project.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{{fecha_op}}", export.OperationDate },
+            { "{{hora_ingreso}}", export.EnterTime },
+            { "{{hora_salida}}", export.LeaveTime },
+            { "{{razon_social}}", project.Client.RazonSocial ?? "" },
+            { "{{direccion}}", project.Address },
+            { "{{giro_empresa}}", project.Client.BusinessType },
+            { "{{condicion_sanitaria}}", export.SanitaryCondition },
+            { "{{areas_tratadas}}", export.TreatedAreas },
+            { "{{servicio}}", serviceNamesStr },
+            { "{{certificado_nro}}", "--prov--" },
+            { "{{insectos}}", export.Insects },
+            { "{{roedores}}", export.Rodents },
+            { "{{otros}}", export.OtherPlagues },
+            { "{{insecticida}}", export.Insecticide },
+            { "{{rodenticida}}", export.Rodenticide },
+            { "{{desinfectante}}", export.Desinfectant },
+            { "{{producto_otros}}", export.OtherProducts },
+            { "{{insecticida_cantidad}}", export.InsecticideAmount },
+            { "{{rodenticida_cantidad}}", export.RodenticideAmount },
+            { "{{desinfectante_cantidad}}", export.DesinfectantAmount },
+            { "{{producto_otros_cantidad}}", export.OtherProductsAmount },
+            { "{{monitoreo_desratizacion_1}}", export.RatExtermination1 },
+            { "{{monitoreo_desratizacion_2}}", export.RatExtermination2 },
+            { "{{monitoreo_desratizacion_3}}", export.RatExtermination3 },
+            { "{{monitoreo_desratizacion_4}}", export.RatExtermination4 },
+            { "{{personal_1}}", export.Staff1 },
+            { "{{personal_2}}", export.Staff2 },
+            { "{{personal_3}}", export.Staff3 },
+            { "{{personal_4}}", export.Staff4 },
+        };
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "Templates/ficha_operaciones.xlsx"
+        );
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "quotation.xlsx"
+        );
     }
 }
