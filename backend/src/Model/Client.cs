@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace PeruControl.Model;
 
+[Index(nameof(TypeDocumentValue), IsUnique = true)]
 public class Client : BaseModel
 {
     [MinLength(0)]

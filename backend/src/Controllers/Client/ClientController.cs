@@ -39,6 +39,23 @@ public class ClientController(
     {
         try
         {
+            // first check if the ruc is already in the db, to not hit SUNAT unnecessarily
+            var client = await _context.Clients.FirstOrDefaultAsync(c =>
+                c.TypeDocumentValue == ruc
+            );
+            if (client != null)
+            {
+                return Ok(
+                    new SunatQueryResponse
+                    {
+                        RazonSocial = client.RazonSocial,
+                        Name = client.Name,
+                        FiscalAddress = client.FiscalAddress,
+                        BusinessType = client.BusinessType,
+                    }
+                );
+            }
+
             var data = await clientService.ScrapSunat(ruc);
             return Ok(data);
         }
