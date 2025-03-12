@@ -7,14 +7,14 @@ import {
 } from "@/components/ui/dialog";
 import { DownloadProjectForm } from "./DownloadProjectForm";
 import { FileSpreadsheet } from "lucide-react";
+import { Project } from "../types";
 
-export function DownloadProject({ open, onOpenChange, projectId }: {
+export function DownloadProject({ open, onOpenChange, project }: {
     open: boolean,
     onOpenChange: (v: boolean) => void,
-    projectId: string,
+    project: Project,
 })
 {
-    console.log("ProyectId", projectId);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -34,7 +34,7 @@ export function DownloadProject({ open, onOpenChange, projectId }: {
                 </DialogHeader>
 
                 <div className="flex-1 overflow-hidden">
-                    <DownloadProjectForm onOpenChange={onOpenChange} />
+                    <DownloadProjectForm onOpenChange={onOpenChange} project={project} />
                 </div>
             </DialogContent>
         </Dialog>

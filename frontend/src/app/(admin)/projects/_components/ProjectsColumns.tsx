@@ -219,7 +219,7 @@ export const columns: Array<ColumnDef<Project>> = [
                         <DownloadProject
                             open={showDownload}
                             onOpenChange={setShowDownload}
-                            projectId={row.original.id!}
+                            project={row.original}
                         />
                     </div>
                     <DropdownMenu>

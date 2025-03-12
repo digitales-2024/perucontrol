@@ -13,43 +13,62 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toastWrapper } from "@/types/toasts";
+import { GenerateExcel } from "../actions";
+import { Project } from "../types";
+import { useEffect } from "react";
 
-export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolean) => void })
+export function DownloadProjectForm({ onOpenChange, project }: {
+  onOpenChange: (v: boolean) => void,
+  project: Project
+ })
 {
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
-            date: "",
-            entryTime: "",
-            departureTime: "",
+            operationDate: "",
+            enterTime: "",
+            leaveTime: "",
             razonSocial: "",
             address: "",
             businessType: "",
-            healthCondition: "",
+            sanitaryCondition: "",
             treatedAreas: "",
             service: "",
             certificateNumber: "",
             insects: "",
             rodents: "",
-            others: "",
+            otherPlagues: "",
             insecticide: "",
             rodenticide: "",
-            disinfectant: "",
+            desinfectant: "",
             otherProducts: "",
-            amountInsecticide: 0,
-            amountRodenticide: 0,
-            amountDisinfectant: 0,
-            amountOtherProducts: 0,
-            ratExterminationMonitoring1: "",
-            ratExterminationMonitoring2: "",
-            ratExterminationMonitoring3: "",
-            ratExterminationMonitoring4: "",
+            insecticideAmount: "",
+            rodenticideAmount: "",
+            desinfectantAmount: "",
+            otherProductsAmount: "",
+            ratExtermination1: "",
+            ratExtermination2: "",
+            ratExtermination3: "",
+            ratExtermination4: "",
             staff1: "",
             staff2: "",
             staff3: "",
             staff4: "",
         },
     });
+
+    const { setValue } = form;
+
+    useEffect(() =>
+    {
+        if (project.client)
+        {
+            setValue("razonSocial", project.client.razonSocial!);
+            setValue("businessType", project.client.businessType!);
+        }
+        setValue("address", project.address!);
+    }, [project, setValue]);
 
     const onSubmit = async(input: DownloadProjectSchema) =>
     {
@@ -59,7 +78,23 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
     const download = async(body: DownloadProjectSchema) =>
     {
         console.log("Body", body);
-    /* Commented code for actual download functionality */
+        const [blob, err] = await toastWrapper(GenerateExcel(project.id, body), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+        });
+
+        if (err)
+        {
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "proyectos.xlsx";
+        a.click();
+        URL.revokeObjectURL(url);
+        onOpenChange(false);
     };
 
     return (
@@ -99,7 +134,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <FormField
                                                         control={form.control}
-                                                        name="date"
+                                                        name="operationDate"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -130,12 +165,12 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <FormField
                                                             control={form.control}
-                                                            name="entryTime"
+                                                            name="enterTime"
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormLabel className="flex items-center gap-2 font-medium">
                                                                         <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                                        Hora de Ingreso
+                                                                        Hora de Ingreso
                                                                     </FormLabel>
                                                                     <FormControl>
                                                                         <Input placeholder="09:30" {...field} className="border-gray-300" />
@@ -147,12 +182,12 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                         <FormField
                                                             control={form.control}
-                                                            name="departureTime"
+                                                            name="leaveTime"
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormLabel className="flex items-center gap-2 font-medium">
                                                                         <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                                        Hora de Salida
+                                                                        Hora de Salida
                                                                     </FormLabel>
                                                                     <FormControl>
                                                                         <Input placeholder="15:30" {...field} className="border-gray-300" />
@@ -169,7 +204,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                         <Card className="border shadow-sm mt-6">
                                             <CardHeader className="py-3">
                                                 <CardTitle className="text-md font-medium">
-                                        Información del Cliente
+                                                    Información del Cliente
                                                 </CardTitle>
                                             </CardHeader>
                                             <Separator />
@@ -182,7 +217,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <Package className="h-4 w-4 text-blue-500" />
-                                                                          Razón Social
+                                                                    Razón Social
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Ingrese la razón social" {...field} className="border-gray-300" />
@@ -199,7 +234,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <MapPinHouse className="h-4 w-4 text-blue-500" />
-                                                                          Dirección
+                                                                    Dirección
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Dirección" {...field} />
@@ -216,7 +251,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <Building2 className="h-4 w-4 text-blue-500" />
-                                                                          Giro del Negocio
+                                                                    Giro del Negocio
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Giro del Negocio" {...field} />
@@ -231,7 +266,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                         <Card className="border shadow-sm mt-6">
                                             <CardHeader className="py-3">
                                                 <CardTitle className="text-md font-medium">
-                                        Detalles del Servicio
+                                                    Detalles del Servicio
                                                 </CardTitle>
                                             </CardHeader>
                                             <Separator />
@@ -239,12 +274,12 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <FormField
                                                         control={form.control}
-                                                        name="healthCondition"
+                                                        name="sanitaryCondition"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <ScanHeart className="h-4 w-4 text-blue-500" />
-                                                                          Condición Sanitaria
+                                                                    Condición Sanitaria
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Condición Sanitaria" {...field} />
@@ -260,7 +295,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <LandPlot className="h-4 w-4 text-blue-500" />
-                                                                          Áreas Tratadas
+                                                                    Áreas Tratadas
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Áreas Tratadas" {...field} />
@@ -276,7 +311,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <ListCheck className="h-4 w-4 text-blue-500" />
-                                                                          Servicios Realizados
+                                                                    Servicios Realizados
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Servicios Realizados" {...field} />
@@ -292,7 +327,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                                     <FileDigit className="h-4 w-4 text-blue-500" />
-                                                                          N° Certificado
+                                                                    N° Certificado
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input placeholder="Numero de certificado" {...field} />
@@ -350,7 +385,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="others"
+                                                        name="otherPlagues"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -410,7 +445,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="disinfectant"
+                                                        name="desinfectant"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -456,7 +491,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <FormField
                                                         control={form.control}
-                                                        name="amountInsecticide"
+                                                        name="insecticideAmount"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -468,10 +503,8 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                                 </FormDescription>
                                                                 <FormControl>
                                                                     <Input
-                                                                        type="number"
-                                                                        placeholder="0"
+                                                                        placeholder="Cantidad de Insecticida"
                                                                         {...field}
-                                                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                                                     />
                                                                 </FormControl>
                                                             </FormItem>
@@ -480,7 +513,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="amountRodenticide"
+                                                        name="rodenticideAmount"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -492,10 +525,8 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                                 </FormDescription>
                                                                 <FormControl>
                                                                     <Input
-                                                                        type="number"
-                                                                        placeholder="0"
+                                                                        placeholder="Cantidad de Rodenticida"
                                                                         {...field}
-                                                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                                                     />
                                                                 </FormControl>
                                                             </FormItem>
@@ -504,7 +535,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="amountDisinfectant"
+                                                        name="desinfectantAmount"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -516,10 +547,8 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                                 </FormDescription>
                                                                 <FormControl>
                                                                     <Input
-                                                                        type="number"
-                                                                        placeholder="0"
+                                                                        placeholder="Cantidad de Desinfectante"
                                                                         {...field}
-                                                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                                                     />
                                                                 </FormControl>
                                                             </FormItem>
@@ -528,7 +557,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="amountOtherProducts"
+                                                        name="otherProductsAmount"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -540,10 +569,8 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                                 </FormDescription>
                                                                 <FormControl>
                                                                     <Input
-                                                                        type="number"
-                                                                        placeholder="0"
+                                                                        placeholder="Cantidad de Otros Productos"
                                                                         {...field}
-                                                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                                                     />
                                                                 </FormControl>
                                                             </FormItem>
@@ -566,7 +593,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <FormField
                                                         control={form.control}
-                                                        name="ratExterminationMonitoring1"
+                                                        name="ratExtermination1"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -585,7 +612,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="ratExterminationMonitoring2"
+                                                        name="ratExtermination2"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -604,7 +631,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="ratExterminationMonitoring3"
+                                                        name="ratExtermination3"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -623,7 +650,7 @@ export function DownloadProjectForm({ onOpenChange }: { onOpenChange: (v: boolea
 
                                                     <FormField
                                                         control={form.control}
-                                                        name="ratExterminationMonitoring4"
+                                                        name="ratExtermination4"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium">
