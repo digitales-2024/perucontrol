@@ -12,6 +12,7 @@ import { DeleteProject } from "./DeleteProject";
 import { Project } from "../types";
 import { AlertDialogAcceptProject } from "./AcceptProject";
 import { AlertDialogRejectProject } from "./RejectProject";
+import { DownloadProject } from "./DownloadProject";
 
 export const columns: Array<ColumnDef<Project>> = [
     {
@@ -187,6 +188,7 @@ export const columns: Array<ColumnDef<Project>> = [
             const [showAcceptProject, setShowAcceptProject] = useState(false);
             const [showRejectProject, setShowRejectProject] = useState(false);
             const [showDeleteProject, setShowDeleteProject] = useState(false);
+            const [showDownload, setShowDownload] = useState(false);
 
             const projectId = row.original.id;
             return (
@@ -212,6 +214,12 @@ export const columns: Array<ColumnDef<Project>> = [
                             onOpenChange={setShowRejectProject}
                             project={row?.original}
                             showTrigger={false}
+                        />
+                        {/* Descargar Proyecto */}
+                        <DownloadProject
+                            open={showDownload}
+                            onOpenChange={setShowDownload}
+                            project={row.original}
                         />
                     </div>
                     <DropdownMenu>
@@ -244,6 +252,9 @@ export const columns: Array<ColumnDef<Project>> = [
                                     Editar
                                 </DropdownMenuItem>
                             </Link>
+                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                                Descargar Servicio
+                            </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowDeleteProject(true)}>
                                 Eliminar
                             </DropdownMenuItem>
