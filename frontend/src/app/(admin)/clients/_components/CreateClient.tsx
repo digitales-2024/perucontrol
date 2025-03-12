@@ -48,21 +48,18 @@ export const CreateClient = () =>
     const handleSearchByRuc = async(ruc: string) =>
     {
         setLoading(true);
-        const result = await SearchClientByRuc(ruc);
+        const [data, error] = await SearchClientByRuc(ruc);
+        if (!!error)
+        {
+            console.error("Error searching client by RUC:", error);
+        }
 
-        if (result)
-        {
-            const data = result;
-            // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial || "");
-            setValue("name", data[0].name || "");
-            setValue("fiscalAddress", data[0].fiscalAddress || "");
-            setValue("businessType", data[0].businessType || "");
-        }
-        else
-        {
-            console.error("Error searching client by RUC:", result);
-        }
+        // Actualiza los campos del formulario con los datos obtenidos
+        setValue("razonSocial", data.razonSocial ?? "");
+        setValue("name", data.name ?? "");
+        setValue("fiscalAddress", data.fiscalAddress ?? "");
+        setValue("businessType", data.businessType ?? "");
+
         setLoading(false);
     };
 

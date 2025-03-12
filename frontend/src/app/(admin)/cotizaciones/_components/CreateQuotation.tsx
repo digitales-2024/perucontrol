@@ -41,12 +41,12 @@ export function CreateQuotation()
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
 
-    { /* Creando las opciones para el AutoComplete */}
+    { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
-    activeClients?.map((client) => ({
-        value: client.id || "",
-        label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
-    })) ?? [];
+        activeClients?.map((client) => ({
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
+        })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
@@ -131,11 +131,11 @@ export function CreateQuotation()
                                                         emptyMessage="No se encontraron clientes"
                                                         value={
                                                             clientsOptions.find((option) => option.value ===
-                                                                field.value) || undefined
+                                                                field.value) ?? undefined
                                                         }
                                                         onValueChange={(option) =>
                                                         {
-                                                            field.onChange(option?.value || "");
+                                                            field.onChange(option?.value ?? "");
                                                         }}
                                                     />
                                                 </FormControl>
@@ -169,7 +169,7 @@ export function CreateQuotation()
                                                                 {
                                                                     const newValue = isSelected
                                                                         ? field.value?.filter((id) => id !== service.id)
-                                                                        : [...(field.value || []), service.id!];
+                                                                        : [...(field.value ?? []), service.id!];
                                                                     field.onChange(newValue);
                                                                 }}
                                                             >
@@ -180,7 +180,7 @@ export function CreateQuotation()
                                                                         "group-hover:text-blue-500",
                                                                     )}
                                                                 >
-                                                                    {serviceIcons[service.name] || <Bug className="h-3 w-3" />}
+                                                                    {serviceIcons[service.name] ?? <Bug className="h-3 w-3" />}
                                                                 </div>
                                                                 <div>
                                                                     <h3 className="text-xs font-medium">
@@ -293,7 +293,7 @@ export function CreateQuotation()
                                                     <SelectGroup>
                                                         {
                                                             terms.map((terms) => (
-                                                                <SelectItem key={terms.id} value={terms.id ? terms.id : ""}>
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
                                                                     {terms.name}
                                                                 </SelectItem>
                                                             ))

@@ -54,14 +54,14 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =
         activeQuotations?.map((quotation) => ({
-            value: quotation?.id || "",
-            label: quotation?.id || "",
+            value: quotation?.id ?? "",
+            label: quotation?.id ?? "",
         })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>
@@ -69,12 +69,12 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         const selectedQuotation = quotations.find((q) => q?.id === option?.value);
         if (selectedQuotation)
         {
-            setValue("clientId", selectedQuotation.client?.id || "");
-            setValue("quotationId", selectedQuotation.id || null);
-            setValue("address", selectedQuotation.client?.fiscalAddress || "");
-            setValue("area", selectedQuotation.area || 0);
-            setValue("spacesCount", selectedQuotation.spacesCount || 0);
-            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) || []);
+            setValue("clientId", selectedQuotation.client?.id ?? "");
+            setValue("quotationId", selectedQuotation.id ?? null);
+            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
+            setValue("area", selectedQuotation.area ?? 0);
+            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
+            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? []);
         }
     };
 
@@ -115,7 +115,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                             emptyMessage="No se encontraron cotizaciones disponibles"
                             value={
                                 quotationsOptions.find((option) => option.value ===
-                                    quotation) || undefined
+                                    quotation) ?? undefined
                             }
                             onValueChange={(option) =>
                             {
@@ -145,7 +145,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                             emptyMessage="No se encontraron clientes"
                                             value={
                                                 clientsOptions.find((option) => option.value ===
-                                                    field.value) || undefined
+                                                    field.value) ?? undefined
                                             }
                                             onValueChange={(option) =>
                                             {
@@ -252,7 +252,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                                         }}
                                                     >
                                                         <div className="mr-4">
-                                                            {serviceIcons[service.name] || <Bug className="h-6 w-6" />}
+                                                            {serviceIcons[service.name] ?? <Bug className="h-6 w-6" />}
                                                         </div>
                                                         <div>
                                                             <h3 className="text-sm font-medium">

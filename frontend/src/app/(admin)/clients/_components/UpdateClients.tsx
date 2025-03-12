@@ -14,9 +14,9 @@ import { SearchClientByRuc, UpdateClient } from "../actions";
 import { Client } from "../types/clients";
 
 interface UpdateClientProps {
-  client: Client;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+    client: Client;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }
 
 export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientProps)
@@ -26,15 +26,15 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
     const form = useForm<CreateClientSchema>({
         resolver: zodResolver(clientSchema),
         defaultValues: {
-            typeDocument: client.typeDocument || "",
-            typeDocumentValue: client.typeDocumentValue || "",
-            razonSocial: client.razonSocial || "",
-            businessType: client.businessType || "",
-            name: client.name || "",
-            fiscalAddress: client.fiscalAddress || "",
-            email: client.email || "",
-            clientLocations: client.clientLocations || [{ address: "" }],
-            phoneNumber: client.phoneNumber || "",
+            typeDocument: client.typeDocument ?? "",
+            typeDocumentValue: client.typeDocumentValue ?? "",
+            razonSocial: client.razonSocial ?? "",
+            businessType: client.businessType ?? "",
+            name: client.name ?? "",
+            fiscalAddress: client.fiscalAddress ?? "",
+            email: client.email ?? "",
+            clientLocations: client.clientLocations ?? [{ address: "" }],
+            phoneNumber: client.phoneNumber ?? "",
         },
     });
 
@@ -51,18 +51,18 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         if (open)
         {
             form.reset({
-                typeDocument: client.typeDocument || "",
-                typeDocumentValue: client.typeDocumentValue || "",
-                razonSocial: client.razonSocial || "",
-                businessType: client.businessType || "",
-                name: client.name || "",
-                fiscalAddress: client.fiscalAddress || "",
-                email: client.email || "",
-                clientLocations: client.clientLocations || [{ address: "" }],
-                phoneNumber: client.phoneNumber || "",
+                typeDocument: client.typeDocument ?? "",
+                typeDocumentValue: client.typeDocumentValue ?? "",
+                razonSocial: client.razonSocial ?? "",
+                businessType: client.businessType ?? "",
+                name: client.name ?? "",
+                fiscalAddress: client.fiscalAddress ?? "",
+                email: client.email ?? "",
+                clientLocations: client.clientLocations ?? [{ address: "" }],
+                phoneNumber: client.phoneNumber ?? "",
             });
 
-            setTypeDocument(client.typeDocument || "");
+            setTypeDocument(client.typeDocument ?? "");
         }
     }, [open, client, form]);
 
@@ -73,9 +73,9 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         {
             const data = result;
             // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial || "");
-            setValue("name", data[0].name || "");
-            setValue("fiscalAddress", data[0].fiscalAddress || "");
+            setValue("razonSocial", data[0].razonSocial ?? "");
+            setValue("name", data[0].name ?? "");
+            setValue("fiscalAddress", data[0].fiscalAddress ?? "");
         }
         else
         {

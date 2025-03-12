@@ -57,13 +57,13 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
 
     const [isOpen, setOpen] = useState(false);
     const [selected, setSelected] = useState<Option | undefined>(value);
-    const [inputValue, setInputValue] = useState<string>(value?.label || "");
+    const [inputValue, setInputValue] = useState<string>(value?.label ?? "");
 
     // Actualiza el estado interno cuando cambia la propiedad value
     useEffect(() =>
     {
         setSelected(value);
-        setInputValue(value?.label || "");
+        setInputValue(value?.label ?? "");
     }, [value]);
 
     const handleKeyDown = useCallback(
@@ -116,7 +116,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
     const handleBlur = useCallback(() =>
     {
         setOpen(false);
-        setInputValue(selected?.label || "");
+        setInputValue(selected?.label ?? "");
     }, [selected]);
 
     const handleSelectOption = useCallback(

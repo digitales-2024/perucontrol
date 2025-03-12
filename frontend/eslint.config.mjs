@@ -13,8 +13,18 @@ const compat = new FlatCompat({
 const eslintConfig = [
     ...compat.extends("next/core-web-vitals", "next/typescript"),
     {
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
         rules: {
             "@typescript-eslint/array-type": ["error", { default: "generic" }],
+            "@typescript-eslint/prefer-nullish-coalescing": ["error", {
+                ignoreConditionalTests: true,
+                ignoreMixedLogicalExpressions: true,
+            }]
         },
     },
     {

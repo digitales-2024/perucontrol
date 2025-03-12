@@ -44,18 +44,18 @@ const serviceIcons: Record<string, React.ReactNode> = {
 
 export function UpdateClientData({ clients, services, quotations, project }: UpdateClientDataProps)
 {
-    const [quotation, setQuotation] = useState(project.quotation?.id || "");
+    const [quotation, setQuotation] = useState(project.quotation?.id ?? "");
     // const [showQuotation, setShowQuotation] = useState(true);
 
     const form = useForm<ClientDataSchema>({
         resolver: zodResolver(clientDataSchema),
         defaultValues: {
-            clientId: project.client?.id || "",
-            quotationId: project.quotation?.id || null,
-            services: project.services?.map((service) => service.id) || [],
-            address: project.address || "",
-            area: project.area || 0,
-            spacesCount: project.spacesCount || 0,
+            clientId: project.client?.id ?? "",
+            quotationId: project.quotation?.id ?? null,
+            services: project.services?.map((service) => service.id) ?? [],
+            address: project.address ?? "",
+            area: project.area ?? 0,
+            spacesCount: project.spacesCount ?? 0,
         },
     });
 
@@ -67,14 +67,14 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "" ? client.razonSocial || "" : client.name || "",
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =
         activeQuotations?.map((quotation) => ({
-            value: quotation?.id || "",
-            label: quotation?.id || "",
+            value: quotation?.id ?? "",
+            label: quotation?.id ?? "",
         })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>
@@ -82,12 +82,12 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
         const selectedQuotation = quotations.find((q) => q?.id === option?.value);
         if (selectedQuotation)
         {
-            setValue("clientId", selectedQuotation.client?.id || "");
-            setValue("quotationId", selectedQuotation.id || null);
-            setValue("address", selectedQuotation.client?.fiscalAddress || "");
-            setValue("area", selectedQuotation.area || 0);
-            setValue("spacesCount", selectedQuotation.spacesCount || 0);
-            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) || []);
+            setValue("clientId", selectedQuotation.client?.id ?? "");
+            setValue("quotationId", selectedQuotation.id ?? null);
+            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
+            setValue("area", selectedQuotation.area ?? 0);
+            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
+            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? []);
         }
     };
 
@@ -114,7 +114,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                         emptyMessage="No se encontraron clientes"
                         value={
                             quotationsOptions.find((option) => option.value ===
-                                quotation) || undefined
+                                quotation) ?? undefined
                         }
                         onValueChange={(option) =>
                         {
@@ -143,7 +143,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                             emptyMessage="No se encontraron clientes"
                                             value={
                                                 clientsOptions.find((option) => option.value ===
-                                                    field.value) || undefined
+                                                    field.value) ?? undefined
                                             }
                                             onValueChange={(option) =>
                                             {
@@ -250,7 +250,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                                         }}
                                                     >
                                                         <div className="mr-4">
-                                                            {serviceIcons[service.name] || <Bug className="h-6 w-6" />}
+                                                            {serviceIcons[service.name] ?? <Bug className="h-6 w-6" />}
                                                         </div>
                                                         <div>
                                                             <h3 className="text-sm font-medium">
