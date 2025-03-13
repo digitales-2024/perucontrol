@@ -19,6 +19,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     {
         base.OnModelCreating(builder);
         PeruControl.Model.Client.SetUp<Client>(builder);
+        PeruControl.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Model.ClientLocation.SetUp<ClientLocation>(builder);
         PeruControl.Model.Quotation.SetUp<Quotation>(builder);
         PeruControl.Model.Project.SetUp<Project>(builder);

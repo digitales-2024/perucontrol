@@ -32,6 +32,11 @@ const data = {
             icon: PieChart,
         },
         {
+            title: "Clientes",
+            url: "/clients",
+            icon: Users,
+        },
+        {
             title: "Cotizaciones",
             url: "/cotizaciones",
             icon: HandCoins,
@@ -42,18 +47,13 @@ const data = {
             icon: BugOff,
         },
         {
-            title: "Clientes",
-            url: "/clients",
-            icon: Users,
-        },
-        {
             title: "Certificaciones",
             url: "#",
             icon: ShieldCheck,
             items: [
                 {
                     title: "Emisión de Certificados",
-                    url: "#",
+                    url: "/certificados",
                 },
                 {
                     title: "Calendario",
