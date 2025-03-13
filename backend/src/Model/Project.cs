@@ -38,6 +38,10 @@ public class Project : BaseModel
     // TODO: clarify supplies
 
     // TODO: schedule
+
+    // Reference properties
+    [JsonIgnore]
+    public virtual ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }
 
 public class ProjectCreateDTO : IMapToEntity<Project>
