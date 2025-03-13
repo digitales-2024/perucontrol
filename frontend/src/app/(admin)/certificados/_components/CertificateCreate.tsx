@@ -19,13 +19,15 @@ import { useMemo } from "react";
 import { CalendarIcon } from "lucide-react";
 import DatePicker from "@/components/ui/date-time-picker";
 import { format, parseISO } from "date-fns";
+import { toastWrapper } from "@/types/toasts";
+import { CreateCertificate, DownloadCertificate } from "../actions";
 
 const createSchema = z.object({
     projectId: z.string({ message: "Selecciona un servicio" }).nonempty({ message: "Selecciona un servicio" }),
     creationDate: z.string().datetime({ message: "Fecha invalida" }),
     expirationDate: z.string().datetime({ message: "Fecha invalida" }),
 });
-type CreateSchema = z.infer<typeof createSchema>;
+export type CreateSchema = z.infer<typeof createSchema>;
 
 type Project = components["schemas"]["ProjectSummary"];
 
@@ -47,8 +49,33 @@ export function CertificateCreate({
     // 2. Define a submit handler.
     const onSubmit = async(values: CreateSchema) =>
     {
-        // Do something with the form values.
-        console.log(values);
+        // Create certificate
+        const [certId, err] = await toastWrapper(CreateCertificate(values), {
+            loading: "Creando certificado...",
+            success: "Certificado creado",
+        });
+        if (err !== null)
+        {
+            return;
+        }
+
+        // Download certificate
+        const [certBlob, certErr] = await toastWrapper(DownloadCertificate(certId), {
+            loading: "Descargando certificado...",
+            success: "Certificado descargado",
+        });
+        if (certErr !== null)
+        {
+            return;
+        }
+
+        // Save certificate
+        const url = URL.createObjectURL(certBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "certificado.docx";
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
     const projectOptions = useMemo(() => projects.map((project) => ({
