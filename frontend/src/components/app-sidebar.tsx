@@ -53,7 +53,7 @@ const data = {
             items: [
                 {
                     title: "Emisión de Certificados",
-                    url: "#",
+                    url: "/certificados",
                 },
                 {
                     title: "Calendario",
