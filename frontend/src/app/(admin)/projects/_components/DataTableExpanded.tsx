@@ -23,11 +23,11 @@ import { Label } from "@/components/ui/label";
 import { Project } from "../types";
 
 interface DataTableProps {
-  columns: Array<ColumnDef<Project>>
-  data: Array<Project>
-  globalFilter: string
-  setGlobalFilter: (value: string) => void
-  toolbarActions?: React.ReactNode
+    columns: Array<ColumnDef<Project>>
+    data: Array<Project>
+    globalFilter: string
+    setGlobalFilter: (value: string) => void
+    toolbarActions?: React.ReactNode
 }
 
 export function DataTableExpanded({
@@ -74,9 +74,9 @@ export function DataTableExpanded({
                     className="max-w-sm"
                 />
                 {toolbarActions &&
-                <div>
-                    {toolbarActions}
-                </div>}
+                    <div>
+                        {toolbarActions}
+                    </div>}
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -145,7 +145,7 @@ export function DataTableExpanded({
 
                                                         <div>
                                                             <h3 className="text-xs font-semibold mb-2">
-                                                                Insumos
+                                                                -
                                                             </h3>
                                                             <div className="grid grid-cols-3 gap-4">
                                                                 {row.original.supplies?.map((supply) => (

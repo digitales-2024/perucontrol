@@ -62,7 +62,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const quotationsOptions: Array<Option> =
         activeQuotations?.map((quotation) => ({
             value: quotation?.id ?? "",
-            label: quotation?.id ?? "",
+            label: `${quotation.client!.name} - ${quotation!.id!.substring(0, 8)}`,
         })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>

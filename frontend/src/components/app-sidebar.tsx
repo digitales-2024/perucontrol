@@ -32,6 +32,11 @@ const data = {
             icon: PieChart,
         },
         {
+            title: "Clientes",
+            url: "/clients",
+            icon: Users,
+        },
+        {
             title: "Cotizaciones",
             url: "/cotizaciones",
             icon: HandCoins,
@@ -40,11 +45,6 @@ const data = {
             title: "Servicios",
             url: "/projects",
             icon: BugOff,
-        },
-        {
-            title: "Clientes",
-            url: "/clients",
-            icon: Users,
         },
         {
             title: "Certificaciones",

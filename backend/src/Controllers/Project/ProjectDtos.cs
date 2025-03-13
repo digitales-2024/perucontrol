@@ -72,3 +72,8 @@ public class ProjectOperationSheetExport
     // personal_4
     public string Staff4 { get; set; } = string.Empty;
 }
+
+public class ProjectCertificateExport
+{
+
+}
