@@ -10,18 +10,11 @@ public class CertificateCreateDTO : IMapToEntity<Certificate>
 
     public Certificate MapToEntity()
     {
-        return new()
-        {
-            CreationDate = CreationDate,
-            ExpirationDate = ExpirationDate,
-        };
+        return new() { CreationDate = CreationDate, ExpirationDate = ExpirationDate };
     }
 }
 
 public class CertificatePatchDTO : IEntityPatcher<Certificate>
 {
-    public void ApplyPatch(Certificate entity)
-    { }
+    public void ApplyPatch(Certificate entity) { }
 }
-
-

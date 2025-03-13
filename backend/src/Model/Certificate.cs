@@ -16,4 +16,3 @@ public class Certificate : BaseModel
     public required DateTime CreationDate { get; set; }
     public required DateTime ExpirationDate { get; set; }
 }
-

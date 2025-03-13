@@ -7,7 +7,7 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectController(DatabaseContext db, ExcelTemplateService excelTemplate, WordTemplateService wordService)
+public class ProjectController(DatabaseContext db, ExcelTemplateService excelTemplate)
     : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     [EndpointSummary("Create")]
@@ -277,30 +277,6 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "quotation.xlsx"
-        );
-    }
-
-    [EndpointSummary("Generate Certificate Word")]
-    [HttpPost("{id}/gen-certificate-word")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificate(
-        Guid id,
-        [FromBody] ProjectCertificateExport data
-    )
-    {
-        var placeholders = new Dictionary<string, string>
-        {
-            { "{{placeholder}}", "???" },
-        };
-        var fileBytes = wordService.GenerateWordFromTemplate(
-            placeholders,
-            "Templates/certificado.docx"
-        );
-        return File(
-            fileBytes,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "certificate.docx"
         );
     }
 }
