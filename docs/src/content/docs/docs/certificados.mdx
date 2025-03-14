@@ -1,0 +1,125 @@
+---
+title: Certificados
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+## Generar certificado
+
+<Uml code={`
+@startuml
+|Certificados|
+start
+
+if (Proyecto completado?) then (si)
+else (no)
+	|Proyectos|
+	:Marcar proyecto
+	como completado;
+	end
+endif
+
+|Certificados|
+
+:Ingresar información;
+:Generar códigos*;
+note left
+	Validar si este código
+	es el mismo que el de la
+	ficha de operaciones
+end note
+
+:Colocar firmas;
+
+if (Generar código
+de barras?) then (si)
+	:Obtener UUID del proyecto;
+	:Generar código de barras;
+	:Colocar código de barras
+	en ubicación fija del
+	documento;
+else (no)
+endif
+
+if (Enviar por correo?) then (si)
+	:Enviar al correo
+	del cliente;
+else (no)
+endif
+
+#palegreen:generar DOCX;
+
+|Cloudflare|
+:Almacenar DOCX;
+:Generar URL;
+
+|Certificados|
+:Guardar URL de
+cloudflare
+en base de datos;
+
+end
+@enduml
+`} />
+
+
+## Auto escanear cert.
+
+
+<Uml code={`
+Usuario -> Scanner: Escanea certificado
+Scanner --> Usuario: Guarda certificado
+Usuario -> Sistema: Carga documento escaneado al sistema
+Usuario -> Sistema: Ejecuta rutina de escaneo
+Sistema --> Usuario: Detecta, registra y guarda el certificado
+`} />
+
+
+<Uml code={`
+@startuml
+|Certificados|
+start
+
+:Rutina de escaneo;
+:Recibe doc escaneado;
+:Aplica visión
+computacional;
+
+:Detecta código de barras;
+
+if (Código de barras encontrado) then (si)
+	:Obtener UUID;
+	:Buscar cert. por
+	UUID;
+else (no)
+	|Usuario|
+	:Ingresa numeración
+	del certificado;
+	|Certificados|
+	:Buscar cert. por
+	numeración;
+endif
+
+if (Cert. existe?) then (si)
+else (no)
+	:Alertar al usuario;
+	end
+endif
+
+|Cloudflare|
+:Guardar documento;
+:Generar URL;
+|Certificados|
+:Guardar URL en la base de datos;
+
+if (Enviar por correo?) then (si)
+	:Enviar cert.
+	por correo;
+else (no)
+endif
+
+end
+@enduml
+`} />
+
+

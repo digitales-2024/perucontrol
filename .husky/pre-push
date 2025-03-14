@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+dotnet husky run -n "Quick backend build"
+dotnet husky run -n "Quick frontend build"

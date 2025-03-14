@@ -1,0 +1,51 @@
+services:
+  aspnet-acide-dev:
+    container_name: aspnet-acide-dev
+    build:
+      context: ..
+      dockerfile: ./Docker/Dockerfile.dev
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
+    volumes:
+      - ..:/app
+    ports:
+      - "5233:5233"
+    stdin_open: true  # Keep STDIN open
+    tty: true         # Allocate a pseudo-TTY
+    networks:
+      - aspnet-acide-network
+
+  postgres-aspnet-acide:
+    image: postgres:latest
+    container_name: postgres-aspnet-acide
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - aspnet-acide-network
+
+  pgadmin4-aspnet-acide:
+    image: elestio/pgadmin:latest
+    container_name: pgadmin-aspnet-acide
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - aspnet-acide-network
+
+networks:
+  aspnet-acide-network:
+    driver: bridge
+
