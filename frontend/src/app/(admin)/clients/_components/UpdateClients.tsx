@@ -33,6 +33,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
             name: client.name ?? "",
             fiscalAddress: client.fiscalAddress ?? "",
             email: client.email ?? "",
+            contactName: client.contactName ?? "",
             clientLocations: client.clientLocations ?? [{ address: "" }],
             phoneNumber: client.phoneNumber ?? "",
         },
@@ -58,6 +59,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                 name: client.name ?? "",
                 fiscalAddress: client.fiscalAddress ?? "",
                 email: client.email ?? "",
+                contactName: client.contactName ?? "",
                 clientLocations: client.clientLocations ?? [{ address: "" }],
                 phoneNumber: client.phoneNumber ?? "",
             });
@@ -195,6 +197,21 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el nombre comercial" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="contactName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Nombre de Contacto
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Ingrese el nombre de contacto" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

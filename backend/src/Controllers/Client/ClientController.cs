@@ -77,6 +77,7 @@ public class ClientController(
                         Name = client.Name,
                         FiscalAddress = client.FiscalAddress,
                         BusinessType = client.BusinessType,
+                        ContactName = client.ContactName,
                     }
                 );
             }
@@ -132,4 +133,5 @@ public class SunatQueryResponse
     public string? Name { get; set; }
     public string? FiscalAddress { get; set; }
     public string? BusinessType { get; set; }
+    public string? ContactName { get; set; }
 }

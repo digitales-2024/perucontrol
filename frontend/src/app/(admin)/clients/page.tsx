@@ -30,6 +30,7 @@ export default async function ClientsPage()
             address: location.address,
         })) || [],
         razonSocial: client.razonSocial ?? "-",  // Si no hay razon social, convertir el null a un string vacio
+        contactName: client.contactName ?? "-",  // Si no hay nombre de contacto, convertir el null a un string vacio
     }));
 
     return (

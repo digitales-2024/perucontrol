@@ -8,6 +8,7 @@ export const clientSchema = z.object({
     name: z.string().nonempty("El nombre es requerido"),
     fiscalAddress: z.string().nonempty("La dirección es requerida"),
     email: z.string().email("El email no es válido"),
+    contactName: z.string().nonempty("El nombre de contacto es requerido"),
     clientLocations: z.array(z.object({
         address: z.string(),
     })),
