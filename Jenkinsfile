@@ -12,6 +12,7 @@ pipeline {
 						docker {
 							image 'node:22'
 							reuseNode true
+							args '-u 0:0'
 						}
 					}
 					steps {
@@ -27,6 +28,7 @@ pipeline {
 						docker {
 							image 'mcr.microsoft.com/dotnet/sdk:9.0-alpine'
 							args '-v nuget-cache:/root/.nuget/packages'
+							args '-u 0:0'
 						}
 					}
 					steps {
@@ -40,7 +42,7 @@ pipeline {
 					agent {
 						docker {
 							image 'digitalesacide/playwright-dotnet9-noble:latest'
-							args '--ipc=host'
+							args '--ipc=host -u 0:0'
 						}
 					}
 					steps {
