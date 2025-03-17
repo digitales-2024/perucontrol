@@ -8,40 +8,42 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
-import { toast } from "sonner";
 import { GetTermsAndConditionsById, UpdateQuotation } from "../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
+import { toastWrapper } from "@/types/toasts";
 
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
-type Clients = components["schemas"]["ClientGetDTO"]
-type Services = components["schemas"]["ServiceGetDTO"]
+type Clients = components["schemas"]["Client"]
+type Services = components["schemas"]["Service"]
 
 export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndConditions, clients, services }: { quotation: Quotation, open: boolean, onOpenChange: (open: boolean) => void, termsAndConditions: Array<TermsAndConditions>, clients: Array<Clients>, services: Array<Services> })
 {
     const [termsOpen, setTermsOpen] = useState(false);
 
+    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
-        clients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+        activeClients?.map((client) => ({
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
         })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
-            clientId: quotation?.client?.id || "",
-            serviceIds: quotation?.services?.map((service) => service.id) || [],
-            description: quotation?.description || "",
-            area: quotation?.area || 0,
-            spacesCount: quotation?.spacesCount || 0,
-            hasTaxes: quotation?.hasTaxes || false,
-            termsAndConditions: quotation?.termsAndConditions || "",
+            clientId: quotation?.client?.id ?? "",
+            serviceIds: quotation?.services?.map((service) => service.id) ?? [],
+            description: quotation?.description ?? "",
+            area: quotation?.area ?? 0,
+            spacesCount: quotation?.spacesCount ?? 0,
+            hasTaxes: quotation?.hasTaxes ?? false,
+            termsAndConditions: quotation?.termsAndConditions ?? "",
         },
     });
 
@@ -52,26 +54,27 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
         if (open)
         {
             form.reset({
-                clientId: quotation?.client?.id || "",
-                serviceIds: quotation?.services?.map((service) => service.id) || [],
-                description: quotation?.description || "",
-                area: quotation?.area || 0,
-                spacesCount: quotation?.spacesCount || 0,
-                hasTaxes: quotation?.hasTaxes || false,
-                termsAndConditions: quotation?.termsAndConditions || "",
+                clientId: quotation?.client?.id ?? "",
+                serviceIds: quotation?.services?.map((service) => service.id) ?? [],
+                description: quotation?.description ?? "",
+                area: quotation?.area ?? 0,
+                spacesCount: quotation?.spacesCount ?? 0,
+                hasTaxes: quotation?.hasTaxes ?? false,
+                termsAndConditions: quotation?.termsAndConditions ?? "",
             });
         }
     }, [open, quotation, form]);
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const result = UpdateQuotation(quotation.id!, input);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, input), {
             loading: "Cargando...",
             success: "¡Cotización actualizada exitosamente!",
-            error: "Error",
         });
-
+        if (err !== null)
+        {
+            return;
+        }
         reset();
         onOpenChange(false);
     };
@@ -124,11 +127,11 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                                         emptyMessage="No se encontraron clientes"
                                                         value={
                                                             clientsOptions.find((option) => option.value ===
-                                                                field.value) || undefined
+                                                                field.value) ?? undefined
                                                         }
                                                         onValueChange={(option) =>
                                                         {
-                                                            field.onChange(option?.value || "");
+                                                            field.onChange(option?.value ?? "");
                                                         }}
                                                     />
                                                 </FormControl>
@@ -271,7 +274,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                                     <SelectGroup>
                                                         {
                                                             termsAndConditions.map((terms) => (
-                                                                <SelectItem key={terms.id} value={terms.id ? terms.id : ""}>
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
                                                                     {terms.name}
                                                                 </SelectItem>
                                                             ))

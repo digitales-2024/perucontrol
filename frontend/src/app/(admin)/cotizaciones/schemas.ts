@@ -23,3 +23,11 @@ export const quotationSchema = z.object({
 });
 
 export type CreateQuotationSchema = z.infer<typeof quotationSchema>;
+
+export const quotationDownloadSchema = z.object({
+    validUntil: z.string().min(5, "El campo es requerido"),
+    guarantee: z.string().min(5, "El campo es requerido"),
+    deliverables: z.string().min(5, "El campo es requerido"),
+});
+
+export type DownloadQuotationSchema = z.infer<typeof quotationDownloadSchema>;

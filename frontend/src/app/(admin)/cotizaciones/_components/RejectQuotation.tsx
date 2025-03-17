@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { UpdateStatus } from "../actions";
 import { components } from "@/types/api";
 
-interface AcceptQuotationProps {
+interface RejectQuotationProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   quotation: components["schemas"]["Quotation2"],
@@ -27,7 +27,7 @@ export function AlertDialogRejectQuotation({
     onOpenChange,
     quotation,
     showTrigger = true,
-}: AcceptQuotationProps)
+}: RejectQuotationProps)
 {
     const handleUpdateStatus = () =>
     {

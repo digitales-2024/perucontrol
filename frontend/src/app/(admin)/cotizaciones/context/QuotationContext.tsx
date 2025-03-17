@@ -4,10 +4,10 @@ import React, { createContext, useContext } from "react";
 import { components } from "@/types/api";
 
 interface QuotationContextProps {
-  quotations: Array<components["schemas"]["QuotationGetDTO"]>;
+  quotations: Array<components["schemas"]["Quotation2"]>;
   terms: Array<components["schemas"]["TermsAndConditions"]>;
-  clients: Array<components["schemas"]["ClientGetDTO"]>;
-  services: Array<components["schemas"]["ServiceGetDTO"]>;
+  clients: Array<components["schemas"]["Client"]>;
+  services: Array<components["schemas"]["Service"]>;
 }
 
 // Crear el contexto con un valor inicial opcional

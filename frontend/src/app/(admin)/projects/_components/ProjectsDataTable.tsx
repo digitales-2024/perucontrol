@@ -1,21 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "@/components/data-table/DataTable";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ProjectsTableToolbarActions } from "./ProjectsTableToolbarActions";
+import { DataTableExpanded } from "./DataTableExpanded";
+import { Project } from "../types";
 
-interface DataTableProps<TData, TValue> {
-    columns: Array<ColumnDef<TData, TValue>>;
-    data: Array<TData>;
+interface DataTableProps {
+    columns: Array<ColumnDef<Project>>;
+    data: Array<Project>;
 }
 
-export function ProjectsDataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>)
+export function ProjectsDataTable({ columns, data }: DataTableProps)
 {
     const [globalFilter, setGlobalFilter] = useState("");
 
     return (
-        <DataTable
+        <DataTableExpanded
             columns={columns}
             data={data}
             globalFilter={globalFilter}

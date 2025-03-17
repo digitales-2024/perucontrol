@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace PeruControl.Model;
 
+[Index(nameof(TypeDocumentValue), IsUnique = true)]
 public class Client : BaseModel
 {
     [MinLength(0)]
@@ -40,6 +42,10 @@ public class Client : BaseModel
     [MaxLength(24)]
     public required string PhoneNumber { get; set; }
 
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? ContactName { get; set; }
+
     // Reference properties
     [JsonIgnore]
     public virtual IList<Quotation> ClientToQuotations { get; set; } = new List<Quotation>();
@@ -51,35 +57,39 @@ public class ClientCreateDTO : IMapToEntity<Client>
     [MaxLength(3)]
     public required string TypeDocument { get; set; }
 
-    [MinLength(8)]
-    [MaxLength(11)]
+    [MinLength(8, ErrorMessage = "El documento debe tener al menos 8 caracteres")]
+    [MaxLength(11, ErrorMessage = "El documento debe tener como máximo 11 caracteres")]
     public required string TypeDocumentValue { get; set; }
 
     [MinLength(0)]
-    [MaxLength(150)]
+    [MaxLength(150, ErrorMessage = "La razón social debe tener como máximo 150 caracteres")]
     public string? RazonSocial { get; set; }
 
     [MinLength(0)]
-    [MaxLength(250)]
+    [MaxLength(250, ErrorMessage = "El tipo de negocio debe tener como máximo 250 caracteres")]
     public required string BusinessType { get; set; }
 
-    [MinLength(1)]
-    [MaxLength(100)]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio")]
+    [MaxLength(100, ErrorMessage = "El nombre debe tener como máximo 100 caracteres")]
     public required string Name { get; set; }
 
     [MinLength(1)]
-    [MaxLength(250)]
+    [MaxLength(250, ErrorMessage = "La dirección debe tener como máximo 100 caracteres")]
     public required string FiscalAddress { get; set; }
 
     [MinLength(3)]
-    [MaxLength(50)]
+    [MaxLength(50, ErrorMessage = "El email debe tener como máximo 50 caracteres")]
     public required string Email { get; set; }
 
     public required ICollection<ClientLocationDTO> ClientLocations { get; set; }
 
-    [MinLength(6)]
-    [MaxLength(24)]
+    [MinLength(6, ErrorMessage = "El número de teléfono debe tener al menos 6 caracteres")]
+    [MaxLength(24, ErrorMessage = "El número de teléfono debe tener como máximo 24 caracteres")]
     public required string PhoneNumber { get; set; }
+
+    [MinLength(1, ErrorMessage = "El nombre de contacto no puede estar vacio")]
+    [MaxLength(100, ErrorMessage = "El nombre contacto debe tener como máximo 100 caracteres")]
+    public string? ContactName { get; set; }
 
     public Client MapToEntity()
     {
@@ -93,6 +103,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
             FiscalAddress = FiscalAddress,
             Email = Email,
             PhoneNumber = PhoneNumber,
+            ContactName = ContactName,
             ClientLocations = ClientLocations.Select(c => c.MapToEntity()).ToList(),
         };
     }
@@ -124,6 +135,10 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     [MaxLength(24)]
     public string? PhoneNumber { get; set; }
 
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? ContactName { get; set; }
+
     public void ApplyPatch(Client entity)
     {
         if (RazonSocial != null)
@@ -138,5 +153,7 @@ public class ClientPatchDTO : IEntityPatcher<Client>
             entity.Email = Email;
         if (PhoneNumber != null)
             entity.PhoneNumber = PhoneNumber;
+        if (ContactName != null)
+            entity.ContactName = ContactName;
     }
 }

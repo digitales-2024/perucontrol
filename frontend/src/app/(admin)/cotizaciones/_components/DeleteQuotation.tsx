@@ -12,34 +12,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { RemoveQuotation } from "../actions";
 import { components } from "@/types/api";
+import { toastWrapper } from "@/types/toasts";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation2"],
-  showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    quotation: components["schemas"]["Quotation2"],
+    showTrigger?: boolean;
 }
 
-export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = true}: DeleteClientProps)
+export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = true }: DeleteClientProps)
 {
-    const onDeleteQuotationHandler = () =>
+    const onDeleteQuotationHandler = async() =>
     {
-        if (quotation)
+        const [, err] = await toastWrapper(RemoveQuotation(quotation.id!), {
+            loading: "Eliminando cotización...",
+            success: "Cotización eliminada exitosamente!",
+        });
+        if (err !== null)
         {
-            RemoveQuotation(quotation.id!);
+            return;
         }
         onOpenChange(false);
     };
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            { showTrigger ? (
+            {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
                         Eliminar
                     </Button>
                 </AlertDialogTrigger>
-            ) : null }
+            ) : null}
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -57,7 +62,7 @@ export function DeleteQuotation({open, onOpenChange, quotation, showTrigger = tr
                         aria-label="Delete selected rows"
                         onClick={onDeleteQuotationHandler}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

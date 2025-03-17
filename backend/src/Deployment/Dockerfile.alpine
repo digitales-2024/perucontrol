@@ -17,7 +17,7 @@ COPY Program.cs .
 COPY PeruControl.csproj .
 COPY appsettings.json .
 
-RUN HUSKY=0 dotnet restore
+RUN HUSKY=0 dotnet restore --locked-mode
 
 # Build binary
 RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out
@@ -30,5 +30,6 @@ COPY --from=build /app/out ./
 COPY --from=build /app/efbundle ./efbundle
 COPY --from=build /app/appsettings.json ./appsettings.json
 COPY Deployment/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY Templates ./Templates
 
 CMD ["./docker-entrypoint.sh"]

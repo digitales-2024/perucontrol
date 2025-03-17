@@ -45,7 +45,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
 
     [EndpointSummary("Get all")]
     [HttpGet]
-    [ProducesResponseType<IEnumerable<QuotationGetDTO>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<Quotation>>(StatusCodes.Status200OK)]
     public override async Task<ActionResult<IEnumerable<Quotation>>> GetAll()
     {
         return await _context
@@ -77,6 +77,16 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
         if (quotation == null)
             return NotFound();
+
+        if (patchDto.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(patchDto.ClientId.Value);
+            if (client == null)
+            {
+                return NotFound("Cliente no encontrado");
+            }
+            quotation.Client = client;
+        }
 
         if (patchDto.ServiceIds != null)
         {
@@ -144,21 +154,95 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     }
 
     [EndpointSummary("Generate Excel")]
-    [HttpGet("{id}/gen-excel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("{id}/gen-excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel()
+    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
     {
+        var quotation = _dbSet
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefault(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
+        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
+
         var placeholders = new Dictionary<string, string>
         {
-            // sample values
-            { "{{digesa_habilitacion}}", "322" },
+            { "{{digesa_habilitacion}}", "123-PROV" },
+            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
+            { "{{nro_presupuesto}}", "123-PROV" },
+            { "{{nro_cliente}}", "123-PROV" },
+            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
+            { "{{adicional_cliente}}", "--Provicional--" },
+            { "{{garantia}}", export.Guarantee },
+            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
+            { "{{nombre_servicio}}", serviceNamesStr },
+            { "{{incluye_igv_str}}", hasTaxes },
+            { "{{validez_dias}}", expiryDaysAmount.ToString() },
+            { "{{termino_custom}}", quotation.TermsAndConditions },
+            { "{{doc_entregados}}", export.Deliverables },
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(placeholders, "template.xlsx");
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "Templates/cotizacion.xlsx"
+        );
         return File(
             fileBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "quotation.xlsx"
         );
+    }
+
+    [HttpDelete("{id}")]
+    public override async Task<IActionResult> Delete(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si la cotización esta asociada a un proyecto
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p =>
+            p.Quotation != null && p.Quotation.Id == id
+        );
+
+        if (isAssociatedWithProject)
+        {
+            return BadRequest(
+                "No se puede eliminar la cotización porque está asociada a un proyecto."
+            );
+        }
+
+        entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [EndpointSummary("Get approved and not associated project")]
+    [HttpGet("approved/not-associated")]
+    [ProducesResponseType(typeof(IEnumerable<Quotation>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Quotation>>> GetApprovedNotAssociated()
+    {
+        var approvedQuotations = await _context
+            .Quotations.Include(c => c.Client)
+            .Include(s => s.Services)
+            .Where(q => q.Status == QuotationStatus.Approved)
+            .Where(q => !_context.Projects.Any(p => p.Quotation.Id == q.Id))
+            .ToListAsync();
+
+        return Ok(approvedQuotations);
     }
 }

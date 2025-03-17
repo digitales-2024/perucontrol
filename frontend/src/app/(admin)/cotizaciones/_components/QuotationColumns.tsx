@@ -14,6 +14,7 @@ import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
+import { QuotationDownload } from "./QuotationDownload";
 
 export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
     {
@@ -24,7 +25,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Cliente
+                Cliente
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -36,7 +37,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
         cell: ({ row }) => (
             <span className="uppercase">
-                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name }
+                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name}
             </span>
         ),
     },
@@ -48,7 +49,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Descripción
+                Descripción
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -96,7 +97,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Nro. de Ambientes
+                Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -120,7 +121,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-            Estado
+                Estado
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -133,16 +134,16 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         cell: ({ row }) => (
             <span className="items-center text-center flex justify-center">
                 {row.original?.status === "Pending" ? (
-                    <Badge variant="secondary">
-                        {row.original.status}
+                    <Badge variant="default">
+                        Pendiente
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        {row.original.status}
+                        Aprobado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
-                        {row.original?.status}
+                        Rechazado
                     </Badge>
                 )}
             </span>
@@ -156,7 +157,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-            IGV
+                IGV
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -182,6 +183,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             const [showDetailQuotation, setShowDetailQuotation] = useState(false);
             const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
             const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
+            const [showDownload, setShowDownload] = useState(false);
             const { terms, clients, services } = useQuotationContext();
 
             return (
@@ -223,6 +225,12 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             quotation={row?.original}
                             showTrigger={false}
                         />
+                        {/* Descargar Cotización */}
+                        <QuotationDownload
+                            open={showDownload}
+                            onOpenChange={setShowDownload}
+                            quotationId={row.original.id!}
+                        />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -254,6 +262,9 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
                                 Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                                Descargar Cotización
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
                                 Eliminar

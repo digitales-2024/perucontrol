@@ -47,10 +47,6 @@ public abstract class AbstractCrudController<T, CreateDTO, PatchDTO> : Controlle
     public virtual async Task<ActionResult<T>> Create([FromBody] CreateDTO createDTO)
     {
         var entity = createDTO.MapToEntity();
-        if (entity.Id == Guid.Empty)
-        {
-            entity.Id = Guid.NewGuid();
-        }
 
         _dbSet.Add(entity);
         await _context.SaveChangesAsync();

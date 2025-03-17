@@ -12,29 +12,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { Client } from "../types/clients";
 import { RemoveClient } from "../actions";
+import { toastWrapper } from "@/types/toasts";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  client: Client,
-  showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    client: Client,
+    showTrigger?: boolean;
 }
 
-export function DeleteClient({open, onOpenChange, client, showTrigger = true}: DeleteClientProps)
+export function DeleteClient({ open, onOpenChange, client, showTrigger = true }: DeleteClientProps)
 {
 
-    const onDeleteClientsHandler = () =>
+    const onDeleteClientsHandler = async() =>
     {
-        RemoveClient(client.id);
+        const [, err] = await toastWrapper(RemoveClient(client.id), {
+            loading: "Eliminando cliente...",
+            success: "Cliente eliminado exitosamente!",
+        });
+        if (err !== null)
+        {
+            return;
+        }
         onOpenChange(false);
     };
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            { showTrigger ? (
+            {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                    Eliminar
+                        Eliminar
                     </Button>
                 </AlertDialogTrigger>
             ) : null}

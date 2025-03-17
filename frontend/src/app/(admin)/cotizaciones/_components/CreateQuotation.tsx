@@ -15,13 +15,23 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { GetTermsAndConditionsById, RegisterQuotation } from "../actions";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
-import { toast } from "sonner";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { useQuotationContext } from "../context/QuotationContext";
+import { cn } from "@/lib/utils";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check } from "lucide-react";
+import { toastWrapper } from "@/types/toasts";
+
+// Mapa de iconos para servicios
+const serviceIcons: Record<string, React.ReactNode> = {
+    Desratización: <Rat className="h-3 w-3" />,
+    Desinsectación: <Bug className="h-3 w-3" />,
+    Fumigación: <Spray className="h-3 w-3" />,
+    Desinfección: <Shield className="h-3 w-3" />,
+};
 
 export function CreateQuotation()
 {
@@ -29,11 +39,13 @@ export function CreateQuotation()
     const [termsOpen, setTermsOpen] = useState(false);
     const [open, setOpen] = useState(false);
 
+    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
-        clients?.map((client) => ({
-            value: client.id || "",
-            label: client.razonSocial !== "-" ? client.razonSocial || "" : client.name || "",
+        activeClients?.map((client) => ({
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
         })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
@@ -53,17 +65,16 @@ export function CreateQuotation()
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const result = RegisterQuotation(input);
-        toast.promise(result, {
+        const [, err] = await toastWrapper(RegisterQuotation(input), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cotización registrada exitosamente";
-            },
-            error: "Error",
+            success: "Cotización registrada exitosamente",
         });
+        if (err !== null)
+        {
+            return;
+        }
+        reset();
+        setOpen(false);
     };
 
     const handleTermsChange = async(id: string) =>
@@ -119,11 +130,11 @@ export function CreateQuotation()
                                                         emptyMessage="No se encontraron clientes"
                                                         value={
                                                             clientsOptions.find((option) => option.value ===
-                                                                field.value) || undefined
+                                                                field.value) ?? undefined
                                                         }
                                                         onValueChange={(option) =>
                                                         {
-                                                            field.onChange(option?.value || "");
+                                                            field.onChange(option?.value ?? "");
                                                         }}
                                                     />
                                                 </FormControl>
@@ -138,36 +149,51 @@ export function CreateQuotation()
                                         name="serviceIds"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-base">
+                                                <FormLabel className="text-base font-medium">
                                                     Servicios
                                                 </FormLabel>
-                                                <div className="mt-2 grid grid-cols-1 space-y-2 md:grid-cols-2">
-                                                    {services.map((service) => (
-                                                        <FormItem
-                                                            key={service.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0"
-                                                        >
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(service.id!)}
-                                                                    onCheckedChange={(checked) =>
-                                                                    {
-                                                                        if (checked)
-                                                                        {
-                                                                            field.onChange([...field.value, service.id]);
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="text-sm font-normal">
-                                                                {service.name}
-                                                            </FormLabel>
-                                                        </FormItem>
-                                                    ))}
+                                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                                    {services.map((service) =>
+                                                    {
+                                                        const isSelected = field.value?.includes(service.id!);
+                                                        return (
+                                                            <div
+                                                                key={service.id}
+                                                                className={cn(
+                                                                    "group relative flex items-center p-1 rounded-lg border-2 cursor-pointer transition-all",
+                                                                    "hover:border-blue-400 hover:bg-blue-50/50",
+                                                                    isSelected ? "border-blue-500 bg-blue-50/70" : "border-gray-200",
+                                                                )}
+                                                                onClick={() =>
+                                                                {
+                                                                    const newValue = isSelected
+                                                                        ? field.value?.filter((id) => id !== service.id)
+                                                                        : [...(field.value ?? []), service.id!];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    className={cn(
+                                                                        "mr-4 transition-colors",
+                                                                        isSelected ? "text-blue-500" : "text-gray-500",
+                                                                        "group-hover:text-blue-500",
+                                                                    )}
+                                                                >
+                                                                    {serviceIcons[service.name] ?? <Bug className="h-3 w-3" />}
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className="text-xs font-medium">
+                                                                        {service.name}
+                                                                    </h3>
+                                                                </div>
+                                                                {isSelected && (
+                                                                    <div className="absolute top-2 right-2 h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                                                        <Check className="h-3 w-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                                 <FormMessage />
                                             </FormItem>
@@ -266,7 +292,7 @@ export function CreateQuotation()
                                                     <SelectGroup>
                                                         {
                                                             terms.map((terms) => (
-                                                                <SelectItem key={terms.id} value={terms.id ? terms.id : ""}>
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
                                                                     {terms.name}
                                                                 </SelectItem>
                                                             ))

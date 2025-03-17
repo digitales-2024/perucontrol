@@ -152,6 +152,47 @@ namespace PeruControl.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PeruControl.Model.Certificate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ProjectNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectNumber"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Certificate");
+                });
+
             modelBuilder.Entity("PeruControl.Model.Client", b =>
                 {
                     b.Property<Guid>("Id")
@@ -162,6 +203,10 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
+
+                    b.Property<string>("ContactName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -211,6 +256,9 @@ namespace PeruControl.Migrations
                         .HasColumnType("character varying(11)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TypeDocumentValue")
+                        .IsUnique();
 
                     b.ToTable("Clients");
                 });
@@ -277,8 +325,11 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<long>("OrderNumber")
-                        .HasColumnType("bigint");
+                    b.Property<int>("OrderNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderNumber"));
 
                     b.Property<Guid?>("QuotationId")
                         .HasColumnType("uuid");
@@ -590,6 +641,17 @@ namespace PeruControl.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PeruControl.Model.Certificate", b =>
+                {
+                    b.HasOne("PeruControl.Model.Project", "Project")
+                        .WithMany("Certificates")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("PeruControl.Model.ClientLocation", b =>
                 {
                     b.HasOne("PeruControl.Model.Client", "Client")
@@ -664,6 +726,11 @@ namespace PeruControl.Migrations
                     b.Navigation("ClientLocations");
 
                     b.Navigation("ClientToQuotations");
+                });
+
+            modelBuilder.Entity("PeruControl.Model.Project", b =>
+                {
+                    b.Navigation("Certificates");
                 });
 #pragma warning restore 612, 618
         }

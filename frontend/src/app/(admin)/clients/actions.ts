@@ -18,7 +18,6 @@ export async function RegisterClient(client: components["schemas"]["ClientCreate
     if (error)
     {
         console.log("Error registering client:", error);
-        console.log(JSON.stringify(error, null, 2));
         return err(error);
     }
     return ok(null);
@@ -83,7 +82,11 @@ export async function RemoveClient(id: string): Promise<Result<null, FetchError>
     if (error)
     {
         console.log("Error deleting client:", error);
-        return err(error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
     }
     return ok(null);
 }

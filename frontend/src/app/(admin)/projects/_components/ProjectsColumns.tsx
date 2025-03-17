@@ -1,14 +1,20 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronUp, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { components } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useState } from "react";
+import { DeleteProject } from "./DeleteProject";
+import { Project } from "../types";
+import { AlertDialogAcceptProject } from "./AcceptProject";
+import { AlertDialogRejectProject } from "./RejectProject";
+import { DownloadProject } from "./DownloadProject";
 
-export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> = [
+export const columns: Array<ColumnDef<Project>> = [
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
@@ -17,7 +23,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              # Orden
+                # Orden
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -41,7 +47,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Cliente
+                Cliente
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -53,7 +59,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center text-center">
-                {row.original.client?.name}
+                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
             </span>
         ),
     },
@@ -79,15 +85,15 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
             <span className="flex justify-center">
                 {row.original?.status === "Pending" ? (
                     <Badge variant="default">
-                        {row.original.status}
+                        Pendiente
                     </Badge>
                 ) : row.original?.status === "Approved" ? (
                     <Badge variant="approved">
-                        {row.original.status}
+                        Aprobado
                     </Badge>
                 ) : (
                     <Badge variant="destructive">
-                        {row.original?.status}
+                        Rechazado
                     </Badge>
                 )}
             </span>
@@ -101,7 +107,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Área m2
+                Área m2
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -125,7 +131,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-            Nro. de Ambientes
+                Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -149,7 +155,7 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Dirección
+                Dirección
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -166,18 +172,55 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
         ),
     },
     {
+        id: "expander",
+        header: () => null,
+        cell: ({ row }) => (
+            <Button variant="ghost" onClick={row.getToggleExpandedHandler()} className="p-0 hover:bg-transparent">
+                {row.getIsExpanded() ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+        ),
+    },
+    {
         id: "acciones",
         header: "Acciones",
-        cell: function Cell()
+        cell: function Cell({ row })
         {
-            // const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
-            /* const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            const [showDetailQuotation, setShowDetailQuotation] = useState(false); */
+            const [showAcceptProject, setShowAcceptProject] = useState(false);
+            const [showRejectProject, setShowRejectProject] = useState(false);
+            const [showDeleteProject, setShowDeleteProject] = useState(false);
+            const [showDownload, setShowDownload] = useState(false);
 
+            const projectId = row.original.id;
             return (
                 <div>
                     <div>
-                        {/* Acciones */}
+                        {/* Eliminar una cotización */}
+                        <DeleteProject
+                            open={showDeleteProject}
+                            onOpenChange={setShowDeleteProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                        {/* Acceptar Proyecto */}
+                        <AlertDialogAcceptProject
+                            open={showAcceptProject}
+                            onOpenChange={setShowAcceptProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                        {/* Rechazar Proyecto */}
+                        <AlertDialogRejectProject
+                            open={showRejectProject}
+                            onOpenChange={setShowRejectProject}
+                            project={row?.original}
+                            showTrigger={false}
+                        />
+                        {/* Descargar Proyecto */}
+                        <DownloadProject
+                            open={showDownload}
+                            onOpenChange={setShowDownload}
+                            project={row.original}
+                        />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -193,13 +236,26 @@ export const columns: Array<ColumnDef<components["schemas"]["ProjectSummary"]>> 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                Ver
+                            <DropdownMenuLabel>
+                                Acciones
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => setShowAcceptProject(true)}>
+                                Aceptar cotización
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                Editar
+                            <DropdownMenuItem onSelect={() => setShowRejectProject(true)}>
+                                Rechazar cotización
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <Link href={`/projects/${projectId}/update/`}>
+                                <DropdownMenuItem>
+                                    Editar
+                                </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                                Descargar Servicio
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowDeleteProject(true)}>
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -109,14 +109,14 @@ export const columns: Array<ColumnDef<Client>> = [
         ),
     },
     {
-        accessorKey: "businessType",
+        accessorKey: "contactName",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-              Giro comercial
+              Nombre de Contacto
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -128,7 +128,7 @@ export const columns: Array<ColumnDef<Client>> = [
         ),
         cell: ({ row }) => (
             <span className="items-center flex justify-center text-center truncate max-w-xs">
-                {row.original.businessType}
+                {row.original.contactName}
             </span>
         ),
     },

@@ -5,12 +5,12 @@ import { Loader, Plus, Search, Trash2 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet ,SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { RegisterClient, SearchClientByRuc } from "../actions";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 
 export const CreateClient = () =>
 {
@@ -28,6 +28,7 @@ export const CreateClient = () =>
             name: "",
             fiscalAddress: "",
             email: "",
+            contactName: "",
             clientLocations: [
                 {
                     address: "",
@@ -39,7 +40,6 @@ export const CreateClient = () =>
 
     const { reset, setValue } = form;
 
-    // Add this after your existing form fields, before the SheetFooter
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: "clientLocations",
@@ -48,37 +48,34 @@ export const CreateClient = () =>
     const handleSearchByRuc = async(ruc: string) =>
     {
         setLoading(true);
-        const result = await SearchClientByRuc(ruc);
+        const [data, error] = await SearchClientByRuc(ruc);
+        if (error !== null)
+        {
+            console.error("Error searching client by RUC:", error);
+        }
 
-        if (result)
-        {
-            const data = result;
-            // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial || "");
-            setValue("name", data[0].name || "");
-            setValue("fiscalAddress", data[0].fiscalAddress || "");
-            setValue("businessType", data[0].businessType || "");
-        }
-        else
-        {
-            console.error("Error searching client by RUC:", result);
-        }
+        // Actualiza los campos del formulario con los datos obtenidos
+        setValue("razonSocial", data.razonSocial ?? "");
+        setValue("name", data.name ?? "");
+        setValue("fiscalAddress", data.fiscalAddress ?? "");
+        setValue("businessType", data.businessType ?? "");
+
         setLoading(false);
     };
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const result = RegisterClient(input);
-        toast.promise(result, {
+        const [, error] = await toastWrapper(RegisterClient(input), {
             loading: "Cargando...",
-            success: () =>
-            {
-                reset();
-                setOpen(false);
-                return "Cliente registrado exitosamente!";
-            },
-            error: "Error",
+            success: "Cliente registrado exitosamente!",
         });
+        if (error !== null)
+        {
+            return;
+        }
+
+        reset();
+        setOpen(false);
     };
 
     useEffect(() =>
@@ -92,16 +89,16 @@ export const CreateClient = () =>
             <SheetTrigger asChild>
                 <Button className="w-28 text-xs">
                     <Plus />
-                              Crear Nuevo
+                    Crear Nuevo
                 </Button>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>
-                                Nuevo Cliente
+                        Nuevo Cliente
                     </SheetTitle>
                     <SheetDescription>
-                              Llena todos los campos para crear un nuevo cliente
+                        Llena todos los campos para crear un nuevo cliente
                     </SheetDescription>
                 </SheetHeader>
 
@@ -117,7 +114,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem className="truncate">
                                             <FormLabel>
-                                                        Tipo de documento
+                                                Tipo de documento
                                             </FormLabel>
                                             <Select onValueChange={(value) =>
                                             {
@@ -132,10 +129,10 @@ export const CreateClient = () =>
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="ruc">
-                                                                    RUC
+                                                        RUC
                                                     </SelectItem>
                                                     <SelectItem value="dni">
-                                                                  DNI
+                                                        DNI
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -152,7 +149,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  RUC
+                                                        RUC
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="flex gap-2">
@@ -172,7 +169,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Razón Social
+                                                        Razón Social
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese la razón social" {...field} />
@@ -187,10 +184,25 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Nombre Comercial
+                                                        Nombre Comercial
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el nombre comercial" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="contactName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Nombre de Contacto
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Ingrese el nombre de contacto" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -208,7 +220,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  DNI
+                                                        DNI
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el DNI" {...field} />
@@ -225,7 +237,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                                  Nombres y Apellidos
+                                                        Nombres y Apellidos
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese los nombres y apellidos" {...field} />
@@ -245,7 +257,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                          Dirección
+                                                Dirección
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Dirección" {...field} />
@@ -262,7 +274,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem className="truncate">
                                             <FormLabel>
-                                                        Giro del Negocio
+                                                Giro del Negocio
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Giro del Negocio" {...field} />
@@ -278,7 +290,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel htmlFor="phoneNumber">
-                                                        Teléfono
+                                                Teléfono
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -299,7 +311,7 @@ export const CreateClient = () =>
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel htmlFor="email">
-                                                          Correo Electrónico
+                                                Correo Electrónico
                                             </FormLabel>
                                             <FormControl>
                                                 <Input

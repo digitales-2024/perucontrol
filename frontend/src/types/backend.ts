@@ -55,6 +55,24 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
         if (data.error)
         {
+            // attempt to extract error messages from validation errors
+            if (data.response.status === 400)
+            {
+                const e = data.error as Error;
+                if (typeof e === "object" && e !== null && "errors" in e)
+                {
+                    const errors = e.errors as Record<string, string>;
+                    const errorsStr = Object.entries(errors).map(([, v]) => `${v}`)
+                        .join(", ");
+
+                    return err({
+                        statusCode: data.response.status,
+                        message: `${errorsStr}`,
+                        error: data.error,
+                    });
+                }
+            }
+
             const e = data.error as Error;
             if (typeof e === "object" && e !== null && "title" in e)
             {
@@ -89,8 +107,12 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
             });
         }
     }
-    catch
+    catch (e)
     {
+        if (process.env.NODE_ENV === "development")
+        {
+            console.error(e);
+        }
         return err({
             statusCode: 503,
             message: "Servidor no disponible",

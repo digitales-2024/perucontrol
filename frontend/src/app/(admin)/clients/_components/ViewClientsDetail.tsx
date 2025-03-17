@@ -25,7 +25,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                     </Button>
                 </DialogTrigger>
             )}
-            <DialogContent className="sm:max-w-[500px] p-0">
+            <DialogContent className="sm:max-w-[600px] p-0">
                 <Card className="border-0">
                     <CardHeader className="pb-4">
                         <DialogTitle className="text-xl font-bold flex items-center">
@@ -37,10 +37,17 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                         <ScrollArea className="max-h-[85vh] pr-4">
                             <div className="space-y-6">
                                 <div>
-                                    <h2 className="text-lg font-semibold">
-                                        {client.name}
-                                    </h2>
-                                    {client.razonSocial !== "-" && (
+                                    {client.name !== "-" && (
+                                        <h2 className="text-lg font-bold">
+                                            {client.name}
+                                        </h2>
+                                    )}
+                                    {client.contactName !== "" && (
+                                        <h3 className="text-base font-semibold">
+                                            {client.contactName}
+                                        </h3>
+                                    )}
+                                    {client.razonSocial !== "" && (
                                         <p className="text-sm text-gray-500">
                                             {client.razonSocial}
                                         </p>
@@ -86,7 +93,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
 
                                 <Separator />
 
-                                <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="flex flex-wrap justify-between px-4">
                                     <DetailItem icon={Mail} label="Correo Electrónico" value={client.email} />
                                     <DetailItem icon={Phone} label="Teléfono" value={client.phoneNumber} />
                                 </div>

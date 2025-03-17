@@ -5,7 +5,7 @@ namespace PeruControl.Controllers;
 public class QuotationGetDTO : PeruControl.Model.BaseModel
 {
     public virtual ClientGetDTO Client { get; set; } = null!;
-    public virtual ServiceGetDTO Service { get; set; } = null!;
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
     public required string Description { get; set; }
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
     public required uint Area { get; set; }
@@ -42,4 +42,11 @@ public class QuotationSummary
     public required uint Area { get; set; }
 
     public uint? SpacesCount { get; set; }
+}
+
+public class QuotationExportDto
+{
+    public required DateTime ValidUntil { get; set; }
+    public required string Guarantee { get; set; }
+    public required string Deliverables { get; set; }
 }

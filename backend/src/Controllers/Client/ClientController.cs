@@ -31,6 +31,31 @@ public class ClientController(
         return entity == null ? NotFound() : Ok(entity);
     }
 
+    [EndpointSummary("Create")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public override async Task<ActionResult<Client>> Create([FromBody] ClientCreateDTO createDTO)
+    {
+        var duplicateExists = await _context.Clients.AnyAsync(c =>
+            c.TypeDocumentValue == createDTO.TypeDocumentValue
+        );
+        if (duplicateExists)
+        {
+            return BadRequest("Ya existe un cliente con el mismo Documento.");
+        }
+
+        var entity = createDTO.MapToEntity();
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = Guid.NewGuid();
+        }
+
+        _dbSet.Add(entity);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+    }
+
     [HttpGet("search-by-ruc/{ruc}")]
     [EndpointSummary("Get business data by RUC")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -39,6 +64,24 @@ public class ClientController(
     {
         try
         {
+            // first check if the ruc is already in the db, to not hit SUNAT unnecessarily
+            var client = await _context.Clients.FirstOrDefaultAsync(c =>
+                c.TypeDocumentValue == ruc
+            );
+            if (client != null)
+            {
+                return Ok(
+                    new SunatQueryResponse
+                    {
+                        RazonSocial = client.RazonSocial,
+                        Name = client.Name,
+                        FiscalAddress = client.FiscalAddress,
+                        BusinessType = client.BusinessType,
+                        ContactName = client.ContactName,
+                    }
+                );
+            }
+
             var data = await clientService.ScrapSunat(ruc);
             return Ok(data);
         }
@@ -48,6 +91,40 @@ public class ClientController(
             return NotFound();
         }
     }
+
+    // Sobrescribiendo el método Delete para agregar las validaciones
+    [HttpDelete("{id}")]
+    public override async Task<IActionResult> Delete(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si el cliente está asociado a alguna cotización
+        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q => q.Client.Id == id);
+        // Verificar si el cliente está asociado a algún proyecto
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Client.Id == id);
+
+        if (isAssociatedWithQuotation)
+        {
+            return BadRequest(
+                "No se puede desactivar el cliente porque está asociado a una cotización."
+            );
+        }
+
+        if (isAssociatedWithProject)
+        {
+            return BadRequest(
+                "No se puede desactivar el cliente porque está asociado a un proyecto."
+            );
+        }
+
+        entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }
 
 public class SunatQueryResponse
@@ -56,4 +133,5 @@ public class SunatQueryResponse
     public string? Name { get; set; }
     public string? FiscalAddress { get; set; }
     public string? BusinessType { get; set; }
+    public string? ContactName { get; set; }
 }

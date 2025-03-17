@@ -72,11 +72,15 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 
 public class QuotationPatchDTO : IEntityPatcher<Quotation>
 {
+    public Guid? ClientId { get; set; }
     public ICollection<Guid>? ServiceIds { get; set; }
     public string? Description { get; set; }
     public uint? Area { get; set; }
     public uint? SpacesCount { get; set; }
     public bool? HasTaxes { get; set; }
+
+    [Column(TypeName = "TEXT")]
+    public string? TermsAndConditions { get; set; }
 
     public void ApplyPatch(Quotation entity)
     {
@@ -88,6 +92,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.SpacesCount = (uint)SpacesCount;
         if (HasTaxes != null)
             entity.HasTaxes = (bool)HasTaxes;
+        if (TermsAndConditions != null)
+            entity.TermsAndConditions = TermsAndConditions;
     }
 }
 
