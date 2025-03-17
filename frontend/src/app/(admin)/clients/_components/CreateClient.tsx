@@ -28,6 +28,7 @@ export const CreateClient = () =>
             name: "",
             fiscalAddress: "",
             email: "",
+            contactName: "",
             clientLocations: [
                 {
                     address: "",
@@ -187,6 +188,21 @@ export const CreateClient = () =>
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Ingrese el nombre comercial" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="contactName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Nombre de Contacto
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Ingrese el nombre de contacto" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
