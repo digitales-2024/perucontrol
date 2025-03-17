@@ -208,13 +208,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectCertificateExport"];
-                    "text/json": components["schemas"]["ProjectCertificateExport"];
-                    "application/*+json": components["schemas"]["ProjectCertificateExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -2354,6 +2348,7 @@ export interface components {
         Certificate: {
             /** Format: int32 */
             projectNumber: number;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
@@ -2369,6 +2364,7 @@ export interface components {
         CertificateCreateDTO: {
             /** Format: uuid */
             projectId: string;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
@@ -2496,7 +2492,6 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        ProjectCertificateExport: Record<string, never>;
         ProjectCreateDTO: {
             /** Format: uuid */
             clientId: string;

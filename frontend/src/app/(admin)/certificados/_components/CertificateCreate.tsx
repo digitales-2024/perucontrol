@@ -21,11 +21,16 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { format, parseISO } from "date-fns";
 import { toastWrapper } from "@/types/toasts";
 import { CreateCertificate, DownloadCertificate } from "../actions";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const createSchema = z.object({
     projectId: z.string({ message: "Selecciona un servicio" }).nonempty({ message: "Selecciona un servicio" }),
+    treatedArea: z.string().min(1, { message: "El área tratada es requerida" }),
     creationDate: z.string().datetime({ message: "Fecha invalida" }),
     expirationDate: z.string().datetime({ message: "Fecha invalida" }),
+    elevatedTankCleaning: z.boolean(),
+    tankCleaning: z.boolean(),
 });
 export type CreateSchema = z.infer<typeof createSchema>;
 
@@ -41,12 +46,12 @@ export function CertificateCreate({
         resolver: zodResolver(createSchema),
         defaultValues: {
             projectId: "",
+            treatedArea: "",
             creationDate: "",
             expirationDate: "",
         },
     });
 
-    // 2. Define a submit handler.
     const onSubmit = async(values: CreateSchema) =>
     {
         // Create certificate
@@ -115,6 +120,64 @@ export function CertificateCreate({
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="treatedArea"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>
+                                    Área tratada
+                                </FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Área tratada" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <div className="flex gap-2">
+                        <FormLabel className="text-base mt-1">
+                            Limpieza y desinfección de tanques elevados y cisternas de agua.
+                        </FormLabel>
+                        <FormField
+                            control={form.control}
+                            name="elevatedTankCleaning"
+                            render={({ field }) => (
+                                <FormItem className="flex py-2">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="flex gap-2">
+                        <FormLabel className="text-base mt-1">
+                            Limpieza y desinfección de tanques cisternas de agua potable.
+                        </FormLabel>
+                        <FormField
+                            control={form.control}
+                            name="tankCleaning"
+                            render={({ field }) => (
+                                <FormItem className="flex py-2">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
                     <FormField
                         control={form.control}
