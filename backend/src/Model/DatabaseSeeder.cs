@@ -120,6 +120,65 @@ public static class DatabaseSeeder
         await context.Clients.AddRangeAsync(defaultClients);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Seeded {count} default services", defaultClients.Count);
+        logger.LogInformation("Seeded {count} services", defaultClients.Count);
+    }
+
+    public static async Task SeedQuotations(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Quotations.AnyAsync())
+        {
+            logger.LogInformation("Quotations already seeded");
+            return;
+        }
+
+        // get services
+        var services = await context.Services.ToListAsync();
+        if (services.Count == 0)
+        {
+            logger.LogWarning("No services found to seed quotations");
+            return;
+        }
+        var servicesAmount = services.Count;
+
+        // get a client
+        var client = await context.Clients.FirstOrDefaultAsync();
+        if (client == null)
+        {
+            logger.LogWarning("No clients found to seed quotations");
+            return;
+        }
+
+        var defaultQuotations = new List<Quotation>
+        {
+            new Quotation
+            {
+                Client = client,
+                Services = services.Take(servicesAmount / 2).ToList(),
+                Status = QuotationStatus.Pending,
+                Description = "Descripcion de la cotizacion",
+                Area = 420,
+                SpacesCount = 32,
+                HasTaxes = true,
+                TermsAndConditions = "Terminos y Condiciones de la cotizacion",
+            },
+            new Quotation
+            {
+                Client = client,
+                Services = services.Take(servicesAmount / 2).ToList(),
+                Status = QuotationStatus.Approved,
+                Description = "Descripcion de la cotizacion numero 2",
+                Area = 42,
+                SpacesCount = 2,
+                HasTaxes = false,
+                TermsAndConditions = "Terminos y Condiciones",
+            },
+        };
+
+        await context.Quotations.AddRangeAsync(defaultQuotations);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} quoations", defaultQuotations.Count);
     }
 }
