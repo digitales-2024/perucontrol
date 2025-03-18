@@ -67,7 +67,7 @@ pipeline {
 					sh 'mkdir -p logs || true'
 					sh "docker logs perucontrol-frontend-ci-${BUILD_NUMBER} > logs/frontend.log 2>&1 || true"
 					sh "docker logs perucontrol-backend-ci-${BUILD_NUMBER} > logs/backend.log 2>&1 || true"
-					archiveArtifacts 'logs/** || true'
+					archiveArtifacts 'logs/**'
 
 					sh 'docker compose -f docker-compose.ci.yml down -v || true'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER} || true"
