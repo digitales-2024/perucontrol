@@ -42,7 +42,7 @@ public class Client : BaseModel
     [MaxLength(24)]
     public required string PhoneNumber { get; set; }
 
-    [MinLength(1)]
+    [MinLength(0)]
     [MaxLength(100)]
     public string? ContactName { get; set; }
 
@@ -87,7 +87,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
     [MaxLength(24, ErrorMessage = "El número de teléfono debe tener como máximo 24 caracteres")]
     public required string PhoneNumber { get; set; }
 
-    [MinLength(1, ErrorMessage = "El nombre de contacto no puede estar vacio")]
+    [MinLength(0)]
     [MaxLength(100, ErrorMessage = "El nombre contacto debe tener como máximo 100 caracteres")]
     public string? ContactName { get; set; }
 

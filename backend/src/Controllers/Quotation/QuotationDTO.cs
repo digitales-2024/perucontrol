@@ -6,7 +6,7 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
 {
     public virtual ClientGetDTO Client { get; set; } = null!;
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
-    public required string Description { get; set; }
+    public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
     public required uint Area { get; set; }
     public required uint SpacesCount { get; set; }
@@ -24,6 +24,7 @@ public class ClientGetDTO : PeruControl.Model.BaseModel
     public required string FiscalAddress { get; set; }
     public required string Email { get; set; }
     public required string PhoneNumber { get; set; }
+    public required string ContactName { get; set; }
     public required ICollection<ClientLocation> ClientLocations { get; set; } =
         new List<ClientLocation>();
 }

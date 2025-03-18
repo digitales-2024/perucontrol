@@ -12,6 +12,14 @@ public enum QuotationStatus
     Rejected,
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum QuotationFrequency
+{
+  Bimonthly,
+  Quarterly,
+  Semiannual
+}
+
 public class Quotation : BaseModel
 {
     public virtual Client Client { get; set; } = null!;
@@ -20,7 +28,7 @@ public class Quotation : BaseModel
 
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
-    public required string Description { get; set; }
+    public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
 
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
     public required uint Area { get; set; }
@@ -46,13 +54,15 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [MinLength(1)]
     public required ICollection<Guid> ServiceIds { get; set; }
 
-    public required string Description { get; set; }
 
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
     public required uint Area { get; set; }
 
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
+    
+    public required QuotationFrequency Frequency { get; set; }
+
     public required bool HasTaxes { get; set; }
     public required string TermsAndConditions { get; set; }
 
@@ -60,8 +70,8 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     {
         return new Quotation
         {
-            Description = Description,
             Status = QuotationStatus.Pending,
+            Frequency = Frequency,
             Area = Area,
             SpacesCount = SpacesCount,
             HasTaxes = HasTaxes,
@@ -74,9 +84,9 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 {
     public Guid? ClientId { get; set; }
     public ICollection<Guid>? ServiceIds { get; set; }
-    public string? Description { get; set; }
     public uint? Area { get; set; }
     public uint? SpacesCount { get; set; }
+    public QuotationFrequency? Frequency { get; set; }
     public bool? HasTaxes { get; set; }
 
     [Column(TypeName = "TEXT")]
@@ -84,8 +94,6 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 
     public void ApplyPatch(Quotation entity)
     {
-        if (Description != null)
-            entity.Description = Description;
         if (Area != null)
             entity.Area = (uint)Area;
         if (SpacesCount != null)
@@ -94,6 +102,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.HasTaxes = (bool)HasTaxes;
         if (TermsAndConditions != null)
             entity.TermsAndConditions = TermsAndConditions;
+        if (Frequency != null)
+            entity.Frequency = Frequency.Value;
     }
 }
 

@@ -240,7 +240,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             .Quotations.Include(c => c.Client)
             .Include(s => s.Services)
             .Where(q => q.Status == QuotationStatus.Approved)
-            .Where(q => !_context.Projects.Any(p => p.Quotation.Id == q.Id))
+            .Where(q => !_context.Projects.Any(p => p.Quotation!.Id == q.Id))
             .ToListAsync();
 
         return Ok(approvedQuotations);
