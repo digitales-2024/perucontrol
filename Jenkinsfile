@@ -48,7 +48,7 @@ pipeline {
 			}
 			steps {
 				dir("backend/Tests.E2E") {
-					sh 'docker run --network perucontrol-network-ci-${BUILD_NUMBER} -e BASE_URL=${BASE_URL} -v $(pwd):/app digitalesacide/playwright-dotnet9-noble:latest \'dotnet test\''
+					sh 'docker run --network perucontrol-network-ci-${BUILD_NUMBER} -e BASE_URL=${BASE_URL} -v $(pwd):/app digitalesacide/playwright-dotnet9-noble:latest dotnet test'
 				}
 			}
 			post {
