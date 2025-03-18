@@ -68,10 +68,14 @@ export function ViewQuotationDetails({
 
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground">
-                                  Descripción
+                                    Frecuencia
                                 </h3>
                                 <p className="text-base">
-                                    {quotation.description || "Sin descripción"}
+                                    {quotation.frequency === "Bimonthly"
+                                        ? "Bimestral"
+                                        : quotation.frequency === "Quarterly"
+                                            ? "Trimestral"
+                                            : "Semestral"}
                                 </p>
                             </div>
 

@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250318174902_Squash Init")]
-    partial class SquashInit
+    [Migration("20250317213642_Squash - conctacName de Cliente")]
+    partial class SquashconctacNamedeCliente
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

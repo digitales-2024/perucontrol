@@ -2348,6 +2348,7 @@ export interface components {
         Certificate: {
             /** Format: int32 */
             projectNumber: number;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
@@ -2363,6 +2364,7 @@ export interface components {
         CertificateCreateDTO: {
             /** Format: uuid */
             projectId: string;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
@@ -2469,6 +2471,8 @@ export interface components {
             /** Format: int32 */
             refreshExpiresIn: number;
         };
+        /** @enum {unknown|null} */
+        NullableOfQuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual" | null;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -2575,7 +2579,7 @@ export interface components {
             client?: components["schemas"]["Client2"];
             services?: Array<components["schemas"]>;
             status: components["schemas"]["QuotationStatus"];
-            description: string;
+            frequency: components["schemas"]["QuotationFrequency"];
             /** Format: uint32 */
             area: number;
             /** Format: uint32 */
@@ -2594,7 +2598,7 @@ export interface components {
             client?: components["schemas"]["Client"];
             services?: Array<components["schemas"]["Service"]>;
             status: components["schemas"]["QuotationStatus"];
-            description: string;
+            frequency: components["schemas"]["QuotationFrequency"];
             /** Format: uint32 */
             area: number;
             /** Format: uint32 */
@@ -2613,11 +2617,11 @@ export interface components {
             /** Format: uuid */
             clientId: string;
             serviceIds: Array<string>;
-            description: string;
             /** Format: uint32 */
             area: number;
             /** Format: uint32 */
             spacesCount: number;
+            frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
             termsAndConditions: string;
         };
@@ -2627,15 +2631,17 @@ export interface components {
             guarantee: string;
             deliverables: string;
         };
+        /** @enum {unknown} */
+        QuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
             /** Format: uuid */
             clientId?: string | null;
             serviceIds?: Array<string> | null;
-            description?: string | null;
             /** Format: uint32 */
             area?: number | null;
             /** Format: uint32 */
             spacesCount?: number | null;
+            frequency?: components["schemas"]["NullableOfQuotationFrequency"];
             hasTaxes?: boolean | null;
             termsAndConditions?: string | null;
         };

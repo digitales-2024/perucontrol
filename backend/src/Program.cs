@@ -139,6 +139,13 @@ using (var scope = app.Services.CreateScope())
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     await DatabaseSeeder.SeedDefaultUserAsync(app.Services, logger);
     await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
+
+    // Apply more seeds when not in prod or staging
+    if (!app.Environment.IsProduction() && !app.Environment.IsStaging())
+    {
+        logger.LogInformation("Seeding development data");
+        await DatabaseSeeder.SeedClients(app.Services, logger);
+    }
 }
 
 app.UseGlobalExceptionHandler();

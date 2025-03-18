@@ -8,6 +8,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
     public required DbSet<Client> Clients { get; set; }
+    public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<Quotation> Quotations { get; set; }
     public required DbSet<Service> Services { get; set; }

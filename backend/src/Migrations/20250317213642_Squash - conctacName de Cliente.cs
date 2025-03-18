@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class SquashInit : Migration
+    public partial class SquashconctacNamedeCliente : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
