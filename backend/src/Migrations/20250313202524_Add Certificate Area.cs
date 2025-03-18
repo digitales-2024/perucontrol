@@ -12,32 +12,32 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Certificate_Projects_ProjectId",
-                table: "Certificate");
+                table: "Certificate"
+            );
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Certificate",
-                table: "Certificate");
+            migrationBuilder.DropPrimaryKey(name: "PK_Certificate", table: "Certificate");
 
-            migrationBuilder.RenameTable(
-                name: "Certificate",
-                newName: "Certificates");
+            migrationBuilder.RenameTable(name: "Certificate", newName: "Certificates");
 
             migrationBuilder.RenameIndex(
                 name: "IX_Certificate_ProjectId",
                 table: "Certificates",
-                newName: "IX_Certificates_ProjectId");
+                newName: "IX_Certificates_ProjectId"
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "TreatedArea",
                 table: "Certificates",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Certificates",
                 table: "Certificates",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Certificates_Projects_ProjectId",
@@ -45,7 +45,8 @@ namespace PeruControl.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -53,29 +54,26 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Certificates_Projects_ProjectId",
-                table: "Certificates");
+                table: "Certificates"
+            );
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Certificates",
-                table: "Certificates");
+            migrationBuilder.DropPrimaryKey(name: "PK_Certificates", table: "Certificates");
 
-            migrationBuilder.DropColumn(
-                name: "TreatedArea",
-                table: "Certificates");
+            migrationBuilder.DropColumn(name: "TreatedArea", table: "Certificates");
 
-            migrationBuilder.RenameTable(
-                name: "Certificates",
-                newName: "Certificate");
+            migrationBuilder.RenameTable(name: "Certificates", newName: "Certificate");
 
             migrationBuilder.RenameIndex(
                 name: "IX_Certificates_ProjectId",
                 table: "Certificate",
-                newName: "IX_Certificate_ProjectId");
+                newName: "IX_Certificate_ProjectId"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Certificate",
                 table: "Certificate",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Certificate_Projects_ProjectId",
@@ -83,7 +81,8 @@ namespace PeruControl.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }
