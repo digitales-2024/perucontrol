@@ -11,7 +11,12 @@ public class CertificateCreateDTO : IMapToEntity<Certificate>
 
     public Certificate MapToEntity()
     {
-        return new() { CreationDate = CreationDate, ExpirationDate = ExpirationDate, TreatedArea = TreatedArea };
+        return new()
+        {
+            CreationDate = CreationDate,
+            ExpirationDate = ExpirationDate,
+            TreatedArea = TreatedArea,
+        };
     }
 }
 

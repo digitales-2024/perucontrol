@@ -40,8 +40,8 @@ public class CertificateController(DatabaseContext db, WordTemplateService wordS
     public IActionResult GenerateCertificate(Guid id)
     {
         // get cert, service and client
-        var cert = _context.Certificates
-            .Include(c => c.Project)
+        var cert = _context
+            .Certificates.Include(c => c.Project)
             .ThenInclude(p => p.Services)
             .Include(c => c.Project)
             .ThenInclude(p => p.Client)
@@ -54,7 +54,8 @@ public class CertificateController(DatabaseContext db, WordTemplateService wordS
         var project = cert.Project;
         var client = project.Client;
 
-        var placeholders = new Dictionary<string, string> {
+        var placeholders = new Dictionary<string, string>
+        {
             { "{{s1}}", "???" },
             { "{{s2}}", "???" },
             { "{{s3}}", "???" },
@@ -68,15 +69,7 @@ public class CertificateController(DatabaseContext db, WordTemplateService wordS
             { "{{cert_creation_date}}", cert.CreationDate.ToString("dd/MM/yyyy") },
             { "{{cert_expiration_date}}", cert.ExpirationDate.ToString("dd/MM/yyyy") },
         };
-        var fileBytes = wordService.GenerateWordFromTemplate(
-            placeholders,
-            "Templates/certificado.docx"
-        );
 
-        return File(
-            fileBytes,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "certificate.docx"
-        );
+        return BadRequest("Generacion en PDF no implementada");
     }
 }
