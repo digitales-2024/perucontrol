@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, Download, FileDigit, Hash, LandPlot, ListCheck, MapPinHouse, Package, Rat, ScanHeart, SprayCan, SquareM, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MousePointer2, Package, Rat, ScanHeart, SprayCan, SprayCanIcon, SquareM, X } from "lucide-react";
 import { format, parse } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -17,6 +17,15 @@ import { toastWrapper } from "@/types/toasts";
 import { GenerateExcel } from "../actions";
 import { Project } from "../types";
 import { useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+
+const infestationLevels = [
+    { id: "alto", label: "Alto" },
+    { id: "moderado", label: "Moderado" },
+    { id: "bajo", label: "Bajo" },
+    { id: "insignificante", label: "Insignificante" },
+];
 
 export function DownloadProjectForm({ onOpenChange, project }: {
   onOpenChange: (v: boolean) => void,
@@ -34,16 +43,18 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             businessType: "",
             sanitaryCondition: "",
             treatedAreas: "",
-            service: "",
+            service: [],
             certificateNumber: "",
             insects: "",
             rodents: "",
             otherPlagues: "",
             insecticide: "",
+            insecticide2: "",
             rodenticide: "",
             desinfectant: "",
             otherProducts: "",
             insecticideAmount: "",
+            insecticideAmount2: "",
             rodenticideAmount: "",
             desinfectantAmount: "",
             otherProductsAmount: "",
@@ -55,6 +66,17 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             staff2: "",
             staff3: "",
             staff4: "",
+            aspersionManual: false,
+            aspersionMotor: false,
+            nebulizacionFrio: false,
+            nebulizacionCaliente: false,
+            nebulizacionCebosTotal: false,
+            colocacionCebosCebaderos: false,
+            colocacionCebosRepuestos: false,
+            degreeInsectInfectivity: "",
+            degreeRodentInfectivity: "",
+            observations: "",
+            recommendations: "",
         },
     });
 
@@ -67,6 +89,11 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             setValue("razonSocial", project.client.razonSocial!);
             setValue("businessType", project.client.businessType!);
         }
+        if (project.services)
+        {
+            const serviceNames = project.services.map((service) => service.name);
+            setValue("service", serviceNames);
+        }
         setValue("address", project.address!);
     }, [project, setValue]);
 
@@ -77,7 +104,6 @@ export function DownloadProjectForm({ onOpenChange, project }: {
 
     const download = async(body: DownloadProjectSchema) =>
     {
-        console.log("Body", body);
         const [blob, err] = await toastWrapper(GenerateExcel(project.id, body), {
             loading: "Generando archivo",
             success: "Excel generado",
@@ -102,7 +128,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             <div className="flex-1 overflow-auto">
                 <Tabs defaultValue="general" className="w-full">
                     <div className="px-6">
-                        <TabsList className="w-full h-12 bg-muted/50 p-1">
+                        <TabsList className="w-full h-auto bg-muted/50 p-1 flex flex-wrap gap-1">
                             <TabsTrigger value="general" className="flex-1">
                                 Información General
                             </TabsTrigger>
@@ -111,6 +137,9 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                             </TabsTrigger>
                             <TabsTrigger value="cantidades" className="flex-1">
                                 Cantidades
+                            </TabsTrigger>
+                            <TabsTrigger value="metodos" className="flex-1">
+                                Métodos y Grados
                             </TabsTrigger>
                             <TabsTrigger value="personal" className="flex-1">
                                 Monitoreo y Personal
@@ -121,7 +150,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                     <div className="mt-4 pb-20">
                         <ScrollArea className="h-[calc(100vh-460px)]">
                             <Form {...form}>
-                                <form id="projectForm" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-6">
+                                <form id="projectForm" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-4">
                                     <TabsContent value="general" className="mt-0">
                                         <Card className="border shadow-sm">
                                             <CardHeader className="py-3">
@@ -309,13 +338,39 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                         name="service"
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                <FormLabel className="flex items-center gap-2 font-medium mb-3">
                                                                     <ListCheck className="h-4 w-4 text-blue-500" />
                                                                     Servicios Realizados
                                                                 </FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="Servicios Realizados" {...field} />
-                                                                </FormControl>
+                                                                <div className="space-y-2">
+                                                                    {project.services?.map((service) => (
+                                                                        <FormItem
+                                                                            key={service.id}
+                                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                                        >
+                                                                            <FormControl>
+                                                                                <Checkbox
+                                                                                    checked
+                                                                                    onCheckedChange={(checked) =>
+                                                                                    {
+                                                                                        if (checked)
+                                                                                        {
+                                                                                            field.onChange([...field.value, service.id]);
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                            </FormControl>
+                                                                            <FormLabel className="text-sm font-normal">
+                                                                                {service.name}
+                                                                            </FormLabel>
+                                                                        </FormItem>
+                                                                    ))}
+                                                                </div>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )}
                                                     />
@@ -429,6 +484,22 @@ export function DownloadProjectForm({ onOpenChange, project }: {
 
                                                     <FormField
                                                         control={form.control}
+                                                        name="insecticide2"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <BugOff className="h-4 w-4 text-blue-500" />
+                                                                    Insecticida 2
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="Nombre del insecticida 2" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
                                                         name="rodenticide"
                                                         render={({ field }) => (
                                                             <FormItem>
@@ -504,6 +575,28 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                 <FormControl>
                                                                     <Input
                                                                         placeholder="Cantidad de Insecticida"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="insecticideAmount2"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <Hash className="h-4 w-4 text-blue-500" />
+                                                                    Cantidad de Insecticida 2
+                                                                </FormLabel>
+                                                                <FormDescription>
+                                                                    Indique la cantidad en ml o g
+                                                                </FormDescription>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Cantidad de Insecticida 2"
                                                                         {...field}
                                                                     />
                                                                 </FormControl>
@@ -754,6 +847,302 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                             </FormItem>
                                                         )}
                                                     />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="border shadow-sm mt-6">
+                                            <CardHeader className="py-3">
+                                                <CardTitle className="text-md font-medium">
+                                                    Orden, Limpieza, Infraestructura y Elementos Innecesarios
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <Separator />
+                                            <CardContent className="pt-4">
+                                                <div className="space-y-6">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="observations"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <ClipboardList className="h-4 w-4 text-blue-500" />
+                                                                    Observaciones
+                                                                </FormLabel>
+                                                                <FormDescription>
+                                                                    Registre las observaciones sobre el estado de orden, limpieza e infraestructura
+                                                                </FormDescription>
+                                                                <FormControl>
+                                                                    <Textarea
+                                                                        placeholder="Ingrese sus observaciones aquí..."
+                                                                        className="min-h-[120px] resize-y"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="recommendations"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <LightbulbIcon className="h-4 w-4 text-blue-500" />
+                                                                    Recomendaciones
+                                                                </FormLabel>
+                                                                <FormDescription>
+                                                                    Registre las recomendaciones para mejorar las condiciones
+                                                                </FormDescription>
+                                                                <FormControl>
+                                                                    <Textarea
+                                                                        placeholder="Ingrese sus recomendaciones aquí..."
+                                                                        className="min-h-[120px] resize-y"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </TabsContent>
+
+                                    <TabsContent value="metodos" className="mt-0 space-y-4">
+                                        <Card className="border shadow-sm">
+                                            <CardHeader className="py-3">
+                                                <CardTitle className="text-md font-medium">
+                                                    Métodos Utilizados
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <Separator />
+                                            <CardContent className="pt-4">
+                                                <div className="space-y-6">
+                                                    <div className="border rounded-lg p-4 bg-gray-50">
+                                                        <div className="grid grid-cols-4 gap-4">
+                                                            {/* Columna de categorías */}
+                                                            <div className="space-y-8">
+                                                                <div className="pt-1">
+                                                                    <h3 className="text-sm font-semibold flex items-center">
+                                                                        <SprayCanIcon className="h-4 w-4 text-blue-500 mr-2" />
+                                                                        Aspersión
+                                                                    </h3>
+                                                                </div>
+                                                                <div className="pt-1">
+                                                                    <h3 className="text-sm font-semibold flex items-center">
+                                                                        <Droplets className="h-4 w-4 text-blue-500 mr-2" />
+                                                                        Nebulización
+                                                                    </h3>
+                                                                </div>
+                                                                <div className="pt-1">
+                                                                    <h3 className="text-sm font-semibold flex items-center">
+                                                                        <MousePointer2 className="h-4 w-4 text-blue-500 mr-2" />
+                                                                        Colocación de Cebos
+                                                                    </h3>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Columna 1 */}
+                                                            <div className="space-y-8">
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="aspersionManual"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <FormLabel className="font-normal">
+                                                                                Manual
+                                                                            </FormLabel>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="nebulizacionFrio"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <div className="flex items-center">
+                                                                                <FormLabel className="font-normal">
+                                                                                    Frío
+                                                                                </FormLabel>
+                                                                            </div>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="colocacionCebosCebaderos"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <FormLabel className="font-normal">
+                                                                                Cebaderos
+                                                                            </FormLabel>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                            </div>
+
+                                                            {/* Columna 2 */}
+                                                            <div className="space-y-8">
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="aspersionMotor"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <FormLabel className="font-normal">
+                                                                                Motor
+                                                                            </FormLabel>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="nebulizacionCaliente"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <div className="flex items-center">
+                                                                                <FormLabel className="font-normal">
+                                                                                    Caliente
+                                                                                </FormLabel>
+                                                                            </div>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <div className="invisible">
+                                                                    <span>
+                                                                        Espacio
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Columna 3 */}
+                                                            <div className="space-y-8">
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="nebulizacionCebosTotal"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <div className="flex items-center">
+                                                                                <FormLabel className="font-normal">
+                                                                                    Nº Cebos Total
+                                                                                </FormLabel>
+                                                                            </div>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="colocacionCebosRepuestos"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                            <FormControl>
+                                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            </FormControl>
+                                                                            <div className="flex items-center">
+                                                                                <FormLabel className="font-normal">
+                                                                                    Nº Cebos Repuestos
+                                                                                </FormLabel>
+                                                                            </div>
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="border shadow-sm">
+                                            <CardHeader className="py-3">
+                                                <CardTitle className="text-md font-medium">
+                                                    Grados de Infestación
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <Separator />
+                                            <CardContent className="pt-4">
+                                                <div className="space-y-6">
+                                                    <div className="border rounded-lg p-4 bg-gray-50">
+                                                        {/* Infestación de insectos y roedores en filas */}
+                                                        <div className="space-y-4">
+                                                            {/* Infestación de Insectos */}
+                                                            <div className="flex items-center gap-x-6">
+                                                                <span className="font-medium">
+                                                                    Insectos:
+                                                                </span>
+                                                                {infestationLevels.map((level) => (
+                                                                    <FormField
+                                                                        key={level.id}
+                                                                        control={form.control}
+                                                                        name="degreeInsectInfectivity"
+                                                                        render={({ field }) => (
+                                                                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                                <FormControl>
+                                                                                    <Checkbox
+                                                                                        checked={field.value === level.id}
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        }
+                                                                                    />
+                                                                                </FormControl>
+                                                                                <FormLabel className="text-sm font-normal">
+                                                                                    {level.label}
+                                                                                </FormLabel>
+                                                                            </FormItem>
+
+                                                                        )}
+                                                                    />
+                                                                ))}
+                                                            </div>
+
+                                                            {/* Infestación de Roedores */}
+                                                            <div className="flex items-center gap-x-6">
+                                                                <span className="font-medium">
+                                                                    Roedores:
+                                                                </span>
+                                                                {infestationLevels.map((level) => (
+                                                                    <FormField
+                                                                        key={level.id}
+                                                                        control={form.control}
+                                                                        name="degreeRodentInfectivity"
+                                                                        render={({ field }) => (
+                                                                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                                <FormControl>
+                                                                                    <Checkbox
+                                                                                        checked={field.value === level.id}
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        }
+                                                                                    />
+                                                                                </FormControl>
+                                                                                <FormLabel className="text-sm font-normal">
+                                                                                    {level.label}
+                                                                                </FormLabel>
+                                                                            </FormItem>
+                                                                        )}
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </CardContent>
                                         </Card>

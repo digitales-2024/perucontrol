@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { components } from "@/types/api";
-import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../../schemas";
 import { Button } from "@/components/ui/button";
@@ -254,7 +254,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                                         }}
                                                     >
                                                         <div className="mr-4">
-                                                            {serviceIcons[service.name] ?? <Bug className="h-6 w-6" />}
+                                                            {serviceIcons[service.name] ?? <ShieldCheck className="h-3 w-3" />}
                                                         </div>
                                                         <div>
                                                             <h3 className="text-sm font-medium">

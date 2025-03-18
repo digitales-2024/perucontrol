@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { useQuotationContext } from "../context/QuotationContext";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 
 // Mapa de iconos para servicios
@@ -31,6 +31,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
     Desinsectación: <Bug className="h-3 w-3" />,
     Fumigación: <Spray className="h-3 w-3" />,
     Desinfección: <Shield className="h-3 w-3" />,
+    LimpiezaDeTanque: <ShieldCheck className="h-3 w-3" />,
 };
 
 export function CreateQuotation()
@@ -53,7 +54,7 @@ export function CreateQuotation()
         defaultValues: {
             clientId: "",
             serviceIds: [],
-            description: "",
+            frequency: "Bimonthly",
             area: 0,
             spacesCount: 0,
             hasTaxes: false,
@@ -200,22 +201,33 @@ export function CreateQuotation()
                                         )}
                                     />
 
-                                    {/* Descripción */}
+                                    {/* Frequency */}
                                     <FormField
                                         control={form.control}
-                                        name="description"
+                                        name="frequency"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                    Descripción
+                                            Frecuencia
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Descripción del servicio..."
-                                                        className="resize-none min-h-[150px] border rounded-md"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Selecciona la frecuencia" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Bimonthly">
+                                                            Bimestral
+                                                        </SelectItem>
+                                                        <SelectItem value="Quarterly">
+                                                            Trimestral
+                                                        </SelectItem>
+                                                        <SelectItem value="Semiannual">
+                                                            Semestral
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

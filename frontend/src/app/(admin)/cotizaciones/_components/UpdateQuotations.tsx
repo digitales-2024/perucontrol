@@ -39,7 +39,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
         defaultValues: {
             clientId: quotation?.client?.id ?? "",
             serviceIds: quotation?.services?.map((service) => service.id) ?? [],
-            description: quotation?.description ?? "",
+            frequency: quotation?.frequency ?? "",
             area: quotation?.area ?? 0,
             spacesCount: quotation?.spacesCount ?? 0,
             hasTaxes: quotation?.hasTaxes ?? false,
@@ -56,7 +56,7 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
             form.reset({
                 clientId: quotation?.client?.id ?? "",
                 serviceIds: quotation?.services?.map((service) => service.id) ?? [],
-                description: quotation?.description ?? "",
+                frequency: quotation?.frequency ?? "",
                 area: quotation?.area ?? 0,
                 spacesCount: quotation?.spacesCount ?? 0,
                 hasTaxes: quotation?.hasTaxes ?? false,
@@ -182,22 +182,33 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                         )}
                                     />
 
-                                    {/* Descripción */}
+                                    {/* Frecuencia */}
                                     <FormField
                                         control={form.control}
-                                        name="description"
+                                        name="frequency"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                    Descripción
+                                                                                Frecuencia
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Descripción del servicio..."
-                                                        className="resize-none min-h-[80px] border rounded-md"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Selecciona la frecuencia" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Bimonthly">
+                                                            Bimestral
+                                                        </SelectItem>
+                                                        <SelectItem value="Quarterly">
+                                                            Trimestral
+                                                        </SelectItem>
+                                                        <SelectItem value="Semiannual">
+                                                            Semestral
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

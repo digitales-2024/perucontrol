@@ -42,14 +42,14 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
     },
     {
-        accessorKey: "description",
+        accessorKey: "frequency",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent"
             >
-                Descripción
+                Frecuencia
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -60,8 +60,10 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             </Button>
         ),
         cell: ({ row }) => (
-            <span>
-                {row.original?.description}
+            <span className="flex justify-center">
+                {row.original?.frequency === "Bimonthly" ? "Bimestral"
+                    : row.original?.frequency === "Quarterly" ? "Trimestral"
+                        : "Semestral"}
             </span>
         ),
     },

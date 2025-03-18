@@ -72,6 +72,7 @@ public static class DatabaseSeeder
             new Service { Name = "Desinfección" },
             new Service { Name = "Desinsectación" },
             new Service { Name = "Desratización" },
+            new Service { Name = "Limpieza de tanque" },
         };
 
         await context.Services.AddRangeAsync(defaultServices);
@@ -157,7 +158,6 @@ public static class DatabaseSeeder
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Pending,
-                Description = "Descripcion de la cotizacion",
                 Area = 420,
                 SpacesCount = 32,
                 HasTaxes = true,
@@ -168,7 +168,6 @@ public static class DatabaseSeeder
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Approved,
-                Description = "Descripcion de la cotizacion numero 2",
                 Area = 42,
                 SpacesCount = 2,
                 HasTaxes = false,

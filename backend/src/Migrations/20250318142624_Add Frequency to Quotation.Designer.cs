@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250317200746_Add ConctactName property in Client")]
-    partial class AddConctactNamepropertyinClient
+    [Migration("20250318142624_Add Frequency to Quotation")]
+    partial class AddFrequencytoQuotation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -369,9 +369,8 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("HasTaxes")
                         .HasColumnType("boolean");

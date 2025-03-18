@@ -370,9 +370,8 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("HasTaxes")
                         .HasColumnType("boolean");
