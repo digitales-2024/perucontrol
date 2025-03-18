@@ -61,8 +61,10 @@ pipeline {
 			}
 			post {
 				always {
-					junit 'reports/testresults.xml'
-					archiveArtifacts 'reports/**'
+					dir("backend/Tests.E2E") {
+						junit 'reports/testresults.xml'
+						archiveArtifacts 'reports/**'
+					}
 					sh 'docker compose -f docker-compose.ci.yml down -v'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER}"
 				}
