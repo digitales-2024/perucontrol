@@ -1,0 +1,46 @@
+services:
+  perucontrol-backend-ci-{BUILD_NUMBER}:
+    build:
+      context: ./backend/src/Deployment/Dockerfile.alpine
+    container_name: perucontrol-backend-ci-{BUILD_NUMBER}
+    restart: never
+    depends_on:
+      perucontrol-db-ci-{BUILD_NUMBER}:
+        condition: service_started
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=perucontrol-db-ci-{BUILD_NUMBER};Database=perucontrol;Username=root;Password=root"
+      Jwt__SecretKey: "1234567890"
+      Jwt__Issuer: "acide.win"
+      Jwt__Audience: "acide.win"
+      Jwt__ExpirationMinutes: 60
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+  perucontrol-frontend-ci-{BUILD_NUMBER}:
+    build:
+      context: ./frontend/deployment/Dockerfile
+    container_name: perucontrol-frontend-ci-{BUILD_NUMBER}
+    restart: never
+    depends_on:
+      perucontrol-backend-ci-{BUILD_NUMBER}:
+        condition: service_started
+    environment:
+      NODE_ENV: "production"
+      INTERNAL_BACKEND_URL: "http://perucontrol-backend-ci-{BUILD_NUMBER}:8080"
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+  perucontrol-db-ci-{BUILD_NUMBER}:
+    image: postgres:latest
+    container_name: perucontrol-db-ci-{BUILD_NUMBER}
+    restart: never
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+networks:
+  perucontrol-network-ci-{BUILD_NUMBER}:
+    driver: bridge

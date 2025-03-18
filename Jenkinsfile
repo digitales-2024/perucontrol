@@ -1,9 +1,5 @@
 pipeline {
 	agent any
-	environment {
-		// Change HOME, because default is usually root dir, and Jenkins user may not have write permissions in that dir
-		HOME = "${WORKSPACE}"
-	}
 	stages {
 		stage("Build project") {
 			parallel {
@@ -27,8 +23,7 @@ pipeline {
 					agent {
 						docker {
 							image 'mcr.microsoft.com/dotnet/sdk:9.0-alpine'
-							args '-v nuget-cache:/root/.nuget/packages'
-							args '-u 0:0'
+							args '-v nuget-cache:/root/.nuget/packages -u 0:0'
 						}
 					}
 					steps {
@@ -38,19 +33,29 @@ pipeline {
 						}
 					}
 				}
-				stage("Run e2e tests") {
-					agent {
-						docker {
-							image 'digitalesacide/playwright-dotnet9-noble:latest'
-							args '--ipc=host -u 0:0'
-						}
-					}
-					steps {
-						dir("backend/Tests.E2E") {
-							sh 'dotnet restore --locked-mode'
-							sh 'dotnet test'
-						}
-					}
+			}
+		}
+		stage("Prepare docker compose") {
+			steps {
+				sh "cp docker-compose.ci.yml docker-compose.ci.yml.bak"
+				sh "sed -i s/{BUILD_NUMBER}/${BUILD_NUMBER}/g docker-compose.ci.yml"
+				sh "docker compose up -d"
+			}
+		}
+		stage("Run e2e tests") {
+			agent {
+				docker {
+					image 'digitalesacide/playwright-dotnet9-noble:latest'
+					args "--ipc=host -u 0:0 --network perucontrol-network-ci-${BUILD_NUMBER}"
+				}
+			}
+			environment {
+				BASE_URL = "http://perucontrol-db-ci-${BUILD_NUMBER}:3000"
+			}
+			steps {
+				dir("backend/Tests.E2E") {
+					sh 'dotnet restore --locked-mode'
+					sh "dotnet test"
 				}
 			}
 		}
