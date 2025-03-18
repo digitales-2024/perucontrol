@@ -37,9 +37,8 @@ pipeline {
 		}
 		stage("Prepare docker compose") {
 			steps {
-				sh "cp docker-compose.ci.yml docker-compose.ci.yml.bak"
 				sh "sed -i s/{BUILD_NUMBER}/${BUILD_NUMBER}/g docker-compose.ci.yml"
-				sh "docker compose up -d"
+				sh "docker compose -f docker-compose-ci-yml up -d"
 			}
 		}
 		stage("Run e2e tests") {
@@ -56,6 +55,11 @@ pipeline {
 				dir("backend/Tests.E2E") {
 					sh 'dotnet restore --locked-mode'
 					sh "dotnet test"
+				}
+			}
+			post {
+				always {
+					sh 'docker-compose -f docker-compose.ci.yml down -v'
 				}
 			}
 		}
