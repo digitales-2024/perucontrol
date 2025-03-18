@@ -43,19 +43,12 @@ pipeline {
 			}
 		}
 		stage("Run e2e tests") {
-			agent {
-				docker {
-					image 'digitalesacide/playwright-dotnet9-noble:latest'
-					args "--ipc=host -u 0:0 --network perucontrol-network-ci-${BUILD_NUMBER}"
-				}
-			}
 			environment {
 				BASE_URL = "http://perucontrol-db-ci-${BUILD_NUMBER}:3000"
 			}
 			steps {
 				dir("backend/Tests.E2E") {
-					sh 'dotnet restore --locked-mode'
-					sh "dotnet test"
+					sh 'docker run --network perucontrol-network-ci-${BUILD_NUMBER} -e BASE_URL=${BASE_URL} -v $(pwd):/app digitalesacide/playwright-dotnet9-noble:latest \'dotnet test\''
 				}
 			}
 			post {
