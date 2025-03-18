@@ -46,3 +46,4 @@ services:
 networks:
   perucontrol-network-ci-{BUILD_NUMBER}:
     driver: bridge
+    external: true
