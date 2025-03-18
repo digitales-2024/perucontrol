@@ -28,6 +28,7 @@ public sealed class Test1 : PageTest
     {
         try
         {
+            await Page.Context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true });
 
             await Page.GotoAsync($"{BaseUrl}/login");
             await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Bienvenido" })).ToBeVisibleAsync();
