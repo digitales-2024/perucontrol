@@ -51,7 +51,7 @@ pipeline {
 		}
 		stage("Run e2e tests") {
 			environment {
-				BASE_URL = "http://perucontrol-db-ci-${BUILD_NUMBER}:3000"
+				BASE_URL = "http://perucontrol-frontend-ci-${BUILD_NUMBER}:3000"
 			}
 			steps {
 				dir("backend/Tests.E2E") {
@@ -60,7 +60,7 @@ pipeline {
 			}
 			post {
 				always {
-					sh 'docker-compose -f docker-compose.ci.yml down -v'
+					sh 'docker compose -f docker-compose.ci.yml down -v'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER}"
 				}
 			}
