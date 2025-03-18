@@ -38,20 +38,20 @@ pipeline {
 		}
 		stage("Prepare docker compose") {
 			steps {
-				sh "sed -i s/{BUILD_NUMBER}/${BUILD_NUMBER}/g docker-compose.ci.yml"
-				sh "docker network create perucontrol-network-ci-${BUILD_NUMBER}"
+				sh "sed -i s/{BUILD_NUMBER}/${BUILD_TAG}/g docker-compose.ci.yml"
+				sh "docker network create perucontrol-network-ci-${BUILD_TAG}"
 				sh "docker compose -f docker-compose.ci.yml up -d"
 			}
 			post {
 				failure {
 					sh 'docker-compose -f docker-compose.ci.yml down -v || true'
-					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER} || true"
+					sh "docker network rm perucontrol-network-ci-${BUILD_TAG} || true"
 				}
 			}
 		}
 		stage("Run e2e tests") {
 			environment {
-				BASE_URL = "http://perucontrol-frontend-ci-${BUILD_NUMBER}:3000"
+				BASE_URL = "http://perucontrol-frontend-ci-${BUILD_TAG}:3000"
 			}
 			steps {
 				// Give time for backend/frontend to start
@@ -65,12 +65,12 @@ pipeline {
 				always {
 					// logs from docker compose
 					sh 'mkdir -p logs || true'
-					sh "docker logs perucontrol-frontend-ci-${BUILD_NUMBER} > logs/frontend.log 2>&1 || true"
-					sh "docker logs perucontrol-backend-ci-${BUILD_NUMBER} > logs/backend.log 2>&1 || true"
+					sh "docker logs perucontrol-frontend-ci-${BUILD_TAG} > logs/frontend.log 2>&1 || true"
+					sh "docker logs perucontrol-backend-ci-${BUILD_TAG} > logs/backend.log 2>&1 || true"
 					archiveArtifacts 'logs/**'
 
 					sh 'docker compose -f docker-compose.ci.yml down -v || true'
-					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER} || true"
+					sh "docker network rm perucontrol-network-ci-${BUILD_TAG} || true"
 				}
 			}
 		}
