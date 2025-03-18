@@ -35,7 +35,7 @@ services:
   perucontrol-db-ci-{BUILD_NUMBER}:
     image: postgres:latest
     container_name: perucontrol-db-ci-{BUILD_NUMBER}
-    restart: never
+    restart: no
     shm_size: 128mb
     environment:
       POSTGRES_USER: root
