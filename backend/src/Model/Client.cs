@@ -42,6 +42,10 @@ public class Client : BaseModel
     [MaxLength(24)]
     public required string PhoneNumber { get; set; }
 
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? ContactName { get; set; }
+
     // Reference properties
     [JsonIgnore]
     public virtual IList<Quotation> ClientToQuotations { get; set; } = new List<Quotation>();
@@ -83,6 +87,10 @@ public class ClientCreateDTO : IMapToEntity<Client>
     [MaxLength(24, ErrorMessage = "El número de teléfono debe tener como máximo 24 caracteres")]
     public required string PhoneNumber { get; set; }
 
+    [MinLength(1, ErrorMessage = "El nombre de contacto no puede estar vacio")]
+    [MaxLength(100, ErrorMessage = "El nombre contacto debe tener como máximo 100 caracteres")]
+    public string? ContactName { get; set; }
+
     public Client MapToEntity()
     {
         return new Client
@@ -95,6 +103,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
             FiscalAddress = FiscalAddress,
             Email = Email,
             PhoneNumber = PhoneNumber,
+            ContactName = ContactName,
             ClientLocations = ClientLocations.Select(c => c.MapToEntity()).ToList(),
         };
     }
@@ -126,6 +135,10 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     [MaxLength(24)]
     public string? PhoneNumber { get; set; }
 
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? ContactName { get; set; }
+
     public void ApplyPatch(Client entity)
     {
         if (RazonSocial != null)
@@ -140,5 +153,7 @@ public class ClientPatchDTO : IEntityPatcher<Client>
             entity.Email = Email;
         if (PhoneNumber != null)
             entity.PhoneNumber = PhoneNumber;
+        if (ContactName != null)
+            entity.ContactName = ContactName;
     }
 }

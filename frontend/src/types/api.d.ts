@@ -2381,6 +2381,7 @@ export interface components {
             email: string;
             clientLocations: Array<components["schemas"]["ClientLocation"]>;
             phoneNumber: string;
+            contactName?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2399,6 +2400,7 @@ export interface components {
             email: string;
             clientLocations: components["schemas"];
             phoneNumber: string;
+            contactName?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2417,6 +2419,7 @@ export interface components {
             email: string;
             clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
             phoneNumber: string;
+            contactName?: string | null;
         };
         ClientLocation: {
             address: string;
@@ -2438,6 +2441,7 @@ export interface components {
             fiscalAddress?: string | null;
             email?: string | null;
             phoneNumber?: string | null;
+            contactName?: string | null;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
@@ -2675,6 +2679,7 @@ export interface components {
             name?: string | null;
             fiscalAddress?: string | null;
             businessType?: string | null;
+            contactName?: string | null;
         };
         Supply: {
             name: string;
