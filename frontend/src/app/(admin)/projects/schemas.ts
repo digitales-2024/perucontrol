@@ -20,16 +20,18 @@ export const downloadProjectSchema = z.object({
     businessType: z.string(),
     sanitaryCondition: z.string(),
     treatedAreas: z.string(),
-    service: z.string(),
+    service: z.array(z.string()),
     certificateNumber: z.string(),
     insects: z.string(),
     rodents: z.string(),
     otherPlagues: z.string(),
     insecticide: z.string(),
+    insecticide2: z.string(),
     rodenticide: z.string(),
     desinfectant: z.string(),
     otherProducts: z.string(),
     insecticideAmount: z.string(),
+    insecticideAmount2: z.string(),
     rodenticideAmount: z.string(),
     desinfectantAmount: z.string(),
     otherProductsAmount: z.string(),
@@ -41,6 +43,24 @@ export const downloadProjectSchema = z.object({
     staff2: z.string(),
     staff3: z.string(),
     staff4: z.string(),
+    aspersionManual: z.boolean().optional()
+        .default(false),
+    aspersionMotor: z.boolean().optional()
+        .default(false),
+    nebulizacionFrio: z.boolean().optional()
+        .default(false),
+    nebulizacionCaliente: z.boolean().optional()
+        .default(false),
+    nebulizacionCebosTotal: z.boolean().optional()
+        .default(false),
+    colocacionCebosCebaderos: z.boolean().optional()
+        .default(false),
+    colocacionCebosRepuestos: z.boolean().optional()
+        .default(false),
+    degreeInsectInfectivity: z.string(),
+    degreeRodentInfectivity: z.string(),
+    observations: z.string(),
+    recommendations: z.string(),
 });
 
 export type DownloadProjectSchema = z.infer<typeof downloadProjectSchema>;
