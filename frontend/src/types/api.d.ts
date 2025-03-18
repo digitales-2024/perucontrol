@@ -2348,6 +2348,7 @@ export interface components {
         Certificate: {
             /** Format: int32 */
             projectNumber: number;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
@@ -2363,6 +2364,7 @@ export interface components {
         CertificateCreateDTO: {
             /** Format: uuid */
             projectId: string;
+            treatedArea: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
