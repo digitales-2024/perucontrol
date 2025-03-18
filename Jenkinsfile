@@ -71,10 +71,6 @@ pipeline {
 
 					sh 'docker compose -f docker-compose.ci.yml down -v || true'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER} || true"
-					dir("backend/Tests.E2E") {
-						junit 'reports/testresults.xml'
-						archiveArtifacts 'reports/**'
-					}
 				}
 			}
 		}
