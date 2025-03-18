@@ -51,8 +51,9 @@ pipeline {
 				// Give time for backend/frontend to start
 				sh 'sleep 5'
 				dir("backend/Tests.E2E") {
-					sh 'mkdir reports || true'
-					sh 'docker run --network perucontrol-network-ci-${BUILD_NUMBER} -e BASE_URL=${BASE_URL} -v $(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest dotnet test --logger "xunit;LogFilePath=reports/testresults.xml"'
+					sh "mkdir reports || true"
+
+					sh "docker run --network perucontrol-network-ci-${BUILD_REF} -e BASE_URL=${BASE_URL} -v $(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest dotnet test --logger \"xunit;LogFilePath=reports/testresults.xml\""
 				}
 			}
 			post {
