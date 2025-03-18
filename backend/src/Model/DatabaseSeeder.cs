@@ -79,4 +79,47 @@ public static class DatabaseSeeder
 
         logger.LogInformation("Seeded {count} default services", defaultServices.Count);
     }
+
+    public static async Task SeedClients(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Clients.AnyAsync())
+        {
+            logger.LogInformation("Clients already seeded");
+            return;
+        }
+
+        var defaultClients = new List<Client>
+        {
+            new Client
+            {
+                TypeDocument = "dni",
+                TypeDocumentValue = "78923498",
+                BusinessType = "-",
+                Name = "Juan Perez",
+                FiscalAddress = "Av. Los Pinos 123",
+                Email = "juan@perez.com",
+                PhoneNumber = "987654321",
+                ClientLocations = new List<ClientLocation>(),
+            },
+            new Client
+            {
+                TypeDocument = "ruc",
+                TypeDocumentValue = "20485938492",
+                RazonSocial = "Pirotécnicos Recreativos ACME E.I.R.L.",
+                BusinessType = "Producción y Comercialización de Pirotécnicos",
+                Name = "ACME INC",
+                FiscalAddress = "Av. Los Pinos 123",
+                Email = "juan@perez.com",
+                PhoneNumber = "987654321",
+                ClientLocations = new List<ClientLocation>(),
+            },
+        };
+
+        await context.Clients.AddRangeAsync(defaultClients);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} default services", defaultClients.Count);
+    }
 }
