@@ -38,7 +38,7 @@ pipeline {
 		stage("Prepare docker compose") {
 			steps {
 				sh "sed -i s/{BUILD_NUMBER}/${BUILD_NUMBER}/g docker-compose.ci.yml"
-				sh "docker compose -f docker-compose-ci-yml up -d"
+				sh "docker compose -f docker-compose.ci.yml up -d"
 			}
 		}
 		stage("Run e2e tests") {
