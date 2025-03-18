@@ -8,13 +8,14 @@ pipeline {
 						docker {
 							image 'node:22'
 							reuseNode true
-							args '-u 0:0'
+							args '-u 0:0 -v pnpm-store:/root/.pnpm-store'
 						}
 					}
 					steps {
 						dir("frontend") {
 							sh 'npm i -g pnpm'
-							sh 'pnpm i'
+							sh 'pnpm config set store-dir /root/.pnpm-store'
+							sh 'pnpm i --frozen-lockfile'
 							sh 'pnpm run build'
 						}
 					}

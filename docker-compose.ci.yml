@@ -1,7 +1,8 @@
 services:
   perucontrol-backend-ci-{BUILD_NUMBER}:
     build:
-      context: ./backend/src/Deployment/Dockerfile.alpine
+      context: ./backend/src
+      dockerfile: ./backend/src/Deployment/Dockerfile.alpine
     container_name: perucontrol-backend-ci-{BUILD_NUMBER}
     restart: never
     depends_on:
@@ -18,7 +19,8 @@ services:
 
   perucontrol-frontend-ci-{BUILD_NUMBER}:
     build:
-      context: ./frontend/deployment/Dockerfile
+      context: ./frontend
+      dockerfile: ./frontend/deployment/Dockerfile
     container_name: perucontrol-frontend-ci-{BUILD_NUMBER}
     restart: never
     depends_on:
