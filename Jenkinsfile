@@ -39,6 +39,7 @@ pipeline {
 		stage("Prepare docker compose") {
 			steps {
 				sh "sed -i s/{BUILD_NUMBER}/${BUILD_NUMBER}/g docker-compose.ci.yml"
+				sh "docker network create perucontrol-network-ci-${BUILD_NUMBER}"
 				sh "docker compose -f docker-compose.ci.yml up -d"
 			}
 		}
@@ -54,6 +55,7 @@ pipeline {
 			post {
 				always {
 					sh 'docker-compose -f docker-compose.ci.yml down -v'
+					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER}"
 				}
 			}
 		}
