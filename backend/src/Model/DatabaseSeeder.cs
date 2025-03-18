@@ -72,6 +72,7 @@ public static class DatabaseSeeder
             new Service { Name = "Desinfección" },
             new Service { Name = "Desinsectación" },
             new Service { Name = "Desratización" },
+            new Service { Name = "Limpieza de tanque" },
         };
 
         await context.Services.AddRangeAsync(defaultServices);

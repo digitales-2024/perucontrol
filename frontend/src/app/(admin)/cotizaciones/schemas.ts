@@ -3,7 +3,7 @@ import * as z from "zod";
 export const quotationSchema = z.object({
     clientId: z.string().min(5, "El cliente es requerido"),
     serviceIds: z.array(z.string().min(1, "El servicio es requerido")),
-    description: z.string().min(3, "La descripción es requerida"),
+    frequency: z.enum(["Bimonthly", "Quarterly", "Semiannual"]),
     area: z.preprocess(
         (val) => (typeof val === "string" ? parseInt(val, 10) : val),
         z

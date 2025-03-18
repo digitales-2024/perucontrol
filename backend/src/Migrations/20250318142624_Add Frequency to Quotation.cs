@@ -5,23 +5,18 @@
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class UniqueClient : Migration
+    public partial class AddFrequencytoQuotation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
-                name: "IX_Clients_TypeDocumentValue",
-                table: "Clients",
-                column: "TypeDocumentValue",
-                unique: true
-            );
+
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(name: "IX_Clients_TypeDocumentValue", table: "Clients");
+
         }
     }
 }

@@ -1,3 +1,5 @@
+using PeruControl.Model;
+
 public class ProjectOperationSheetExport
 {
     // fecha_op
@@ -27,6 +29,9 @@ public class ProjectOperationSheetExport
     // insecticida
     public string Insecticide { get; set; } = string.Empty;
 
+    // insecticida2
+    public string Insecticide2 { get; set; } = string.Empty;
+
     // rodenticida
     public string Rodenticide { get; set; } = string.Empty;
 
@@ -38,6 +43,9 @@ public class ProjectOperationSheetExport
 
     // insecticida_cantidad
     public string InsecticideAmount { get; set; } = string.Empty;
+
+    // insecticida_cantidad_2
+    public string InsecticideAmount2 { get; set; } = string.Empty;
 
     // rodenticida_cantidad
     public string RodenticideAmount { get; set; } = string.Empty;
@@ -71,4 +79,25 @@ public class ProjectOperationSheetExport
 
     // personal_4
     public string Staff4 { get; set; } = string.Empty;
+
+    public bool aspersionManual { get; set; } = false;
+    
+    public bool aspersionMotor { get; set; } = false;
+
+    public bool nebulizacionFrio { get; set; } = false;
+
+    public bool nebulizacionCaliente { get; set; } = false;
+
+    public bool nebulizacionCebosTotal { get; set; } = false;
+
+    public bool colocacionCebosCebaderos { get; set; } = false;
+
+    public bool colocacionCebosRepuestos { get; set; } = false;
+
+    public DegressInfestation degreeInsectInfectivity { get; set; } = DegressInfestation.Negligible;
+    public DegressInfestation degreeRodentInfectivity { get; set; } = DegressInfestation.Negligible;
+
+    public string observations { get; set; } = string.Empty;
+
+    public string recommendations { get; set; } = string.Empty;
 }
