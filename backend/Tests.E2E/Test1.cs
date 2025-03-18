@@ -55,16 +55,4 @@ public sealed class Test1 : PageTest
             throw;
         }
     }
-
-    [TestInitialize]
-    public async Task StartTracing()
-    {
-        // Start tracing for each test
-        await Page.Context.Tracing.StartAsync(new()
-        {
-            Screenshots = true,
-            Snapshots = true,
-            Sources = true
-        });
-    }
 }
