@@ -10,13 +10,7 @@ pipeline {
 					steps {
 						dir("frontend") {
 							// Just use the docker image to build the frontend
-							sh "docker build -t perucontrol-frontend-ci-${BUILD_REF} ."
-
-
-							sh 'npm i -g pnpm'
-							sh 'pnpm config set store-dir /root/.pnpm-store'
-							sh 'pnpm i --frozen-lockfile'
-							sh 'pnpm run build'
+							sh "docker build -t perucontrol-frontend-ci-${BUILD_REF} -f deployment/Dockerfile ."
 						}
 					}
 				}
@@ -68,11 +62,16 @@ pipeline {
 					sh "docker logs perucontrol-frontend-ci-${BUILD_REF} > logs/frontend.log 2>&1 || true"
 					sh "docker logs perucontrol-backend-ci-${BUILD_REF} > logs/backend.log 2>&1 || true"
 					archiveArtifacts 'logs/**'
-
-					sh 'docker compose -f docker-compose.ci.yml down -v || true'
-					sh "docker network rm perucontrol-network-ci-${BUILD_REF} || true"
 				}
 			}
+		}
+	}
+	post {
+		always {
+			// remove docker images built
+			sh 'docker compose -f docker-compose.ci.yml down -v || true'
+			sh "docker network rm perucontrol-network-ci-${BUILD_REF} || true"
+			sh "docker rmi perucontrol-frontend-ci-${BUILD_REF} || true"
 		}
 	}
 }

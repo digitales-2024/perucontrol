@@ -18,9 +18,7 @@ services:
       - perucontrol-network-ci-{BUILD_NUMBER}
 
   perucontrol-frontend-ci-{BUILD_NUMBER}:
-    build:
-      context: ./frontend
-      dockerfile: ./deployment/Dockerfile
+    image: perucontrol-frontend-ci-{BUILD_NUMBER}
     container_name: perucontrol-frontend-ci-{BUILD_NUMBER}
     restart: no
     depends_on:
