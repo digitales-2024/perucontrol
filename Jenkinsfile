@@ -43,7 +43,7 @@ pipeline {
 				sh "docker compose -f docker-compose.ci.yml up -d"
 			}
 			post {
-				error {
+				failure {
 					sh 'docker-compose -f docker-compose.ci.yml down -v || true'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER} || true"
 				}
