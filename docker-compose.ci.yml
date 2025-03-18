@@ -4,7 +4,7 @@ services:
       context: ./backend/src
       dockerfile: ./Deployment/Dockerfile.alpine
     container_name: perucontrol-backend-ci-{BUILD_NUMBER}
-    restart: never
+    restart: no
     depends_on:
       perucontrol-db-ci-{BUILD_NUMBER}:
         condition: service_started
@@ -22,7 +22,7 @@ services:
       context: ./frontend
       dockerfile: ./deployment/Dockerfile
     container_name: perucontrol-frontend-ci-{BUILD_NUMBER}
-    restart: never
+    restart: no
     depends_on:
       perucontrol-backend-ci-{BUILD_NUMBER}:
         condition: service_started
