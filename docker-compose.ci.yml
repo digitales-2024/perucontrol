@@ -10,7 +10,7 @@ services:
         condition: service_healthy
     environment:
       ConnectionStrings__DefaultConnection: "Host=perucontrol-db-ci-{BUILD_NUMBER};Database=perucontrol;Username=root;Password=root"
-      Jwt__SecretKey: "1234567890"
+      Jwt__SecretKey: "c91ced689811a048633484858d3f000414d29b16696e11ca6d7d485641cc3235"
       Jwt__Issuer: "acide.win"
       Jwt__Audience: "acide.win"
       Jwt__ExpirationMinutes: 60
