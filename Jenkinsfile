@@ -55,13 +55,14 @@ pipeline {
 			}
 			steps {
 				dir("backend/Tests.E2E") {
+					sh 'mkdir reports || true'
 					sh 'docker run --network perucontrol-network-ci-${BUILD_NUMBER} -e BASE_URL=${BASE_URL} -v $(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest dotnet test --logger "xunit;LogFilePath=reports/testresults.xml"'
-					junit 'reports/testresults.xml'
-					archiveArtifacts 'reports/**'
 				}
 			}
 			post {
 				always {
+					junit 'reports/testresults.xml'
+					archiveArtifacts 'reports/**'
 					sh 'docker compose -f docker-compose.ci.yml down -v'
 					sh "docker network rm perucontrol-network-ci-${BUILD_NUMBER}"
 				}
