@@ -14,6 +14,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<Project> Projects { get; set; }
     public required DbSet<Supply> Supplies { get; set; }
     public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
+    public required DbSet<ProjectOperationSheet> ProjectOperationSheet { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -26,6 +27,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Model.Service.SetUp<Service>(builder);
         PeruControl.Model.Supply.SetUp<Supply>(builder);
         PeruControl.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
+        PeruControl.Model.ProjectOperationSheet.SetUp<ProjectOperationSheet>(builder);
     }
 
     public override int SaveChanges()
