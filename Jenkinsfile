@@ -28,7 +28,7 @@ pipeline {
 			steps {
 				sh "sed -i s/{BUILD_NUMBER}/${BUILD_REF}/g docker-compose.ci.yml"
 				sh "docker network create perucontrol-network-ci-${BUILD_REF}"
-				sh "docker compose -f docker-compose.ci.yml up -d"
+				sh "docker compose -f docker-compose.ci.yml up -d --remove-orphans"
 			}
 			post {
 				failure {
