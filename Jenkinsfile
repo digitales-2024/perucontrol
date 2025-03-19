@@ -15,16 +15,10 @@ pipeline {
 					}
 				}
 				stage('Build backend') {
-					agent {
-						docker {
-							image 'mcr.microsoft.com/dotnet/sdk:9.0-alpine'
-							args '-v nuget-cache:/root/.nuget/packages -u 0:0'
-						}
-					}
 					steps {
 						dir("backend/src") {
-							sh 'dotnet restore --locked-mode'
-							sh 'dotnet publish -c Release -r linux-musl-x64 -o out'
+							// Just use the docker image to build the frontend
+							sh "docker build -t perucontrol-backend-ci-${BUILD_REF} -f Deployment/Dockerfile.alpine ."
 						}
 					}
 				}
