@@ -66,6 +66,7 @@ pipeline {
 			sh 'docker compose -f docker-compose.ci.yml down -v || true'
 			sh "docker network rm perucontrol-network-ci-${BUILD_REF} || true"
 			sh "docker rmi perucontrol-frontend-ci-${BUILD_REF} || true"
+			sh "docker rmi perucontrol-backend-ci-${BUILD_REF} || true"
 		}
 	}
 }
