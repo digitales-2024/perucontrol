@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MousePointer2, Package, Rat, ScanHeart, SprayCan, SprayCanIcon, SquareM, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MousePointer2, Package, Rat, Save, ScanHeart, SprayCan, SprayCanIcon, SquareM, X } from "lucide-react";
 import { format, parse } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -14,11 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel } from "../actions";
+import { GenerateExcel, SaveProjectOperationSheetData } from "../actions";
 import { Project } from "../types";
 import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { components } from "@/types/api";
 
 const infestationLevels = [
     { id: "alto", label: "Alto" },
@@ -35,6 +36,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
+            projectId: project.id,
             operationDate: "",
             enterTime: "",
             leaveTime: "",
@@ -73,8 +75,8 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             nebulizacionCebosTotal: false,
             colocacionCebosCebaderos: false,
             colocacionCebosRepuestos: false,
-            degreeInsectInfectivity: "",
-            degreeRodentInfectivity: "",
+            degreeInsectInfectivity: "Moderate",
+            degreeRodentInfectivity: "Moderate",
             observations: "",
             recommendations: "",
         },
@@ -121,6 +123,26 @@ export function DownloadProjectForm({ onOpenChange, project }: {
         a.click();
         URL.revokeObjectURL(url);
         onOpenChange(false);
+    };
+
+    const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
+    {
+        const [result, error] = await toastWrapper(
+            SaveProjectOperationSheetData(project.id, input),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return;
+        }
+
+        console.log("Datos guardados exitosamente:", result);
     };
 
     return (
@@ -1100,7 +1122,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                 <FormControl>
                                                                                     <Checkbox
                                                                                         checked={field.value === level.id}
-                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
                                                                                         }
                                                                                     />
                                                                                 </FormControl>
@@ -1129,7 +1151,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                 <FormControl>
                                                                                     <Checkbox
                                                                                         checked={field.value === level.id}
-                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
                                                                                         }
                                                                                     />
                                                                                 </FormControl>
@@ -1165,6 +1187,14 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                         <X className="h-4 w-4" />
                         Cancelar
                     </Button>
+                    <Button
+                        type="button"
+                        onClick={form.handleSubmit(handleSubmit)}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        Guardar
+                    </Button>
                     <Button type="submit" form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
                         <Download className="h-4 w-4" />
                         Generar Excel
@@ -1174,4 +1204,3 @@ export function DownloadProjectForm({ onOpenChange, project }: {
         </div>
     );
 }
-

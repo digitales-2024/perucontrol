@@ -145,3 +145,64 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
         });
     }
 }
+
+export async function SaveProjectOperationSheetData(id: string, body: components["schemas"]["ProjectOperationSheetCreateDTO"]): Promise<Result<null, FetchError>>
+{
+    const c = await cookies();
+    const jwt = c.get(ACCESS_TOKEN_KEY);
+    if (!jwt)
+    {
+        return err({
+            statusCode: 401,
+            message: "No autorizado",
+            error: null,
+        });
+    }
+
+    try
+    {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Project/${id}/operations-sheet`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt.value}`,
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok)
+        {
+            const errorBody = await response.json();
+            console.error("Error guardando datos del proyecto:", errorBody);
+            return err({
+                statusCode: response.status,
+                message: "Error guardando datos del proyecto",
+                error: errorBody,
+            });
+        }
+
+        return ok(null);
+    }
+    catch (e)
+    {
+        console.error("Error en la solicitud:", e);
+        return err({
+            statusCode: 500,
+            message: "Error en la solicitud",
+            error: "Error en la solicitud",
+        });
+    }
+
+    /* const [, error] = await wrapper((auth) => backend.POST("/api/ProjectOperationSheet", {
+        ...auth,
+        body,
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null); */
+}

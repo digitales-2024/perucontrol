@@ -4,6 +4,8 @@ namespace PeruControl.Model;
 
 public class ProjectOperationSheet : BaseModel
 {
+    public Guid ProjectId { get; set; }
+
     [JsonIgnore]
     public virtual Project Project { get; set; } = null!;
 
@@ -178,7 +180,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     {
         return new ProjectOperationSheet
         {
-            OperationDate = OperationDate ?? DateTime.Now,
+            OperationDate = OperationDate?.ToUniversalTime() ?? DateTime.UtcNow,
             EnterTime = EnterTime ?? TimeSpan.Zero,
             LeaveTime = LeaveTime ?? TimeSpan.Zero,
             SanitaryCondition = SanitaryCondition ?? string.Empty,

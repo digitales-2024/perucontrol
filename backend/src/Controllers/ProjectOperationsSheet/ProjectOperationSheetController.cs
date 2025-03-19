@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 
 namespace PeruControl.Controllers;
@@ -14,8 +15,25 @@ public class ProjectOperationSheetController(DatabaseContext db)
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public override async Task<ActionResult<ProjectOperationSheet>> Create([FromBody] ProjectOperationSheetCreateDTO createDTO)
     {
+        /* var project = await _context.Projects.AnyAsync(p => p.Id == createDTO.ProjectId);
+        if (!project)
+        {
+            return BadRequest("El project no existe");
+        } */
+        
+        var project = await _context.Set<Project>().FindAsync(createDTO.ProjectId);
+        if (project == null)
+            return NotFound("Proyecto no encontrado");
+
+        if (createDTO.OperationDate.HasValue)
+        {
+            createDTO.OperationDate = createDTO.OperationDate.Value.ToUniversalTime();
+        }
+
         var entity = createDTO.MapToEntity();
         entity.Id = Guid.NewGuid();
+
+        entity.Project = project;
 
         // Create the Project Operation Sheet
         _context.Add(entity);

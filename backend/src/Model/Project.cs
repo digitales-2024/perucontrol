@@ -33,6 +33,9 @@ public class Project : BaseModel
     [JsonIgnore]
     public virtual Quotation? Quotation { get; set; } = null!;
 
+    [JsonIgnore]
+    public virtual ProjectOperationSheet ProjectOperationSheet { get; set; } = null!;
+
     public required string Address { get; set; }
 
     public required uint Area { get; set; }

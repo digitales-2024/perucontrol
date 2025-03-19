@@ -509,7 +509,8 @@ namespace PeruControl.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
 
                     b.ToTable("ProjectOperationSheet");
                 });
@@ -847,8 +848,8 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
                 {
                     b.HasOne("PeruControl.Model.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .WithOne("ProjectOperationSheet")
+                        .HasForeignKey("PeruControl.Model.ProjectOperationSheet", "ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -906,6 +907,9 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.Project", b =>
                 {
                     b.Navigation("Certificates");
+
+                    b.Navigation("ProjectOperationSheet")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

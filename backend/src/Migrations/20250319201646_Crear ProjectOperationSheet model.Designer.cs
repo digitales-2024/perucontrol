@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250319170334_Agregar modelo ProjectOperationSheet")]
-    partial class AgregarmodeloProjectOperationSheet
+    [Migration("20250319201646_Crear ProjectOperationSheet model")]
+    partial class CrearProjectOperationSheetmodel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -512,7 +512,8 @@ namespace PeruControl.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
 
                     b.ToTable("ProjectOperationSheet");
                 });
@@ -850,8 +851,8 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
                 {
                     b.HasOne("PeruControl.Model.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .WithOne("ProjectOperationSheet")
+                        .HasForeignKey("PeruControl.Model.ProjectOperationSheet", "ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -909,6 +910,9 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.Project", b =>
                 {
                     b.Navigation("Certificates");
+
+                    b.Navigation("ProjectOperationSheet")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
