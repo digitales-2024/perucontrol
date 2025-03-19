@@ -80,4 +80,106 @@ public static class DatabaseSeeder
 
         logger.LogInformation("Seeded {count} default services", defaultServices.Count);
     }
+
+    public static async Task SeedClients(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Clients.AnyAsync())
+        {
+            logger.LogInformation("Clients already seeded");
+            return;
+        }
+
+        var defaultClients = new List<Client>
+        {
+            new Client
+            {
+                TypeDocument = "dni",
+                TypeDocumentValue = "78923498",
+                BusinessType = "-",
+                Name = "Juan Perez",
+                FiscalAddress = "Av. Los Pinos 123",
+                Email = "juan@perez.com",
+                PhoneNumber = "987654321",
+                ClientLocations = new List<ClientLocation>(),
+            },
+            new Client
+            {
+                TypeDocument = "ruc",
+                TypeDocumentValue = "20485938492",
+                RazonSocial = "Pirotécnicos Recreativos ACME E.I.R.L.",
+                BusinessType = "Producción y Comercialización de Pirotécnicos",
+                Name = "ACME INC",
+                FiscalAddress = "Av. Los Pinos 123",
+                Email = "juan@perez.com",
+                PhoneNumber = "987654321",
+                ClientLocations = new List<ClientLocation>(),
+            },
+        };
+
+        await context.Clients.AddRangeAsync(defaultClients);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} services", defaultClients.Count);
+    }
+
+    public static async Task SeedQuotations(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Quotations.AnyAsync())
+        {
+            logger.LogInformation("Quotations already seeded");
+            return;
+        }
+
+        // get services
+        var services = await context.Services.ToListAsync();
+        if (services.Count == 0)
+        {
+            logger.LogWarning("No services found to seed quotations");
+            return;
+        }
+        var servicesAmount = services.Count;
+
+        // get a client
+        var client = await context.Clients.FirstOrDefaultAsync();
+        if (client == null)
+        {
+            logger.LogWarning("No clients found to seed quotations");
+            return;
+        }
+
+        var defaultQuotations = new List<Quotation>
+        {
+            new Quotation
+            {
+                Client = client,
+                Services = services.Take(servicesAmount / 2).ToList(),
+                Status = QuotationStatus.Pending,
+                Frequency = QuotationFrequency.Bimonthly,
+                Area = 420,
+                SpacesCount = 32,
+                HasTaxes = true,
+                TermsAndConditions = "Terminos y Condiciones de la cotizacion",
+            },
+            new Quotation
+            {
+                Client = client,
+                Services = services.Take(servicesAmount / 2).ToList(),
+                Status = QuotationStatus.Approved,
+                Frequency = QuotationFrequency.Semiannual,
+                Area = 42,
+                SpacesCount = 2,
+                HasTaxes = false,
+                TermsAndConditions = "Terminos y Condiciones",
+            },
+        };
+
+        await context.Quotations.AddRangeAsync(defaultQuotations);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} quoations", defaultQuotations.Count);
+    }
 }

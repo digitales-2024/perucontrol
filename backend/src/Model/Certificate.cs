@@ -13,6 +13,7 @@ public class Certificate : BaseModel
     [JsonIgnore]
     public virtual Project Project { get; set; } = null!;
 
+    public required string TreatedArea { get; set; }
     public required DateTime CreationDate { get; set; }
     public required DateTime ExpirationDate { get; set; }
 }

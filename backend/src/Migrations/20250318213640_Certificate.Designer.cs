@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250318213640_Certificate")]
+    partial class Certificate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -353,172 +356,6 @@ namespace PeruControl.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("AspercionMotor")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("AspersionManual")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ColocacionCebosCebaderos")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ColocacionCebosRepuestos")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<int>("DegreeInsectInfectivity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DegreeRodentInfectivity")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Desinfectant")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DesinfectantAmount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<TimeSpan>("EnterTime")
-                        .HasColumnType("interval");
-
-                    b.Property<string>("Insecticide")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Insecticide2")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("InsecticideAmount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("InsecticideAmount2")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Insects")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<TimeSpan>("LeaveTime")
-                        .HasColumnType("interval");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<bool>("NebulizacionCaliente")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("NebulizacionCebosTotal")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("NebulizacionFrio")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Observations")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("OperationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("OtherPlagues")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OtherProducts")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OtherProductsAmount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("RatExtermination1")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination2")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination3")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination4")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Recommendations")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Rodenticide")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RodenticideAmount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Rodents")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SanitaryCondition")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Staff1")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Staff2")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Staff3")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Staff4")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TreatedAreas")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId")
-                        .IsUnique();
-
-                    b.ToTable("ProjectOperationSheet");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Quotation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -849,17 +686,6 @@ namespace PeruControl.Migrations
                     b.Navigation("Quotation");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
-                {
-                    b.HasOne("PeruControl.Model.Project", "Project")
-                        .WithOne("ProjectOperationSheet")
-                        .HasForeignKey("PeruControl.Model.ProjectOperationSheet", "ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Quotation", b =>
                 {
                     b.HasOne("PeruControl.Model.Client", "Client")
@@ -911,9 +737,6 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.Project", b =>
                 {
                     b.Navigation("Certificates");
-
-                    b.Navigation("ProjectOperationSheet")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

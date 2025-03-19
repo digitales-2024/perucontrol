@@ -1,0 +1,51 @@
+services:
+  perucontrol-backend-ci-{BUILD_NUMBER}:
+    image: perucontrol-backend-ci-{BUILD_NUMBER}
+    container_name: perucontrol-backend-ci-{BUILD_NUMBER}
+    restart: no
+    depends_on:
+      perucontrol-db-ci-{BUILD_NUMBER}:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=perucontrol-db-ci-{BUILD_NUMBER};Database=perucontrol;Username=root;Password=root"
+      Jwt__SecretKey: "c91ced689811a048633484858d3f000414d29b16696e11ca6d7d485641cc3235"
+      Jwt__Issuer: "acide.win"
+      Jwt__Audience: "acide.win"
+      Jwt__ExpirationMinutes: 60
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+  perucontrol-frontend-ci-{BUILD_NUMBER}:
+    image: perucontrol-frontend-ci-{BUILD_NUMBER}
+    container_name: perucontrol-frontend-ci-{BUILD_NUMBER}
+    restart: no
+    depends_on:
+      perucontrol-backend-ci-{BUILD_NUMBER}:
+        condition: service_started
+    environment:
+      NODE_ENV: "production"
+      INTERNAL_BACKEND_URL: "http://perucontrol-backend-ci-{BUILD_NUMBER}:8080"
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+  perucontrol-db-ci-{BUILD_NUMBER}:
+    image: postgres:latest
+    container_name: perucontrol-db-ci-{BUILD_NUMBER}
+    restart: no
+    shm_size: 128mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - perucontrol-network-ci-{BUILD_NUMBER}
+
+networks:
+  perucontrol-network-ci-{BUILD_NUMBER}:
+    driver: bridge
+    external: true

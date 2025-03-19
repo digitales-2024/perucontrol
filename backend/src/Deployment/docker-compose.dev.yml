@@ -28,6 +28,7 @@ services:
         condition: service_started
     environment:
       NODE_ENV: "${NODE_ENV}"
+      INTERNAL_BACKEND_URL: "${INTERNAL_BACKEND_URL}"
     networks:
       - proxy
       - perucontrol-network-develop
