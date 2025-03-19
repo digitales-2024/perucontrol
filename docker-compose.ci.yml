@@ -1,8 +1,6 @@
 services:
   perucontrol-backend-ci-{BUILD_NUMBER}:
-    build:
-      context: ./backend/src
-      dockerfile: ./Deployment/Dockerfile.alpine
+    image: perucontrol-backend-ci-{BUILD_NUMBER}
     container_name: perucontrol-backend-ci-{BUILD_NUMBER}
     restart: no
     depends_on:

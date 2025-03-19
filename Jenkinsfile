@@ -15,16 +15,10 @@ pipeline {
 					}
 				}
 				stage('Build backend') {
-					agent {
-						docker {
-							image 'mcr.microsoft.com/dotnet/sdk:9.0-alpine'
-							args '-v nuget-cache:/root/.nuget/packages -u 0:0'
-						}
-					}
 					steps {
 						dir("backend/src") {
-							sh 'dotnet restore --locked-mode'
-							sh 'dotnet publish -c Release -r linux-musl-x64 -o out'
+							// Just use the docker image to build the frontend
+							sh "docker build -t perucontrol-backend-ci-${BUILD_REF} -f Deployment/Dockerfile.alpine ."
 						}
 					}
 				}
@@ -34,7 +28,7 @@ pipeline {
 			steps {
 				sh "sed -i s/{BUILD_NUMBER}/${BUILD_REF}/g docker-compose.ci.yml"
 				sh "docker network create perucontrol-network-ci-${BUILD_REF}"
-				sh "docker compose -f docker-compose.ci.yml up -d"
+				sh "docker compose -f docker-compose.ci.yml up -d --remove-orphans"
 			}
 			post {
 				failure {
@@ -72,6 +66,7 @@ pipeline {
 			sh 'docker compose -f docker-compose.ci.yml down -v || true'
 			sh "docker network rm perucontrol-network-ci-${BUILD_REF} || true"
 			sh "docker rmi perucontrol-frontend-ci-${BUILD_REF} || true"
+			sh "docker rmi perucontrol-backend-ci-${BUILD_REF} || true"
 		}
 	}
 }
