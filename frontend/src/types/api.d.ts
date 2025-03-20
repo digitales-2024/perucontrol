@@ -1096,38 +1096,16 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/ProjectOperationSheet": {
+    "/api/ProjectOperationSheet/create-or-update": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
-                    };
-                };
-            };
-        };
+        get?: never;
         put?: never;
-        /** Create */
+        /** Create or Update */
         post: {
             parameters: {
                 query?: never;
@@ -1143,6 +1121,17 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
                 /** @description Created */
                 201: {
                     headers: {
@@ -1301,6 +1290,134 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/by-project/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find operation sheet by project ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/ProjectOperationSheet/{id}/reactivate": {
@@ -2770,6 +2887,8 @@ export interface components {
             spacesCount: number;
         };
         ProjectOperationSheet: {
+            /** Format: uuid */
+            projectId?: string;
             /** Format: date-time */
             operationDate: string;
             enterTime: string;
