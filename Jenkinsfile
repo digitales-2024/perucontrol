@@ -1,7 +1,7 @@
 pipeline {
 	agent any
 	environment {
-		BUILD_REF = "${BUILD_TAG.replace('%2F', '-')}"
+		BUILD_REF = "${sh(script: "echo -n '${BUILD_TAG}' | sha256sum | cut -c1-12", returnStdout: true).trim()}"
 	}
 	stages {
 		stage("Build project") {
