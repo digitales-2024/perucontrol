@@ -176,6 +176,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public string? Recommendations { get; set; } = string.Empty;
 
+    // Método para crear una nueva entidad
     public ProjectOperationSheet MapToEntity()
     {
         return new ProjectOperationSheet
@@ -218,6 +219,50 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             Observations = Observations ?? string.Empty,
             Recommendations = Recommendations ?? string.Empty,
         };
+    }
+
+    // Método para actualizar una entidad existente
+    public ProjectOperationSheet MapToEntity(ProjectOperationSheet entity)
+    {
+        entity.OperationDate = OperationDate ?? entity.OperationDate;
+        entity.EnterTime = EnterTime ?? entity.EnterTime;
+        entity.LeaveTime = LeaveTime ?? entity.LeaveTime;
+        entity.SanitaryCondition = SanitaryCondition ?? entity.SanitaryCondition;
+        entity.TreatedAreas = TreatedAreas ?? entity.TreatedAreas;
+        entity.Insects = Insects ?? entity.Insects;
+        entity.Rodents = Rodents ?? entity.Rodents;
+        entity.OtherPlagues = OtherPlagues ?? entity.OtherPlagues;
+        entity.Insecticide = Insecticide ?? entity.Insecticide;
+        entity.Insecticide2 = Insecticide2 ?? entity.Insecticide2;
+        entity.Rodenticide = Rodenticide ?? entity.Rodenticide;
+        entity.Desinfectant = Desinfectant ?? entity.Desinfectant;
+        entity.OtherProducts = OtherProducts ?? entity.OtherProducts;
+        entity.InsecticideAmount = InsecticideAmount ?? entity.InsecticideAmount;
+        entity.InsecticideAmount2 = InsecticideAmount2 ?? entity.InsecticideAmount2;
+        entity.RodenticideAmount = RodenticideAmount ?? entity.RodenticideAmount;
+        entity.DesinfectantAmount = DesinfectantAmount ?? entity.DesinfectantAmount;
+        entity.OtherProductsAmount = OtherProductsAmount ?? entity.OtherProductsAmount;
+        entity.RatExtermination1 = RatExtermination1 ?? entity.RatExtermination1;
+        entity.RatExtermination2 = RatExtermination2 ?? entity.RatExtermination2;
+        entity.RatExtermination3 = RatExtermination3 ?? entity.RatExtermination3;
+        entity.RatExtermination4 = RatExtermination4 ?? entity.RatExtermination4;
+        entity.Staff1 = Staff1 ?? entity.Staff1;
+        entity.Staff2 = Staff2 ?? entity.Staff2;
+        entity.Staff3 = Staff3 ?? entity.Staff3;
+        entity.Staff4 = Staff4 ?? entity.Staff4;
+        entity.AspersionManual = AspersionManual ?? entity.AspersionManual;
+        entity.AspercionMotor = AspercionMotor ?? entity.AspercionMotor;
+        entity.NebulizacionFrio = NebulizacionFrio ?? entity.NebulizacionFrio;
+        entity.NebulizacionCaliente = NebulizacionCaliente ?? entity.NebulizacionCaliente;
+        entity.NebulizacionCebosTotal = NebulizacionCebosTotal ?? entity.NebulizacionCebosTotal;
+        entity.ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
+        entity.ColocacionCebosRepuestos = ColocacionCebosRepuestos ?? entity.ColocacionCebosRepuestos;
+        entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;
+        entity.DegreeRodentInfectivity = DegreeRodentInfectivity ?? entity.DegreeRodentInfectivity;
+        entity.Observations = Observations ?? entity.Observations;
+        entity.Recommendations = Recommendations ?? entity.Recommendations;
+
+        return entity;
     }
 }
 
