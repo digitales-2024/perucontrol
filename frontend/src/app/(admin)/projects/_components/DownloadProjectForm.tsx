@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MousePointer2, Package, Rat, ScanHeart, SprayCan, SprayCanIcon, SquareM, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MousePointer2, Package, Rat, Save, ScanHeart, SprayCan, SprayCanIcon, SquareM, X } from "lucide-react";
 import { format, parse } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -14,17 +14,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel } from "../actions";
+import { GenerateExcel, GetProjectOperationSheet, SaveProjectOperationSheetData } from "../actions";
 import { Project } from "../types";
 import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { components } from "@/types/api";
 
 const infestationLevels = [
-    { id: "alto", label: "Alto" },
-    { id: "moderado", label: "Moderado" },
-    { id: "bajo", label: "Bajo" },
-    { id: "insignificante", label: "Insignificante" },
+    { id: "High", label: "Alto" },
+    { id: "Moderate", label: "Moderado" },
+    { id: "Low", label: "Bajo" },
+    { id: "Negligible", label: "Insignificante" },
 ];
 
 export function DownloadProjectForm({ onOpenChange, project }: {
@@ -35,6 +36,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
+            projectId: project.id,
             operationDate: "",
             enterTime: "",
             leaveTime: "",
@@ -73,8 +75,8 @@ export function DownloadProjectForm({ onOpenChange, project }: {
             nebulizacionCebosTotal: false,
             colocacionCebosCebaderos: false,
             colocacionCebosRepuestos: false,
-            degreeInsectInfectivity: "",
-            degreeRodentInfectivity: "",
+            degreeInsectInfectivity: "Moderate",
+            degreeRodentInfectivity: "Moderate",
             observations: "",
             recommendations: "",
         },
@@ -104,13 +106,32 @@ export function DownloadProjectForm({ onOpenChange, project }: {
 
     const download = async(body: DownloadProjectSchema) =>
     {
+        // Guardar los datos antes de generar el Excel
+        const [, saveError] = await toastWrapper(
+            SaveProjectOperationSheetData(project.id, body),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (saveError)
+        {
+            console.error("Error al guardar los datos:", saveError);
+            return;
+        }
+
+        // Genera el Excel
         const [blob, err] = await toastWrapper(GenerateExcel(project.id, body), {
             loading: "Generando archivo",
             success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
         });
 
         if (err)
         {
+            console.error("Error al generar el Excel:", err);
             return;
         }
 
@@ -122,6 +143,61 @@ export function DownloadProjectForm({ onOpenChange, project }: {
         URL.revokeObjectURL(url);
         onOpenChange(false);
     };
+
+    const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
+    {
+        const [result, error] = await toastWrapper(
+            SaveProjectOperationSheetData(project.id, input), // Cambia a `true` si es una actualización
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return;
+        }
+
+        console.log("Datos guardados exitosamente:", result);
+    };
+
+    useEffect(() =>
+    {
+        const loadOperationSheet = async() =>
+        {
+            const [data, error] = await GetProjectOperationSheet(project.id);
+
+            if (error)
+            {
+                console.error("Error cargando la ficha operativa:", error);
+                return;
+            }
+
+            if (!data)
+            {
+                console.warn("No se encontró una ficha operativa");
+                return;
+            }
+
+            // Obtener los valores actuales del formulario (que incluyen los datos del proyecto)
+            const currentValues = form.getValues();
+
+            // Fusionar datos: si el dato de la ficha operativa es null/undefined, mantener el del proyecto
+            const mergedData = {
+                ...currentValues, // Datos actuales (proyecto)
+                ...data, // Datos de la ficha operativa
+                operationDate: data.operationDate?.split("T")[0] || currentValues.operationDate, // Asegurar formato YYYY-MM-DD
+            };
+
+            // Establecer los valores en el formulario sin perder los del proyecto
+            form.reset(mergedData);
+        };
+
+        loadOperationSheet();
+    }, [project.id, form]);
 
     return (
         <div className="flex flex-col h-full">
@@ -336,7 +412,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                     <FormField
                                                         control={form.control}
                                                         name="service"
-                                                        render={({ field }) => (
+                                                        render={() => (
                                                             <FormItem>
                                                                 <FormLabel className="flex items-center gap-2 font-medium mb-3">
                                                                     <ListCheck className="h-4 w-4 text-blue-500" />
@@ -348,7 +424,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                             key={service.id}
                                                                             className="flex flex-row items-start space-x-3 space-y-0"
                                                                         >
-                                                                            <FormControl>
+                                                                            {/* <FormControl>
                                                                                 <Checkbox
                                                                                     checked
                                                                                     onCheckedChange={(checked) =>
@@ -363,8 +439,9 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                         }
                                                                                     }}
                                                                                 />
-                                                                            </FormControl>
+                                                                            </FormControl> */}
                                                                             <FormLabel className="text-sm font-normal">
+                                                                                {"- "}
                                                                                 {service.name}
                                                                             </FormLabel>
                                                                         </FormItem>
@@ -1100,7 +1177,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                 <FormControl>
                                                                                     <Checkbox
                                                                                         checked={field.value === level.id}
-                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
                                                                                         }
                                                                                     />
                                                                                 </FormControl>
@@ -1108,7 +1185,6 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                     {level.label}
                                                                                 </FormLabel>
                                                                             </FormItem>
-
                                                                         )}
                                                                     />
                                                                 ))}
@@ -1129,7 +1205,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                                 <FormControl>
                                                                                     <Checkbox
                                                                                         checked={field.value === level.id}
-                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(""))
+                                                                                        onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
                                                                                         }
                                                                                     />
                                                                                 </FormControl>
@@ -1165,7 +1241,15 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                         <X className="h-4 w-4" />
                         Cancelar
                     </Button>
-                    <Button type="submit" form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                    <Button
+                        type="button"
+                        onClick={form.handleSubmit(handleSubmit)}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        Guardar
+                    </Button>
+                    <Button type="button" onClick={form.handleSubmit(download)} form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
                         <Download className="h-4 w-4" />
                         Generar Excel
                     </Button>
@@ -1174,4 +1258,3 @@ export function DownloadProjectForm({ onOpenChange, project }: {
         </div>
     );
 }
-

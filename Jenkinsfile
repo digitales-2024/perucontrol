@@ -1,7 +1,7 @@
 pipeline {
 	agent any
 	environment {
-		BUILD_REF = "${BUILD_TAG.replace('%2F', '-')}"
+		BUILD_REF = "${sh(script: "echo -n '${BUILD_TAG}' | sha256sum | cut -c1-12", returnStdout: true).trim()}"
 	}
 	stages {
 		stage("Build project") {
@@ -55,6 +55,7 @@ pipeline {
 					sh 'mkdir -p logs || true'
 					sh "docker logs perucontrol-frontend-ci-${BUILD_REF} > logs/frontend.log 2>&1 || true"
 					sh "docker logs perucontrol-backend-ci-${BUILD_REF} > logs/backend.log 2>&1 || true"
+					sh "docker logs perucontrol-db-ci-${BUILD_REF} > logs/db.log 2>&1 || true"
 					archiveArtifacts 'logs/**'
 				}
 			}
