@@ -55,7 +55,7 @@ pipeline {
 					sh 'mkdir -p logs || true'
 					sh "docker logs perucontrol-frontend-ci-${BUILD_REF} > logs/frontend.log 2>&1 || true"
 					sh "docker logs perucontrol-backend-ci-${BUILD_REF} > logs/backend.log 2>&1 || true"
-					sh "docker logs perucontrol-backend-db-${BUILD_REF} > logs/db.log 2>&1 || true"
+					sh "docker logs perucontrol-db-ci-${BUILD_REF} > logs/db.log 2>&1 || true"
 					archiveArtifacts 'logs/**'
 				}
 			}
