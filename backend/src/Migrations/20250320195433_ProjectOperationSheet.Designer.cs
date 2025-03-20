@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250319201646_Crear ProjectOperationSheet model")]
-    partial class CrearProjectOperationSheetmodel
+    [Migration("20250320195433_ProjectOperationSheet")]
+    partial class ProjectOperationSheet
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -189,11 +189,15 @@ namespace PeruControl.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectNumber"));
 
+                    b.Property<string>("TreatedArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Certificate");
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("PeruControl.Model.Client", b =>
