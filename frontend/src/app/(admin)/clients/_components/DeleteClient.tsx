@@ -10,14 +10,14 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Client } from "../types/clients";
 import { RemoveClient } from "../actions";
 import { toastWrapper } from "@/types/toasts";
+import { components } from "@/types/api";
 
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    client: Client,
+    client: components["schemas"]["Client"];
     showTrigger?: boolean;
 }
 
@@ -26,7 +26,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
 
     const onDeleteClientsHandler = async() =>
     {
-        const [, err] = await toastWrapper(RemoveClient(client.id), {
+        const [, err] = await toastWrapper(RemoveClient(client.id!), {
             loading: "Eliminando cliente...",
             success: "Cliente eliminado exitosamente!",
         });

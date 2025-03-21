@@ -11,4 +11,5 @@ export interface Project {
   services?: Array<components["schemas"]["Service"]>;
   quotation?: components["schemas"]["Quotation"];
   supplies?: Array<{ id: string; name: string; quantity: number; unit: string }>;
+  isActive: boolean;
 }

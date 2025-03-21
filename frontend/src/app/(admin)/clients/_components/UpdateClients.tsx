@@ -10,11 +10,11 @@ import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
 import { UpdateClient } from "../actions";
-import { Client } from "../types/clients";
 import { toastWrapper } from "@/types/toasts";
+import { components } from "@/types/api";
 
 interface UpdateClientProps {
-    client: Client;
+    client: components["schemas"]["Client"];
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -70,7 +70,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const [, err] = await toastWrapper(UpdateClient(client.id, input), {
+        const [, err] = await toastWrapper(UpdateClient(client.id!, input), {
             loading: "Cargando...",
             success: "¡Cliente actualizado exitosamente!",
         });

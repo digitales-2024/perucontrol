@@ -1,16 +1,16 @@
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, User, Briefcase, MapPin, Mail, Phone, Building } from "lucide-react";
-import type { Client } from "../types/clients";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { components } from "@/types/api";
 
 interface ViewClientDetailsProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  client: Client
+  client: components["schemas"]["Client"]
   showTrigger?: boolean
 }
 

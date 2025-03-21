@@ -92,7 +92,7 @@ public class ClientController(
         }
     }
 
-    // Sobrescribiendo el método Delete para agregar las validaciones
+    // Delete con validaciones
     [HttpDelete("{id}")]
     public override async Task<IActionResult> Delete(Guid id)
     {
@@ -102,22 +102,22 @@ public class ClientController(
             return NotFound();
         }
 
-        // Verificar si el cliente está asociado a alguna cotización
-        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q => q.Client.Id == id);
-        // Verificar si el cliente está asociado a algún proyecto
-        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Client.Id == id);
+        // Verificar si el cliente está asociado a alguna cotización activa
+        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q => q.Client.Id == id && q.IsActive);
+        // Verificar si el cliente está asociado a algún proyecto activo
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Client.Id == id && p.IsActive);
 
         if (isAssociatedWithQuotation)
         {
             return BadRequest(
-                "No se puede desactivar el cliente porque está asociado a una cotización."
+                "No se puede desactivar el cliente porque está asociado a una cotización activa."
             );
         }
 
         if (isAssociatedWithProject)
         {
             return BadRequest(
-                "No se puede desactivar el cliente porque está asociado a un proyecto."
+                "No se puede desactivar el cliente porque está asociado a un proyecto activo."
             );
         }
 

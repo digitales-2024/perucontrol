@@ -33,11 +33,15 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center uppercase text-center">
-                {row.original.orderNumber}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.orderNumber}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "client",
@@ -57,11 +61,15 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center">
-                {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "state",
@@ -81,23 +89,32 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.status === "Pending" ? (
-                    <Badge variant="default">
-                        Pendiente
-                    </Badge>
-                ) : row.original?.status === "Approved" ? (
-                    <Badge variant="approved">
-                        Aprobado
-                    </Badge>
-                ) : (
-                    <Badge variant="destructive">
-                        Rechazado
-                    </Badge>
-                )}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+
+            return (
+                <span
+                    className={`items-center text-center flex justify-center ${
+                        !isActive ? "text-red-500" : ""
+                    }`}
+                >
+                    {row.original?.status === "Pending" ? (
+                        <Badge variant={!isActive ? "deleted" : "default"}>
+                    Pendiente
+                        </Badge>
+                    ) : row.original?.status === "Approved" ? (
+                        <Badge variant={!isActive ? "deleted" : "approved"}>
+                    Aprobado
+                        </Badge>
+                    ) : (
+                        <Badge variant={!isActive ? "deleted" : "destructive"}>
+                    Rechazado
+                        </Badge>
+                    )}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "area",
@@ -117,11 +134,15 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original.area}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`flex justify-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.area}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "spacesCount",
@@ -141,11 +162,15 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original.spacesCount}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.spacesCount}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "address",
@@ -165,11 +190,15 @@ export const columns: Array<ColumnDef<Project>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original.address}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.address}
+                </span>
+            );
+        },
     },
     {
         id: "expander",
@@ -185,6 +214,7 @@ export const columns: Array<ColumnDef<Project>> = [
         header: "Acciones",
         cell: function Cell({ row })
         {
+            const isActive = row.original?.isActive;
             const [showAcceptProject, setShowAcceptProject] = useState(false);
             const [showRejectProject, setShowRejectProject] = useState(false);
             const [showDeleteProject, setShowDeleteProject] = useState(false);
@@ -240,22 +270,34 @@ export const columns: Array<ColumnDef<Project>> = [
                                 Acciones
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowAcceptProject(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowAcceptProject(true)}
+                                disabled={!isActive}
+                            >
                                 Aceptar Servicio
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowRejectProject(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowRejectProject(true)}
+                                disabled={!isActive}
+                            >
                                 Rechazar Servicio
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <Link href={`/projects/${projectId}/update/`}>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem disabled={!isActive}>
                                     Editar
                                 </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowDownload(true)}
+                                disabled={!isActive}
+                            >
                                 Descargar Servicio
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDeleteProject(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowDeleteProject(true)}
+                                disabled={!isActive}
+                            >
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

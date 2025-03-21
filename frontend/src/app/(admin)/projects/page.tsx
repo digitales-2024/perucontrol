@@ -14,9 +14,7 @@ export default async function ProjectsPage()
         throw error;
     }
 
-    const activeProjects = projects.filter((project) => project.isActive);  // Filtrando los proyectos activos
-
-    const transformedProjects = activeProjects.map((project) => ({
+    const transformedProjects = projects.map((project) => ({
         id: project.id!,
         area: project.area,
         spacesCount: project.spacesCount,
@@ -26,6 +24,7 @@ export default async function ProjectsPage()
         client: project.client,
         services: project.services,
         quotation: project.quotation,
+        isActive: project.isActive ?? false,
     }));
 
     return (
