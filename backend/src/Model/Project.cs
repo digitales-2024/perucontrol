@@ -46,4 +46,3 @@ public class Project : BaseModel
     [JsonIgnore]
     public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }
-

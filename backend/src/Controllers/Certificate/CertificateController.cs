@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
-using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class CertificateController(DatabaseContext db, WordTemplateService wordService)
+public class CertificateController(DatabaseContext db)
     : AbstractCrudController<Certificate, CertificateCreateDTO, CertificatePatchDTO>(db)
 {
     [EndpointSummary("Create")]

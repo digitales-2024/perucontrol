@@ -104,7 +104,6 @@ public class ProjectOperationSheetExport
     public string recommendations { get; set; } = string.Empty;
 }
 
-
 public class ProjectCreateDTO : IMapToEntity<Project>
 {
     public required Guid ClientId { get; set; }
@@ -179,8 +178,6 @@ public class ProjectSummary : BaseModel
     public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
 
     public required uint SpacesCount { get; set; }
-
-    public required int OrderNumber { get; set; }
 }
 
 public class ProjectStatusPatchDTO
