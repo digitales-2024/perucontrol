@@ -163,6 +163,8 @@ public static class DatabaseSeeder
                 SpacesCount = 32,
                 HasTaxes = true,
                 TermsAndConditions = "Terminos y Condiciones de la cotizacion",
+                CreationDate = DateTime.Now,
+                ExpirationDate = DateTime.Now.AddDays(30),
             },
             new Quotation
             {
@@ -174,6 +176,8 @@ public static class DatabaseSeeder
                 SpacesCount = 2,
                 HasTaxes = false,
                 TermsAndConditions = "Terminos y Condiciones",
+                CreationDate = DateTime.Now,
+                ExpirationDate = DateTime.Now.AddDays(30),
             },
         };
 

@@ -38,6 +38,10 @@ public class Quotation : BaseModel
 
     public required bool HasTaxes { get; set; }
 
+    public required DateTime CreationDate { get; set; }
+
+    public required DateTime ExpirationDate { get; set; }
+
     /// <summary>
     /// This is a COPY of the terms and conditions selected by the user,
     /// this way the T&C in the database can be safely edited,
@@ -66,6 +70,10 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     public required bool HasTaxes { get; set; }
     public required string TermsAndConditions { get; set; }
 
+    public required DateTime CreationDate { get; set; }
+
+    public required DateTime ExpirationDate { get; set; }
+
     public Quotation MapToEntity()
     {
         return new Quotation
@@ -76,6 +84,8 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
             SpacesCount = SpacesCount,
             HasTaxes = HasTaxes,
             TermsAndConditions = TermsAndConditions,
+            CreationDate = CreationDate.ToUniversalTime(),
+            ExpirationDate = ExpirationDate.ToUniversalTime(),
         };
     }
 }
@@ -92,6 +102,10 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     [Column(TypeName = "TEXT")]
     public string? TermsAndConditions { get; set; }
 
+    public DateTime? CreationDate { get; set; }
+
+    public DateTime? ExpirationDate { get; set; }
+
     public void ApplyPatch(Quotation entity)
     {
         if (Area != null)
@@ -104,6 +118,10 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.TermsAndConditions = TermsAndConditions;
         if (Frequency != null)
             entity.Frequency = Frequency.Value;
+        if (CreationDate != null)
+            entity.CreationDate = CreationDate.Value.ToUniversalTime();
+        if (ExpirationDate != null)
+            entity.ExpirationDate = ExpirationDate.Value.ToUniversalTime();
     }
 }
 
