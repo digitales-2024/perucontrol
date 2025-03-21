@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -14,7 +13,7 @@ public enum ProjectStatus
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum DegressInfestation
+public enum InfestationDegree
 {
     High,
     Moderate,
@@ -25,16 +24,13 @@ public enum DegressInfestation
 public class Project : BaseModel
 {
     [JsonIgnore]
-    public virtual Client Client { get; set; } = null!;
+    public Client Client { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
     [JsonIgnore]
-    public virtual Quotation? Quotation { get; set; } = null!;
-
-    [JsonIgnore]
-    public virtual ProjectOperationSheet ProjectOperationSheet { get; set; } = null!;
+    public Quotation? Quotation { get; set; } = null!;
 
     public required string Address { get; set; }
 
@@ -44,16 +40,13 @@ public class Project : BaseModel
 
     public required uint SpacesCount { get; set; }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int OrderNumber { get; set; }
-
-    // TODO: clarify supplies
-
-    // TODO: schedule
+    // Schedule: a list of Appointments
+    public ICollection<ProjectAppointment> Appointments { get; set; } =
+        new HashSet<ProjectAppointment>();
 
     // Reference properties
     [JsonIgnore]
-    public virtual ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
+    public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }
 
 public class ProjectCreateDTO : IMapToEntity<Project>
@@ -106,7 +99,6 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
 
     public void ApplyPatch(Project entity)
     {
-        // Look at all these null checks. In C we'd just memcpy and be done with it
         if (Address != null)
             entity.Address = Address;
         if (Area != null)
@@ -133,10 +125,6 @@ public class ProjectSummary : BaseModel
     public required uint SpacesCount { get; set; }
 
     public required int OrderNumber { get; set; }
-
-    // TODO: clarify supplies
-
-    // TODO: schedule
 }
 
 public class ProjectStatusPatchDTO

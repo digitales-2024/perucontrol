@@ -7,14 +7,20 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 public class ProjectOperationSheetController(DatabaseContext db)
-    : AbstractCrudController<ProjectOperationSheet, ProjectOperationSheetCreateDTO, ProjectOperationSheetPatchDTO>(db)
+    : AbstractCrudController<
+        ProjectOperationSheet,
+        ProjectOperationSheetCreateDTO,
+        ProjectOperationSheetPatchDTO
+    >(db)
 {
     [EndpointSummary("Create or Update")]
     [HttpPost("create-or-update")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ProjectOperationSheet>> CreateOrUpdate([FromBody] ProjectOperationSheetCreateDTO createDTO)
+    public async Task<ActionResult<ProjectOperationSheet>> CreateOrUpdate(
+        [FromBody] ProjectOperationSheetCreateDTO createDTO
+    )
     {
         var project = await _context.Set<Project>().FindAsync(createDTO.ProjectId);
         if (project == null)
@@ -26,7 +32,8 @@ public class ProjectOperationSheetController(DatabaseContext db)
         }
 
         // Verificar si ya existe una ficha operativa para este proyecto
-        var existingEntity = await _context.Set<ProjectOperationSheet>()
+        var existingEntity = await _context
+            .Set<ProjectOperationSheet>()
             .FirstOrDefaultAsync(x => x.Project.Id == createDTO.ProjectId);
 
         if (existingEntity != null)
@@ -54,7 +61,10 @@ public class ProjectOperationSheetController(DatabaseContext db)
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public override async Task<IActionResult> Patch(Guid id, [FromBody] ProjectOperationSheetPatchDTO patchDTO)
+    public override async Task<IActionResult> Patch(
+        Guid id,
+        [FromBody] ProjectOperationSheetPatchDTO patchDTO
+    )
     {
         var entity = await _dbSet.FindAsync(id);
         if (entity == null)
@@ -75,7 +85,8 @@ public class ProjectOperationSheetController(DatabaseContext db)
     public async Task<ActionResult<ProjectOperationSheet>> FindByIdProject(Guid projectId)
     {
         // Buscar la ficha operativa asociada al proyecto
-        var operationSheet = await _context.Set<ProjectOperationSheet>()
+        var operationSheet = await _context
+            .Set<ProjectOperationSheet>()
             .Include(x => x.Project) // Incluir la relación con el proyecto
             .FirstOrDefaultAsync(x => x.Project.Id == projectId);
 

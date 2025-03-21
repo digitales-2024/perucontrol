@@ -81,7 +81,7 @@ public class ProjectOperationSheetExport
     public string Staff4 { get; set; } = string.Empty;
 
     public bool aspersionManual { get; set; } = false;
-    
+
     public bool aspersionMotor { get; set; } = false;
 
     public bool nebulizacionFrio { get; set; } = false;
@@ -94,8 +94,8 @@ public class ProjectOperationSheetExport
 
     public bool colocacionCebosRepuestos { get; set; } = false;
 
-    public DegressInfestation degreeInsectInfectivity { get; set; } = DegressInfestation.Negligible;
-    public DegressInfestation degreeRodentInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree degreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
+    public InfestationDegree degreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
     public string observations { get; set; } = string.Empty;
 

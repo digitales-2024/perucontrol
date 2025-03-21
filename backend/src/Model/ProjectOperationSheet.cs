@@ -1,13 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
 public class ProjectOperationSheet : BaseModel
 {
-    public Guid ProjectId { get; set; }
+    [Required]
+    public Guid ProjectAppointmentId { get; set; }
 
     [JsonIgnore]
-    public virtual Project Project { get; set; } = null!;
+    public ProjectAppointment ProjectAppointment { get; set; } = null!;
 
     // fecha_op
     public required DateTime OperationDate { get; set; }
@@ -95,9 +97,9 @@ public class ProjectOperationSheet : BaseModel
     public bool ColocacionCebosCebaderos { get; set; } = false;
     public bool ColocacionCebosRepuestos { get; set; } = false;
 
-    public DegressInfestation DegreeInsectInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
-    public DegressInfestation DegreeRodentInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
     public string Observations { get; set; } = string.Empty;
 
@@ -168,9 +170,9 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public bool? ColocacionCebosCebaderos { get; set; } = false;
     public bool? ColocacionCebosRepuestos { get; set; } = false;
 
-    public DegressInfestation? DegreeInsectInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
-    public DegressInfestation? DegreeRodentInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree? DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
     public string? Observations { get; set; } = string.Empty;
 
@@ -214,8 +216,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             NebulizacionCebosTotal = NebulizacionCebosTotal ?? false,
             ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? false,
             ColocacionCebosRepuestos = ColocacionCebosRepuestos ?? false,
-            DegreeInsectInfectivity = DegreeInsectInfectivity ?? DegressInfestation.Negligible,
-            DegreeRodentInfectivity = DegreeRodentInfectivity ?? DegressInfestation.Negligible,
+            DegreeInsectInfectivity = DegreeInsectInfectivity ?? InfestationDegree.Negligible,
+            DegreeRodentInfectivity = DegreeRodentInfectivity ?? InfestationDegree.Negligible,
             Observations = Observations ?? string.Empty,
             Recommendations = Recommendations ?? string.Empty,
         };
@@ -255,8 +257,10 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.NebulizacionFrio = NebulizacionFrio ?? entity.NebulizacionFrio;
         entity.NebulizacionCaliente = NebulizacionCaliente ?? entity.NebulizacionCaliente;
         entity.NebulizacionCebosTotal = NebulizacionCebosTotal ?? entity.NebulizacionCebosTotal;
-        entity.ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
-        entity.ColocacionCebosRepuestos = ColocacionCebosRepuestos ?? entity.ColocacionCebosRepuestos;
+        entity.ColocacionCebosCebaderos =
+            ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
+        entity.ColocacionCebosRepuestos =
+            ColocacionCebosRepuestos ?? entity.ColocacionCebosRepuestos;
         entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;
         entity.DegreeRodentInfectivity = DegreeRodentInfectivity ?? entity.DegreeRodentInfectivity;
         entity.Observations = Observations ?? entity.Observations;
@@ -266,7 +270,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     }
 }
 
-public class ProjectOperationSheetPatchDTO: IEntityPatcher<ProjectOperationSheet>
+public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
 {
     public Guid? ProjectId { get; set; }
 
@@ -330,9 +334,9 @@ public class ProjectOperationSheetPatchDTO: IEntityPatcher<ProjectOperationSheet
     public bool? ColocacionCebosCebaderos { get; set; } = false;
     public bool? ColocacionCebosRepuestos { get; set; } = false;
 
-    public DegressInfestation? DegreeInsectInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
-    public DegressInfestation? DegreeRodentInfectivity { get; set; } = DegressInfestation.Negligible;
+    public InfestationDegree? DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
     public string? Observations { get; set; } = string.Empty;
 
@@ -388,8 +392,7 @@ public class ProjectOperationSheetPatchDTO: IEntityPatcher<ProjectOperationSheet
             entity.Staff1 = Staff1;
         if (Staff2 != null)
             entity.Staff2 = Staff2;
-        if (Staff3
-            != null)
+        if (Staff3 != null)
             entity.Staff3 = Staff3;
         if (Staff4 != null)
             entity.Staff4 = Staff4;
@@ -408,9 +411,9 @@ public class ProjectOperationSheetPatchDTO: IEntityPatcher<ProjectOperationSheet
         if (ColocacionCebosRepuestos != null)
             entity.ColocacionCebosRepuestos = (bool)ColocacionCebosRepuestos;
         if (DegreeInsectInfectivity != null)
-            entity.DegreeInsectInfectivity = (DegressInfestation)DegreeInsectInfectivity;
+            entity.DegreeInsectInfectivity = (InfestationDegree)DegreeInsectInfectivity;
         if (DegreeRodentInfectivity != null)
-            entity.DegreeRodentInfectivity = (DegressInfestation)DegreeRodentInfectivity;
+            entity.DegreeRodentInfectivity = (InfestationDegree)DegreeRodentInfectivity;
         if (Observations != null)
             entity.Observations = Observations;
         if (Recommendations != null)
