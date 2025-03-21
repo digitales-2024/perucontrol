@@ -88,7 +88,7 @@ export function QuotationDownload({ open, onOpenChange, quotationId }: {
                                         <FormItem>
                                             <FormLabel className="flex items-center gap-2 text-base font-medium">
                                                 <CalendarIcon className="h-4 w-4 text-blue-500" />
-                                                Fecha del Proyecto
+                                                Fecha Limite
                                             </FormLabel>
                                             <FormDescription>
                                                 Seleccione la fecha hasta la cual será válida esta cotización

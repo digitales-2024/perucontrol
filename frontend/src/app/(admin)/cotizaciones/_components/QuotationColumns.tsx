@@ -42,32 +42,6 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
     },
     {
-        accessorKey: "frequency",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-                Frecuencia
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.frequency === "Bimonthly" ? "Bimestral"
-                    : row.original?.frequency === "Quarterly" ? "Trimestral"
-                        : "Semestral"}
-            </span>
-        ),
-    },
-    {
         accessorKey: "area",
         header: ({ column }) => (
             <Button
@@ -114,6 +88,42 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 {row.original?.spacesCount}
             </span>
         ),
+    },
+    {
+        accessorKey: "creationDate",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 hover:bg-transparent"
+            >
+              Fecha de Creación
+                {column.getIsSorted() === "asc" ? (
+                    <ArrowUp className="ml-1 h-4 w-4" />
+                ) : column.getIsSorted() === "desc" ? (
+                    <ArrowDown className="ml-1 h-4 w-4" />
+                ) : (
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const rawDate = row.original?.creationDate;
+            const formattedDate = rawDate
+                ? new Intl.DateTimeFormat("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                }).format(new Date(rawDate))
+                : "Fecha no disponible";
+
+            return (
+                <span className="flex justify-center">
+                    {formattedDate}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "status",

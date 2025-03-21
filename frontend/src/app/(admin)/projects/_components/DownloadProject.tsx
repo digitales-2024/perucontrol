@@ -24,7 +24,7 @@ export function DownloadProject({ open, onOpenChange, project }: {
                         <div className="flex items-center gap-2">
                             <FileSpreadsheet className="h-5 w-5 text-blue-500" />
                             <DialogTitle className="text-xl">
-                                Generar documento de Proyecto
+                                Generar Ficha de Operaciones
                             </DialogTitle>
                         </div>
                     </div>

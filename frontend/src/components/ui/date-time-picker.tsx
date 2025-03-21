@@ -83,7 +83,7 @@ export default function DatePicker({
                         </span>
                     ) : (
                         <span className="truncate">
-Selecciona una fecha
+                            Selecciona una fecha
                         </span>
                     )}
                 </Button>

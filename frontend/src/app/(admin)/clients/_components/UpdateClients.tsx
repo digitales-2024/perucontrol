@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
-import { SearchClientByRuc, UpdateClient } from "../actions";
+import { UpdateClient } from "../actions";
 import { Client } from "../types/clients";
 import { toastWrapper } from "@/types/toasts";
 
@@ -39,7 +39,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         },
     });
 
-    const { reset, setValue } = form;
+    const { reset } = form;
 
     // Add this after your existing form fields, before the SheetFooter
     const { fields, append, remove } = useFieldArray({
@@ -67,23 +67,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
             setTypeDocument(client.typeDocument ?? "");
         }
     }, [open, client, form]);
-
-    const handleSearchByRuc = async(ruc: string) =>
-    {
-        const result = await SearchClientByRuc(ruc);
-        if (result)
-        {
-            const data = result;
-            // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial ?? "");
-            setValue("name", data[0].name ?? "");
-            setValue("fiscalAddress", data[0].fiscalAddress ?? "");
-        }
-        else
-        {
-            console.error("Error searching client by RUC:", result);
-        }
-    };
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
@@ -125,7 +108,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                             <FormLabel>
                                                 Tipo de documento
                                             </FormLabel>
-                                            <Select value={field.value} onValueChange={(value) =>
+                                            <Select disabled value={field.value} onValueChange={(value) =>
                                             {
                                                 field.onChange(value);
                                                 setTypeDocument(value);
@@ -162,10 +145,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="flex gap-2">
-                                                            <Input placeholder="Ingrese el RUC" {...field} />
-                                                            <Button type="button" className="px-3" onClick={() => handleSearchByRuc(field.value)}>
-                                                                <Search />
-                                                            </Button>
+                                                            <Input disabled placeholder="Ingrese el RUC" {...field} />
                                                         </div>
                                                     </FormControl>
                                                     <FormMessage />
@@ -232,7 +212,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                         DNI
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Ingrese el DNI" {...field} />
+                                                        <Input disabled placeholder="Ingrese el DNI" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

@@ -15,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
+import DatePicker from "@/components/ui/date-time-picker";
+import { formatISO, parseISO } from "date-fns";
 
 type Quotation = components["schemas"]["Quotation2"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
@@ -44,6 +46,8 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
             spacesCount: quotation?.spacesCount ?? 0,
             hasTaxes: quotation?.hasTaxes ?? false,
             termsAndConditions: quotation?.termsAndConditions ?? "",
+            creationDate: quotation?.creationDate ?? "",
+            expirationDate: quotation?.expirationDate ?? "",
         },
     });
 
@@ -61,6 +65,8 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                 spacesCount: quotation?.spacesCount ?? 0,
                 hasTaxes: quotation?.hasTaxes ?? false,
                 termsAndConditions: quotation?.termsAndConditions ?? "",
+                creationDate: quotation?.creationDate ?? "",
+                expirationDate: quotation?.expirationDate ?? "",
             });
         }
     }, [open, quotation, form]);
@@ -209,6 +215,66 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
                                                         </SelectItem>
                                                     </SelectContent>
                                                 </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="creationDate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                    Fecha de creación
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <DatePicker
+                                                        value={field.value ? parseISO(field.value) : undefined}
+                                                        onChange={(date) =>
+                                                        {
+                                                            if (date)
+                                                            {
+                                                                const formattedDate = formatISO(date, { representation: "complete" });
+                                                                field.onChange(formattedDate);
+                                                            }
+                                                            else
+                                                            {
+                                                                field.onChange("");
+                                                            }
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="expirationDate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                    Fecha de expiración
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <DatePicker
+                                                        value={field.value ? parseISO(field.value) : undefined}
+                                                        onChange={(date) =>
+                                                        {
+                                                            if (date)
+                                                            {
+                                                                const formattedDate = formatISO(date, { representation: "complete" });
+                                                                field.onChange(formattedDate);
+                                                            }
+                                                            else
+                                                            {
+                                                                field.onChange("");
+                                                            }
+                                                        }}
+                                                    />
+                                                </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

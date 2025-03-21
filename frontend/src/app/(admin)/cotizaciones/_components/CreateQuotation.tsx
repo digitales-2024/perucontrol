@@ -24,6 +24,8 @@ import { useQuotationContext } from "../context/QuotationContext";
 import { cn } from "@/lib/utils";
 import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
+import DatePicker from "@/components/ui/date-time-picker";
+import { format, parse } from "date-fns";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -59,6 +61,8 @@ export function CreateQuotation()
             spacesCount: 0,
             hasTaxes: false,
             termsAndConditions: "",
+            creationDate: "",
+            expirationDate: "",
         },
     });
 
@@ -228,6 +232,66 @@ export function CreateQuotation()
                                                         </SelectItem>
                                                     </SelectContent>
                                                 </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="creationDate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                    Fecha de creación
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <DatePicker
+                                                        value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
+                                                        onChange={(date) =>
+                                                        {
+                                                            if (date)
+                                                            {
+                                                                const formattedDate = format(date, "yyyy-MM-dd");
+                                                                field.onChange(formattedDate);
+                                                            }
+                                                            else
+                                                            {
+                                                                field.onChange("");
+                                                            }
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="expirationDate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                    Fecha de expiración
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <DatePicker
+                                                        value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
+                                                        onChange={(date) =>
+                                                        {
+                                                            if (date)
+                                                            {
+                                                                const formattedDate = format(date, "yyyy-MM-dd");
+                                                                field.onChange(formattedDate);
+                                                            }
+                                                            else
+                                                            {
+                                                                field.onChange("");
+                                                            }
+                                                        }}
+                                                    />
+                                                </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

@@ -3106,6 +3106,10 @@ export interface components {
             /** Format: uint32 */
             spacesCount: number;
             hasTaxes: boolean;
+            /** Format: date-time */
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
             id?: string;
@@ -3125,6 +3129,10 @@ export interface components {
             /** Format: uint32 */
             spacesCount: number;
             hasTaxes: boolean;
+            /** Format: date-time */
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
             id?: string;
@@ -3145,6 +3153,10 @@ export interface components {
             frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
             termsAndConditions: string;
+            /** Format: date-time */
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
         };
         QuotationExportDto: {
             /** Format: date-time */
@@ -3165,6 +3177,10 @@ export interface components {
             frequency?: components["schemas"]["NullableOfQuotationFrequency"];
             hasTaxes?: boolean | null;
             termsAndConditions?: string | null;
+            /** Format: date-time */
+            creationDate?: string | null;
+            /** Format: date-time */
+            expirationDate?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";

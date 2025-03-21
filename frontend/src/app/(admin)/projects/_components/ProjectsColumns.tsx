@@ -241,10 +241,10 @@ export const columns: Array<ColumnDef<Project>> = [
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => setShowAcceptProject(true)}>
-                                Aceptar cotización
+                                Aceptar Servicio
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowRejectProject(true)}>
-                                Rechazar cotización
+                                Rechazar Servicio
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <Link href={`/projects/${projectId}/update/`}>

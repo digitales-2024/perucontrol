@@ -424,22 +424,6 @@ export function DownloadProjectForm({ onOpenChange, project }: {
                                                                             key={service.id}
                                                                             className="flex flex-row items-start space-x-3 space-y-0"
                                                                         >
-                                                                            {/* <FormControl>
-                                                                                <Checkbox
-                                                                                    checked
-                                                                                    onCheckedChange={(checked) =>
-                                                                                    {
-                                                                                        if (checked)
-                                                                                        {
-                                                                                            field.onChange([...field.value, service.id]);
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                            </FormControl> */}
                                                                             <FormLabel className="text-sm font-normal">
                                                                                 {"- "}
                                                                                 {service.name}
