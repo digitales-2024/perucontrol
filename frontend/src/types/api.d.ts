@@ -135,9 +135,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Certificate"]>;
-                        "application/json": Array<components["schemas"]["Certificate"]>;
-                        "text/json": Array<components["schemas"]["Certificate"]>;
+                        "text/plain": components["schemas"]["Certificate"][];
+                        "application/json": components["schemas"]["Certificate"][];
+                        "text/json": components["schemas"]["Certificate"][];
                     };
                 };
             };
@@ -440,9 +440,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Client"]>;
-                        "application/json": Array<components["schemas"]["Client"]>;
-                        "text/json": Array<components["schemas"]["Client"]>;
+                        "text/plain": components["schemas"]["Client"][];
+                        "application/json": components["schemas"]["Client"][];
+                        "text/json": components["schemas"]["Client"][];
                     };
                 };
             };
@@ -744,9 +744,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectSummary"]>;
-                        "application/json": Array<components["schemas"]["ProjectSummary"]>;
-                        "text/json": Array<components["schemas"]["ProjectSummary"]>;
+                        "text/plain": components["schemas"]["ProjectSummary"][];
+                        "application/json": components["schemas"]["ProjectSummary"][];
+                        "text/json": components["schemas"]["ProjectSummary"][];
                     };
                 };
             };
@@ -1096,72 +1096,6 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/ProjectOperationSheet/create-or-update": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create or Update */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                    "text/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/ProjectOperationSheet/{id}": {
         parameters: {
             query?: never;
@@ -1292,57 +1226,6 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/ProjectOperationSheet/by-project/{projectId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Find operation sheet by project ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    projectId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/ProjectOperationSheet": {
         parameters: {
             query?: never;
@@ -1366,9 +1249,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "text/plain": components["schemas"]["ProjectOperationSheet"][];
+                        "application/json": components["schemas"]["ProjectOperationSheet"][];
+                        "text/json": components["schemas"]["ProjectOperationSheet"][];
                     };
                 };
             };
@@ -1490,9 +1373,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Quotation2"]>;
-                        "application/json": Array<components["schemas"]["Quotation2"]>;
-                        "text/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/plain": components["schemas"]["Quotation2"][];
+                        "application/json": components["schemas"]["Quotation2"][];
+                        "text/json": components["schemas"]["Quotation2"][];
                     };
                 };
             };
@@ -1817,9 +1700,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Quotation2"]>;
-                        "application/json": Array<components["schemas"]["Quotation2"]>;
-                        "text/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/plain": components["schemas"]["Quotation2"][];
+                        "application/json": components["schemas"]["Quotation2"][];
+                        "text/json": components["schemas"]["Quotation2"][];
                     };
                 };
             };
@@ -1902,9 +1785,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Service"]>;
-                        "application/json": Array<components["schemas"]["Service"]>;
-                        "text/json": Array<components["schemas"]["Service"]>;
+                        "text/plain": components["schemas"]["Service"][];
+                        "application/json": components["schemas"]["Service"][];
+                        "text/json": components["schemas"]["Service"][];
                     };
                 };
             };
@@ -2156,9 +2039,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Supply"]>;
-                        "application/json": Array<components["schemas"]["Supply"]>;
-                        "text/json": Array<components["schemas"]["Supply"]>;
+                        "text/plain": components["schemas"]["Supply"][];
+                        "application/json": components["schemas"]["Supply"][];
+                        "text/json": components["schemas"]["Supply"][];
                     };
                 };
             };
@@ -2410,9 +2293,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["TermsAndConditions"]>;
-                        "application/json": Array<components["schemas"]["TermsAndConditions"]>;
-                        "text/json": Array<components["schemas"]["TermsAndConditions"]>;
+                        "text/plain": components["schemas"]["TermsAndConditions"][];
+                        "application/json": components["schemas"]["TermsAndConditions"][];
+                        "text/json": components["schemas"]["TermsAndConditions"][];
                     };
                 };
             };
@@ -2725,12 +2608,12 @@ export interface components {
             /** Format: date-time */
             expirationDate: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         CertificateCreateDTO: {
             /** Format: uuid */
@@ -2750,16 +2633,16 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations: Array<components["schemas"]["ClientLocation"]>;
+            clientLocations: components["schemas"]["ClientLocation"][];
             phoneNumber: string;
             contactName?: string | null;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         Client2: {
             typeDocument: string;
@@ -2773,12 +2656,12 @@ export interface components {
             phoneNumber: string;
             contactName?: string | null;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         ClientCreateDTO: {
             typeDocument: string;
@@ -2788,19 +2671,19 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
+            clientLocations: components["schemas"]["ClientLocationDTO"][];
             phoneNumber: string;
             contactName?: string | null;
         };
         ClientLocation: {
             address: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         ClientLocationDTO: {
             address: string;
@@ -2814,8 +2697,6 @@ export interface components {
             phoneNumber?: string | null;
             contactName?: string | null;
         };
-        /** @enum {unknown} */
-        DegressInfestation: "High" | "Moderate" | "Low" | "Negligible";
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
@@ -2830,6 +2711,8 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        /** @enum {unknown} */
+        InfestationDegree: "High" | "Moderate" | "Low" | "Negligible";
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -2845,7 +2728,7 @@ export interface components {
             refreshExpiresIn: number;
         };
         /** @enum {unknown|null} */
-        NullableOfDegressInfestation: "High" | "Moderate" | "Low" | "Negligible" | null;
+        NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual" | null;
         ProblemDetails: {
@@ -2863,15 +2746,29 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: int32 */
-            orderNumber?: number;
+            appointments?: components["schemas"]["ProjectAppointment"][];
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
+        };
+        ProjectAppointment: {
+            /** Format: int32 */
+            orderNumber?: number | null;
+            /** Format: date-time */
+            dueDate?: string | null;
+            /** Format: date-time */
+            actualDate?: string | null;
+            /** Format: uuid */
+            id: string;
+            isActive: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
         };
         ProjectCreateDTO: {
             /** Format: uuid */
@@ -2879,7 +2776,7 @@ export interface components {
             /** Format: uuid */
             quotationId?: string | null;
             /** @description Array of Service IDs */
-            services: Array<string>;
+            services: string[];
             address: string;
             /** Format: uint32 */
             area: number;
@@ -2888,7 +2785,7 @@ export interface components {
         };
         ProjectOperationSheet: {
             /** Format: uuid */
-            projectId?: string;
+            projectAppointmentId: string;
             /** Format: date-time */
             operationDate: string;
             enterTime: string;
@@ -2923,17 +2820,17 @@ export interface components {
             nebulizacionCebosTotal?: boolean;
             colocacionCebosCebaderos?: boolean;
             colocacionCebosRepuestos?: boolean;
-            degreeInsectInfectivity?: components["schemas"]["DegressInfestation"];
-            degreeRodentInfectivity?: components["schemas"]["DegressInfestation"];
+            degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["InfestationDegree"];
             observations?: string;
             recommendations?: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         ProjectOperationSheetCreateDTO: {
             /** Format: uuid */
@@ -2972,8 +2869,8 @@ export interface components {
             nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: boolean | null;
             colocacionCebosRepuestos?: boolean | null;
-            degreeInsectInfectivity?: components["schemas"]["NullableOfDegressInfestation"];
-            degreeRodentInfectivity?: components["schemas"]["NullableOfDegressInfestation"];
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;
             recommendations?: string | null;
         };
@@ -3011,8 +2908,8 @@ export interface components {
             nebulizacionCebosTotal?: boolean;
             colocacionCebosCebaderos?: boolean;
             colocacionCebosRepuestos?: boolean;
-            degreeInsectInfectivity?: components["schemas"]["DegressInfestation"];
-            degreeRodentInfectivity?: components["schemas"]["DegressInfestation"];
+            degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["InfestationDegree"];
             observations?: string;
             recommendations?: string;
         };
@@ -3053,8 +2950,8 @@ export interface components {
             nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: boolean | null;
             colocacionCebosRepuestos?: boolean | null;
-            degreeInsectInfectivity?: components["schemas"]["NullableOfDegressInfestation"];
-            degreeRodentInfectivity?: components["schemas"]["NullableOfDegressInfestation"];
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;
             recommendations?: string | null;
         };
@@ -3064,7 +2961,7 @@ export interface components {
             /** Format: uuid */
             quotationId?: string | null;
             /** @description Array of Service IDs */
-            services?: Array<string> | null;
+            services?: string[] | null;
             address?: string | null;
             /** Format: uint32 */
             area?: number | null;
@@ -3078,7 +2975,7 @@ export interface components {
         };
         ProjectSummary: {
             client?: components["schemas"]["Client"];
-            services?: Array<components["schemas"]["Service"]>;
+            services?: components["schemas"]["Service"][];
             quotation?: components["schemas"]["Quotation"];
             address: string;
             /** Format: uint32 */
@@ -3086,19 +2983,17 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: int32 */
-            orderNumber: number;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         Quotation: {
             client?: components["schemas"]["Client2"];
-            services?: Array<components["schemas"]>;
+            services?: components["schemas"][];
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
             /** Format: uint32 */
@@ -3112,16 +3007,16 @@ export interface components {
             expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         } | null;
         Quotation2: {
             client?: components["schemas"]["Client"];
-            services?: Array<components["schemas"]["Service"]>;
+            services?: components["schemas"]["Service"][];
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
             /** Format: uint32 */
@@ -3135,17 +3030,17 @@ export interface components {
             expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         QuotationCreateDTO: {
             /** Format: uuid */
             clientId: string;
-            serviceIds: Array<string>;
+            serviceIds: string[];
             /** Format: uint32 */
             area: number;
             /** Format: uint32 */
@@ -3169,7 +3064,7 @@ export interface components {
         QuotationPatchDTO: {
             /** Format: uuid */
             clientId?: string | null;
-            serviceIds?: Array<string> | null;
+            serviceIds?: string[] | null;
             /** Format: uint32 */
             area?: number | null;
             /** Format: uint32 */
@@ -3193,12 +3088,12 @@ export interface components {
         Service: {
             name: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         ServiceCreateDTO: {
             name: string;
@@ -3226,12 +3121,12 @@ export interface components {
             name: string;
             unit: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         SupplyCreateDTO: {
             name: string;
@@ -3244,12 +3139,12 @@ export interface components {
             name: string;
             content: string;
             /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
+            id: string;
+            isActive: boolean;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            modifiedAt?: string;
+            modifiedAt: string;
         };
         TermsAndConditionsCreateDTO: {
             name: string;

@@ -22,6 +22,10 @@ public enum QuotationFrequency
 
 public class Quotation : BaseModel
 {
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int QuotationNumber { get; set; }
+
     public Client Client { get; set; } = null!;
 
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();
