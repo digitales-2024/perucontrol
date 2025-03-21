@@ -7,6 +7,7 @@ namespace PeruControl.Model;
 public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
+    public required DbSet<Business> Businesses { get; set; }
     public required DbSet<Client> Clients { get; set; }
     public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
@@ -22,6 +23,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        PeruControl.Model.Business.SetUp<Business>(builder);
         PeruControl.Model.Client.SetUp<Client>(builder);
         PeruControl.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Model.ClientLocation.SetUp<ClientLocation>(builder);
