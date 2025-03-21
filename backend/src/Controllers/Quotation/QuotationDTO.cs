@@ -12,6 +12,8 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public required uint SpacesCount { get; set; }
     public required bool HasTaxes { get; set; }
     public required string TermsAndConditions { get; set; }
+    public required DateTime CreationDate { get; set; }
+    public required DateTime ExpirationDate { get; set; }
 }
 
 public class ClientGetDTO : PeruControl.Model.BaseModel

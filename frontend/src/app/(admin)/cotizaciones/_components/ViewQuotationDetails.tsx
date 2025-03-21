@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -42,7 +41,7 @@ export function ViewQuotationDetails({
                 </DialogHeader>
 
                 <ScrollArea className="max-h-[70vh]">
-                    <div className="space-y-6 py-4">
+                    <div className="space-y-6">
                         <div className="space-y-4">
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground">
@@ -126,22 +125,36 @@ export function ViewQuotationDetails({
                                 </div>
                             </div>
 
-                            {quotation.createdAt && (
+                            <div className="flex gap-12">
                                 <div>
                                     <h3 className="text-sm font-medium text-muted-foreground">
-                                      Fecha de creación
+                                          Fecha de creación
                                     </h3>
                                     <p className="text-sm">
-                                        {new Date(quotation.createdAt).toLocaleString()}
+                                        {
+                                            new Intl.DateTimeFormat("es-ES", {
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                            }).format(new Date(quotation.creationDate))
+                                        }
                                     </p>
                                 </div>
-                            )}
-                        </div>
-
-                        <div className="flex justify-end space-x-2 pt-4">
-                            <Button variant="outline" onClick={() => onOpenChange(false)}>
-                              Cerrar
-                            </Button>
+                                <div>
+                                    <h3 className="text-sm font-medium text-muted-foreground">
+                                          Fecha de expiración
+                                    </h3>
+                                    <p className="text-sm">
+                                        {
+                                            new Intl.DateTimeFormat("es-ES", {
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                            }).format(new Date(quotation.expirationDate))
+                                        }
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </ScrollArea>

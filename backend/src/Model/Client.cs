@@ -135,7 +135,7 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     [MaxLength(24)]
     public string? PhoneNumber { get; set; }
 
-    [MinLength(1)]
+    [MinLength(0)]
     [MaxLength(100)]
     public string? ContactName { get; set; }
 

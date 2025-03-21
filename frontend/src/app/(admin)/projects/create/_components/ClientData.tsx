@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../schemas";
 import { CreateProject } from "../../actions";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toastWrapper } from "@/types/toasts";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
@@ -34,6 +34,9 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
 {
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
+    const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+
+    const router = useRouter();
 
     const form = useForm<ClientDataSchema>({
         resolver: zodResolver(clientDataSchema),
@@ -79,6 +82,54 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         }
     };
 
+    const handleClientChange = (option: Option | null) =>
+    {
+        const selectedClient = clients.find((client) => client.id === option?.value);
+        if (selectedClient)
+        {
+            setValue("clientId", selectedClient.id ?? "");
+
+            // Agregar la dirección fiscal como una opción adicional
+            const addressOptions = [
+                ...(selectedClient.fiscalAddress
+                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    : []),
+                ...(selectedClient.clientLocations
+                    ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
+                    .map((location) => ({
+                        value: location.address,
+                        label: location.address,
+                    })) ?? []),
+            ];
+
+            setClientAddressOptions(addressOptions);
+        }
+        else
+        {
+            setValue("clientId", "");
+            setClientAddressOptions([]);
+        }
+    };
+
+    useEffect(() =>
+    {
+        const selectedClient = clients.find((client) => client.id === form.getValues("clientId"));
+        if (selectedClient)
+        {
+            const addressOptions = [
+                ...(selectedClient.fiscalAddress
+                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    : []),
+                ...(selectedClient.clientLocations?.map((location) => ({
+                    value: location.address,
+                    label: location.address,
+                })) ?? []),
+            ];
+
+            setClientAddressOptions(addressOptions);
+        }
+    }, [clients, form]);
+
     const handleClick = () =>
     {
         setShowQuotation(false);
@@ -94,7 +145,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
         {
             return;
         }
-        redirect("./");
+        router.push("./");
     };
 
     return (
@@ -150,6 +201,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                             onValueChange={(option) =>
                                             {
                                                 field.onChange(option?.value || "");
+                                                handleClientChange(option);
                                             }}
                                         />
                                     </FormControl>
@@ -168,7 +220,19 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                         Dirección
                                     </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
+                                        <AutoComplete
+                                            options={clientAddressOptions}
+                                            placeholder="Av. / Jr. / Calle Nro. Lt."
+                                            emptyMessage="No se encontraron dirreciones"
+                                            value={
+                                                clientAddressOptions.find((option) => option.value ===
+                                                    field.value) ?? undefined
+                                            }
+                                            onValueChange={(option) =>
+                                            {
+                                                field.onChange(option?.value || "");
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
