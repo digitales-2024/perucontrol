@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class SquashconctacNamedeCliente : Migration
+    public partial class Squash : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -256,10 +256,12 @@ namespace PeruControl.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Frequency = table.Column<int>(type: "integer", nullable: false),
                     Area = table.Column<long>(type: "bigint", nullable: false),
                     SpacesCount = table.Column<long>(type: "bigint", nullable: false),
                     HasTaxes = table.Column<bool>(type: "boolean", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TermsAndConditions = table.Column<string>(type: "TEXT", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
@@ -334,13 +336,14 @@ namespace PeruControl.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificate",
+                name: "Certificates",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProjectNumber = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TreatedArea = table.Column<string>(type: "text", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -349,9 +352,67 @@ namespace PeruControl.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Certificate", x => x.Id);
+                    table.PrimaryKey("PK_Certificates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Certificate_Projects_ProjectId",
+                        name: "FK_Certificates_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectOperationSheet",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OperationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EnterTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    LeaveTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    SanitaryCondition = table.Column<string>(type: "text", nullable: false),
+                    TreatedAreas = table.Column<string>(type: "text", nullable: false),
+                    Insects = table.Column<string>(type: "text", nullable: false),
+                    Rodents = table.Column<string>(type: "text", nullable: false),
+                    OtherPlagues = table.Column<string>(type: "text", nullable: false),
+                    Insecticide = table.Column<string>(type: "text", nullable: false),
+                    Insecticide2 = table.Column<string>(type: "text", nullable: false),
+                    Rodenticide = table.Column<string>(type: "text", nullable: false),
+                    Desinfectant = table.Column<string>(type: "text", nullable: false),
+                    OtherProducts = table.Column<string>(type: "text", nullable: false),
+                    InsecticideAmount = table.Column<string>(type: "text", nullable: false),
+                    InsecticideAmount2 = table.Column<string>(type: "text", nullable: false),
+                    RodenticideAmount = table.Column<string>(type: "text", nullable: false),
+                    DesinfectantAmount = table.Column<string>(type: "text", nullable: false),
+                    OtherProductsAmount = table.Column<string>(type: "text", nullable: false),
+                    RatExtermination1 = table.Column<string>(type: "text", nullable: false),
+                    RatExtermination2 = table.Column<string>(type: "text", nullable: false),
+                    RatExtermination3 = table.Column<string>(type: "text", nullable: false),
+                    RatExtermination4 = table.Column<string>(type: "text", nullable: false),
+                    Staff1 = table.Column<string>(type: "text", nullable: false),
+                    Staff2 = table.Column<string>(type: "text", nullable: false),
+                    Staff3 = table.Column<string>(type: "text", nullable: false),
+                    Staff4 = table.Column<string>(type: "text", nullable: false),
+                    AspersionManual = table.Column<bool>(type: "boolean", nullable: false),
+                    AspercionMotor = table.Column<bool>(type: "boolean", nullable: false),
+                    NebulizacionFrio = table.Column<bool>(type: "boolean", nullable: false),
+                    NebulizacionCaliente = table.Column<bool>(type: "boolean", nullable: false),
+                    NebulizacionCebosTotal = table.Column<bool>(type: "boolean", nullable: false),
+                    ColocacionCebosCebaderos = table.Column<bool>(type: "boolean", nullable: false),
+                    ColocacionCebosRepuestos = table.Column<bool>(type: "boolean", nullable: false),
+                    DegreeInsectInfectivity = table.Column<int>(type: "integer", nullable: false),
+                    DegreeRodentInfectivity = table.Column<int>(type: "integer", nullable: false),
+                    Observations = table.Column<string>(type: "text", nullable: false),
+                    Recommendations = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectOperationSheet", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectOperationSheet_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
@@ -420,8 +481,8 @@ namespace PeruControl.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificate_ProjectId",
-                table: "Certificate",
+                name: "IX_Certificates_ProjectId",
+                table: "Certificates",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
@@ -433,6 +494,12 @@ namespace PeruControl.Migrations
                 name: "IX_Clients_TypeDocumentValue",
                 table: "Clients",
                 column: "TypeDocumentValue",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectOperationSheet_ProjectId",
+                table: "ProjectOperationSheet",
+                column: "ProjectId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -480,10 +547,13 @@ namespace PeruControl.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Certificate");
+                name: "Certificates");
 
             migrationBuilder.DropTable(
                 name: "ClientLocations");
+
+            migrationBuilder.DropTable(
+                name: "ProjectOperationSheet");
 
             migrationBuilder.DropTable(
                 name: "ProjectService");
