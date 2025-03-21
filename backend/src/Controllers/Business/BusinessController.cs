@@ -5,5 +5,4 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 public class BusinessController(DatabaseContext db)
-    : AbstractCrudController<Business, BusinessCreateDTO, BusinessPatchDTO>(db)
-{ }
+    : AbstractCrudController<Business, BusinessCreateDTO, BusinessPatchDTO>(db) { }
