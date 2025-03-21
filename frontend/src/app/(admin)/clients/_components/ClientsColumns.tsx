@@ -7,11 +7,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/component
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import { UpdateClientSheet } from "./UpdateClients";
-import { Client } from "../types/clients";
 import { DeleteClient } from "./DeleteClient";
 import { ViewClientDetails } from "./ViewClientsDetail";
+import { components } from "@/types/api";
 
-export const columns: Array<ColumnDef<Client>> = [
+export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
     {
         accessorKey: "typeDocument",
         header: ({ column }) => (
@@ -30,11 +30,15 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center uppercase text-center">
-                {row.original.typeDocument}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.typeDocument}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "typeDocumentValue",
@@ -54,11 +58,15 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center">
-                {row.original.typeDocumentValue}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.typeDocumentValue}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "razonSocial",
@@ -78,11 +86,15 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original.razonSocial}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.razonSocial}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "name",
@@ -102,11 +114,15 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original.name}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.name}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "contactName",
@@ -126,11 +142,15 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center text-center truncate max-w-xs">
-                {row.original.contactName}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.contactName}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "email",
@@ -150,17 +170,22 @@ export const columns: Array<ColumnDef<Client>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center flex justify-center text-ellipsis text-center">
-                {row.original.email}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {row.original.email}
+                </span>
+            );
+        },
     },
     {
         id: "acciones",
         header: "Acciones",
         cell: function Cell({ row })
         {
+            const isActive = row.original?.isActive;
             const [showUpdateClient, setShowUpdateClient] = useState(false);
             const [showDeleteClient, setShowDeleteClient] = useState(false);
             const [showDetailClient, setShowDetailClient] = useState(false);
@@ -206,10 +231,16 @@ export const columns: Array<ColumnDef<Client>> = [
                             <DropdownMenuItem onSelect={() => setShowDetailClient(true)}>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowUpdateClient(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowUpdateClient(true)}
+                                disabled={!isActive}
+                            >
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDeleteClient(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowDeleteClient(true)}
+                                disabled={!isActive}
+                            >
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

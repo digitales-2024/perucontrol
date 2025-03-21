@@ -20,6 +20,7 @@ interface AcceptQuotationProps {
   onOpenChange: (open: boolean) => void;
   quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
+  disabled?: boolean;
 }
 
 export function AlertDialogAcceptQuotation({
@@ -27,6 +28,7 @@ export function AlertDialogAcceptQuotation({
     onOpenChange,
     quotation,
     showTrigger = true,
+    disabled,
 }: AcceptQuotationProps)
 {
     const handleUpdateStatus = () =>
@@ -43,7 +45,7 @@ export function AlertDialogAcceptQuotation({
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             { showTrigger ? (
                 <AlertDialogTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" disabled={disabled}>
                         Aceptar cotización
                     </Button>
                 </AlertDialogTrigger>
@@ -63,6 +65,7 @@ export function AlertDialogAcceptQuotation({
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUpdateStatus}
+                        disabled={disabled}
                     >
                       Continuar
                     </AlertDialogAction>

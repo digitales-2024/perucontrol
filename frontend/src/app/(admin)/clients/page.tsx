@@ -21,8 +21,6 @@ export default async function ClientsPage()
         );
     }
 
-    // const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
-
     const formattedClients = clients.map((client) => ({
         ...client,
         id: client.id ?? "-", // Si no hay id convertir el null a un string vacio

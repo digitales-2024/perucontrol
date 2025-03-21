@@ -35,11 +35,19 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="uppercase">
-                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            const clientName =
+              row.original?.client?.name === "-"
+                  ? row.original.client.razonSocial
+                  : row.original?.client?.name;
+            return (
+                <span className={`uppercase ${!isActive ? "line-through text-red-500" : ""}`}>
+                    {clientName}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "area",
@@ -59,11 +67,18 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.area}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span className={`flex justify-center ${
+                    !isActive ? "line-through text-red-500" : ""
+                }`}
+                >
+                    {row.original?.area}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "spacesCount",
@@ -83,11 +98,18 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.spacesCount}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span className={`flex justify-center ${
+                    !isActive ? "line-through text-red-500" : ""
+                }`}
+                >
+                    {row.original?.spacesCount}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "creationDate",
@@ -109,6 +131,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         ),
         cell: ({ row }) =>
         {
+            const isActive = row.original?.isActive;
             const rawDate = row.original?.creationDate;
             const formattedDate = rawDate
                 ? new Intl.DateTimeFormat("es-ES", {
@@ -119,7 +142,10 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 : "Fecha no disponible";
 
             return (
-                <span className="flex justify-center">
+                <span className={`flex justify-center ${
+                    !isActive ? "line-through text-red-500" : ""
+                }`}
+                >
                     {formattedDate}
                 </span>
             );
@@ -143,23 +169,32 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original?.status === "Pending" ? (
-                    <Badge variant="default">
-                        Pendiente
-                    </Badge>
-                ) : row.original?.status === "Approved" ? (
-                    <Badge variant="approved">
-                        Aprobado
-                    </Badge>
-                ) : (
-                    <Badge variant="destructive">
-                        Rechazado
-                    </Badge>
-                )}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+
+            return (
+                <span
+                    className={`items-center text-center flex justify-center ${
+                        !isActive ? "text-red-500" : ""
+                    }`}
+                >
+                    {row.original?.status === "Pending" ? (
+                        <Badge variant={!isActive ? "deleted" : "default"}>
+                          Pendiente
+                        </Badge>
+                    ) : row.original?.status === "Approved" ? (
+                        <Badge variant={!isActive ? "deleted" : "approved"}>
+                          Aprobado
+                        </Badge>
+                    ) : (
+                        <Badge variant={!isActive ? "deleted" : "destructive"}>
+                          Rechazado
+                        </Badge>
+                    )}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "hasTaxes",
@@ -179,17 +214,25 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original?.hasTaxes ? "SI" : "NO"}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span className={`flex justify-center ${
+                    !isActive ? "line-through text-red-500" : ""
+                }`}
+                >
+                    {row.original?.hasTaxes ? "SI" : "NO"}
+                </span>
+            );
+        },
     },
     {
         id: "acciones",
         header: "Acciones",
         cell: function Cell({ row })
         {
+            const isActive = row.original?.isActive;
             const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
             const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
             const [showDetailQuotation, setShowDetailQuotation] = useState(false);
@@ -229,6 +272,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             onOpenChange={setShowAcceptQuotaion}
                             quotation={row?.original}
                             showTrigger={false}
+                            disabled={!isActive}
                         />
                         {/* Rechazar Cotización */}
                         <AlertDialogRejectQuotation
@@ -236,12 +280,14 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                             onOpenChange={setShowRejectQuotaion}
                             quotation={row?.original}
                             showTrigger={false}
+                            disabled={!isActive}
                         />
                         {/* Descargar Cotización */}
                         <QuotationDownload
                             open={showDownload}
                             onOpenChange={setShowDownload}
                             quotationId={row.original.id!}
+                            disabled={!isActive}
                         />
                     </div>
                     <DropdownMenu>
@@ -262,23 +308,38 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                                 Acciones
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowAcceptQuotaion(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowAcceptQuotaion(true)}
+                                disabled={!isActive}
+                            >
                                 Aceptar cotización
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowRejectQuotaion(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowRejectQuotaion(true)}
+                                disabled={!isActive}
+                            >
                                 Rechazar cotización
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
                                 Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowUpdateQuotation(true)}
+                                disabled={!isActive}
+                            >
                                 Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowDownload(true)}
+                                disabled={!isActive}
+                            >
                                 Descargar Cotización
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setShowDeleteQuotation(true)}
+                                disabled={!isActive}
+                            >
                                 Eliminar
                             </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -12,4 +12,5 @@ export type Client = {
     clientLocations: Array<{
         address: string;
     }>;
+    isActive: boolean;
 }

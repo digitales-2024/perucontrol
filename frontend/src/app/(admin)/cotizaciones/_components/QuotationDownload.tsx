@@ -23,6 +23,7 @@ export function QuotationDownload({ open, onOpenChange, quotationId }: {
     open: boolean,
     onOpenChange: (v: boolean) => void,
     quotationId: string,
+    disabled?: boolean,
 })
 {
     const form = useForm<DownloadQuotationSchema>({
