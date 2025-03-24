@@ -122,6 +122,9 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
 
+    [MinLength(1, ErrorMessage = "Debe haber al menos 1 visita")]
+    public required IList<DateTime> Appointments { get; set; } = null!;
+
     public Project MapToEntity()
     {
         return new Project

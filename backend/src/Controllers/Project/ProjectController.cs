@@ -17,12 +17,10 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
         var entity = createDTO.MapToEntity();
-        entity.Id = Guid.NewGuid();
 
         // validate the client exists before creating the project
         var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
-        if (client == null)
-            return NotFound("Cliente no encontrado");
+        if (client == null) return NotFound("Cliente no encontrado");
         entity.Client = client;
 
         // if a quotation is provided, validate it exists
@@ -47,6 +45,19 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         if (services.Count != createDTO.Services.Count)
             return NotFound("Algunos servicios no fueron encontrados");
         entity.Services = services;
+
+        // Create Appointments
+        var appointments = createDTO.Appointments.Select(app => new ProjectAppointment
+        {
+            DueDate = app,
+            ProjectOperationSheet = new()
+            {
+                OperationDate = app.Date,
+                EnterTime = new TimeSpan(9, 0, 0),
+                LeaveTime = new TimeSpan(13, 0, 0),
+            },
+        }).ToList();
+        entity.Appointments = appointments;
 
         // Create and populate the project
         _context.Add(entity);
