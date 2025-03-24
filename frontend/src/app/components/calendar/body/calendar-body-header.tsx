@@ -15,11 +15,11 @@ export default function CalendarBodyHeader({
         <div className="flex items-center justify-center gap-1 py-2 w-full sticky top-0 bg-background z-10 border-b">
             <span
                 className={cn(
-                    "text-xs font-medium",
+                    "text-xs font-medium capitalize",
                     isToday ? "text-primary" : "text-muted-foreground",
                 )}
             >
-                {format(date, "EEE")}
+                {date.toLocaleString("es-PE", { weekday: "short" })}
             </span>
             {!onlyDay && (
                 <span

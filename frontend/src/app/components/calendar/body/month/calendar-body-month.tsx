@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export default function CalendarBodyMonth()
 {
-    const { date, events, setDate, setMode } = useCalendarContext();
+    const { date, events } = useCalendarContext();
 
     // Get the first day of the month
     const monthStart = startOfMonth(date);
@@ -41,12 +41,12 @@ export default function CalendarBodyMonth()
         start: calendarStart,
         end: calendarEnd,
     }) ||
-      isWithinInterval(event.end, { start: calendarStart, end: calendarEnd }));
+        isWithinInterval(event.end, { start: calendarStart, end: calendarEnd }));
 
     return (
         <div className="flex flex-col flex-grow overflow-hidden">
             <div className="hidden md:grid grid-cols-7 border-border divide-x divide-border">
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                {["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"].map((day) => (
                     <div
                         key={day}
                         className="py-2 text-center text-sm font-medium text-muted-foreground border-b border-border"
@@ -78,15 +78,9 @@ export default function CalendarBodyMonth()
                             <div
                                 key={day.toISOString()}
                                 className={cn(
-                                    "relative flex flex-col border-b border-r p-2 aspect-square cursor-pointer",
+                                    "relative flex flex-col border-b border-r p-2 aspect-square",
                                     !isCurrentMonth && "bg-muted/50 hidden md:flex",
                                 )}
-                                onClick={(e) =>
-                                {
-                                    e.stopPropagation();
-                                    setDate(day);
-                                    setMode("day");
-                                }}
                             >
                                 <div
                                     className={cn(
@@ -116,17 +110,11 @@ export default function CalendarBodyMonth()
                                                     duration: 0.2,
                                                 }}
                                                 className="text-xs text-muted-foreground"
-                                                onClick={(e) =>
-                                                {
-                                                    e.stopPropagation();
-                                                    setDate(day);
-                                                    setMode("day");
-                                                }}
                                             >
-                        +
+                                                +
                                                 {dayEvents.length - 3}
                                                 {" "}
-more
+                                                more
                                             </motion.div>
                                         )}
                                     </div>

@@ -3,10 +3,8 @@ import { useCalendarContext } from "../../calendar-context";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
     format,
-    addDays,
     addMonths,
     addWeeks,
-    subDays,
     subMonths,
     subWeeks,
 } from "date-fns";
@@ -19,14 +17,11 @@ export default function CalendarHeaderDateChevrons()
     {
         switch (mode)
         {
-        case "month":
+        case "mes":
             setDate(subMonths(date, 1));
             break;
-        case "week":
+        case "semana":
             setDate(subWeeks(date, 1));
-            break;
-        case "day":
-            setDate(subDays(date, 1));
             break;
         }
     }
@@ -35,14 +30,11 @@ export default function CalendarHeaderDateChevrons()
     {
         switch (mode)
         {
-        case "month":
+        case "mes":
             setDate(addMonths(date, 1));
             break;
-        case "week":
+        case "semana":
             setDate(addWeeks(date, 1));
-            break;
-        case "day":
-            setDate(addDays(date, 1));
             break;
         }
     }

@@ -7,7 +7,7 @@ import { CalendarEvent, Mode } from "./calendar/calendar-types";
 export default function CalendarDemo()
 {
     const [events, setEvents] = useState<Array<CalendarEvent>>([]);
-    const [mode, setMode] = useState<Mode>("month");
+    const [mode, setMode] = useState<Mode>("mes");
     const [date, setDate] = useState<Date>(new Date());
 
     return (
