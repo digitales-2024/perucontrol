@@ -26,6 +26,10 @@ export default async function ClientsPage()
         id: client.id ?? "-", // Si no hay id convertir el null a un string vacio
         clientLocations: client.clientLocations?.filter((location) => location.address).map((location) => ({
             address: location.address,
+            id: location.id ?? "-",
+            isActive: location.isActive ?? false,
+            createdAt: location.createdAt ?? "-",
+            modifiedAt: location.modifiedAt ?? "-",
         })) || [],
         razonSocial: client.razonSocial ?? "-",  // Si no hay razon social, convertir el null a un string vacio
         contactName: client.contactName ?? "-",  // Si no hay nombre de contacto, convertir el null a un string vacio

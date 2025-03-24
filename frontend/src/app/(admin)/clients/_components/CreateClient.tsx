@@ -102,7 +102,7 @@ export const CreateClient = () =>
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="h-[calc(85vh-100px)] overflow-y-auto">
+                <ScrollArea className="h-[calc(90vh-100px)] overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
