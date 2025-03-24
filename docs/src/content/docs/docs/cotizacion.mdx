@@ -8,6 +8,33 @@ import Uml from "@/components/uml.astro"
 
 <Uml code={`
 @startuml
+
+class Quotation
+{
+    Client Client
+    ICollection<Service> Services
+    QuotationStatus Status
+    QuotationFrequency Frequency
+    uint Area
+    uint SpacesCount
+    bool HasTaxes
+    DateTime CreationDate
+    DateTime ExpirationDate
+    string TermsAndConditions
+}
+
+enum QuotationFrequency
+{
+  Bimonthly,
+  Quarterly,
+  Semiannual,
+}
+
+@enduml
+`} />
+
+<Uml code={`
+@startuml
 |Cotizacion|
 start
 
@@ -23,7 +50,6 @@ endif
 |Cotizacion|
 :Selecciona cliente;
 :Selecciona tipo de servicio;
-:Ingresar descripción del servicio;
 :Ingresa area, m2, etc;
 
 if (Existen T&C?) then (si)
@@ -66,12 +92,6 @@ endif
 :Marca como aprobado;
 
 
-if (Crear proyecto automaticamente?) then (si)
-	|Proyecto|
-	:Crear proyecto;
-	end
-else (no)
-endif
 |Cotizacion|
 
 end
