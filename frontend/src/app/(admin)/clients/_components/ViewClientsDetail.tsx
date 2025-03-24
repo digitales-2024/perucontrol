@@ -62,7 +62,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                         {triggerContent}
                     </DialogTrigger>
                 )}
-                <DialogContent className="sm:max-w-[600px] md:max-w-[700px] p-0">
+                <DialogContent className="sm:max-w-[650px] md:max-w-[750px] p-0">
                     <div className="p-4 sm:p-6">
                         <div className="flex justify-between items-center mb-4">
                             <DialogTitle className="text-xl font-bold flex items-center">
