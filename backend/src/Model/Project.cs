@@ -6,7 +6,7 @@ namespace PeruControl.Model;
 public enum ProjectStatus
 {
     Pending,
-    Approved,
+    Completed,
     Rejected,
 }
 

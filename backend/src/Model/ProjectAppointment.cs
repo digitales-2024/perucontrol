@@ -24,5 +24,5 @@ public class ProjectAppointment : BaseModel
     public DateTime? ActualDate { get; set; }
 
     [JsonIgnore]
-    public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
+    public Certificate? Certificate { get; set; }
 }

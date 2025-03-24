@@ -13,17 +13,20 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Certificates_Projects_ProjectId",
-                table: "Certificates");
+                table: "Certificates"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "ProjectId",
                 table: "Certificates",
-                newName: "ProjectAppointmentId");
+                newName: "ProjectAppointmentId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_Certificates_ProjectId",
                 table: "Certificates",
-                newName: "IX_Certificates_ProjectAppointmentId");
+                newName: "IX_Certificates_ProjectAppointmentId"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "DueDate",
@@ -33,7 +36,8 @@ namespace PeruControl.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Certificates_ProjectAppointments_ProjectAppointmentId",
@@ -41,7 +45,8 @@ namespace PeruControl.Migrations
                 column: "ProjectAppointmentId",
                 principalTable: "ProjectAppointments",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -49,17 +54,20 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Certificates_ProjectAppointments_ProjectAppointmentId",
-                table: "Certificates");
+                table: "Certificates"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "ProjectAppointmentId",
                 table: "Certificates",
-                newName: "ProjectId");
+                newName: "ProjectId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_Certificates_ProjectAppointmentId",
                 table: "Certificates",
-                newName: "IX_Certificates_ProjectId");
+                newName: "IX_Certificates_ProjectId"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "DueDate",
@@ -67,7 +75,8 @@ namespace PeruControl.Migrations
                 type: "timestamp with time zone",
                 nullable: true,
                 oldClrType: typeof(DateTime),
-                oldType: "timestamp with time zone");
+                oldType: "timestamp with time zone"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Certificates_Projects_ProjectId",
@@ -75,7 +84,8 @@ namespace PeruControl.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }
