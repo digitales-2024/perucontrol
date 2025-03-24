@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface DataTableProps<TData, TValue> {
     columns: Array<ColumnDef<TData, TValue>>;
@@ -52,7 +53,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
     });
 
     return (
-        <div className="overflow-x-scroll">
+        <div className="overflow-x-auto">
             <div className="flex items-center justify-between py-4">
                 <Input
                     placeholder="Buscar..."
@@ -60,11 +61,15 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                     onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm"
                 />
-                {toolbarActions && (
-                    <div>
-                        {toolbarActions}
-                    </div>
-                )}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        {toolbarActions && (
+                            <div>
+                                {toolbarActions}
+                            </div>
+                        )}
+                    </DropdownMenuTrigger>
+                </DropdownMenu>
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -104,18 +109,10 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-between space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length}
-                    {" "}
-                    de
-                    {table.getFilteredRowModel().rows.length}
-                    {" "}
-                    fila(s) seleccionada(s).
-                </div>
-                <div className="flex items-center space-x-6">
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex flex-wrap gap-4 items-center space-x-4">
                     <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">
+                        <p className="text-xs md:text-sm font-medium">
                             Filas por página
                         </p>
                         <Select
@@ -125,7 +122,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                                 table.setPageSize(Number(value));
                             }}
                         >
-                            <SelectTrigger className="h-8 w-[70px]">
+                            <SelectTrigger className="h-8 w-[90px]">
                                 <SelectValue placeholder={table.getState().pagination.pageSize} />
                             </SelectTrigger>
                             <SelectContent side="top">
@@ -138,7 +135,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                         </Select>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">
+                        <p className="text-xs md:text-sm font-medium">
                             Página
                             {" "}
                             {table.getState().pagination.pageIndex + 1}

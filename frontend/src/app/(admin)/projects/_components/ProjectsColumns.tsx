@@ -21,7 +21,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 # Orden
                 {column.getIsSorted() === "asc" ? (
@@ -37,7 +37,7 @@ export const columns: Array<ColumnDef<Project>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.orderNumber}
                 </span>
             );
@@ -49,7 +49,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Cliente
                 {column.getIsSorted() === "asc" ? (
@@ -65,7 +65,7 @@ export const columns: Array<ColumnDef<Project>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
                 </span>
             );
@@ -77,7 +77,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Estado
                 {column.getIsSorted() === "asc" ? (
@@ -95,7 +95,7 @@ export const columns: Array<ColumnDef<Project>> = [
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center ${
+                    className={`items-center text-center flex justify-center text-xs md:text-sm ${
                         !isActive ? "text-red-500" : ""
                     }`}
                 >
@@ -122,7 +122,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Área m2
                 {column.getIsSorted() === "asc" ? (
@@ -138,7 +138,7 @@ export const columns: Array<ColumnDef<Project>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`flex justify-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.area}
                 </span>
             );
@@ -150,7 +150,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
@@ -166,7 +166,7 @@ export const columns: Array<ColumnDef<Project>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.spacesCount}
                 </span>
             );
@@ -178,7 +178,7 @@ export const columns: Array<ColumnDef<Project>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Dirección
                 {column.getIsSorted() === "asc" ? (
@@ -194,7 +194,7 @@ export const columns: Array<ColumnDef<Project>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.address}
                 </span>
             );

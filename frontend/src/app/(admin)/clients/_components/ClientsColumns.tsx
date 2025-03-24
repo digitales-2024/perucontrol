@@ -18,9 +18,9 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Tipo
+                Tipo
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -34,7 +34,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center uppercase text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.typeDocument}
                 </span>
             );
@@ -46,7 +46,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
               Número de documento
                 {column.getIsSorted() === "asc" ? (
@@ -62,7 +62,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.typeDocumentValue}
                 </span>
             );
@@ -74,7 +74,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
         Razón Social
                 {column.getIsSorted() === "asc" ? (
@@ -90,7 +90,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.razonSocial}
                 </span>
             );
@@ -102,7 +102,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
             Nombre
                 {column.getIsSorted() === "asc" ? (
@@ -118,7 +118,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.name}
                 </span>
             );
@@ -130,7 +130,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
               Nombre de Contacto
                 {column.getIsSorted() === "asc" ? (
@@ -146,7 +146,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.contactName}
                 </span>
             );
@@ -158,7 +158,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
         Correo Electrónico
                 {column.getIsSorted() === "asc" ? (
@@ -174,7 +174,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`items-center flex justify-center text-center ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {row.original.email}
                 </span>
             );

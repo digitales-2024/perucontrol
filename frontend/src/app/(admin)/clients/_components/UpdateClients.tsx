@@ -84,7 +84,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent>
+            <SheetContent className="w-full sm:max-w-md md:max-w-lg p-0 overflow-hidden">
                 <SheetHeader>
                     <SheetTitle>
                         Actualizar Cliente
@@ -94,7 +94,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="max-h-[90vh] h-full overflow-y-auto">
+                <ScrollArea className="max-h-[85vh] overflow-y-auto px-2">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
