@@ -102,9 +102,11 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
         var project = await _context
-            .Projects.Include(c => c.Client)
+            .Projects
+            .Include(p => p.Client)
             .Include(p => p.Services)
-            .Include(q => q.Quotation)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -112,7 +114,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             return NotFound();
         }
 
-        var projectSummary = new ProjectSummary
+        var projectSummary = new ProjectSummarySingle
         {
             Id = project.Id,
             Client = project.Client,
@@ -122,6 +124,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             Area = project.Area,
             Address = project.Address,
             Quotation = project.Quotation,
+            Appointments = project.Appointments,
         };
 
         return Ok(projectSummary);
