@@ -30,10 +30,6 @@ export default function CreateTermsForm({ onClose }: { onClose: (v: boolean) => 
         const promise = CreateTermsAndConditions({
             name: values.name,
             content: values.terms,
-            id: "",
-            isActive: false,
-            createdAt: "",
-            modifiedAt: "",
         });
 
         toastWrapper(promise, {

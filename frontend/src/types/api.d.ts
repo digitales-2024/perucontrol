@@ -2865,12 +2865,12 @@ export interface components {
             bankCCI: string;
             deductions: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         BusinessCreateDTO: Record<string, never>;
         BusinessPatchDTO: {
@@ -2894,12 +2894,12 @@ export interface components {
             /** Format: date-time */
             expirationDate: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         CertificateCreateDTO: {
             /** Format: uuid */
@@ -2925,12 +2925,12 @@ export interface components {
             phoneNumber: string;
             contactName?: string | null;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         Client2: {
             /** Format: int32 */
@@ -2946,12 +2946,12 @@ export interface components {
             phoneNumber: string;
             contactName?: string | null;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ClientCreateDTO: {
             typeDocument: string;
@@ -2968,12 +2968,12 @@ export interface components {
         ClientLocation: {
             address: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ClientLocationDTO: {
             address: string;
@@ -3038,12 +3038,12 @@ export interface components {
             spacesCount: number;
             appointments?: Array<components["schemas"]["ProjectAppointment"]>;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ProjectAppointment: {
             /** Format: int32 */
@@ -3053,12 +3053,12 @@ export interface components {
             /** Format: date-time */
             actualDate?: string | null;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ProjectCreateDTO: {
             /** Format: uuid */
@@ -3115,12 +3115,12 @@ export interface components {
             observations?: string;
             recommendations?: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ProjectOperationSheetCreateDTO: {
             /** Format: uuid */
@@ -3274,12 +3274,12 @@ export interface components {
             /** Format: uint32 */
             spacesCount: number;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         Quotation: {
             /** Format: int32 */
@@ -3299,12 +3299,12 @@ export interface components {
             expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         } | null;
         Quotation2: {
             /** Format: int32 */
@@ -3324,12 +3324,12 @@ export interface components {
             expirationDate: string;
             termsAndConditions: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         QuotationCreateDTO: {
             /** Format: uuid */
@@ -3382,12 +3382,12 @@ export interface components {
         Service: {
             name: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         ServiceCreateDTO: {
             name: string;
@@ -3415,12 +3415,12 @@ export interface components {
             name: string;
             unit: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         SupplyCreateDTO: {
             name: string;
@@ -3433,12 +3433,12 @@ export interface components {
             name: string;
             content: string;
             /** Format: uuid */
-            id: string;
-            isActive: boolean;
+            id?: string;
+            isActive?: boolean;
             /** Format: date-time */
-            createdAt: string;
+            createdAt?: string;
             /** Format: date-time */
-            modifiedAt: string;
+            modifiedAt?: string;
         };
         TermsAndConditionsCreateDTO: {
             name: string;
