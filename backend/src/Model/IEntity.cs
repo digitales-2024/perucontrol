@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace PeruControl.Model;
@@ -19,12 +20,16 @@ public interface IEntity
 /// </summary>
 public abstract class BaseModel : IEntity
 {
+    [Required]
     public Guid Id { get; set; } = Guid.NewGuid();
 
+    [Required]
     public bool IsActive { get; set; } = true;
 
+    [Required]
     public DateTime CreatedAt { get; set; }
 
+    [Required]
     public DateTime ModifiedAt { get; set; }
 
     public static void SetUp<A>(ModelBuilder modelBuilder)

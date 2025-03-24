@@ -15,16 +15,20 @@ public enum QuotationStatus
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum QuotationFrequency
 {
-  Bimonthly,
-  Quarterly,
-  Semiannual
+    Bimonthly,
+    Quarterly,
+    Semiannual,
 }
 
 public class Quotation : BaseModel
 {
-    public virtual Client Client { get; set; } = null!;
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int QuotationNumber { get; set; }
 
-    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+    public Client Client { get; set; } = null!;
+
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
@@ -42,11 +46,6 @@ public class Quotation : BaseModel
 
     public required DateTime ExpirationDate { get; set; }
 
-    /// <summary>
-    /// This is a COPY of the terms and conditions selected by the user,
-    /// this way the T&C in the database can be safely edited,
-    /// and used ones in the quotations wont be affected
-    /// </summary>
     [Column(TypeName = "TEXT")]
     public required string TermsAndConditions { get; set; }
 }
@@ -58,13 +57,12 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [MinLength(1)]
     public required ICollection<Guid> ServiceIds { get; set; }
 
-
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
     public required uint Area { get; set; }
 
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
-    
+
     public required QuotationFrequency Frequency { get; set; }
 
     public required bool HasTaxes { get; set; }

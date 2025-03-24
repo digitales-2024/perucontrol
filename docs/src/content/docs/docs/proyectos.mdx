@@ -24,7 +24,8 @@ if (Crear proyecto sin cotización?) then (si)
 	:Crear proyecto;
 	:Obtener cliente;
 else (no)
-	if (Hay proyecto aprobado?) then (si)
+	if (Hay cotizacion
+	aprobada?) then (si)
 		:Selecctionar cotización;
 		:Crear proyecto;
 		:Obtener datos del cliente;
@@ -44,10 +45,7 @@ if (Tiene orden de servicio?) then (si)
 else (no)
 endif
 
-if (Registrar insumos*?) then (si)
-	:Registrar insumos;
-else (no)
-endif
+:Ingresar visitas;
 
 :Marcar proyecto como pendiente;
 

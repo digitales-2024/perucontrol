@@ -81,6 +81,42 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {count} default services", defaultServices.Count);
     }
 
+    public static async Task SeedBusiness(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var businessCount = await context.Businesses.CountAsync();
+        if (businessCount == 1)
+        {
+            logger.LogInformation("Business already seeded");
+            return;
+        }
+        if (businessCount > 1)
+        {
+            throw new InvalidDataException(
+                "Multiple businesses found. Only 1 business is allowed."
+            );
+        }
+
+        var business = new Business
+        {
+            DigesaNumber = "",
+            Address = "",
+            Email = "",
+            RUC = "",
+            Phones = "",
+            DirectorName = "",
+            BankName = "",
+            BankAccount = "",
+            BankCCI = "",
+            Deductions = "",
+        };
+        await context.Businesses.AddAsync(business);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Main business seeded.");
+    }
+
     public static async Task SeedClients(IServiceProvider serviceProvider, ILogger logger)
     {
         using var scope = serviceProvider.CreateScope();
