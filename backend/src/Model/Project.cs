@@ -39,6 +39,7 @@ public class Project : BaseModel
     public required uint SpacesCount { get; set; }
 
     // Schedule: a list of Appointments
+    [JsonIgnore]
     public ICollection<ProjectAppointment> Appointments { get; set; } =
         new HashSet<ProjectAppointment>();
 }
