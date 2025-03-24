@@ -11,7 +11,7 @@ public class Certificate : BaseModel
     public int ProjectNumber { get; set; }
 
     [JsonIgnore]
-    public virtual Project Project { get; set; } = null!;
+    public virtual ProjectAppointment ProjectAppointment { get; set; } = null!;
 
     public required string TreatedArea { get; set; }
     public required DateTime CreationDate { get; set; }

@@ -18,8 +18,11 @@ public class ProjectAppointment : BaseModel
     public ProjectOperationSheet ProjectOperationSheet { get; set; } = null!;
 
     /// The date by which the appointment should be performed
-    public DateTime? DueDate { get; set; }
+    public DateTime DueDate { get; set; }
 
     /// The actual date the appointment was performed
     public DateTime? ActualDate { get; set; }
+
+    [JsonIgnore]
+    public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }

@@ -41,8 +41,4 @@ public class Project : BaseModel
     // Schedule: a list of Appointments
     public ICollection<ProjectAppointment> Appointments { get; set; } =
         new HashSet<ProjectAppointment>();
-
-    // Reference properties
-    [JsonIgnore]
-    public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }
