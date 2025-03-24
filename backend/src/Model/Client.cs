@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,10 @@ namespace PeruControl.Model;
 [Index(nameof(TypeDocumentValue), IsUnique = true)]
 public class Client : BaseModel
 {
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int ClientNumber { get; set; }
+
     [MinLength(0)]
     [MaxLength(3)]
     public required string TypeDocument { get; set; }

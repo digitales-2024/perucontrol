@@ -103,9 +103,13 @@ public class ClientController(
         }
 
         // Verificar si el cliente está asociado a alguna cotización activa
-        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q => q.Client.Id == id && q.IsActive);
+        var isAssociatedWithQuotation = await _context.Quotations.AnyAsync(q =>
+            q.Client.Id == id && q.IsActive
+        );
         // Verificar si el cliente está asociado a algún proyecto activo
-        var isAssociatedWithProject = await _context.Projects.AnyAsync(p => p.Client.Id == id && p.IsActive);
+        var isAssociatedWithProject = await _context.Projects.AnyAsync(p =>
+            p.Client.Id == id && p.IsActive
+        );
 
         if (isAssociatedWithQuotation)
         {
