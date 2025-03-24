@@ -21,7 +21,7 @@ export default async function ClientsPage()
     return (
         <Shell>
             <HeaderPage title="Información de PeruControl" />
-            <CompanyInfoForm businessInfo={businessInfo} />
+            <CompanyInfoForm businessInfo={businessInfo[0]} />
         </Shell>
     );
 }

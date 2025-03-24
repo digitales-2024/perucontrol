@@ -13,11 +13,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Building, Mail, Phone, User, CreditCard, Landmark, FileText, Save } from "lucide-react";
 import { companyInfoSchema, CompanyInfoSchema } from "../schemas";
-import { Business } from "../business";
 import { toastWrapper } from "@/types/toasts";
 import { UpdateBusiness } from "../actions";
+import { components } from "@/types/api";
 
-export function CompanyInfoForm(businessInfo: Business)
+export function CompanyInfoForm({ businessInfo }: { businessInfo:components["schemas"]["Business"] })
 {
     const isMobile = useIsMobile();
 
@@ -92,7 +92,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Número DIGESA
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: DIGESA-12345-2023" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -109,7 +109,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 RUC
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: 20123456789" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -126,7 +126,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Nombre del Director
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: Juan Pérez Rodríguez" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -143,7 +143,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Deducciones
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Textarea placeholder="Ej: IGV 18%" className="resize-none min-h-[80px]" {...field} />
+                                                                <Textarea className="resize-none min-h-[80px]" {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -163,7 +163,6 @@ export function CompanyInfoForm(businessInfo: Business)
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Textarea
-                                                                    placeholder="Ej: Av. Principal 123, San Isidro, Lima"
                                                                     className="resize-none min-h-[80px]"
                                                                     {...field}
                                                                 />
@@ -183,7 +182,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Correo Electrónico
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: contacto@empresa.com" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -200,7 +199,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Teléfonos
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: +51 987 654 321 / +51 123 456 789" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -219,7 +218,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Nombre del Banco
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: Banco de Crédito del Perú" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -236,7 +235,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Número de Cuenta
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: 193-2458792-0-24" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -253,7 +252,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                                 Código CCI
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Ej: 002-193-002458792024-51" {...field} />
+                                                                <Input {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -308,7 +307,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Número DIGESA
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: DIGESA-12345-2023" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -325,7 +324,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     RUC
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: 20123456789" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -342,7 +341,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Nombre del Director
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: Juan Pérez Rodríguez" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -359,7 +358,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Deducciones
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder="Ej: IGV 18%" className="resize-none min-h-[80px]" {...field} />
+                                                    <Textarea className="resize-none min-h-[80px]" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -385,7 +384,6 @@ export function CompanyInfoForm(businessInfo: Business)
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Textarea
-                                                        placeholder="Ej: Av. Principal 123, San Isidro, Lima"
                                                         className="resize-none min-h-[80px]"
                                                         {...field}
                                                     />
@@ -405,7 +403,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Correo Electrónico
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: contacto@empresa.com" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -422,7 +420,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Teléfonos
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: +51 987 654 321 / +51 123 456 789" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -447,7 +445,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Nombre del Banco
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: Banco de Crédito del Perú" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -464,7 +462,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Número de Cuenta
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: 193-2458792-0-24" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -481,7 +479,7 @@ export function CompanyInfoForm(businessInfo: Business)
                                                     Código CCI
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: 002-193-002458792024-51" {...field} />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

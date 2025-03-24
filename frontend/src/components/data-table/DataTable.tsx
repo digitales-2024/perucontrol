@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface DataTableProps<TData, TValue> {
     columns: Array<ColumnDef<TData, TValue>>;
@@ -61,15 +60,11 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                     onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm"
                 />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        {toolbarActions && (
-                            <div>
-                                {toolbarActions}
-                            </div>
-                        )}
-                    </DropdownMenuTrigger>
-                </DropdownMenu>
+                {toolbarActions && (
+                    <div>
+                        {toolbarActions}
+                    </div>
+                )}
             </div>
             <div className="rounded-md border">
                 <Table>

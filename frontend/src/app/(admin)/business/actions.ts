@@ -26,4 +26,3 @@ export async function UpdateBusiness(id: string, data: Business): Promise<Result
     }
     return ok(null);
 }
-
