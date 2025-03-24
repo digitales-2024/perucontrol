@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { useQuotationContext } from "../context/QuotationContext";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck, Plus } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { format, parse } from "date-fns";
@@ -100,11 +100,12 @@ export function CreateQuotation()
         <>
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
-                    <Button>
-                        Nueva cotización
+                    <Button className="w-28 text-xs">
+                        <Plus />
+                        Crear Nuevo
                     </Button>
                 </SheetTrigger>
-                <SheetContent>
+                <SheetContent className="w-full sm:max-w-md md:max-w-lg p-0 overflow-hidden">
                     <SheetHeader>
                         <SheetTitle className="text-xl">
                             Nueva cotización
@@ -114,7 +115,7 @@ export function CreateQuotation()
                         </SheetDescription>
                     </SheetHeader>
 
-                    <ScrollArea className="max-h-[85vh] h-full overflow-y-auto">
+                    <ScrollArea className="h-[calc(85vh-100px)]">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                                 <div className="mx-4 grid gap-3">

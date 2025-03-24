@@ -209,15 +209,7 @@ export function DataTableExpanded({
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-between space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length}
-                    {" "}
-                    de
-                    {table.getFilteredRowModel().rows.length}
-                    {" "}
-                    fila(s) seleccionada(s).
-                </div>
+            <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                         <p className="text-sm font-medium">
@@ -230,7 +222,7 @@ export function DataTableExpanded({
                                 table.setPageSize(Number(value));
                             }}
                         >
-                            <SelectTrigger className="h-8 w-[70px]">
+                            <SelectTrigger className="h-8 w-[90px]">
                                 <SelectValue placeholder={table.getState().pagination.pageSize} />
                             </SelectTrigger>
                             <SelectContent side="top">

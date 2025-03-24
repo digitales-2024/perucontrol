@@ -92,7 +92,7 @@ export const CreateClient = () =>
                     Crear Nuevo
                 </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="w-full sm:max-w-md md:max-w-lg p-0 overflow-hidden">
                 <SheetHeader>
                     <SheetTitle>
                         Nuevo Cliente
@@ -102,7 +102,7 @@ export const CreateClient = () =>
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="max-h-[85vh] h-full overflow-y-auto">
+                <ScrollArea className="h-[calc(85vh-100px)] overflow-y-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
@@ -113,7 +113,7 @@ export const CreateClient = () =>
                                     name="typeDocument"
                                     render={({ field }) => (
                                         <FormItem className="truncate">
-                                            <FormLabel>
+                                            <FormLabel className="text-xs md:text-sm">
                                                 Tipo de documento
                                             </FormLabel>
                                             <Select onValueChange={(value) =>
@@ -148,7 +148,7 @@ export const CreateClient = () =>
                                             name="typeDocumentValue"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         RUC
                                                     </FormLabel>
                                                     <FormControl>
@@ -168,7 +168,7 @@ export const CreateClient = () =>
                                             name="razonSocial"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         Razón Social
                                                     </FormLabel>
                                                     <FormControl>
@@ -183,7 +183,7 @@ export const CreateClient = () =>
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         Nombre Comercial
                                                     </FormLabel>
                                                     <FormControl>
@@ -198,7 +198,7 @@ export const CreateClient = () =>
                                             name="contactName"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         Nombre de Contacto
                                                     </FormLabel>
                                                     <FormControl>
@@ -219,7 +219,7 @@ export const CreateClient = () =>
                                             name="typeDocumentValue"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         DNI
                                                     </FormLabel>
                                                     <FormControl>
@@ -236,7 +236,7 @@ export const CreateClient = () =>
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="text-xs md:text-sm">
                                                         Nombres y Apellidos
                                                     </FormLabel>
                                                     <FormControl>
@@ -256,7 +256,7 @@ export const CreateClient = () =>
                                     name="fiscalAddress"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>
+                                            <FormLabel className="text-xs md:text-sm">
                                                 Dirección
                                             </FormLabel>
                                             <FormControl>
@@ -273,7 +273,7 @@ export const CreateClient = () =>
                                     name="businessType"
                                     render={({ field }) => (
                                         <FormItem className="truncate">
-                                            <FormLabel>
+                                            <FormLabel className="text-xs md:text-sm">
                                                 Giro del Negocio
                                             </FormLabel>
                                             <FormControl>
@@ -289,7 +289,7 @@ export const CreateClient = () =>
                                     name="phoneNumber"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="phoneNumber">
+                                            <FormLabel className="text-xs md:text-sm" htmlFor="phoneNumber">
                                                 Teléfono
                                             </FormLabel>
                                             <FormControl>
@@ -310,7 +310,7 @@ export const CreateClient = () =>
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="email">
+                                            <FormLabel className="text-xs md:text-sm" htmlFor="email">
                                                 Correo Electrónico
                                             </FormLabel>
                                             <FormControl>

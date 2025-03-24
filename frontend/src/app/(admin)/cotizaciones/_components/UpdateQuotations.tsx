@@ -102,13 +102,13 @@ export function UpdateQuotationSheet({ quotation, open, onOpenChange, termsAndCo
     return (
         <>
             <Sheet open={open} onOpenChange={onOpenChange}>
-                <SheetContent>
+                <SheetContent className="w-full sm:max-w-md md:max-w-lg p-0 overflow-hidden">
                     <SheetHeader>
                         <SheetTitle className="text-xl">
-                            Nueva cotización
+                            Actualizar cotización
                         </SheetTitle>
                         <SheetDescription>
-                            Agrega una nueva cotización.
+                            Actualizar una cotización.
                         </SheetDescription>
                     </SheetHeader>
 

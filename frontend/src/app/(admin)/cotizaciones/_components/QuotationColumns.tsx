@@ -23,7 +23,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Cliente
                 {column.getIsSorted() === "asc" ? (
@@ -43,7 +43,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                   ? row.original.client.razonSocial
                   : row.original?.client?.name;
             return (
-                <span className={`uppercase ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span className={`uppercase text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {clientName}
                 </span>
             );
@@ -55,7 +55,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Área m2
                 {column.getIsSorted() === "asc" ? (
@@ -71,7 +71,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center ${
+                <span className={`flex justify-center text-xs md:text-sm ${
                     !isActive ? "line-through text-red-500" : ""
                 }`}
                 >
@@ -86,7 +86,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
@@ -102,7 +102,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center ${
+                <span className={`flex justify-center text-xs md:text-sm ${
                     !isActive ? "line-through text-red-500" : ""
                 }`}
                 >
@@ -117,7 +117,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
               Fecha de Creación
                 {column.getIsSorted() === "asc" ? (
@@ -142,7 +142,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
                 : "Fecha no disponible";
 
             return (
-                <span className={`flex justify-center ${
+                <span className={`flex justify-center text-xs md:text-sm ${
                     !isActive ? "line-through text-red-500" : ""
                 }`}
                 >
@@ -157,7 +157,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 Estado
                 {column.getIsSorted() === "asc" ? (
@@ -175,7 +175,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center ${
+                    className={`items-center text-center flex justify-center text-xs md:text-sm ${
                         !isActive ? "text-red-500" : ""
                     }`}
                 >
@@ -202,7 +202,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 hover:bg-transparent text-sm md:text-base"
             >
                 IGV
                 {column.getIsSorted() === "asc" ? (
@@ -218,7 +218,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center ${
+                <span className={`flex justify-center text-xs md:text-sm ${
                     !isActive ? "line-through text-red-500" : ""
                 }`}
                 >

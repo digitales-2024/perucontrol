@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible } from "next/font/google";
+// import { Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
-const atkinsonHyperlegible = Atkinson_Hyperlegible({
+/* const atkinsonHyperlegible = Atkinson_Hyperlegible({
     variable: "--font-atkinson",
     weight: ["400", "700"],
     subsets: ["latin"],
-});
+}); */
 
 export const metadata: Metadata = {
     title: "PeruControl",
@@ -24,7 +24,7 @@ export default function RootLayout({
     return (
         <html lang="es" suppressHydrationWarning>
             <body
-                className={`${atkinsonHyperlegible.variable} antialiased`}
+                className={"antialiased"}
             >
                 <Toaster
                     richColors
