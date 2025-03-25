@@ -14,6 +14,7 @@ export default function CalendarDemo()
     {
         console.log("MODE!", mode);
         console.log("DATE!", date);
+        console.log(computeTimeRange(mode, date));
     });
 
     return (
@@ -57,5 +58,9 @@ function computeTimeRange(mode: Mode, date: Date): [Date, Date]
         end.setDate(start.getDate() + 6);
         end.setHours(23, 59, 59, 999);
         return [start, end];
+    }
+    else
+    {
+        throw new Error("Invalid mode");
     }
 }
