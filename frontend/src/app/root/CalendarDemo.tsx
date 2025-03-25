@@ -30,7 +30,7 @@ export default function CalendarDemo()
 
             setEvents(data.map((appointment) => ({
                 id: appointment.id,
-                title: `${appointment.client.name} #${appointment.project.projectNumber}`,
+                title: `#${appointment.project.projectNumber} - ${appointment.client.name}`,
                 color: !!appointment.actualDate ? "greed" : "red",
                 start: parseISO(appointment.dueDate),
                 end: parseISO(appointment.dueDate),

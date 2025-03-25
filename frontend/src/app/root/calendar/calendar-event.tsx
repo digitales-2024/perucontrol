@@ -33,8 +33,6 @@ function calculateEventPosition(
 ): EventPosition
 {
     const overlappingEvents = getOverlappingEvents(event, allEvents);
-    console.log("OVERLAP??");
-    console.log(overlappingEvents);
 
     const group = [event, ...overlappingEvents].sort((a, b) => (a.id > b.id ? 1 : -1));
     const position = group.indexOf(event);
