@@ -1,5 +1,5 @@
 import { CalendarEvent as CalendarEventType } from "./calendar-types";
-import { format, isSameDay, isSameMonth } from "date-fns";
+import { isSameDay, isSameMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { motion, MotionConfig, AnimatePresence } from "framer-motion";
 import { useCalendarContext } from "./calendar-context";
@@ -86,7 +86,7 @@ export default function CalendarEvent({
             <AnimatePresence mode="wait">
                 <motion.div
                     className={cn(
-                        `px-3 py-1.5 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
+                        `px-1 py-1 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
                         !month && "absolute",
                         className,
                     )}
@@ -138,17 +138,6 @@ export default function CalendarEvent({
                     >
                         <p className={cn("font-bold truncate", month && "text-xs")}>
                             {event.title}
-                        </p>
-                        <p className={cn("text-sm", month && "text-xs")}>
-                            <span>
-                                {format(event.start, "h:mm a")}
-                            </span>
-                            <span className={cn("mx-1", month && "hidden")}>
-                                -
-                            </span>
-                            <span className={cn(month && "hidden")}>
-                                {format(event.end, "h:mm a")}
-                            </span>
                         </p>
                     </motion.div>
                 </motion.div>

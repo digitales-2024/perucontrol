@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Calendar from "./calendar/calendar";
 import { CalendarEvent, Mode } from "./calendar/calendar-types";
+import { GetAppointmentsByDate } from "./actions";
+import { parseISO } from "date-fns";
 
 export default function CalendarDemo()
 {
@@ -12,10 +14,29 @@ export default function CalendarDemo()
 
     useEffect(() =>
     {
-        console.log("MODE!", mode);
-        console.log("DATE!", date);
-        console.log(computeTimeRange(mode, date));
-    });
+        (async() =>
+        {
+            const [startDate, endDate] = (computeTimeRange(mode, date));
+
+            const [data, err] = await GetAppointmentsByDate(startDate, endDate);
+            if (err !== null)
+            {
+                console.error("fetch error!!!");
+                console.error(err);
+                return;
+            }
+            console.log("fetch data!");
+            console.log(data);
+
+            setEvents(data.map((appointment) => ({
+                id: appointment.id,
+                title: `${appointment.client.name} a`,
+                color: !!appointment.actualDate ? "greed" : "red",
+                start: parseISO(appointment.dueDate),
+                end: parseISO(appointment.dueDate),
+            })));
+        })();
+    }, [mode, date]);
 
     return (
         <Calendar
