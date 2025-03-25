@@ -3255,6 +3255,8 @@ export interface components {
             instance?: string | null;
         };
         Project: {
+            /** Format: int32 */
+            projectNumber?: number;
             address: string;
             /** Format: uint32 */
             area: number;
