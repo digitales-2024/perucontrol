@@ -20,8 +20,8 @@ function getOverlappingEvents(
     {
         if (event.id === currentEvent.id) return false;
         return (
-            currentEvent.start < event.end &&
-            currentEvent.end > event.start &&
+            currentEvent.start <= event.end &&
+            currentEvent.end >= event.start &&
             isSameDay(currentEvent.start, event.start)
         );
     });
@@ -33,29 +33,18 @@ function calculateEventPosition(
 ): EventPosition
 {
     const overlappingEvents = getOverlappingEvents(event, allEvents);
-    const group = [event, ...overlappingEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
+    console.log("OVERLAP??");
+    console.log(overlappingEvents);
+
+    const group = [event, ...overlappingEvents].sort((a, b) => (a.id > b.id ? 1 : -1));
     const position = group.indexOf(event);
-    const width = `${100 / (overlappingEvents.length + 1)}%`;
-    const left = `${(position * 100) / (overlappingEvents.length + 1)}%`;
+    const width = "100%";
 
-    const startHour = event.start.getHours();
-    const startMinutes = event.start.getMinutes();
-
-    let endHour = event.end.getHours();
-    let endMinutes = event.end.getMinutes();
-
-    if (!isSameDay(event.start, event.end))
-    {
-        endHour = 23;
-        endMinutes = 59;
-    }
-
-    const topPosition = (startHour * 128) + ((startMinutes / 60) * 128);
-    const duration = (endHour * 60) + endMinutes - ((startHour * 60) + startMinutes);
-    const height = (duration / 60) * 128;
+    const topPosition = 128 * position;
+    const height = 128;
 
     return {
-        left,
+        left: "0",
         width,
         top: `${topPosition}px`,
         height: `${height}px`,
@@ -72,7 +61,7 @@ export default function CalendarEvent({
     className?: string
 })
 {
-    const { events, setSelectedEvent, setManageEventDialogOpen, date } =
+    const { events, date } =
         useCalendarContext();
     const style = month ? {} : calculateEventPosition(event, events);
 
@@ -94,8 +83,10 @@ export default function CalendarEvent({
                     onClick={(e) =>
                     {
                         e.stopPropagation();
-                        setSelectedEvent(event);
-                        setManageEventDialogOpen(true);
+                        // setSelectedEvent(event);
+                        // setManageEventDialogOpen(true);
+
+                        // FIXME: redirect to appointment page
                     }}
                     initial={{
                         opacity: 0,
