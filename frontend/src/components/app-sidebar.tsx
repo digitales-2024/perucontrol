@@ -72,7 +72,7 @@ const data = {
                 },
                 {
                     title: "Datos de la empresa",
-                    url: "#",
+                    url: "/business",
                 },
                 {
                     title: "Exportar datos",

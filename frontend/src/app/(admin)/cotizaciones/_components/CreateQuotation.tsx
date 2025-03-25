@@ -48,7 +48,10 @@ export function CreateQuotation()
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
+            label:
+            client.contactName && client.contactName.trim() !== "" && client.contactName !== "-"
+                ? client.contactName
+                : client.name ?? "-",
         })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
@@ -115,7 +118,7 @@ export function CreateQuotation()
                         </SheetDescription>
                     </SheetHeader>
 
-                    <ScrollArea className="h-[calc(85vh-100px)]">
+                    <ScrollArea className="h-[calc(95vh-100px)]">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                                 <div className="mx-4 grid gap-3">

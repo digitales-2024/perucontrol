@@ -18,7 +18,7 @@ export default async function ProjectsPage()
         id: project.id!,
         area: project.area,
         spacesCount: project.spacesCount,
-        orderNumber: project.orderNumber,
+        // orderNumber: project.orderNumber,
         status: project.status,
         address: project.address,
         client: project.client,
