@@ -135,7 +135,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Business"]>;
+                        "text/plain": Array<Array<components["schemas"]["Business"]>>;
                         "application/json": Array<components["schemas"]["Business"]>;
                         "text/json": Array<components["schemas"]["Business"]>;
                     };
