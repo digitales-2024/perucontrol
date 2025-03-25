@@ -59,7 +59,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
+            label: client.contactName !== "" && client.contactName !== "-" ? client.contactName ?? "" : client.name ?? "-",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =
@@ -78,7 +78,32 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
             setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
             setValue("area", selectedQuotation.area ?? 0);
             setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
-            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? []);
+            setValue(
+                "services",
+                selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? [],
+            );
+
+            // Actualizar las direcciones del cliente asociado a la cotización
+            const selectedClient = clients.find((client) => client.id === selectedQuotation.client?.id);
+            if (selectedClient)
+            {
+                const addressOptions = [
+                    ...(selectedClient.fiscalAddress
+                        ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                        : []),
+                    ...(selectedClient.clientLocations
+                        ?.filter((location) => location.address?.trim() !== "") // Filtrar direcciones vacías
+                        .map((location) => ({
+                            value: location.address,
+                            label: location.address,
+                        })) ?? []),
+                ];
+                setClientAddressOptions(addressOptions);
+            }
+            else
+            {
+                setClientAddressOptions([]);
+            }
         }
     };
 
@@ -101,7 +126,6 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         label: location.address,
                     })) ?? []),
             ];
-
             setClientAddressOptions(addressOptions);
         }
         else

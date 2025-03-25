@@ -2,6 +2,7 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { Shell } from "@/components/common/Shell";
 import { ClientData } from "./_components/ClientData";
 import { backend, wrapper } from "@/types/backend";
+import { ServiceDates } from "./_components/ServiceDates";
 
 export default async function ProjectsPage()
 {
@@ -36,6 +37,7 @@ export default async function ProjectsPage()
         <Shell>
             <HeaderPage title="Nuevo Servicio" description="Registra un nuevo servicio" />
             <ClientData clients={clients} services={services} quotations={quotations} />
+            <ServiceDates />
         </Shell>
     );
 }
