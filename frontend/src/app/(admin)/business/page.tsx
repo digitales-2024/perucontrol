@@ -21,7 +21,7 @@ export default async function ClientsPage()
     return (
         <Shell>
             <HeaderPage title="Información de PeruControl" />
-            <CompanyInfoForm businessInfo={businessInfo[0]} />
+            <CompanyInfoForm businessInfo={Array.isArray(businessInfo) ? businessInfo[0] : businessInfo} />
         </Shell>
     );
 }

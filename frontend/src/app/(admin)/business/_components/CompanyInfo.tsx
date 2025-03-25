@@ -17,7 +17,7 @@ import { toastWrapper } from "@/types/toasts";
 import { UpdateBusiness } from "../actions";
 import { components } from "@/types/api";
 
-export function CompanyInfoForm({ businessInfo }: { businessInfo:components["schemas"]["Business"] })
+export function CompanyInfoForm({ businessInfo }: { businessInfo: components["schemas"]["Business"] })
 {
     const isMobile = useIsMobile();
 
