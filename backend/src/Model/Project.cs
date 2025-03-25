@@ -6,7 +6,7 @@ namespace PeruControl.Model;
 public enum ProjectStatus
 {
     Pending,
-    Approved,
+    Completed,
     Rejected,
 }
 
@@ -39,10 +39,7 @@ public class Project : BaseModel
     public required uint SpacesCount { get; set; }
 
     // Schedule: a list of Appointments
+    [JsonIgnore]
     public ICollection<ProjectAppointment> Appointments { get; set; } =
         new HashSet<ProjectAppointment>();
-
-    // Reference properties
-    [JsonIgnore]
-    public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
 }

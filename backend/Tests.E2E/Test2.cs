@@ -24,7 +24,7 @@ public sealed class Test2 : PageTest
         // wait for navigation
         await Expect(Page).ToHaveURLAsync($"{BaseUrl}/");
 
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Dashboard" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Inicio" })).ToBeVisibleAsync();
     }
 
     [TestMethod]

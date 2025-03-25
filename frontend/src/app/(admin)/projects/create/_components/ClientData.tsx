@@ -161,7 +161,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
 
     const onSubmit = async(data: ClientDataSchema) =>
     {
-        const [, err] = await toastWrapper(CreateProject(data), {
+        const [, err] = await toastWrapper(CreateProject({ ...data, appointments: [] }), {
             loading: "Cargando...",
             success: "Servicio registrado exitosamente",
         });

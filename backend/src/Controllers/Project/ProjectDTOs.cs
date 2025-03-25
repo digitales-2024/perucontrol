@@ -122,6 +122,9 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
 
+    [MinLength(1, ErrorMessage = "Debe haber al menos 1 visita")]
+    public required IList<DateTime> Appointments { get; set; } = null!;
+
     public Project MapToEntity()
     {
         return new Project
@@ -165,11 +168,30 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
 
 public class ProjectSummary : BaseModel
 {
-    public virtual Client Client { get; set; } = null!;
+    public required Client Client { get; set; } = null!;
 
-    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+    public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
-    public virtual Quotation? Quotation { get; set; } = null!;
+    public Quotation? Quotation { get; set; } = null!;
+
+    public required string Address { get; set; }
+
+    public required uint Area { get; set; }
+
+    public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+
+    public required uint SpacesCount { get; set; }
+}
+
+public class ProjectSummarySingle : BaseModel
+{
+    public required Client Client { get; set; } = null!;
+
+    public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public Quotation? Quotation { get; set; } = null!;
+
+    public required ICollection<ProjectAppointment> Appointments { get; set; } = null!;
 
     public required string Address { get; set; }
 

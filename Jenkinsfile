@@ -63,11 +63,13 @@ pipeline {
 	}
 	post {
 		always {
-			// remove docker images built
+			// remove docker images/containers built
 			sh 'docker compose -f docker-compose.ci.yml down -v || true'
 			sh "docker network rm perucontrol-network-ci-${BUILD_REF} || true"
 			sh "docker rmi perucontrol-frontend-ci-${BUILD_REF} || true"
 			sh "docker rmi perucontrol-backend-ci-${BUILD_REF} || true"
+			sh "docker container rm perucontrol-frontend-ci-${BUILD_REF} || true"
+			sh "docker container rm perucontrol-backend-ci-${BUILD_REF} || true"
 		}
 	}
 }

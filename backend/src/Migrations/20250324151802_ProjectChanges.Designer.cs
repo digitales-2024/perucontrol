@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250324151802_ProjectChanges")]
+    partial class ProjectChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,8 +259,7 @@ namespace PeruControl.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectAppointmentId")
-                        .IsUnique();
+                    b.HasIndex("ProjectAppointmentId");
 
                     b.ToTable("Certificates");
                 });
@@ -453,7 +455,7 @@ namespace PeruControl.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectAppointment");
+                    b.ToTable("ProjectAppointments");
                 });
 
             modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
@@ -944,8 +946,8 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.Certificate", b =>
                 {
                     b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
-                        .WithOne("Certificate")
-                        .HasForeignKey("PeruControl.Model.Certificate", "ProjectAppointmentId")
+                        .WithMany("Certificates")
+                        .HasForeignKey("ProjectAppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1057,7 +1059,7 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
                 {
-                    b.Navigation("Certificate");
+                    b.Navigation("Certificates");
 
                     b.Navigation("ProjectOperationSheet")
                         .IsRequired();
