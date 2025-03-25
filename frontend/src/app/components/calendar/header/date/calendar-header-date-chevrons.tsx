@@ -50,7 +50,7 @@ export default function CalendarHeaderDateChevrons()
             </Button>
 
             <span className="min-w-[140px] text-center font-medium">
-                {format(date, "MMMM d, yyyy")}
+                {format(date, "dd/MM/yyyy")}
             </span>
 
             <Button
