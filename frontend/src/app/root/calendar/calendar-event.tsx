@@ -1,5 +1,5 @@
 import { CalendarEvent as CalendarEventType } from "./calendar-types";
-import { format, isSameDay, isSameMonth } from "date-fns";
+import { isSameDay, isSameMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { motion, MotionConfig, AnimatePresence } from "framer-motion";
 import { useCalendarContext } from "./calendar-context";
@@ -20,8 +20,8 @@ function getOverlappingEvents(
     {
         if (event.id === currentEvent.id) return false;
         return (
-            currentEvent.start < event.end &&
-            currentEvent.end > event.start &&
+            currentEvent.start <= event.end &&
+            currentEvent.end >= event.start &&
             isSameDay(currentEvent.start, event.start)
         );
     });
@@ -33,29 +33,16 @@ function calculateEventPosition(
 ): EventPosition
 {
     const overlappingEvents = getOverlappingEvents(event, allEvents);
-    const group = [event, ...overlappingEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    const group = [event, ...overlappingEvents].sort((a, b) => (a.id > b.id ? 1 : -1));
     const position = group.indexOf(event);
-    const width = `${100 / (overlappingEvents.length + 1)}%`;
-    const left = `${(position * 100) / (overlappingEvents.length + 1)}%`;
+    const width = "100%";
 
-    const startHour = event.start.getHours();
-    const startMinutes = event.start.getMinutes();
-
-    let endHour = event.end.getHours();
-    let endMinutes = event.end.getMinutes();
-
-    if (!isSameDay(event.start, event.end))
-    {
-        endHour = 23;
-        endMinutes = 59;
-    }
-
-    const topPosition = (startHour * 128) + ((startMinutes / 60) * 128);
-    const duration = (endHour * 60) + endMinutes - ((startHour * 60) + startMinutes);
-    const height = (duration / 60) * 128;
+    const topPosition = 128 * position;
+    const height = 128;
 
     return {
-        left,
+        left: "0",
         width,
         top: `${topPosition}px`,
         height: `${height}px`,
@@ -72,7 +59,7 @@ export default function CalendarEvent({
     className?: string
 })
 {
-    const { events, setSelectedEvent, setManageEventDialogOpen, date } =
+    const { events, date } =
         useCalendarContext();
     const style = month ? {} : calculateEventPosition(event, events);
 
@@ -86,7 +73,7 @@ export default function CalendarEvent({
             <AnimatePresence mode="wait">
                 <motion.div
                     className={cn(
-                        `px-3 py-1.5 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
+                        `px-1 py-1 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
                         !month && "absolute",
                         className,
                     )}
@@ -94,8 +81,10 @@ export default function CalendarEvent({
                     onClick={(e) =>
                     {
                         e.stopPropagation();
-                        setSelectedEvent(event);
-                        setManageEventDialogOpen(true);
+                        // setSelectedEvent(event);
+                        // setManageEventDialogOpen(true);
+
+                        // FIXME: redirect to appointment page
                     }}
                     initial={{
                         opacity: 0,
@@ -138,17 +127,6 @@ export default function CalendarEvent({
                     >
                         <p className={cn("font-bold truncate", month && "text-xs")}>
                             {event.title}
-                        </p>
-                        <p className={cn("text-sm", month && "text-xs")}>
-                            <span>
-                                {format(event.start, "h:mm a")}
-                            </span>
-                            <span className={cn("mx-1", month && "hidden")}>
-                                -
-                            </span>
-                            <span className={cn(month && "hidden")}>
-                                {format(event.end, "h:mm a")}
-                            </span>
                         </p>
                     </motion.div>
                 </motion.div>

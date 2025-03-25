@@ -1,7 +1,7 @@
 import { Shell } from "@/components/common/Shell";
 import AdminLayout from "./(admin)/layout";
 import { HeaderPage } from "@/components/common/HeaderPage";
-import CalendarDemo from "./components/CalendarDemo";
+import CalendarDemo from "./root/CalendarDemo";
 
 export default function Home()
 {

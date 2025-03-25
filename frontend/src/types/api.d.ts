@@ -3067,6 +3067,7 @@ export interface components {
             dueDate: string;
             /** Format: date-time */
             actualDate?: string | null;
+            client: components["schemas"]["Client"];
             /** Format: uuid */
             id: string;
             isActive: boolean;
@@ -3254,6 +3255,8 @@ export interface components {
             instance?: string | null;
         };
         Project: {
+            /** Format: int32 */
+            projectNumber?: number;
             address: string;
             /** Format: uint32 */
             area: number;
