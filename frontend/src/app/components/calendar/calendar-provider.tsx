@@ -14,14 +14,14 @@ export default function CalendarProvider({
     calendarIconIsToday = true,
     children,
 }: {
-  events: Array<CalendarEvent>
-  setEvents: (events: Array<CalendarEvent>) => void
-  mode: Mode
-  setMode: (mode: Mode) => void
-  date: Date
-  setDate: (date: Date) => void
-  calendarIconIsToday: boolean
-  children: React.ReactNode
+    events: Array<CalendarEvent>
+    setEvents: (events: Array<CalendarEvent>) => void
+    mode: Mode
+    setMode: (mode: Mode) => void
+    date: Date
+    setDate: (date: Date) => void
+    calendarIconIsToday: boolean
+    children: React.ReactNode
 })
 {
     const [newEventDialogOpen, setNewEventDialogOpen] = useState(false);

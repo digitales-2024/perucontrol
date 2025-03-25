@@ -11,7 +11,7 @@ export default function CalendarHeaderDateBadge()
         <div className="whitespace-nowrap rounded-sm border px-1.5 py-0.5 text-xs">
             {monthEvents.length}
             {" "}
-events
+            events
         </div>
     );
 }
