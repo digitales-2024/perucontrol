@@ -27,7 +27,7 @@ import { components } from "@/types/api";
 const data = {
     navMain: [
         {
-            title: "Dashboard",
+            title: "Inicio",
             url: "/",
             icon: PieChart,
         },

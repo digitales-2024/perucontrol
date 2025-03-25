@@ -15,93 +15,135 @@ public class ProjectOperationSheet : BaseModel
     public required DateTime OperationDate { get; set; }
 
     // hora_ingreso
+    [Required]
     public required TimeSpan EnterTime { get; set; }
 
     // hora_salida
+    [Required]
     public required TimeSpan LeaveTime { get; set; }
 
     // condición_sanitaria
-    public required string SanitaryCondition { get; set; }
+    [Required]
+    public string SanitaryCondition { get; set; } = string.Empty;
 
     // areas_tratadas
-    public required string TreatedAreas { get; set; }
+    [Required]
+    public string TreatedAreas { get; set; } = string.Empty;
 
     // insectos
-    public required string Insects { get; set; }
+    [Required]
+    public string Insects { get; set; } = string.Empty;
 
     // roedores
-    public required string Rodents { get; set; }
+    [Required]
+    public string Rodents { get; set; } = string.Empty;
 
     // otras
-    public required string OtherPlagues { get; set; }
+    [Required]
+    public string OtherPlagues { get; set; } = string.Empty;
 
     // insecticida
-    public required string Insecticide { get; set; }
+    [Required]
+    public string Insecticide { get; set; } = string.Empty;
 
     // insecticida2
-    public required string Insecticide2 { get; set; }
+    [Required]
+    public string Insecticide2 { get; set; } = string.Empty;
 
     // rodenticida
-    public required string Rodenticide { get; set; }
+    [Required]
+    public string Rodenticide { get; set; } = string.Empty;
 
     // desinfectante
-    public required string Desinfectant { get; set; }
+    [Required]
+    public string Desinfectant { get; set; } = string.Empty;
 
     // otros_productos
-    public required string OtherProducts { get; set; }
+    [Required]
+    public string OtherProducts { get; set; } = string.Empty;
 
     // insecticida_cantidad
-    public required string InsecticideAmount { get; set; }
+    [Required]
+    public string InsecticideAmount { get; set; } = string.Empty;
 
     // insecticida_cantidad_2
-    public required string InsecticideAmount2 { get; set; }
+    [Required]
+    public string InsecticideAmount2 { get; set; } = string.Empty;
 
     // rodenticida_cantidad
-    public required string RodenticideAmount { get; set; }
+    [Required]
+    public string RodenticideAmount { get; set; } = string.Empty;
 
     // desinfectante_cantidad
-    public required string DesinfectantAmount { get; set; }
+    [Required]
+    public string DesinfectantAmount { get; set; } = string.Empty;
 
     // producto_otros_cantidad
-    public required string OtherProductsAmount { get; set; }
+    [Required]
+    public string OtherProductsAmount { get; set; } = string.Empty;
 
     // monitoreo_desratizacion_1
-    public required string RatExtermination1 { get; set; }
+    [Required]
+    public string RatExtermination1 { get; set; } = string.Empty;
 
     // monitoreo_desratizacion_2
-    public required string RatExtermination2 { get; set; }
+    [Required]
+    public string RatExtermination2 { get; set; } = string.Empty;
 
     // monitoreo_desratizacion_3
-    public required string RatExtermination3 { get; set; }
+    [Required]
+    public string RatExtermination3 { get; set; } = string.Empty;
 
     // monitoreo_desratizacion_4
-    public required string RatExtermination4 { get; set; }
+    [Required]
+    public string RatExtermination4 { get; set; } = string.Empty;
 
     // personal_1
-    public required string Staff1 { get; set; }
+    [Required]
+    public string Staff1 { get; set; } = string.Empty;
 
     // personal_2
-    public required string Staff2 { get; set; }
+    [Required]
+    public string Staff2 { get; set; } = string.Empty;
 
     // personal_3
-    public required string Staff3 { get; set; }
+    [Required]
+    public string Staff3 { get; set; } = string.Empty;
 
     // personal_4
-    public required string Staff4 { get; set; }
+    [Required]
+    public string Staff4 { get; set; } = string.Empty;
 
+    [Required]
     public bool AspersionManual { get; set; } = false;
+
+    [Required]
     public bool AspercionMotor { get; set; } = false;
+
+    [Required]
     public bool NebulizacionFrio { get; set; } = false;
+
+    [Required]
     public bool NebulizacionCaliente { get; set; } = false;
+
+    [Required]
     public bool NebulizacionCebosTotal { get; set; } = false;
+
+    [Required]
     public bool ColocacionCebosCebaderos { get; set; } = false;
+
+    [Required]
     public bool ColocacionCebosRepuestos { get; set; } = false;
 
+    [Required]
     public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
+    [Required]
     public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
+    [Required]
     public string Observations { get; set; } = string.Empty;
 
+    [Required]
     public string Recommendations { get; set; } = string.Empty;
 }

@@ -4,6 +4,47 @@
  */
 
 export interface paths {
+    "/api/Appointment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get by time range */
+        get: {
+            parameters: {
+                query?: {
+                    start?: string;
+                    end?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["AppointmentGetDTO"]>;
+                        "application/json": Array<components["schemas"]["AppointmentGetDTO"]>;
+                        "text/json": Array<components["schemas"]["AppointmentGetDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -1182,7 +1223,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Project/{id}/update-state": {
+    "/api/Project/{id}/appointment": {
         parameters: {
             query?: never;
             header?: never;
@@ -1191,12 +1232,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update Project State */
-        patch: {
+        /**
+         * Add Appointment
+         * @description Creates and adds a new appointment to a project
+         */
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -1207,18 +1247,22 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectStatusPatchDTO"];
-                    "text/json": components["schemas"]["ProjectStatusPatchDTO"];
-                    "application/*+json": components["schemas"]["ProjectStatusPatchDTO"];
+                    "application/json": components["schemas"]["ProjectCreateDTO"];
+                    "text/json": components["schemas"]["ProjectCreateDTO"];
+                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -1229,6 +1273,161 @@ export interface paths {
                         "text/plain": components["schemas"]["ProblemDetails"];
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{proj_id}/appointment/{app_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Deactivate Appointment
+         * @description Deactivates an appointment from a project
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectCreateDTO"];
+                    "text/json": components["schemas"]["ProjectCreateDTO"];
+                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit Appointment
+         * @description Edits an appointment from a project
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectCreateDTO"];
+                    "text/json": components["schemas"]["ProjectCreateDTO"];
+                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Project/{proj_id}/appointment/{app_id}/ops-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Appointment Operations Sheet */
+        post: {
+            parameters: {
+                query?: {
+                    id?: string;
+                };
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
+                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
                     };
                 };
                 /** @description Not Found */
@@ -1244,9 +1443,13 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
-    "/api/Project/{id}/gen-operations-sheet": {
+    "/api/Project/{proj_id}/appointment/{app_id}/certificate": {
         parameters: {
             query?: never;
             header?: never;
@@ -1255,13 +1458,16 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Operations Sheet */
+        /** Generate Appointment Certificate */
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    id?: string;
+                };
                 header?: never;
                 path: {
-                    id: string;
+                    proj_id: string;
+                    app_id: string;
                 };
                 cookie?: never;
             };
@@ -2853,6 +3059,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AppointmentGetDTO: {
+            project: components["schemas"]["Project"];
+            /** Format: int32 */
+            orderNumber?: number | null;
+            /** Format: date-time */
+            dueDate: string;
+            /** Format: date-time */
+            actualDate?: string | null;
+            /** Format: uuid */
+            id: string;
+            isActive: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+        };
         Business: {
             digesaNumber: string;
             address: string;
@@ -2888,6 +3110,8 @@ export interface components {
         Certificate: {
             /** Format: int32 */
             projectNumber: number;
+            /** Format: uuid */
+            projectAppointmentId: string;
             treatedArea: string;
             /** Format: date-time */
             creationDate: string;
@@ -3036,22 +3260,6 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            appointments?: Array<components["schemas"]["ProjectAppointment"]>;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        ProjectAppointment: {
-            /** Format: int32 */
-            orderNumber?: number | null;
-            /** Format: date-time */
-            dueDate?: string | null;
-            /** Format: date-time */
-            actualDate?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3072,6 +3280,7 @@ export interface components {
             area: number;
             /** Format: uint32 */
             spacesCount: number;
+            appointments: Array<string>;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
@@ -3103,17 +3312,17 @@ export interface components {
             staff2: string;
             staff3: string;
             staff4: string;
-            aspersionManual?: boolean;
-            aspercionMotor?: boolean;
-            nebulizacionFrio?: boolean;
-            nebulizacionCaliente?: boolean;
-            nebulizacionCebosTotal?: boolean;
-            colocacionCebosCebaderos?: boolean;
-            colocacionCebosRepuestos?: boolean;
-            degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
-            degreeRodentInfectivity?: components["schemas"]["InfestationDegree"];
-            observations?: string;
-            recommendations?: string;
+            aspersionManual: boolean;
+            aspercionMotor: boolean;
+            nebulizacionFrio: boolean;
+            nebulizacionCaliente: boolean;
+            nebulizacionCebosTotal: boolean;
+            colocacionCebosCebaderos: boolean;
+            colocacionCebosRepuestos: boolean;
+            degreeInsectInfectivity: components["schemas"]["InfestationDegree"];
+            degreeRodentInfectivity: components["schemas"]["InfestationDegree"];
+            observations: string;
+            recommendations: string;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3259,13 +3468,10 @@ export interface components {
             spacesCount?: number | null;
         };
         /** @enum {unknown} */
-        ProjectStatus: "Pending" | "Approved" | "Rejected";
-        ProjectStatusPatchDTO: {
-            status?: components["schemas"]["ProjectStatus"];
-        };
+        ProjectStatus: "Pending" | "Completed" | "Rejected";
         ProjectSummary: {
-            client?: components["schemas"]["Client"];
-            services?: Array<components["schemas"]["Service"]>;
+            client: components["schemas"]["Client"];
+            services: Array<components["schemas"]["Service"]>;
             quotation?: components["schemas"]["Quotation"];
             address: string;
             /** Format: uint32 */

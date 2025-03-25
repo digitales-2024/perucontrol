@@ -17,7 +17,6 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
         var entity = createDTO.MapToEntity();
-        entity.Id = Guid.NewGuid();
 
         // validate the client exists before creating the project
         var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
@@ -47,6 +46,21 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         if (services.Count != createDTO.Services.Count)
             return NotFound("Algunos servicios no fueron encontrados");
         entity.Services = services;
+
+        // Create Appointments
+        var appointments = createDTO
+            .Appointments.Select(app => new ProjectAppointment
+            {
+                DueDate = app,
+                ProjectOperationSheet = new()
+                {
+                    OperationDate = app.Date,
+                    EnterTime = new TimeSpan(9, 0, 0),
+                    LeaveTime = new TimeSpan(13, 0, 0),
+                },
+            })
+            .ToList();
+        entity.Appointments = appointments;
 
         // Create and populate the project
         _context.Add(entity);
@@ -91,9 +105,10 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
         var project = await _context
-            .Projects.Include(c => c.Client)
+            .Projects.Include(p => p.Client)
             .Include(p => p.Services)
-            .Include(q => q.Quotation)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -101,7 +116,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             return NotFound();
         }
 
-        var projectSummary = new ProjectSummary
+        var projectSummary = new ProjectSummarySingle
         {
             Id = project.Id,
             Client = project.Client,
@@ -111,6 +126,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             Area = project.Area,
             Address = project.Address,
             Quotation = project.Quotation,
+            Appointments = project.Appointments,
         };
 
         return Ok(projectSummary);
@@ -191,28 +207,140 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         return NoContent();
     }
 
-    [EndpointSummary("Update Project State")]
-    [HttpPatch("{id}/update-state")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    /// TODO: Project status should be updated on every action by its appointments.
+    /*[EndpointSummary("Update Project State")]*/
+    /*[HttpPatch("{id}/update-state")]*/
+    /*[ProducesResponseType(StatusCodes.Status204NoContent)]*/
+    /*[ProducesResponseType(StatusCodes.Status400BadRequest)]*/
+    /*[ProducesResponseType(StatusCodes.Status404NotFound)]*/
+    /*public async Task<IActionResult> UpdateState(Guid id, [FromBody] ProjectStatusPatchDTO patchDto)*/
+    /*{*/
+    /*    var project = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);*/
+    /*    if (project == null)*/
+    /*    {*/
+    /*        return NotFound();*/
+    /*    }*/
+    /**/
+    /*    // Actualizar el estado del proyecto y guardar en la base de datos*/
+    /*    project.Status = patchDto.Status;*/
+    /*    await _context.SaveChangesAsync();*/
+    /**/
+    /*    return NoContent();*/
+    /*}*/
+
+    /// TODO: Move to appointment
+    /*[EndpointSummary("Generate Operations Sheet")]*/
+    /*[HttpPost("{id}/gen-operations-sheet")]*/
+    /*[ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]*/
+    /*[ProducesResponseType(StatusCodes.Status404NotFound)]*/
+    /*public IActionResult GenerateOperationsSheet(*/
+    /*    Guid id,*/
+    /*    [FromBody] ProjectOperationSheetExport export*/
+    /*)*/
+    /*{*/
+    /*    var project = _dbSet*/
+    /*        .Include(p => p.Client)*/
+    /*        .Include(p => p.Services)*/
+    /*        .FirstOrDefault(p => p.Id == id);*/
+    /**/
+    /*    if (project == null)*/
+    /*    {*/
+    /*        return NotFound(*/
+    /*            $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."*/
+    /*        );*/
+    /*    }*/
+    /**/
+    /*    var serviceNames = project.Services.Select(s => s.Name).ToList();*/
+    /*    var serviceNamesStr = string.Join(", ", serviceNames);*/
+    /**/
+    /*    var placeholders = new Dictionary<string, string>*/
+    /*    {*/
+    /*        { "{{fecha_op}}", export.OperationDate },*/
+    /*        { "{{hora_ingreso}}", export.EnterTime },*/
+    /*        { "{{hora_salida}}", export.LeaveTime },*/
+    /*        { "{{razon_social}}", project.Client.RazonSocial ?? "" },*/
+    /*        { "{{direccion}}", project.Address },*/
+    /*        { "{{giro_empresa}}", project.Client.BusinessType },*/
+    /*        { "{{condicion_sanitaria}}", export.SanitaryCondition },*/
+    /*        { "{{areas_tratadas}}", export.TreatedAreas },*/
+    /*        { "{{servicio}}", serviceNamesStr },*/
+    /*        { "{{certificado_nro}}", "--prov--" },*/
+    /*        { "{{insectos}}", export.Insects },*/
+    /*        { "{{roedores}}", export.Rodents },*/
+    /*        { "{{otros}}", export.OtherPlagues },*/
+    /*        { "{{insecticida}}", export.Insecticide },*/
+    /*        { "{{insecticida_2}}", export.Insecticide2 },*/
+    /*        { "{{rodenticida}}", export.Rodenticide },*/
+    /*        { "{{desinfectante}}", export.Desinfectant },*/
+    /*        { "{{producto_otros}}", export.OtherProducts },*/
+    /*        { "{{insecticida_cantidad}}", export.InsecticideAmount },*/
+    /*        { "{{insecticida_cantidad_2}}", export.InsecticideAmount2 },*/
+    /*        { "{{rodenticida_cantidad}}", export.RodenticideAmount },*/
+    /*        { "{{desinfectante_cantidad}}", export.DesinfectantAmount },*/
+    /*        { "{{producto_otros_cantidad}}", export.OtherProductsAmount },*/
+    /*        { "{{monitoreo_desratizacion_1}}", export.RatExtermination1 },*/
+    /*        { "{{monitoreo_desratizacion_2}}", export.RatExtermination2 },*/
+    /*        { "{{monitoreo_desratizacion_3}}", export.RatExtermination3 },*/
+    /*        { "{{monitoreo_desratizacion_4}}", export.RatExtermination4 },*/
+    /*        { "{{personal_1}}", export.Staff1 },*/
+    /*        { "{{personal_2}}", export.Staff2 },*/
+    /*        { "{{personal_3}}", export.Staff3 },*/
+    /*        { "{{personal_4}}", export.Staff4 },*/
+    /*        { "{{aspersion_manual}}", export.aspersionManual ? "Sí" : "No" },*/
+    /*        { "{{aspersion_motor}}", export.aspersionMotor ? "Sí" : "No" },*/
+    /*        { "{{nebulizacion_frio}}", export.nebulizacionFrio ? "Sí" : "No" },*/
+    /*        { "{{nebulizacion_caliente}}", export.nebulizacionCaliente ? "Sí" : "No" },*/
+    /*        { "{{nebulizacion_cebos_total}}", export.nebulizacionCebosTotal ? "Sí" : "No" },*/
+    /*        { "{{colocacion_cebos_cebaderos}}", export.colocacionCebosCebaderos ? "Sí" : "No" },*/
+    /*        { "{{colocacion_cebos_repuestos}}", export.colocacionCebosRepuestos ? "Sí" : "No" },*/
+    /*        { "{{observations}}", export.observations },*/
+    /*        { "{{recommendations}}", export.recommendations },*/
+    /*    };*/
+    /*    var fileBytes = excelTemplate.GenerateExcelFromTemplate(*/
+    /*        placeholders,*/
+    /*        "Templates/ficha_operaciones.xlsx"*/
+    /*    );*/
+    /*    return File(*/
+    /*        fileBytes,*/
+    /*        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",*/
+    /*        "quotation.xlsx"*/
+    /*    );*/
+    /*}*/
+
+    [EndpointSummary("Add Appointment")]
+    [EndpointDescription("Creates and adds a new appointment to a project")]
+    [HttpPost("{id}/appointment")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateState(Guid id, [FromBody] ProjectStatusPatchDTO patchDto)
+    public async Task<ActionResult<Project>> AddAppointment([FromBody] ProjectCreateDTO createDTO)
     {
-        var project = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
-        if (project == null)
-        {
-            return NotFound();
-        }
-
-        // Actualizar el estado del proyecto y guardar en la base de datos
-        project.Status = patchDto.Status;
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        return Ok();
     }
 
-    [EndpointSummary("Generate Operations Sheet")]
-    [HttpPost("{id}/gen-operations-sheet")]
+    [EndpointSummary("Edit Appointment")]
+    [EndpointDescription("Edits an appointment from a project")]
+    [HttpPatch("{proj_id}/appointment/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> PatchAppointment([FromBody] ProjectCreateDTO createDTO)
+    {
+        return Ok();
+    }
+
+    [EndpointSummary("Deactivate Appointment")]
+    [EndpointDescription("Deactivates an appointment from a project")]
+    [HttpDelete("{proj_id}/appointment/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> DeactivateAppointment(
+        [FromBody] ProjectCreateDTO createDTO
+    )
+    {
+        return Ok();
+    }
+
+    [EndpointSummary("Generate Appointment Operations Sheet")]
+    [HttpPost("{proj_id}/appointment/{app_id}/ops-sheet")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheet(
@@ -220,74 +348,15 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         [FromBody] ProjectOperationSheetExport export
     )
     {
-        var project = _dbSet
-            .Include(p => p.Client)
-            .Include(p => p.Services)
-            .FirstOrDefault(p => p.Id == id);
+        return Ok();
+    }
 
-        if (project == null)
-        {
-            return NotFound(
-                $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
-            );
-        }
-
-        var serviceNames = project.Services.Select(s => s.Name).ToList();
-        var serviceNamesStr = string.Join(", ", serviceNames);
-
-        var placeholders = new Dictionary<string, string>
-        {
-            { "{{fecha_op}}", export.OperationDate },
-            { "{{hora_ingreso}}", export.EnterTime },
-            { "{{hora_salida}}", export.LeaveTime },
-            { "{{razon_social}}", project.Client.RazonSocial ?? "" },
-            { "{{direccion}}", project.Address },
-            { "{{giro_empresa}}", project.Client.BusinessType },
-            { "{{condicion_sanitaria}}", export.SanitaryCondition },
-            { "{{areas_tratadas}}", export.TreatedAreas },
-            { "{{servicio}}", serviceNamesStr },
-            { "{{certificado_nro}}", "--prov--" },
-            { "{{insectos}}", export.Insects },
-            { "{{roedores}}", export.Rodents },
-            { "{{otros}}", export.OtherPlagues },
-            { "{{insecticida}}", export.Insecticide },
-            { "{{insecticida_2}}", export.Insecticide2 },
-            { "{{rodenticida}}", export.Rodenticide },
-            { "{{desinfectante}}", export.Desinfectant },
-            { "{{producto_otros}}", export.OtherProducts },
-            { "{{insecticida_cantidad}}", export.InsecticideAmount },
-            { "{{insecticida_cantidad_2}}", export.InsecticideAmount2 },
-            { "{{rodenticida_cantidad}}", export.RodenticideAmount },
-            { "{{desinfectante_cantidad}}", export.DesinfectantAmount },
-            { "{{producto_otros_cantidad}}", export.OtherProductsAmount },
-            { "{{monitoreo_desratizacion_1}}", export.RatExtermination1 },
-            { "{{monitoreo_desratizacion_2}}", export.RatExtermination2 },
-            { "{{monitoreo_desratizacion_3}}", export.RatExtermination3 },
-            { "{{monitoreo_desratizacion_4}}", export.RatExtermination4 },
-            { "{{personal_1}}", export.Staff1 },
-            { "{{personal_2}}", export.Staff2 },
-            { "{{personal_3}}", export.Staff3 },
-            { "{{personal_4}}", export.Staff4 },
-            { "{{aspersion_manual}}", export.aspersionManual ? "Sí" : "No" },
-            { "{{aspersion_motor}}", export.aspersionMotor ? "Sí" : "No" },
-            { "{{nebulizacion_frio}}", export.nebulizacionFrio ? "Sí" : "No" },
-            { "{{nebulizacion_caliente}}", export.nebulizacionCaliente ? "Sí" : "No" },
-            { "{{nebulizacion_cebos_total}}", export.nebulizacionCebosTotal ? "Sí" : "No" },
-            { "{{colocacion_cebos_cebaderos}}", export.colocacionCebosCebaderos ? "Sí" : "No" },
-            { "{{colocacion_cebos_repuestos}}", export.colocacionCebosRepuestos ? "Sí" : "No" },
-            /* { "{{degree_insect_infectivity}}", export.degreeInsectInfectivity.ToString() },
-            { "{{degree_rodent_infectivity}}", export.degreeRodentInfectivity.ToString() }, */
-            { "{{observations}}", export.observations },
-            { "{{recommendations}}", export.recommendations },
-        };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-            placeholders,
-            "Templates/ficha_operaciones.xlsx"
-        );
-        return File(
-            fileBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "quotation.xlsx"
-        );
+    [EndpointSummary("Generate Appointment Certificate")]
+    [HttpPost("{proj_id}/appointment/{app_id}/certificate")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificate(Guid id, [FromBody] ProjectOperationSheetExport export)
+    {
+        return Ok();
     }
 }
