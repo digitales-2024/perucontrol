@@ -13,7 +13,8 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     [EndpointSummary("Create")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
         var entity = createDTO.MapToEntity();
@@ -136,7 +137,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] ProjectPatchDTO patchDto)
     {
         var entity = await _dbSet.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == id);
@@ -311,31 +312,79 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     [EndpointDescription("Creates and adds a new appointment to a project")]
     [HttpPost("{id}/appointment")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Project>> AddAppointment([FromBody] ProjectCreateDTO createDTO)
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> AddAppointment(
+        Guid id,
+        [FromBody] AppointmentCreateDTO dto
+    )
     {
-        return Ok();
+        // verify project exists
+        var project = await _context.Projects.FindAsync(id);
+        if (project == null)
+            return NotFound("Proyecto no encontrado");
+
+        // create appointment
+        var newAppointment = new ProjectAppointment
+        {
+            DueDate = dto.DueDate,
+            ProjectOperationSheet = new()
+            {
+                OperationDate = dto.DueDate,
+                EnterTime = new TimeSpan(9, 0, 0),
+                LeaveTime = new TimeSpan(13, 0, 0),
+            },
+        };
+
+        // append appointment to projects
+        project.Appointments.Add(newAppointment);
+        await _context.SaveChangesAsync();
+
+        return Created();
     }
 
     [EndpointSummary("Edit Appointment")]
     [EndpointDescription("Edits an appointment from a project")]
     [HttpPatch("{proj_id}/appointment/{app_id}")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Project>> PatchAppointment([FromBody] ProjectCreateDTO createDTO)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> PatchAppointment(
+        Guid proj_id,
+        Guid app_id,
+        [FromBody] AppointmentPatchDTO dto
+    )
     {
+        // validate entity exists
+        var appointment = await _context
+            .ProjectAppointments.Include(a => a.Project)
+            .FirstOrDefaultAsync(a => a.Id == app_id);
+        if (appointment == null)
+            return NotFound("Evento no encontrado");
+        if (appointment.Project.Id != proj_id)
+            return BadRequest("Evento no pertenece al proyecto");
+
+        dto.ApplyPatch(appointment);
+        await _context.SaveChangesAsync();
         return Ok();
     }
 
     [EndpointSummary("Deactivate Appointment")]
     [EndpointDescription("Deactivates an appointment from a project")]
     [HttpDelete("{proj_id}/appointment/{app_id}")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Project>> DeactivateAppointment(
-        [FromBody] ProjectCreateDTO createDTO
-    )
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> DeactivateAppointment(Guid proj_id, Guid app_id)
     {
+        // validate entity exists
+        var appointment = await _context
+            .ProjectAppointments.Include(a => a.Project)
+            .FirstOrDefaultAsync(a => a.Id == app_id);
+        if (appointment == null)
+            return NotFound("Evento no encontrado");
+        if (appointment.Project.Id != proj_id)
+            return BadRequest("Evento no pertenece al proyecto");
+
+        appointment.IsActive = false;
+        await _context.SaveChangesAsync();
         return Ok();
     }
 

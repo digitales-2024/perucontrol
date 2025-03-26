@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -23,6 +24,9 @@ public class Project : BaseModel
 {
     [JsonIgnore]
     public Client Client { get; set; } = null!;
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int ProjectNumber { get; set; }
 
     [JsonIgnore]
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();
