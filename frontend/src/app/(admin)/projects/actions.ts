@@ -77,27 +77,6 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
         message: "Desactivado - actualizar estado",
         error: null,
     });
-    //const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/update-state", {
-    //    ...auth,
-    //    body:
-    //    {
-    //        status: newStatus,
-    //    },
-    //    params: {
-    //        path: {
-    //            id: id,
-    //        },
-    //    },
-    //}));
-    //
-    //revalidatePath("/(admin)/cotizaciones", "page");
-    //
-    //if (error)
-    //{
-    //    console.log("Error updating status:", error);
-    //    return err(error);
-    //}
-    //return ok(null);
 }
 
 export async function GenerateExcel(id: string, body: DownloadProjectSchema): Promise<Result<Blob, FetchError>>
