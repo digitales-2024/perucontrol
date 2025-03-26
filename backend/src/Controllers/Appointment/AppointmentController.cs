@@ -21,7 +21,7 @@ public class AppointmentController(DatabaseContext db) : ControllerBase
         var appointments = await db
             .Appointments.Where(a => a.DueDate >= start && a.DueDate <= end)
             .Include(a => a.Project)
-                .ThenInclude(p => p.Client)
+            .ThenInclude(p => p.Client)
             .ToListAsync();
 
         return Ok(

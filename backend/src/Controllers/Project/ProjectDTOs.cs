@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using PeruControl.Model;
 
+namespace PeruControl.Controllers;
+
 public class ProjectOperationSheetExport
 {
     // fecha_op

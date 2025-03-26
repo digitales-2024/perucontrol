@@ -11,21 +11,24 @@ namespace PeruControl.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "ProjectNumber",
-                table: "Projects",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0)
-                .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+            migrationBuilder
+                .AddColumn<int>(
+                    name: "ProjectNumber",
+                    table: "Projects",
+                    type: "integer",
+                    nullable: false,
+                    defaultValue: 0
+                )
+                .Annotation(
+                    "Npgsql:ValueGenerationStrategy",
+                    NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "ProjectNumber",
-                table: "Projects");
+            migrationBuilder.DropColumn(name: "ProjectNumber", table: "Projects");
         }
     }
 }
