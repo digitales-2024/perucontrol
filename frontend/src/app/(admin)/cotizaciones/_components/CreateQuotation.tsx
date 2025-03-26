@@ -216,7 +216,7 @@ export function CreateQuotation()
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                            Frecuencia
+                                                    Frecuencia
                                                 </FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>

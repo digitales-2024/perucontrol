@@ -1085,6 +1085,17 @@ export interface paths {
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         delete?: never;
@@ -1247,9 +1258,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectCreateDTO"];
-                    "text/json": components["schemas"]["ProjectCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
+                    "application/json": components["schemas"]["AppointmentCreateDTO"];
+                    "text/json": components["schemas"]["AppointmentCreateDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCreateDTO"];
                 };
             };
             responses: {
@@ -1270,9 +1281,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
                     };
                 };
             };
@@ -1307,16 +1318,10 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectCreateDTO"];
-                    "text/json": components["schemas"]["ProjectCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
-                };
-            };
+            requestBody?: never;
             responses: {
-                /** @description Created */
-                201: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1332,9 +1337,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
                     };
                 };
             };
@@ -1357,14 +1362,14 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectCreateDTO"];
-                    "text/json": components["schemas"]["ProjectCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
+                    "application/json": components["schemas"]["AppointmentPatchDTO"];
+                    "text/json": components["schemas"]["AppointmentPatchDTO"];
+                    "application/*+json": components["schemas"]["AppointmentPatchDTO"];
                 };
             };
             responses: {
-                /** @description Created */
-                201: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1380,9 +1385,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
                     };
                 };
             };
@@ -3059,6 +3064,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AppointmentCreateDTO: {
+            /** Format: date-time */
+            dueDate?: string;
+        };
         AppointmentGetDTO: {
             project: components["schemas"]["Project"];
             /** Format: int32 */
@@ -3075,6 +3084,14 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
+        };
+        AppointmentPatchDTO: {
+            /** Format: int32 */
+            orderNumber?: number | null;
+            /** Format: date-time */
+            dueDate?: string | null;
+            /** Format: date-time */
+            actualDate?: string | null;
         };
         Business: {
             digesaNumber: string;
@@ -3660,6 +3677,17 @@ export interface components {
         UserReturn: {
             username: string;
             email: string;
+        };
+        ValidationProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+            errors?: {
+                [key: string]: Array<string>;
+            };
         };
     };
     responses: never;

@@ -1,15 +1,27 @@
 import * as z from "zod";
 
 export const clientDataSchema = z.object({
-    clientId: z.string().min(1, "Debe seleccionar un cliente"),
-    quotationId: z.string().nullable(),
+    clientId: z.string().uuid("Debe ser un UUID válido"),
+    quotationId: z.union([z.string().uuid(), z.null()]).optional(),
     services: z.array(z.string().min(1, "El servicio es requerido")),
-    address: z.string().min(1, "La dirección es requerida"),
-    area: z.number().min(1, "El área debe ser mayor a 0"),
-    spacesCount: z.number().min(1, "El número de ambientes debe ser mayor a 0"),
+    address: z.string().min(1, "La dirección es requerida")
+        .max(100, "Máximo 100 caracteres"),
+    area: z.preprocess(
+        (val) => Number(val),
+        z.number().int()
+            .min(1, "Debe ser mayor a 0")
+            .max(4294967295, "Valor demasiado grande"),
+    ),
+    spacesCount: z.preprocess(
+        (val) => Number(val),
+        z.number().int()
+            .min(1, "Debe ser mayor a 0")
+            .max(4294967295, "Valor demasiado grande"),
+    ),
+    appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
 });
 
-export type ClientDataSchema = z.infer<typeof clientDataSchema>
+export type ClientDataSchema = z.infer<typeof clientDataSchema>;
 
 export const downloadProjectSchema = z.object({
     projectId: z.string(),
