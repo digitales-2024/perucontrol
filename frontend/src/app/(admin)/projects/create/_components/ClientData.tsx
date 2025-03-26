@@ -295,7 +295,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                                 {
                                                     const newValue = isSelected
                                                         ? field.value?.filter((id: string) => id !== service.id)
-                                                        : [...(field.value || []), service.id!];
+                                                        : [...(field.value ?? []), service.id!];
                                                     field.onChange(newValue);
                                                 }}
                                             >
