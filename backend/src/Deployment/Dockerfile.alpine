@@ -43,4 +43,13 @@ COPY Fonts /usr/local/share/fonts/
 # Update font cache
 RUN fc-cache -f -v
 
+# Install LibreOffice headless
+RUN apk add --no-cache libreoffice libreoffice-lang-en
+
+# Create symlink to ensure 'soffice' command works
+RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+
+# Create directory for LibreOffice user profile to avoid permissions issues
+RUN mkdir -p /tmp/.config && chmod 777 /tmp/.config
+
 CMD ["./docker-entrypoint.sh"]
