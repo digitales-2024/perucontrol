@@ -7,8 +7,11 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate)
-    : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
+public class QuotationController(
+    DatabaseContext db,
+    ExcelTemplateService excelTemplate,
+    PDFConverterService pDFConverterService
+) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
     [HttpPost]
@@ -159,98 +162,59 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
     {
-        var unixms = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var tempDir = Path.Combine(Path.GetTempPath(), "quotation_gen");
-        Directory.CreateDirectory(tempDir);
+        var quotation = _dbSet
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefault(q => q.Id == id);
 
-        var tempFilePath = Path.Combine(tempDir, $"quotation_{unixms}.xlsx");
-        var pdfFilePath = Path.Combine(tempDir, $"quotation_{unixms}.pdf");
-
-        try
+        if (quotation == null)
         {
-            var quotation = _dbSet
-                .Include(q => q.Client)
-                .Include(q => q.Services)
-                .FirstOrDefault(q => q.Id == id);
-
-            if (quotation == null)
-            {
-                return NotFound(
-                    $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
-                );
-            }
-
-            var serviceNames = quotation.Services.Select(s => s.Name).ToList();
-            var serviceNamesStr = string.Join(", ", serviceNames);
-            var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
-            var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
-
-            var placeholders = new Dictionary<string, string>
-            {
-                { "{{digesa_habilitacion}}", "123-PROV" },
-                { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
-                { "{{nro_presupuesto}}", "123-PROV" },
-                { "{{nro_cliente}}", "123-PROV" },
-                { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
-                { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
-                { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
-                { "{{adicional_cliente}}", "--Provicional--" },
-                { "{{garantia}}", export.Guarantee },
-                { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
-                { "{{nombre_servicio}}", serviceNamesStr },
-                { "{{incluye_igv_str}}", hasTaxes },
-                { "{{validez_dias}}", expiryDaysAmount.ToString() },
-                { "{{termino_custom}}", quotation.TermsAndConditions },
-                { "{{doc_entregados}}", export.Deliverables },
-            };
-            var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-                placeholders,
-                "Templates/cotizacion_plantilla.xlsx"
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
             );
-
-            System.IO.File.WriteAllBytes(tempFilePath, fileBytes);
-
-            // Call LibreOffice to convert to PDF
-            var process = new System.Diagnostics.Process
-            {
-                StartInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "soffice",
-                    Arguments =
-                        $"--headless --convert-to pdf --outdir \"{tempDir}\" \"{tempFilePath}\"",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                },
-            };
-            process.Start();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
-            {
-                var error = process.StandardError.ReadToEnd();
-                return BadRequest($"Error generando PDF: {error}");
-            }
-
-            // read pdf file
-            var pdfBytes = System.IO.File.ReadAllBytes(pdfFilePath);
-
-            // send
-            return File(pdfBytes, "application/pdf", "quotation.pdf");
-            /*return File(*/
-            /*    fileBytes,*/
-            /*    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",*/
-            /*    "quotation.xlsx"*/
-            /*);*/
         }
-        finally
+
+        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
+        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
+
+        var placeholders = new Dictionary<string, string>
         {
-            if (System.IO.File.Exists(tempFilePath))
-                System.IO.File.Delete(tempFilePath);
-            if (System.IO.File.Exists(pdfFilePath))
-                System.IO.File.Delete(pdfFilePath);
+            { "{{digesa_habilitacion}}", "123-PROV" },
+            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
+            { "{{nro_presupuesto}}", "123-PROV" },
+            { "{{nro_cliente}}", "123-PROV" },
+            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
+            { "{{adicional_cliente}}", "--Provicional--" },
+            { "{{garantia}}", export.Guarantee },
+            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
+            { "{{nombre_servicio}}", serviceNamesStr },
+            { "{{incluye_igv_str}}", hasTaxes },
+            { "{{validez_dias}}", expiryDaysAmount.ToString() },
+            { "{{termino_custom}}", quotation.TermsAndConditions },
+            { "{{doc_entregados}}", export.Deliverables },
+        };
+        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+            placeholders,
+            "Templates/cotizacion_plantilla.xlsx"
+        );
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(fileBytes, "xlsx");
+
+        if (errorStr != "")
+        {
+            return BadRequest(errorStr);
         }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "quotation.pdf");
     }
 
     [HttpDelete("{id}")]

@@ -5,11 +5,21 @@ using PeruControl.Model;
 
 namespace PeruControl.Controllers;
 
+/// <summary>
+/// Controller responsible for managing appointment-related operations.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
 public class AppointmentController(DatabaseContext db) : ControllerBase
 {
+    /// <summary>
+    /// Retrieves appointments within a specified time range.
+    /// </summary>
+    /// <param name="start">The start date and time of the range.</param>
+    /// <param name="end">The end date and time of the range.</param>
+    /// <returns>A collection of appointments that fall within the specified time range.</returns>
+    /// <response code="200">Returns the list of appointments in the specified date range.</response>
     [EndpointSummary("Get by time range")]
     [HttpGet]
     [ProducesResponseType<IEnumerable<AppointmentGetDTO>>(StatusCodes.Status200OK)]
