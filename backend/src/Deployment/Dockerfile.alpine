@@ -44,7 +44,7 @@ COPY Fonts /usr/local/share/fonts/
 RUN fc-cache -f -v
 
 # Install LibreOffice headless
-RUN apk add --no-cache libreoffice libreoffice-lang-en
+RUN apk add --no-cache libreoffice libreoffice-lang-en_us libreoffice-lang-es
 
 # Create symlink to ensure 'soffice' command works
 RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
