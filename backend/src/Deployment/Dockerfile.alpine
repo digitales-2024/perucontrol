@@ -36,4 +36,11 @@ COPY --from=build /app/appsettings.json ./appsettings.json
 COPY Deployment/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY Templates ./Templates
 
+# Install fontconfig
+RUN apk add --no-cache fontconfig
+# Copy fonts
+COPY Fonts /usr/local/share/fonts/
+# Update font cache
+RUN fc-cache -f -v
+
 CMD ["./docker-entrypoint.sh"]

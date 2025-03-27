@@ -191,7 +191,7 @@ public class QuotationController(
             { "{{direccion_perucontrol}}", business.Address },
             { "{{ruc_perucontrol}}", business.RUC },
             { "{{celulares_perucontrol}}", business.Phones },
-            { "{{gerente_perucontrol}}", business.Phones },
+            { "{{gerente_perucontrol}}", business.DirectorName },
             { "{{fecha_cotizacion}}", "" },
             { "{{cod_cotizacion}}", quotationNumber },
             { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
