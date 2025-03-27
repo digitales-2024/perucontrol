@@ -160,7 +160,7 @@ public class QuotationController(
     [HttpPost("{id}/gen-excel")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
+    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto dto)
     {
         var quotation = _dbSet
             .Include(q => q.Client)
@@ -174,28 +174,57 @@ public class QuotationController(
             );
         }
 
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null) return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
         var serviceNames = quotation.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
         var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
-        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
+        var expiryDaysAmount = (dto.ValidUntil - quotation.CreatedAt).Days;
+
+        var igv1 = quotation.HasTaxes ? "SI" : "NO";
+        var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
 
         var placeholders = new Dictionary<string, string>
         {
-            { "{{digesa_habilitacion}}", "123-PROV" },
-            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
-            { "{{nro_presupuesto}}", "123-PROV" },
-            { "{{nro_cliente}}", "123-PROV" },
-            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
+            { "{{digesa_habilitacion}}", business.DigesaNumber },
+            { "{{direccion_perucontrol}}", business.Address },
+            { "{{ruc_perucontrol}}", business.RUC },
+            { "{{celulares_perucontrol}}", business.Phones },
+            { "{{gerente_perucontrol}}", business.Phones },
+            { "{{fecha_cotizacion}}", "" },
+            { "{{cod_cotizacion}}", quotationNumber },
+            { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
+            { "{{fecha_exp_cotizacion}}", dto.ValidUntil.ToString("dd/MM/yyyy") },
             { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
-            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
-            { "{{adicional_cliente}}", "--Provicional--" },
-            { "{{garantia}}", export.Guarantee },
-            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
-            { "{{nombre_servicio}}", serviceNamesStr },
-            { "{{incluye_igv_str}}", hasTaxes },
-            { "{{validez_dias}}", expiryDaysAmount.ToString() },
-            { "{{termino_custom}}", quotation.TermsAndConditions },
-            { "{{doc_entregados}}", export.Deliverables },
+            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
+            { "{{trabajos_realizar_en}}", "" },
+            { "{{direccion_servicio_cliente}}", "" },
+            { "{{contacto_cliente}}", quotation.Client.ContactName ?? quotation.Client.Name },
+            { "{{banco_perucontrol}}", business.BankName },
+            { "{{cuenta_banco_perucontrol}}", business.BankAccount },
+            { "{{cci_perucontrol}}", business.BankCCI },
+            { "{{detracciones_perucontrol}}", business.Deductions },
+            { "{{forma_pago}}", "" },
+            { "{{otros}}", "" },
+            { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
+            { "{{lista_servicios_textual}}", "" },
+            { "{{descripcion_servicios}}", "" },
+            { "{{detalle_servicios}}", "" },
+            { "{{costo_servicio}}", "" },
+            { "{{tiene_igv_1}}", igv1 },
+            { "{{sub_subtotal}}", "" },
+            { "{{subtotal}}", "" },
+            { "{{tiene_igv_2}}", igv1 },
+            { "{{disponibilidad}}", "" },
+            { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
+            { "{{hora}}", "" },
+            { "{{custom_6}}", "" },
+            { "{{ambientes_a_tratar}}", "" },
+            { "{{entregables}}", dto.Deliverables },
+            { "{{custom_10}}", quotation.TermsAndConditions },
+
+            /*{ "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },*/
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,

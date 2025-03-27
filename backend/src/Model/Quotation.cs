@@ -20,6 +20,20 @@ public enum QuotationFrequency
     Semiannual,
 }
 
+public static class QuotationFrequencyExtensions
+{
+    public static string ToSpanishString(this QuotationFrequency status)
+    {
+        return status switch
+        {
+            QuotationFrequency.Bimonthly => "BIMENSUALES",
+            QuotationFrequency.Quarterly => "TRIMESTRALES",
+            QuotationFrequency.Semiannual => "SEMESTRALES",
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
+        };
+    }
+}
+
 public class Quotation : BaseModel
 {
     [Required]
