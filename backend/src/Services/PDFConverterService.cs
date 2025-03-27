@@ -23,7 +23,7 @@ public class PDFConverterService
                 {
                     FileName = "soffice",
                     Arguments =
-                        $"--headless --convert-to pdf --outdir \"{tempDir}\" \"{tempFilePath}\"",
+                        $"--headless --convert-to pdf:writer_pdf_Export{{\"PageSize\":1}} --outdir \"{tempDir}\" \"{tempFilePath}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
