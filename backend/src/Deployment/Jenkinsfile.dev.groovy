@@ -58,25 +58,41 @@ pipeline {
         }
         stage("Restart backend service") {
             steps {
-                sshagent(['ssh-deploy']) {
-                    // Replace docker image version
-                    sh """
-                        ${SSH_COM} '
-                        mkdir -p ${REMOTE_FOLDER} &&
-                        cd ${REMOTE_FOLDER} &&
-                        sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml'
-                        '
-                    """
-                    // Place environment variables
-                    //sh """
-                    //    ${SSH_COM} '
-                    //    umask 077 &&
-                    //    mkdir -p ${REMOTE_FOLDER} &&
-                    //    cd ${REMOTE_FOLDER} &&
-                    //    echo "INTERNAL_BACKEND_URL=${INTERNAL_BACKEND_URL}" > .env
-                    //    '
-                    //"""
-                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
+                script {
+                    // Define all your environment variables in an array
+                    def envVars = [
+                        'DATABASE_URL',
+                        'API_KEY',
+                        'REDIS_URL',
+                    ]
+
+                    // Generate the withCredentials block dynamically
+                    def credentialsList = envVars.collect { 
+                        string(credentialsId: it, variable: it)
+                    }
+
+                    withCredentials(credentialsList) {
+                        sshagent(['ssh-deploy']) {
+                            // Replace docker image version
+                            sh """
+                                ${SSH_COM} '
+                                mkdir -p ${REMOTE_FOLDER} &&
+                                cd ${REMOTE_FOLDER} &&
+                                sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml
+                                '
+                            """
+                            // Place environment variables
+                            //sh """
+                            //    ${SSH_COM} '
+                            //    umask 077 &&
+                            //    mkdir -p ${REMOTE_FOLDER} &&
+                            //    cd ${REMOTE_FOLDER} &&
+                            //    echo "INTERNAL_BACKEND_URL=${INTERNAL_BACKEND_URL}" > .env
+                            //    '
+                            //"""
+                            sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
+                        }
+                    }
                 }
             }
         }
