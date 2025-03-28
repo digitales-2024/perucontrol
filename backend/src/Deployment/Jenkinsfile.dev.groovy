@@ -59,15 +59,14 @@ pipeline {
         stage("Restart backend service") {
             steps {
                 script {
-                    // Define all your environment variables in an array
-                    def envVars = [
-                        'DATABASE_URL',
-                        'API_KEY',
-                        'REDIS_URL',
-                    ]
+                    def config = readYaml file: 'src/Deployment/env.yaml'
+                    def env = config.develop
 
-                    // Generate the withCredentials block dynamically
-                    def credentialsList = envVars.collect { 
+                    def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
+                    def sensitiveVars = env.sensitive
+
+                    // Define all your environment variables in an array
+                    def credentialsList = sensitiveVars.collect { 
                         string(credentialsId: it, variable: it)
                     }
 
@@ -82,14 +81,22 @@ pipeline {
                                 '
                             """
                             // Place environment variables
-                            //sh """
-                            //    ${SSH_COM} '
-                            //    umask 077 &&
-                            //    mkdir -p ${REMOTE_FOLDER} &&
-                            //    cd ${REMOTE_FOLDER} &&
-                            //    echo "INTERNAL_BACKEND_URL=${INTERNAL_BACKEND_URL}" > .env
-                            //    '
-                            //"""
+                            sh """
+                                ${SSH_COM} '
+                                umask 077 && 
+                                (rm -f ${REMOTE_FOLDER}/.env || true) && 
+                                touch ${REMOTE_FOLDER}/.env && 
+
+                                cat >> ${REMOTE_FOLDER}/.env << EOL
+                                # Non-sensitive variables
+                                ${nonSensitiveVars.join('\n')}
+                                # Sensitive variables
+                                ${sensitiveVarIds.collect { varName -> "${varName}=${binding.getVariable(varName)}" }.join('\n')}
+                                EOL
+                                '
+                            """
+
+                            // restart
                             sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
                         }
                     }
