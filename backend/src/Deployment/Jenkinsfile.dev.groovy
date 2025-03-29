@@ -59,17 +59,17 @@ pipeline {
         stage("Restart backend service") {
             steps {
                 script {
-                    def config = readYaml file: 'src/Deployment/env.yaml'
+                    def config = readYaml file: 'backend/src/Deployment/env.yaml'
                     def env = config.develop
-
+        
                     def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
                     def sensitiveVars = env.sensitive
-
+        
                     // Define all your environment variables in an array
                     def credentialsList = sensitiveVars.collect { 
                         string(credentialsId: it, variable: it)
                     }
-
+        
                     withCredentials(credentialsList) {
                         sshagent(['ssh-deploy']) {
                             // Replace docker image version
@@ -80,22 +80,28 @@ pipeline {
                                 sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml
                                 '
                             """
-                            // Place environment variables
+                            
+                            // Create a temporary script that will create the .env file
+                            // This enables us to use shell variables to properly handle 
+                            // the credentials without using binding.getVariable()
                             sh """
-                                ${SSH_COM} '
-                                umask 077 && 
-                                (rm -f ${REMOTE_FOLDER}/.env || true) && 
-                                touch ${REMOTE_FOLDER}/.env && 
-
-                                cat >> ${REMOTE_FOLDER}/.env << EOL
-                                # Non-sensitive variables
-                                ${nonSensitiveVars.join('\n')}
-                                # Sensitive variables
-                                ${sensitiveVarIds.collect { varName -> "${varName}=${binding.getVariable(varName)}" }.join('\n')}
-                                EOL
-                                '
+                                cat > ${WORKSPACE}/create_env.sh << 'EOL'
+#!/bin/bash
+cat << EOF
+# Non-sensitive variables
+${nonSensitiveVars.join('\n')}
+# Sensitive variables
+${sensitiveVars.collect { varName -> "${varName}=\${${varName}}" }.join('\n')}
+EOF
+EOL
+                                chmod +x ${WORKSPACE}/create_env.sh
                             """
-
+                            
+                            // Execute the script to generate env content and send it to remote
+                            sh """
+                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env'
+                            """
+        
                             // restart
                             sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
                         }
