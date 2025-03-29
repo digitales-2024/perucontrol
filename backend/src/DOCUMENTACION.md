@@ -28,19 +28,26 @@ para crear un proyecto nuevo, vacio, sin tener que instalar ningun programa.
 
 ## Ejecutar el proyecto mediante Docker
 
-- Compilar imagen de docker:
-```
-docker build -f Docker/Dockerfile.dev -t aspnet-acide --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .
+En `Deployment/docker-compose.local.yml` esta el archivo docker compose para levantar todo el backend.
+
+Para ejecutarlo:
+
+- Dentro de la carpeta `src` ejecutar (nótese que no hay parametro -d):
+
+```sh
+docker-compose -f Deployment/docker-compose.local.yml up
 ```
 
-- Ejecutar imagen de desarrollo:
-````
-docker run -it --rm -v $(pwd):/app -p 5233:5233 aspnet-acide
-````
+- Esto levantará el backend, postgres y pgadmin.
+- Dejar el terminal abierto.
+- En otro terminal, ejecutar `docker exec -it aspnet-acide-dev sh` para entrar al contenedor.
+- Entraras a un contenedor vacio, listo para iniciar el proyecto.
+- Dentro ejecuta `dotnet-ef database update` para aplicar las migraciones.
+- Luego, ejecuta `dotnet watch run` para iniciar la aplicacion.
+- Ahora puedes acceder al backend desde afuera, en `http://localhost:5233`.
+- La interfaz de openapi esta en `http://localhost:5233/scalar/v1`
 
-Una vez la imagen de desarrollo se este ejecutando entrarás a un shell.
-Dentro de ese shell ejecuta: `dotnet watch run` para iniciar la aplicacion.
-Puedes cancelar con Ctrl-C, reiniciar, ejecutar otros comandos de EF, etc.
+El frontend se puede conectar normalmente a `http://localhost:5233`.
 
 
 ## Swagger/OpenAPI

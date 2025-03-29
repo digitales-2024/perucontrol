@@ -58,10 +58,48 @@ pipeline {
         }
         stage("Restart backend service") {
             steps {
-                sshagent(['ssh-deploy']) {
-                    // Replace docker image version
-                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml'"
-                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
+                script {
+                    def config = readYaml file: 'src/Deployment/env.yaml'
+                    def env = config.develop
+
+                    def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
+                    def sensitiveVars = env.sensitive
+
+                    // Define all your environment variables in an array
+                    def credentialsList = sensitiveVars.collect { 
+                        string(credentialsId: it, variable: it)
+                    }
+
+                    withCredentials(credentialsList) {
+                        sshagent(['ssh-deploy']) {
+                            // Replace docker image version
+                            sh """
+                                ${SSH_COM} '
+                                mkdir -p ${REMOTE_FOLDER} &&
+                                cd ${REMOTE_FOLDER} &&
+                                sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml
+                                '
+                            """
+                            // Place environment variables
+                            sh """
+                                ${SSH_COM} '
+                                umask 077 && 
+                                (rm -f ${REMOTE_FOLDER}/.env || true) && 
+                                touch ${REMOTE_FOLDER}/.env && 
+
+                                cat >> ${REMOTE_FOLDER}/.env << EOL
+                                # Non-sensitive variables
+                                ${nonSensitiveVars.join('\n')}
+                                # Sensitive variables
+                                ${sensitiveVarIds.collect { varName -> "${varName}=${binding.getVariable(varName)}" }.join('\n')}
+                                EOL
+                                '
+                            """
+
+                            // restart
+                            sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
+                        }
+                    }
                 }
             }
         }
