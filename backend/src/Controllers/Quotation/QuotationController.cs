@@ -229,9 +229,7 @@ public class QuotationController(
             { "{{custom_6}}", quotation.CustomField6 },
             { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
             { "{{entregables}}", quotation.Deliverables },
-            { "{{custom_10}}", quotation.TermsAndConditions },
-
-            /*{ "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },*/
+            { "{{custom_10}}", quotation.CustomField10 ?? "" },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
