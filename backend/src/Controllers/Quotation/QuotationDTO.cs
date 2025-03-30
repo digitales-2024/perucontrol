@@ -6,6 +6,7 @@ namespace PeruControl.Controllers;
 
 public class QuotationGetDTO : PeruControl.Model.BaseModel
 {
+    public int QuotationNumber { get; set; }
     public virtual ClientGetDTO Client { get; set; } = null!;
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
     public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
@@ -13,9 +14,21 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public required uint Area { get; set; }
     public required uint SpacesCount { get; set; }
     public required bool HasTaxes { get; set; }
-    public required string TermsAndConditions { get; set; }
     public required DateTime CreationDate { get; set; }
     public required DateTime ExpirationDate { get; set; }
+    public required string ServiceAddress { get; set; }
+    public required string PaymentMethod { get; set; }
+    public required string Others { get; set; }
+    public required string ServiceListText { get; set; }
+    public required string ServiceDescription { get; set; }
+    public required string ServiceDetail { get; set; }
+    public required decimal Price { get; set; }
+    public required string RequiredAvailability { get; set; }
+    public required string ServiceTime { get; set; }
+    public required string CustomField6 { get; set; }
+    public required string TreatedAreas { get; set; }
+    public required string Deliverables { get; set; }
+    public string? CustomField10 { get; set; }
 }
 
 public class ClientGetDTO : PeruControl.Model.BaseModel

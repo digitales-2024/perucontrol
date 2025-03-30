@@ -31,7 +31,7 @@ public class QuotationController(
             .ToListAsync();
 
         var missingServiceIds = createDto.ServiceIds.Except(services.Select(s => s.Id)).ToList();
-        if (missingServiceIds.Any())
+        if (missingServiceIds.Count != 0)
         {
             return NotFound("Algunos servicios no fueron encontrados");
         }
