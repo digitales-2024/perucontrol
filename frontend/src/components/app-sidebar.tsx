@@ -7,7 +7,6 @@ import {
     HandCoins,
     PieChart,
     Settings2,
-    ShieldCheck,
     Users,
 } from "lucide-react";
 
@@ -47,32 +46,17 @@ const data = {
             icon: BugOff,
         },
         {
-            title: "Certificaciones",
-            url: "#",
-            icon: ShieldCheck,
-            items: [
-                {
-                    title: "Emisión de Certificados",
-                    url: "/certificados",
-                },
-                {
-                    title: "Calendario",
-                    url: "#",
-                },
-            ],
-        },
-        {
             title: "Ajustes",
             url: "#",
             icon: Settings2,
             items: [
                 {
-                    title: "Cuenta",
-                    url: "#",
-                },
-                {
                     title: "Datos de la empresa",
                     url: "/business",
+                },
+                {
+                    title: "Cuenta",
+                    url: "#",
                 },
                 {
                     title: "Exportar datos",

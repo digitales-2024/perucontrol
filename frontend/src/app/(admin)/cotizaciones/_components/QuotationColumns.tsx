@@ -7,16 +7,27 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
 import { useState } from "react";
-import { UpdateQuotationSheet } from "./UpdateQuotations";
-import { useQuotationContext } from "../context/QuotationContext";
 import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
-import { QuotationDownload } from "./QuotationDownload";
+import Link from "next/link";
+import { toastWrapper } from "@/types/toasts";
+import { GenerateExcel } from "../actions";
 
 export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
+    {
+        accessorKey: "quotationNumber",
+        header: "Nro.",
+        cell: ({ row }) => (
+            <span className={`text-xs md:text-sm ${!row.original.isActive ? "line-through text-red-500" : ""}`}>
+                #
+                {" "}
+                {row.original.quotationNumber}
+            </span>
+        ),
+    },
     {
         accessorKey: "client",
         header: ({ column }) => (
@@ -39,9 +50,9 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original.isActive;
             const clientName =
-              row.original?.client?.name === "-"
-                  ? row.original.client.razonSocial
-                  : row.original?.client?.name;
+                row.original?.client?.name === "-"
+                    ? row.original.client.razonSocial
+                    : row.original?.client?.name;
             return (
                 <span className={`uppercase text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {clientName}
@@ -57,7 +68,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-                Área m2
+                Área
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -71,11 +82,12 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.area}
+                    {" "}
+                    m2
                 </span>
             );
         },
@@ -88,7 +100,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-                Nro. de Ambientes
+                Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -102,8 +114,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.spacesCount}
@@ -119,7 +130,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-              Fecha de Creación
+                Fecha
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -142,8 +153,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                 : "Fecha no disponible";
 
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {formattedDate}
@@ -175,21 +185,20 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center text-xs md:text-sm ${
-                        !isActive ? "text-red-500" : ""
+                    className={`items-center text-center flex justify-center text-xs md:text-sm ${!isActive ? "text-red-500" : ""
                     }`}
                 >
                     {row.original?.status === "Pending" ? (
                         <Badge variant={!isActive ? "deleted" : "default"}>
-                          Pendiente
+                            Pendiente
                         </Badge>
                     ) : row.original?.status === "Approved" ? (
                         <Badge variant={!isActive ? "deleted" : "approved"}>
-                          Aprobado
+                            Aprobado
                         </Badge>
                     ) : (
                         <Badge variant={!isActive ? "deleted" : "destructive"}>
-                          Rechazado
+                            Rechazado
                         </Badge>
                     )}
                 </span>
@@ -218,8 +227,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.hasTaxes ? "SI" : "NO"}
@@ -233,26 +241,14 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         cell: function Cell({ row })
         {
             const isActive = row.original?.isActive;
-            const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
             const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
             const [showDetailQuotation, setShowDetailQuotation] = useState(false);
             const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
             const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
-            const [showDownload, setShowDownload] = useState(false);
-            const { terms, clients, services } = useQuotationContext();
 
             return (
                 <div>
                     <div>
-                        {/* Actualizar cotización */}
-                        <UpdateQuotationSheet
-                            open={showUpdateQuotation}
-                            onOpenChange={setShowUpdateQuotation}
-                            quotation={row.original}
-                            termsAndConditions={terms}
-                            clients={clients}
-                            services={services}
-                        />
                         {/* Eliminar una cotización */}
                         <DeleteQuotation
                             open={showDeleteQuotation}
@@ -280,13 +276,6 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                             onOpenChange={setShowRejectQuotaion}
                             quotation={row?.original}
                             showTrigger={false}
-                            disabled={!isActive}
-                        />
-                        {/* Descargar Cotización */}
-                        <QuotationDownload
-                            open={showDownload}
-                            onOpenChange={setShowDownload}
-                            quotationId={row.original.id!}
                             disabled={!isActive}
                         />
                     </div>
@@ -324,17 +313,24 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                             <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
                                 Ver
                             </DropdownMenuItem>
+                            <Link href={`/cotizaciones/${row.original.id}`}>
+                                <DropdownMenuItem
+                                    disabled={!isActive}
+                                >
+                                    Editar
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem
-                                onSelect={() => setShowUpdateQuotation(true)}
+                                onSelect={() => downloadExcel(row.original.id!)}
                                 disabled={!isActive}
                             >
-                                Editar
+                                Descargar Cotización en Excel
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                onSelect={() => setShowDownload(true)}
+                                onSelect={() => downloadPdf(row.original.id!)}
                                 disabled={!isActive}
                             >
-                                Descargar Cotización
+                                Descargar Cotización en PDF
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onSelect={() => setShowDeleteQuotation(true)}
@@ -349,3 +345,43 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         },
     },
 ];
+
+const downloadExcel = async(id: string) =>
+{
+    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+        loading: "Generando archivo",
+        success: "Excel generado",
+    });
+
+    if (err)
+    {
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cotizacion_${id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+const downloadPdf = async(id: string) =>
+{
+    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+        loading: "Generando archivo",
+        success: "Excel generado",
+    });
+
+    if (err)
+    {
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cotizacion_${id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+};

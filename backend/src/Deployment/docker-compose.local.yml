@@ -3,7 +3,7 @@ services:
     container_name: aspnet-acide-dev
     build:
       context: ..
-      dockerfile: ./Docker/Dockerfile.dev
+      dockerfile: ./Deployment/Dockerfile.dev
       args:
         USER_ID: ${UID:-1000}
         GROUP_ID: ${GID:-1000}
@@ -26,7 +26,7 @@ services:
       POSTGRES_PASSWORD: root
       PGDATA: /var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '5433:5432'
     networks:
       - aspnet-acide-network
 
@@ -39,7 +39,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_LISTEN_PORT: 8080
     ports:
-      - "8080:8080"
+      - "8088:8080"
     volumes:
       - ./servers.json:/pgadmin4/servers.json
     networks:

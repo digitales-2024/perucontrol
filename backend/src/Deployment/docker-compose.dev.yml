@@ -1,6 +1,6 @@
 services:
   perucontrol-backend-develop:
-    image: docker.io/digitalesacide/perucontrol-backend-develop:0
+    image: docker.io/digitalesacide/perucontrol-backend-develop:latest
     container_name: perucontrol-backend-develop
     restart: unless-stopped
     depends_on:
@@ -13,14 +13,14 @@ services:
       Jwt__Audience: "${Jwt__Audience}"
       Jwt__ExpirationMinutes: "${Jwt__ExpirationMinutes}"
       Logging__LogLevel__Default: "${Logging__LogLevel__Default}"
-      Logging__LogLevel__Microsoft.AspNetCore: "${Logging__LogLevel__Microsoft.AspNetCore}"
+      # Logging__LogLevel__Microsoft.AspNetCore: "${Logging__LogLevel__Microsoft.AspNetCore}"
       AllowedHosts: "${AllowedHosts}"
     networks:
       - proxy
       - perucontrol-network-develop
 
   perucontrol-frontend-develop:
-    image: docker.io/digitalesacide/perucontrol-frontend-develop:0
+    image: docker.io/digitalesacide/perucontrol-frontend-develop:latest
     container_name: perucontrol-frontend-develop
     restart: unless-stopped
     depends_on:

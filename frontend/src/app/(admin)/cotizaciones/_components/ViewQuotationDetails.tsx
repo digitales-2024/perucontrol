@@ -117,15 +117,6 @@ export function ViewQuotationDetails({ quotation, open, onOpenChange }: ViewQuot
 
                 <Separator />
 
-                <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                        Términos y Condiciones
-                    </h3>
-                    <div className="mt-2 p-3 border rounded-md bg-muted/20 text-sm">
-                        {quotation.termsAndConditions || "Sin términos y condiciones"}
-                    </div>
-                </div>
-
                 <div className={`${isMobile ? "flex flex-col space-y-3" : "flex gap-12"}`}>
                     <div>
                         <h3 className="text-sm font-medium text-muted-foreground">

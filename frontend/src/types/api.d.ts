@@ -2147,6 +2147,57 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Quotation/{id}/gen-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate PDF */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Quotation/{id}/gen-excel": {
         parameters: {
             query?: never;
@@ -2166,13 +2217,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["QuotationExportDto"];
-                    "text/json": components["schemas"]["QuotationExportDto"];
-                    "application/*+json": components["schemas"]["QuotationExportDto"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -3628,7 +3673,7 @@ export interface components {
         Quotation: {
             /** Format: int32 */
             quotationNumber: number;
-            client?: components["schemas"]["Client2"];
+            client: components["schemas"]["Client2"];
             services?: Array<components["schemas"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
@@ -3641,7 +3686,20 @@ export interface components {
             creationDate: string;
             /** Format: date-time */
             expirationDate: string;
-            termsAndConditions: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            serviceListText: string;
+            serviceDescription: string;
+            serviceDetail: string;
+            /** Format: double */
+            price: number;
+            requiredAvailability: string;
+            serviceTime: string;
+            customField6: string;
+            treatedAreas: string;
+            deliverables: string;
+            customField10?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3679,6 +3737,7 @@ export interface components {
             /** Format: int32 */
             quotationNumber: number;
             client?: components["schemas"]["Client"];
+            client: components["schemas"]["Client"];
             services?: Array<components["schemas"]["Service"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
@@ -3691,7 +3750,20 @@ export interface components {
             creationDate: string;
             /** Format: date-time */
             expirationDate: string;
-            termsAndConditions: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            serviceListText: string;
+            serviceDescription: string;
+            serviceDetail: string;
+            /** Format: double */
+            price: number;
+            requiredAvailability: string;
+            serviceTime: string;
+            customField6: string;
+            treatedAreas: string;
+            deliverables: string;
+            customField10?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3710,17 +3782,24 @@ export interface components {
             spacesCount: number;
             frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
-            termsAndConditions: string;
             /** Format: date-time */
             creationDate: string;
             /** Format: date-time */
             expirationDate: string;
-        };
-        QuotationExportDto: {
-            /** Format: date-time */
-            validUntil: string;
-            guarantee: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            serviceListText: string;
+            serviceDescription: string;
+            serviceDetail: string;
+            /** Format: double */
+            price: number;
+            requiredAvailability: string;
+            serviceTime: string;
+            customField6: string;
+            treatedAreas: string;
             deliverables: string;
+            customField10?: string | null;
         };
         /** @enum {unknown} */
         QuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual";
@@ -3739,6 +3818,20 @@ export interface components {
             creationDate?: string | null;
             /** Format: date-time */
             expirationDate?: string | null;
+            serviceAddress?: string | null;
+            paymentMethod?: string | null;
+            others?: string | null;
+            serviceListText?: string | null;
+            serviceDescription?: string | null;
+            serviceDetail?: string | null;
+            /** Format: double */
+            price?: number | null;
+            requiredAvailability?: string | null;
+            serviceTime?: string | null;
+            customField6?: string | null;
+            treatedAreas?: string | null;
+            deliverables?: string | null;
+            customField10?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";
