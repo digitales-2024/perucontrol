@@ -51,6 +51,7 @@ pipeline {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
                             def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}")
                             image.push()
+                            image.push("latest")
                         }
                     }
                     sh "rm Dockerfile || true"
@@ -113,7 +114,7 @@ EOL
                             """
 
                             // Send the docker-compose file to the remote
-                            sh "scp docker-compose.yml ${SCP_COM}:${REMOTE_FOLDER}/docker-compose.yml"
+                            sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${REMOTE_USER}@${REMOTE_IP}:${REMOTE_FOLDER}"
 
                             // Restart the service
                             sh """
