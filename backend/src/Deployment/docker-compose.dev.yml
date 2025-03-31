@@ -1,6 +1,6 @@
 services:
   perucontrol-backend-develop:
-    image: docker.io/digitalesacide/perucontrol-backend-develop:0
+    image: docker.io/digitalesacide/perucontrol-backend-develop:latest
     container_name: perucontrol-backend-develop
     restart: unless-stopped
     depends_on:
@@ -20,7 +20,7 @@ services:
       - perucontrol-network-develop
 
   perucontrol-frontend-develop:
-    image: docker.io/digitalesacide/perucontrol-frontend-develop:0
+    image: docker.io/digitalesacide/perucontrol-frontend-develop:latest
     container_name: perucontrol-frontend-develop
     restart: unless-stopped
     depends_on:
