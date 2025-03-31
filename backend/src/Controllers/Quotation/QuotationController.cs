@@ -31,7 +31,7 @@ public class QuotationController(
             .ToListAsync();
 
         var missingServiceIds = createDto.ServiceIds.Except(services.Select(s => s.Id)).ToList();
-        if (missingServiceIds.Any())
+        if (missingServiceIds.Count != 0)
         {
             return NotFound("Algunos servicios no fueron encontrados");
         }
@@ -160,7 +160,7 @@ public class QuotationController(
     [HttpPost("{id}/gen-excel")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto dto)
+    public IActionResult GenerateExcel(Guid id)
     {
         var quotation = _dbSet
             .Include(q => q.Client)
@@ -175,15 +175,19 @@ public class QuotationController(
         }
 
         var business = _context.Businesses.FirstOrDefault();
-        if (business == null) return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
 
         var serviceNames = quotation.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
         var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
-        var expiryDaysAmount = (dto.ValidUntil - quotation.CreatedAt).Days;
+        var expiryDaysAmount = (quotation.ExpirationDate - quotation.CreationDate).Days;
 
         var igv1 = quotation.HasTaxes ? "SI" : "NO";
-        var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+        var quotationNumber =
+            quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+
+        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
 
         var placeholders = new Dictionary<string, string>
         {
@@ -192,39 +196,40 @@ public class QuotationController(
             { "{{ruc_perucontrol}}", business.RUC },
             { "{{celulares_perucontrol}}", business.Phones },
             { "{{gerente_perucontrol}}", business.DirectorName },
-            { "{{fecha_cotizacion}}", "" },
+            { "{{fecha_cotizacion}}", quotation.CreationDate.ToString("dd/MM/yyyy") },
             { "{{cod_cotizacion}}", quotationNumber },
             { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
-            { "{{fecha_exp_cotizacion}}", dto.ValidUntil.ToString("dd/MM/yyyy") },
+            { "{{fecha_exp_cotizacion}}", quotation.ExpirationDate.ToString("dd/MM/yyyy") },
             { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
             { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
-            { "{{trabajos_realizar_en}}", "" },
-            { "{{direccion_servicio_cliente}}", "" },
-            { "{{contacto_cliente}}", quotation.Client.ContactName ?? quotation.Client.Name },
+            { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
+            {
+                "{{direccion_servicio_cliente}}",
+                areAddressesDifferent ? quotation.ServiceAddress : ""
+            },
+            { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
             { "{{banco_perucontrol}}", business.BankName },
             { "{{cuenta_banco_perucontrol}}", business.BankAccount },
             { "{{cci_perucontrol}}", business.BankCCI },
             { "{{detracciones_perucontrol}}", business.Deductions },
-            { "{{forma_pago}}", "" },
-            { "{{otros}}", "" },
+            { "{{forma_pago}}", quotation.PaymentMethod },
+            { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            { "{{lista_servicios_textual}}", "" },
-            { "{{descripcion_servicios}}", "" },
-            { "{{detalle_servicios}}", "" },
-            { "{{costo_servicio}}", "" },
+            { "{{lista_servicios_textual}}", quotation.ServiceListText },
+            { "{{descripcion_servicios}}", quotation.ServiceDescription },
+            { "{{detalle_servicios}}", quotation.ServiceDetail },
+            { "{{costo_servicio}}", quotation.Price.ToString() },
             { "{{tiene_igv_1}}", igv1 },
-            { "{{sub_subtotal}}", "" },
-            { "{{subtotal}}", "" },
+            { "{{sub_subtotal}}", quotation.Price.ToString() },
+            { "{{subtotal}}", quotation.Price.ToString() },
             { "{{tiene_igv_2}}", igv1 },
-            { "{{disponibilidad}}", "" },
+            { "{{disponibilidad}}", quotation.RequiredAvailability },
             { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
-            { "{{hora}}", "" },
-            { "{{custom_6}}", "" },
-            { "{{ambientes_a_tratar}}", "" },
-            { "{{entregables}}", dto.Deliverables },
-            { "{{custom_10}}", quotation.TermsAndConditions },
-
-            /*{ "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },*/
+            { "{{hora}}", quotation.ServiceTime },
+            { "{{custom_6}}", quotation.CustomField6 },
+            { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
+            { "{{entregables}}", quotation.Deliverables },
+            { "{{custom_10}}", quotation.CustomField10 ?? "" },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,

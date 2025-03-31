@@ -1,12 +1,19 @@
 "use client";
 
-import { CreateQuotation } from "./CreateQuotation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export function QuotationTableToolbarActions({})
 {
     return (
         <div>
-            <CreateQuotation  />
+            <Link href="/cotizaciones/nuevo">
+                <Button>
+                    <Plus />
+        Crear cotización
+                </Button>
+            </Link>
         </div>
     );
 }

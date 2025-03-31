@@ -40,12 +40,15 @@ public class Quotation : BaseModel
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int QuotationNumber { get; set; }
 
+    [Required(ErrorMessage = "El cliente es obligatorio")]
     public Client Client { get; set; } = null!;
 
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
+    [Required(ErrorMessage = "El estado de la cotización es obligatorio")]
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
+    [Required(ErrorMessage = "La frecuencia es obligatoria")]
     public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
 
     [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
@@ -56,88 +59,83 @@ public class Quotation : BaseModel
 
     public required bool HasTaxes { get; set; }
 
+    [Required(ErrorMessage = "La fecha de creación es obligatoria")]
+    [DataType(DataType.Date)]
     public required DateTime CreationDate { get; set; }
 
+    [Required(ErrorMessage = "La fecha de expiración es obligatoria")]
+    [DataType(DataType.Date)]
+    [CustomValidation(typeof(Quotation), nameof(ValidateExpirationDate))]
     public required DateTime ExpirationDate { get; set; }
+
+    [Required(ErrorMessage = "La dirección del servicio es obligatoria")]
+    [StringLength(200, ErrorMessage = "La dirección no puede exceder 200 caracteres")]
+    public required string ServiceAddress { get; set; }
+
+    [Required(ErrorMessage = "El método de pago es obligatorio")]
+    [StringLength(100, ErrorMessage = "El método de pago no puede exceder 100 caracteres")]
+    public required string PaymentMethod { get; set; }
+
+    [StringLength(500, ErrorMessage = "El campo no puede exceder 500 caracteres")]
+    public required string Others { get; set; }
+
+    [Required(ErrorMessage = "La lista de servicios es obligatoria")]
+    [StringLength(1000, ErrorMessage = "La lista de servicios no puede exceder 1000 caracteres")]
+    public required string ServiceListText { get; set; }
+
+    [Required(ErrorMessage = "La descripción del servicio es obligatoria")]
+    [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
+    public required string ServiceDescription { get; set; }
+
+    [Required(ErrorMessage = "El detalle del servicio es obligatorio")]
+    [StringLength(1000, ErrorMessage = "El detalle no puede exceder 1000 caracteres")]
+    public required string ServiceDetail { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    [Range(
+        0,
+        9999999.99,
+        ErrorMessage = "El precio debe ser un valor positivo y no mayor a 9,999,999.99"
+    )]
+    public required decimal Price { get; set; }
+
+    [Required(ErrorMessage = "La disponibilidad requerida es obligatoria")]
+    [StringLength(200, ErrorMessage = "La disponibilidad no puede exceder 200 caracteres")]
+    public required string RequiredAvailability { get; set; }
+
+    [Required(ErrorMessage = "El tiempo de servicio es obligatorio")]
+    [StringLength(100, ErrorMessage = "El tiempo de servicio no puede exceder 100 caracteres")]
+    public required string ServiceTime { get; set; }
+
+    [StringLength(255, ErrorMessage = "El campo no puede exceder 255 caracteres")]
+    public required string CustomField6 { get; set; }
+
+    [Required(ErrorMessage = "Las áreas tratadas son obligatorias")]
+    [StringLength(500, ErrorMessage = "Las áreas tratadas no pueden exceder 500 caracteres")]
+    public required string TreatedAreas { get; set; }
+
+    [Required(ErrorMessage = "Los entregables son obligatorios")]
+    [StringLength(500, ErrorMessage = "Los entregables no pueden exceder 500 caracteres")]
+    public required string Deliverables { get; set; }
 
     [Column(TypeName = "TEXT")]
-    public required string TermsAndConditions { get; set; }
-}
+    public string? CustomField10 { get; set; }
 
-public class QuotationCreateDTO : IMapToEntity<Quotation>
-{
-    public required Guid ClientId { get; set; }
-
-    [MinLength(1)]
-    public required ICollection<Guid> ServiceIds { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
-    public required uint Area { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public required uint SpacesCount { get; set; }
-
-    public required QuotationFrequency Frequency { get; set; }
-
-    public required bool HasTaxes { get; set; }
-    public required string TermsAndConditions { get; set; }
-
-    public required DateTime CreationDate { get; set; }
-
-    public required DateTime ExpirationDate { get; set; }
-
-    public Quotation MapToEntity()
+    // Custom validation method
+    public static ValidationResult? ValidateExpirationDate(
+        DateTime expirationDate,
+        ValidationContext context
+    )
     {
-        return new Quotation
+        var instance = (Quotation)context.ObjectInstance;
+
+        if (expirationDate <= instance.CreationDate)
         {
-            Status = QuotationStatus.Pending,
-            Frequency = Frequency,
-            Area = Area,
-            SpacesCount = SpacesCount,
-            HasTaxes = HasTaxes,
-            TermsAndConditions = TermsAndConditions,
-            CreationDate = CreationDate.ToUniversalTime(),
-            ExpirationDate = ExpirationDate.ToUniversalTime(),
-        };
+            return new ValidationResult(
+                "La fecha de expiración debe ser posterior a la fecha de creación"
+            );
+        }
+
+        return ValidationResult.Success;
     }
-}
-
-public class QuotationPatchDTO : IEntityPatcher<Quotation>
-{
-    public Guid? ClientId { get; set; }
-    public ICollection<Guid>? ServiceIds { get; set; }
-    public uint? Area { get; set; }
-    public uint? SpacesCount { get; set; }
-    public QuotationFrequency? Frequency { get; set; }
-    public bool? HasTaxes { get; set; }
-
-    [Column(TypeName = "TEXT")]
-    public string? TermsAndConditions { get; set; }
-
-    public DateTime? CreationDate { get; set; }
-
-    public DateTime? ExpirationDate { get; set; }
-
-    public void ApplyPatch(Quotation entity)
-    {
-        if (Area != null)
-            entity.Area = (uint)Area;
-        if (SpacesCount != null)
-            entity.SpacesCount = (uint)SpacesCount;
-        if (HasTaxes != null)
-            entity.HasTaxes = (bool)HasTaxes;
-        if (TermsAndConditions != null)
-            entity.TermsAndConditions = TermsAndConditions;
-        if (Frequency != null)
-            entity.Frequency = Frequency.Value;
-        if (CreationDate != null)
-            entity.CreationDate = CreationDate.Value.ToUniversalTime();
-        if (ExpirationDate != null)
-            entity.ExpirationDate = ExpirationDate.Value.ToUniversalTime();
-    }
-}
-
-public class QuotationStatusPatchDTO
-{
-    public required QuotationStatus Status { get; set; }
 }

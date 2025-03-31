@@ -4,7 +4,6 @@ import type { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { CreateQuotationSchema, DownloadQuotationSchema } from "./schemas";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 
@@ -76,7 +75,7 @@ export async function RegisterQuotation(body: components["schemas"]["QuotationCr
     return ok(null);
 }
 
-export async function UpdateQuotation(id: string, newQuotation: CreateQuotationSchema): Promise<Result<null, FetchError>>
+export async function UpdateQuotation(id: string, newQuotation: components["schemas"]["QuotationPatchDTO"]): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Quotation/{id}", {
         ...auth,
@@ -146,7 +145,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     return ok(null);
 }
 
-export async function GenerateExcel(id: string, body: DownloadQuotationSchema): Promise<Result<Blob, FetchError>>
+export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -167,7 +166,6 @@ export async function GenerateExcel(id: string, body: DownloadQuotationSchema): 
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt.value}`,
             },
-            body: JSON.stringify(body),
         });
 
         if (!response.ok)
