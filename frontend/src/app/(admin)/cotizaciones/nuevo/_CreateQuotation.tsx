@@ -1,20 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SheetFooter} from "@/components/ui/sheet";
+import { SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React  from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { GetTermsAndConditionsById, RegisterQuotation } from "../actions";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
@@ -40,10 +40,10 @@ type Terms = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
-export function CreateQuotation({terms, clients, services}: {
-terms: Array<Terms>,
-clients: Array<Clients>,
-services: Services,
+export function CreateQuotation({ terms, clients, services }: {
+    terms: Array<Terms>,
+    clients: Array<Clients>,
+    services: Services,
 })
 {
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
@@ -52,10 +52,7 @@ services: Services,
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label:
-            client.contactName && client.contactName.trim() !== "" && client.contactName !== "-"
-                ? client.contactName
-                : client.name ?? "-",
+            label: client.name ?? "-",
         })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
@@ -67,8 +64,7 @@ services: Services,
             area: 0,
             spacesCount: 0,
             hasTaxes: false,
-            termsAndConditions: "",
-            creationDate: "",
+            creationDate: format(new Date(), "yyyy-MM-dd"),
             expirationDate: "",
             serviceAddress: "",
             paymentMethod: "",
@@ -107,7 +103,7 @@ services: Services,
         if (result)
         {
             const content = result[0].content;
-            setValue("termsAndConditions", content);
+            // setValue("termsAndConditions", content);
         }
         else
         {
@@ -122,6 +118,10 @@ services: Services,
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <div className="mx-4 grid gap-3">
 
+                        <h3 className="text-lg font-bold mt-4">
+                            Información del Cliente
+                        </h3>
+
                         {/* Cliente */}
                         <FormField
                             control={form.control}
@@ -129,7 +129,7 @@ services: Services,
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-base">
-                                                    Cliente
+                                        Cliente
                                     </FormLabel>
                                     <FormControl>
                                         <AutoComplete
@@ -138,7 +138,7 @@ services: Services,
                                             emptyMessage="No se encontraron clientes"
                                             value={
                                                 clientsOptions.find((option) => option.value ===
-                                                                field.value) ?? undefined
+                                                    field.value) ?? undefined
                                             }
                                             onValueChange={(option) =>
                                             {
@@ -151,6 +151,105 @@ services: Services,
                             )}
                         />
 
+                        <FormField
+                            control={form.control}
+                            name="serviceAddress"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Dirección del Servicio
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Dirección donde se realizará el servicio. Puede ser diferente a la dirección fiscal del cliente.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Dirección del Servicio" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <hr />
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Datos de la cotización
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="creationDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-2 font-medium">
+                                            Fecha de creación
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Fecha en la que se entrega la cotización al cliente
+                                        </FormDescription>
+                                        <FormControl>
+                                            <DatePicker
+                                                value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
+                                                onChange={(date) =>
+                                                {
+                                                    if (date)
+                                                    {
+                                                        const formattedDate = format(date, "yyyy-MM-dd");
+                                                        field.onChange(formattedDate);
+                                                    }
+                                                    else
+                                                    {
+                                                        field.onChange("");
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="expirationDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-2 font-medium">
+                                            Fecha de expiración
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Fecha en la que expira la cotización
+                                        </FormDescription>
+                                        <FormControl>
+                                            <DatePicker
+                                                value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
+                                                onChange={(date) =>
+                                                {
+                                                    if (date)
+                                                    {
+                                                        const formattedDate = format(date, "yyyy-MM-dd");
+                                                        field.onChange(formattedDate);
+                                                    }
+                                                    else
+                                                    {
+                                                        field.onChange("");
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <hr />
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Servicios
+                        </h3>
+
                         {/* Servicio */}
                         <FormField
                             control={form.control}
@@ -158,7 +257,7 @@ services: Services,
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-base font-medium">
-                                                    Servicios
+                                        Servicios
                                     </FormLabel>
                                     <div className="grid grid-cols-2 gap-2 mt-2">
                                         {services.map((service) =>
@@ -215,8 +314,11 @@ services: Services,
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-base">
-                                                    Frecuencia
+                                        Frecuencia de trabajos (cronograma)
                                     </FormLabel>
+                                    <FormDescription>
+                                        Cada cuanto se realizará el servicio.
+                                    </FormDescription>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
@@ -225,76 +327,16 @@ services: Services,
                                         </FormControl>
                                         <SelectContent>
                                             <SelectItem value="Bimonthly">
-                                                            Bimestral
+                                                Bimestral
                                             </SelectItem>
                                             <SelectItem value="Quarterly">
-                                                            Trimestral
+                                                Trimestral
                                             </SelectItem>
                                             <SelectItem value="Semiannual">
-                                                            Semestral
+                                                Semestral
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="creationDate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex items-center gap-2 font-medium">
-                                                    Fecha de creación
-                                    </FormLabel>
-                                    <FormControl>
-                                        <DatePicker
-                                            value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
-                                            onChange={(date) =>
-                                            {
-                                                if (date)
-                                                {
-                                                    const formattedDate = format(date, "yyyy-MM-dd");
-                                                    field.onChange(formattedDate);
-                                                }
-                                                else
-                                                {
-                                                    field.onChange("");
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="expirationDate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex items-center gap-2 font-medium">
-                                                    Fecha de expiración
-                                    </FormLabel>
-                                    <FormControl>
-                                        <DatePicker
-                                            value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
-                                            onChange={(date) =>
-                                            {
-                                                if (date)
-                                                {
-                                                    const formattedDate = format(date, "yyyy-MM-dd");
-                                                    field.onChange(formattedDate);
-                                                }
-                                                else
-                                                {
-                                                    field.onChange("");
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -308,7 +350,7 @@ services: Services,
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-base">
-                                                        Área m2
+                                            Área m2
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="m2" className="border rounded-md" {...field} />
@@ -325,7 +367,7 @@ services: Services,
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-base">
-                                                        Nro. de Ambientes
+                                            Nro. de Ambientes
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="#" {...field} />
@@ -336,10 +378,83 @@ services: Services,
                             />
                         </div>
 
+                        <FormField
+                            control={form.control}
+                            name="serviceDescription"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Descripción del Servicio
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Descripción del Servicio" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="serviceDetail"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Detalle del Servicio
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Detalle del Servicio" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="serviceListText"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Lista de Servicios
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Lista de Servicios" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="treatedAreas"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Ambientes a tratar
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Áreas específicas que se tratarán. Se mostrará en el punto 7. de los términos y condiciones.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Áreas Tratadas" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <hr />
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Costos y facturación
+                        </h3>
+
                         {/* IGV */}
                         <div className="flex gap-2">
                             <FormLabel className="text-base mt-1">
-                                            IGV
+                                ¿Incluye IGV?
                             </FormLabel>
                             <FormField
                                 control={form.control}
@@ -358,9 +473,74 @@ services: Services,
                             />
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="paymentMethod"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-base">
+                                            Método de Pago
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Método de Pago a mostrar en la cotización. Ejm: Transferencia, Efectivo, YAPE, etc.
+                                        </FormDescription>
+                                        <FormControl>
+                                            <Input placeholder="Transferencia" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="others"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-base">
+                                            Otros
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Información adicional acerca del pago
+                                        </FormDescription>
+                                        <FormControl>
+                                            <Input placeholder="Otros" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Precio
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Este precio se mostrará en la cotización, y también se usará para calcular los ingresos.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Precio" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <hr />
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Otra información
+                        </h3>
+
                         <div className="space-y-2">
                             <FormLabel htmlFor="terms">
-                                            Terminos y Condiciones
+                                Terminos y Condiciones
                             </FormLabel>
                             <div className="flex flex-col gap-2">
                                 <Select onValueChange={handleTermsChange}>
@@ -381,23 +561,100 @@ services: Services,
                                 </Select>
 
                                 <Button type="button" variant="secondary" className="w-full justify-start">
-                                                Plantillas de T&C
+                                    Plantillas de Términos y condiciones
                                 </Button>
-
                             </div>
                         </div>
 
                         <FormField
                             control={form.control}
-                            name="termsAndConditions"
+                            name="requiredAvailability"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel className="text-base">
+                                        Disponibilidad Requerida
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
+                                    </FormDescription>
                                     <FormControl>
-                                        <Textarea
-                                            placeholder="Terminos y Condiciones"
-                                            {...field}
-                                            className="min-h-[200px] border rounded-md"
-                                        />
+                                        <Input placeholder="Disponibilidad Requerida" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="serviceTime"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Hora del servicio
+                                    </FormLabel>
+                                    <FormDescription>
+                                        A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Tiempo de Servicio" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="customField6"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Campo Personalizado 6
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Punto 6 de los términos y condiciones.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Campo Personalizado 6" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="deliverables"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Entregables
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Entregables" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="customField10"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-base">
+                                        Campo Personalizado 10
+                                    </FormLabel>
+                                    <FormDescription>
+                                        Punto 10 de los términos y condiciones.
+                                    </FormDescription>
+                                    <FormControl>
+                                        <Input placeholder="Campo Personalizado 10" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -405,217 +662,9 @@ services: Services,
                         />
                     </div>
 
-                    <FormField
-                        control={form.control}
-                        name="serviceAddress"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Dirección del Servicio
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Dirección del Servicio" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="paymentMethod"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Método de Pago
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Método de Pago" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="others"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Otros
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Otros" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="serviceListText"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Lista de Servicios
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Lista de Servicios" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="serviceDescription"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Descripción del Servicio
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Descripción del Servicio" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="serviceDetail"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Detalle del Servicio
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Detalle del Servicio" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Precio
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Precio" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="requiredAvailability"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Disponibilidad Requerida
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Disponibilidad Requerida" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="serviceTime"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Tiempo de Servicio
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Tiempo de Servicio" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="customField6"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Campo Personalizado 6
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Campo Personalizado 6" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="treatedAreas"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Áreas Tratadas
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Áreas Tratadas" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="deliverables"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Entregables
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Entregables" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="customField10"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                                Campo Personalizado 10
-                                </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Campo Personalizado 10" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
                     <SheetFooter>
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                                        Guardar
+                            Guardar
                         </Button>
                     </SheetFooter>
                 </form>

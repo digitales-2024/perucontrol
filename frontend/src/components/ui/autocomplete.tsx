@@ -183,7 +183,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
             >
                 <div
                     className={cn(
-                        "absolute top-0 z-10 w-full rounded-xl border border-input bg-white shadow outline-none animate-in fade-in-0 zoom-in-95",
+                        "absolute top-0 z-10 w-full rounded-xl border border-input bg-background shadow outline-none animate-in fade-in-0 zoom-in-95",
                         isOpen ? "block" : "hidden",
                     )}
                 >

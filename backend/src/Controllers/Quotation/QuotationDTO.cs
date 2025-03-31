@@ -79,8 +79,6 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 
     public required bool HasTaxes { get; set; }
 
-    public required string TermsAndConditions { get; set; }
-
     public required DateTime CreationDate { get; set; }
 
     public required DateTime ExpirationDate { get; set; }

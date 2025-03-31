@@ -21,7 +21,6 @@ export const quotationSchema = z.object({
             .min(1, { message: "La cantidad debe ser al menos 1" }),
     ),
     hasTaxes: z.boolean(),
-    termsAndConditions: z.string().min(3, "Los términos y condiciones son requeridos"),
     creationDate: z.string().min(5, "La fecha de creación es requerida"),
     expirationDate: z.string().min(5, "La fecha de expiración es requerida"),
     serviceAddress: z.string().min(3, "La dirección del servicio es requerida"),
