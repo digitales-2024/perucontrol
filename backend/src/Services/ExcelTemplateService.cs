@@ -48,10 +48,15 @@ public class ExcelTemplateService
         return ms.ToArray();
     }
 
-    private void ReplaceSharedStringPlaceholders(WorksheetPart worksheetPart, SharedStringTablePart sharedStringPart, Dictionary<string, string> placeholders)
+    private void ReplaceSharedStringPlaceholders(
+        WorksheetPart worksheetPart,
+        SharedStringTablePart sharedStringPart,
+        Dictionary<string, string> placeholders
+    )
     {
         // Get all cells that use shared strings
-        var cells = worksheetPart.Worksheet.Descendants<Cell>()
+        var cells = worksheetPart
+            .Worksheet.Descendants<Cell>()
             .Where(c => c.DataType != null && c.DataType == CellValues.SharedString)
             .ToList();
 
@@ -66,11 +71,14 @@ public class ExcelTemplateService
             if (modifiedSharedStrings.ContainsKey(stringId))
                 continue;
 
-            var sharedStringItem = sharedStringPart.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId);
+            var sharedStringItem = sharedStringPart
+                .SharedStringTable.Elements<SharedStringItem>()
+                .ElementAt(stringId);
 
             // Check if the shared string contains placeholders
             bool hasPlaceholder = placeholders.Keys.Any(key =>
-                sharedStringItem.InnerText.Contains(key));
+                sharedStringItem.InnerText.Contains(key)
+            );
 
             if (hasPlaceholder)
             {
@@ -103,7 +111,10 @@ public class ExcelTemplateService
         sharedStringPart.SharedStringTable.Save();
     }
 
-    private void ReplaceInRichText(SharedStringItem sharedString, Dictionary<string, string> placeholders)
+    private void ReplaceInRichText(
+        SharedStringItem sharedString,
+        Dictionary<string, string> placeholders
+    )
     {
         // For each Run element that contains text
         foreach (var run in sharedString.Elements<Run>())

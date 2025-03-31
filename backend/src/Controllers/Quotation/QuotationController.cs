@@ -332,7 +332,11 @@ public class QuotationController(
         );
 
         // send
-        return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "quotation.xlsx"
+        );
     }
 
     [HttpDelete("{id}")]
