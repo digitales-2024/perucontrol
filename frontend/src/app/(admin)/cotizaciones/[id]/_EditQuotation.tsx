@@ -80,7 +80,7 @@ export default function EditQuotation({
         },
     });
 
-    const { setValue } = form;
+    //const { setValue } = form;
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
@@ -100,8 +100,8 @@ export default function EditQuotation({
         const result = await GetTermsAndConditionsById(id);
         if (result)
         {
-            const content = result[0].content;
-            setValue("termsAndConditions", content);
+            //const content = result[0].content;
+            //setValue("termsAndConditions", content);
         }
         else
         {
@@ -573,23 +573,6 @@ export default function EditQuotation({
                                             </Button>
                                         </div>
                                     </div>
-
-                                    <FormField
-                                        control={form.control}
-                                        name="termsAndConditions"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Términos y Condiciones"
-                                                        {...field}
-                                                        className="min-h-[200px]"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                 </div>
 
                                 <div className="flex justify-end space-x-2">

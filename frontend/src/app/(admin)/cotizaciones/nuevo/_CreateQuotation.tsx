@@ -83,8 +83,6 @@ export function CreateQuotation({ terms, clients, services }: {
         },
     });
 
-    const { reset, setValue } = form;
-
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
         const [, err] = await toastWrapper(RegisterQuotation(input), {
@@ -104,7 +102,7 @@ export function CreateQuotation({ terms, clients, services }: {
         const result = await GetTermsAndConditionsById(id);
         if (result)
         {
-            const content = result[0].content;
+            //const content = result[0].content;
             // setValue("termsAndConditions", content);
         }
         else
