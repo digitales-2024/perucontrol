@@ -50,9 +50,9 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         {
             const isActive = row.original.isActive;
             const clientName =
-              row.original?.client?.name === "-"
-                  ? row.original.client.razonSocial
-                  : row.original?.client?.name;
+                row.original?.client?.name === "-"
+                    ? row.original.client.razonSocial
+                    : row.original?.client?.name;
             return (
                 <span className={`uppercase text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
                     {clientName}
@@ -82,13 +82,12 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.area}
                     {" "}
-m2
+                    m2
                 </span>
             );
         },
@@ -115,8 +114,7 @@ m2
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.spacesCount}
@@ -132,7 +130,7 @@ m2
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-              Fecha
+                Fecha
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -155,8 +153,7 @@ m2
                 : "Fecha no disponible";
 
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {formattedDate}
@@ -188,21 +185,20 @@ m2
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center text-xs md:text-sm ${
-                        !isActive ? "text-red-500" : ""
+                    className={`items-center text-center flex justify-center text-xs md:text-sm ${!isActive ? "text-red-500" : ""
                     }`}
                 >
                     {row.original?.status === "Pending" ? (
                         <Badge variant={!isActive ? "deleted" : "default"}>
-                          Pendiente
+                            Pendiente
                         </Badge>
                     ) : row.original?.status === "Approved" ? (
                         <Badge variant={!isActive ? "deleted" : "approved"}>
-                          Aprobado
+                            Aprobado
                         </Badge>
                     ) : (
                         <Badge variant={!isActive ? "deleted" : "destructive"}>
-                          Rechazado
+                            Rechazado
                         </Badge>
                     )}
                 </span>
@@ -231,8 +227,7 @@ m2
         {
             const isActive = row.original?.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     {row.original?.hasTaxes ? "SI" : "NO"}
@@ -322,14 +317,20 @@ m2
                                 <DropdownMenuItem
                                     disabled={!isActive}
                                 >
-                                Editar
+                                    Editar
                                 </DropdownMenuItem>
                             </Link>
                             <DropdownMenuItem
-                                onSelect={() => download(row.original.id!)}
+                                onSelect={() => downloadExcel(row.original.id!)}
                                 disabled={!isActive}
                             >
-                                Descargar Cotización
+                                Descargar Cotización en Excel
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => downloadPdf(row.original.id!)}
+                                disabled={!isActive}
+                            >
+                                Descargar Cotización en PDF
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onSelect={() => setShowDeleteQuotation(true)}
@@ -345,7 +346,27 @@ m2
     },
 ];
 
-const download = async(id: string) =>
+const downloadExcel = async(id: string) =>
+{
+    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+        loading: "Generando archivo",
+        success: "Excel generado",
+    });
+
+    if (err)
+    {
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cotizacion_${id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+const downloadPdf = async(id: string) =>
 {
     const [blob, err] = await toastWrapper(GenerateExcel(id), {
         loading: "Generando archivo",
