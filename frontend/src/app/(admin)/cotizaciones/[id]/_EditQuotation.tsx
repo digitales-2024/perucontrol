@@ -21,7 +21,7 @@ import { formatISO, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Quotation = components["schemas"]["Quotation2"];
+type Quotation = components["schemas"]["Quotation3"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]

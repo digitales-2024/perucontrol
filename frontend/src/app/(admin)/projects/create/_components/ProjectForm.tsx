@@ -16,7 +16,7 @@ import { toast } from "sonner";
 interface ProjectFormProps {
   clients: Array<components["schemas"]["Client"]>;
   services: Array<components["schemas"]["Service"]>;
-  quotations: Array<components["schemas"]["Quotation2"]>;
+  quotations: Array<components["schemas"]["Quotation3"]>;
 }
 
 export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
@@ -89,8 +89,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                     }
                 }),
             };
-
-            console.log("Datos del formulario:", JSON.stringify(requestData, null, 2));
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",

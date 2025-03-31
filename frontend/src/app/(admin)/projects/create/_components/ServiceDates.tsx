@@ -32,15 +32,17 @@ export function ServiceDates()
     // Función para generar fechas basadas en la frecuencia
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<string> =>
     {
-        const dates: Array<string> = [startDate.toISOString()];
+        const dates: Array<string> = [];
         let currentDate = new Date(startDate);
-        const maxIterations = 12 / (frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6);
+        const currentYear = new Date().getFullYear();
 
-        for (let i = 1; i < maxIterations; i += 1)
+        while (currentDate.getFullYear() <= currentYear)
         {
+            dates.push(currentDate.toISOString());
+
+            // Determinar cuántos meses agregar según la frecuencia
             const monthsToAdd = frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6;
             currentDate = addMonths(currentDate, monthsToAdd);
-            dates.push(currentDate.toISOString());
         }
 
         return dates;
