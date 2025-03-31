@@ -100,16 +100,16 @@ public static class DatabaseSeeder
 
         var business = new Business
         {
-            DigesaNumber = "",
-            Address = "",
-            Email = "",
-            RUC = "",
-            Phones = "",
-            DirectorName = "",
-            BankName = "",
-            BankAccount = "",
-            BankCCI = "",
-            Deductions = "",
+            DigesaNumber = "62-2023",
+            Address = "Urb. Villa Manuelito A-16, J.L.B. y Rivero, Arequipa",
+            Email = "servicios@perucontrol.com",
+            RUC = "20539641922",
+            Phones = "979716629 - 986951290",
+            DirectorName = "Sr. William Moreyra A.",
+            BankName = "Crédito del Perú",
+            BankAccount = "215-20391810-0-04",
+            BankCCI = "002-21500203918100429",
+            Deductions = "00-101-385558",
         };
         await context.Businesses.AddAsync(business);
         await context.SaveChangesAsync();

@@ -21,14 +21,14 @@ import {
 import { useState } from "react";
 
 type NavMainItem = {
+    title: string
+    url: string
+    icon: LucideIcon
+    isActive?: boolean
+    items?: Array<{
         title: string
         url: string
-        icon: LucideIcon
-        isActive?: boolean
-        items?: Array<{
-            title: string
-            url: string
-        }>
+    }>
 }
 
 export function NavMain({
@@ -42,13 +42,13 @@ export function NavMain({
     return (
         <SidebarGroup>
             <SidebarMenu>
-                {items.map((item, idx) => <SidebarMenuItem key={idx} item={item} pathname={pathname} />)}
+                {items.map((item, idx) => <SidebarMenuItemLocal key={idx} item={item} pathname={pathname} />)}
             </SidebarMenu>
         </SidebarGroup>
     );
 }
 
-function SidebarMenuItem({item, pathname}: {item: NavMainItem, pathname: string})
+function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
     const [expandOpen, setExpandOpen] = useState(true);
 
@@ -84,7 +84,7 @@ function SidebarMenuItem({item, pathname}: {item: NavMainItem, pathname: string}
                             <SidebarMenuAction className="data-[state=open]:rotate-90">
                                 <ChevronRight />
                                 <span className="sr-only">
-                                                    Toggle
+                                    Toggle
                                 </span>
                             </SidebarMenuAction>
                         </CollapsibleTrigger>
