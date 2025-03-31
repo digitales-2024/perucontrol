@@ -41,28 +41,93 @@ public class ExcelTemplateService
         }
 
         // Replace placeholders in cells
-        foreach (var cell in worksheetPart.Worksheet.Descendants<Cell>())
-        {
-            if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-            {
-                var stringId = int.Parse(cell.InnerText);
-                var text = sharedStringPart.SharedStringTable.ElementAt(stringId).InnerText;
+        ReplaceSharedStringPlaceholders(worksheetPart, sharedStringPart, placeholders);
 
-                // Check if text contains any placeholder
+        newPackage.Save();
+
+        return ms.ToArray();
+    }
+
+    private void ReplaceSharedStringPlaceholders(WorksheetPart worksheetPart, SharedStringTablePart sharedStringPart, Dictionary<string, string> placeholders)
+    {
+        // Get all cells that use shared strings
+        var cells = worksheetPart.Worksheet.Descendants<Cell>()
+            .Where(c => c.DataType != null && c.DataType == CellValues.SharedString)
+            .ToList();
+
+        // Track which shared strings have been modified
+        var modifiedSharedStrings = new Dictionary<int, bool>();
+
+        foreach (var cell in cells)
+        {
+            var stringId = int.Parse(cell.InnerText);
+
+            // Skip if we've already processed this shared string
+            if (modifiedSharedStrings.ContainsKey(stringId))
+                continue;
+
+            var sharedStringItem = sharedStringPart.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId);
+
+            // Check if the shared string contains placeholders
+            bool hasPlaceholder = placeholders.Keys.Any(key =>
+                sharedStringItem.InnerText.Contains(key));
+
+            if (hasPlaceholder)
+            {
+                // Mark this shared string as modified
+                modifiedSharedStrings[stringId] = true;
+
+                // Handle rich text (with formatting)
+                if (sharedStringItem.Elements<Run>().Any())
+                {
+                    ReplaceInRichText(sharedStringItem, placeholders);
+                }
+                // Handle plain text
+                else if (sharedStringItem.Elements<Text>().Any())
+                {
+                    var textElement = sharedStringItem.Elements<Text>().First();
+                    var text = textElement.Text;
+                    foreach (var placeholder in placeholders)
+                    {
+                        if (text.Contains(placeholder.Key))
+                        {
+                            text = text.Replace(placeholder.Key, placeholder.Value);
+                        }
+                    }
+                    textElement.Text = text;
+                }
+            }
+        }
+
+        // Save the changes
+        sharedStringPart.SharedStringTable.Save();
+    }
+
+    private void ReplaceInRichText(SharedStringItem sharedString, Dictionary<string, string> placeholders)
+    {
+        // For each Run element that contains text
+        foreach (var run in sharedString.Elements<Run>())
+        {
+            var textElement = run.Elements<Text>().FirstOrDefault();
+            if (textElement != null)
+            {
+                var text = textElement.Text;
+                bool replacementMade = false;
+
                 foreach (var placeholder in placeholders)
                 {
                     if (text.Contains(placeholder.Key))
                     {
                         text = text.Replace(placeholder.Key, placeholder.Value);
-                        cell.CellValue = new CellValue(text);
-                        cell.DataType = CellValues.String;
+                        replacementMade = true;
                     }
+                }
+
+                if (replacementMade)
+                {
+                    textElement.Text = text;
                 }
             }
         }
-
-        newPackage.Save();
-
-        return ms.ToArray();
     }
 }

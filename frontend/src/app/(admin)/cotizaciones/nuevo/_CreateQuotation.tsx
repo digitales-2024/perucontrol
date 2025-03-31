@@ -26,6 +26,7 @@ import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { format, parse } from "date-fns";
 import { components, paths } from "@/types/api";
+import { redirect } from "next/navigation";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -94,7 +95,8 @@ export function CreateQuotation({ terms, clients, services }: {
         {
             return;
         }
-        reset();
+
+        redirect("./");
     };
 
     const handleTermsChange = async(id: string) =>
