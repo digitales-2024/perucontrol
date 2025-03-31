@@ -7,12 +7,12 @@ import {
 } from "@/components/ui/dialog";
 import { DownloadProjectForm } from "./DownloadProjectForm";
 import { FileSpreadsheet } from "lucide-react";
-import { components } from "@/types/api";
+import { Project } from "../types";
 
 export function DownloadProject({ open, onOpenChange, project }: {
     open: boolean,
     onOpenChange: (v: boolean) => void,
-    project: components["schemas"]["Project"],
+    project: Project,
 })
 {
 
