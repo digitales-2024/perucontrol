@@ -71,20 +71,20 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
         case "Approved":
             return (
                 <Badge variant="approved">
-                    Aprobado
+                        Aprobado
                 </Badge>
             );
         case "Rejected":
             return (
                 <Badge variant="destructive">
-                    Rechazado
+                        Rechazado
                 </Badge>
             );
         case "Pending":
         default:
             return (
                 <Badge variant="default">
-                    Pendiente
+                        Pendiente
                 </Badge>
             );
         }
@@ -204,11 +204,11 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
             {
                 // Llamar a EditAppointment con el campo correspondiente
                 const [, error] = await EditAppointment(
-                  project.id!,
-                  id,
-                  field === "dueDate" ? newDateISO : null,
-                  null,
-                  field === "actualDate" ? newDateISO : null,
+                    project.id!,
+                    id,
+                    field === "dueDate" ? newDateISO : null,
+                    null,
+                    field === "actualDate" ? newDateISO : null,
                 );
 
                 if (error)
@@ -251,7 +251,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
     {
         if (deletingAppointmentId)
         {
-            const [,error] = await DesactivateAppointment(project.id!, deletingAppointmentId);
+            const [, error] = await DesactivateAppointment(project.id!, deletingAppointmentId);
             if (error)
             {
                 console.error("Error al desactivar una cita", error);
@@ -366,7 +366,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                                 </h4>
                                                 <p className="text-sm text-muted-foreground">
                                                     {project.client?.typeDocument.toUpperCase()}
-:
+                                                    :
                                                     {project.client?.typeDocumentValue}
                                                 </p>
                                             </div>
@@ -550,7 +550,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                         {sortedAppointments.map((appointment, index) => (
                                             <div
                                                 key={appointment.id}
-                                                className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-blue-200 transition-colors"
+                                                className="bg-gray-50 dark:bg-background p-4 rounded-lg border border-gray-200 hover:border-blue-200 transition-colors"
                                             >
                                                 <div className="flex justify-between items-center mb-3">
                                                     <div className="flex items-center gap-2">
@@ -580,11 +580,11 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
 
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     {/* Columna de Fecha Planificada */}
-                                                    <div className="bg-white p-3 rounded-md border border-gray-100">
+                                                    <div className="bg-white dark:bg-background p-3 rounded-md border border-gray-100">
                                                         <div className="flex items-center gap-2 mb-2">
                                                             <Clock className="h-4 w-4 text-blue-500" />
                                                             <h4 className="font-medium text-sm">
-Fecha Planificada
+                                                                Fecha Planificada
                                                             </h4>
                                                         </div>
                                                         <p className="text-base mb-3 pl-6">
@@ -592,7 +592,7 @@ Fecha Planificada
                                                                 formatDate(appointment.dueDate)
                                                             ) : (
                                                                 <span className="italic text-gray-400">
-No registrada
+                                                                    No registrada
                                                                 </span>
                                                             )}
                                                         </p>
@@ -607,18 +607,18 @@ No registrada
                                                             className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
                                                         >
                                                             <Pencil className="h-3.5 w-3.5 mr-2" />
-            Editar Fecha Planificada
+                                                            Editar Fecha Planificada
                                                         </Button>
                                                     </div>
 
                                                     {/* Columna de Fecha Real */}
-                                                    <div className="bg-white p-3 rounded-md border border-gray-100">
+                                                    <div className="bg-white dark:bg-background p-3 rounded-md border border-gray-100">
                                                         <div className="flex items-center gap-2 mb-2">
                                                             <CheckCircle2
                                                                 className={`h-4 w-4 ${appointment.actualDate ? "text-green-500" : "text-gray-300"}`}
                                                             />
                                                             <h4 className="font-medium text-sm">
-Fecha Real
+                                                                Fecha Real
                                                             </h4>
                                                         </div>
                                                         <p className="text-base mb-3 pl-6">
@@ -626,7 +626,7 @@ Fecha Real
                                                                 formatDate(appointment.actualDate)
                                                             ) : (
                                                                 <span className="italic text-gray-400">
-Pendiente de registro
+                                                                    Pendiente de registro
                                                                 </span>
                                                             )}
                                                         </p>
@@ -638,21 +638,20 @@ Pendiente de registro
                                                                 "actualDate",
                                                             )
                                                             }
-                                                            className={`w-full ${
-                                                                appointment.actualDate
-                                                                    ? "text-green-600 border-green-200 hover:bg-green-50"
-                                                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                                            className={`w-full ${appointment.actualDate
+                                                                ? "text-green-600 border-green-200 hover:bg-green-50"
+                                                                : "bg-green-600 hover:bg-green-700 text-white"
                                                             }`}
                                                         >
                                                             {appointment.actualDate ? (
                                                                 <>
                                                                     <Pencil className="h-3.5 w-3.5 mr-2" />
-                    Editar Fecha Real
+                                                                    Editar Fecha Real
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <Calendar className="h-3.5 w-3.5 mr-2" />
-                    Registrar Fecha Real
+                                                                    Registrar Fecha Real
                                                                 </>
                                                             )}
                                                         </Button>
