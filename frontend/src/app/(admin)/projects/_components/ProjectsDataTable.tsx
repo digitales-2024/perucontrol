@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ProjectsTableToolbarActions } from "./ProjectsTableToolbarActions";
-import { DataTableExpanded } from "./DataTableExpanded";
 import { Project } from "../types";
+import { DataTable } from "@/components/data-table/DataTable";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps {
     columns: Array<ColumnDef<Project>>;
@@ -14,14 +15,25 @@ interface DataTableProps {
 export function ProjectsDataTable({ columns, data }: DataTableProps)
 {
     const [globalFilter, setGlobalFilter] = useState("");
+    const router = useRouter();
+
+    // Función para manejar el clic en una fila
+    const handleRowClick = (project: Project) =>
+    {
+        if (project.isActive)
+        {
+            router.push(`/projects/${project.id}/details`);
+        }
+    };
 
     return (
-        <DataTableExpanded
+        <DataTable
             columns={columns}
             data={data}
             globalFilter={globalFilter}
             setGlobalFilter={setGlobalFilter}
             toolbarActions={<ProjectsTableToolbarActions />}
+            onRowClick={handleRowClick}
         />
     );
 }

@@ -32,15 +32,17 @@ export function ServiceDates()
     // Función para generar fechas basadas en la frecuencia
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<string> =>
     {
-        const dates: Array<string> = [startDate.toISOString()];
+        const dates: Array<string> = [];
         let currentDate = new Date(startDate);
-        const maxIterations = 12 / (frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6);
+        const currentYear = new Date().getFullYear();
 
-        for (let i = 1; i < maxIterations; i += 1)
+        while (currentDate.getFullYear() <= currentYear)
         {
+            dates.push(currentDate.toISOString());
+
+            // Determinar cuántos meses agregar según la frecuencia
             const monthsToAdd = frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6;
             currentDate = addMonths(currentDate, monthsToAdd);
-            dates.push(currentDate.toISOString());
         }
 
         return dates;
@@ -145,7 +147,7 @@ export function ServiceDates()
                     <DrawerContent>
                         <DrawerHeader>
                             <DrawerTitle>
-Editar fecha
+                                Editar fecha
                             </DrawerTitle>
                         </DrawerHeader>
                         <div className="px-4 py-2">
@@ -158,14 +160,14 @@ Editar fecha
                         </div>
                         <DrawerFooter className="flex-row gap-3 pt-2">
                             <Button variant="outline" className="flex-1" onClick={() => setIsEditDialogOpen(false)} type="button">
-                Cancelar
+                                Cancelar
                             </Button>
                             <Button
                                 className="flex-1 bg-blue-600 hover:bg-blue-700"
                                 onClick={() => handleSaveEdit(tempDate)}
                                 type="button"
                             >
-                Guardar
+                                Guardar
                             </Button>
                         </DrawerFooter>
                     </DrawerContent>
@@ -178,7 +180,7 @@ Editar fecha
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>
-Editar fecha
+                            Editar fecha
                         </DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
@@ -191,10 +193,10 @@ Editar fecha
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} type="button">
-              Cancelar
+                            Cancelar
                         </Button>
                         <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleSaveEdit(tempDate)} type="button">
-              Guardar
+                            Guardar
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -206,7 +208,7 @@ Editar fecha
         <Card className="w-full">
             <CardHeader>
                 <CardTitle className="text-xl">
-Configurar fechas
+                    Configurar fechas
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -214,7 +216,7 @@ Configurar fechas
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="service-date" className="block mb-2">
-                Fecha de Servicio
+                                Fecha de Servicio
                             </Label>
                             <DatePicker
                                 value={serviceDate}
@@ -225,7 +227,7 @@ Configurar fechas
                         </div>
                         <div>
                             <Label htmlFor="frequency" className="block mb-2">
-                Frecuencia
+                                Frecuencia
                             </Label>
                             <Select value={frequency} onValueChange={(value) => setValue("frequency", value as FrequencyType)}>
                                 <SelectTrigger className="w-[180px]">
@@ -233,13 +235,13 @@ Configurar fechas
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Bimonthly">
-Bimestral
+                                        Bimestral
                                     </SelectItem>
                                     <SelectItem value="Quarterly">
-Trimestral
+                                        Trimestral
                                     </SelectItem>
                                     <SelectItem value="Semiannual">
-Semestral
+                                        Semestral
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -253,7 +255,7 @@ Semestral
                             className="bg-blue-600 hover:bg-blue-700"
                             disabled={!serviceDate || !frequency}
                         >
-              Programar Servicio
+                            Programar Servicio
                         </Button>
                     </div>
                 </div>
@@ -262,7 +264,7 @@ Semestral
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="add-date" className="block mb-2">
-                Agregar fecha
+                                Agregar fecha
                             </Label>
                             <DatePicker value={newDate} onChange={setNewDate} placeholder="Seleccione fecha" className="w-full" />
                         </div>
@@ -279,14 +281,14 @@ Semestral
 
                     <div>
                         <Label className="block mb-2">
-Fechas programadas
+                            Fechas programadas
                         </Label>
                         <Card className="border border-gray-200">
                             <ScrollArea className={isMobile ? "h-[200px]" : "h-[300px]"}>
                                 <div className="p-2">
                                     {appointments.length === 0 ? (
                                         <p className="text-center text-muted-foreground py-4">
-No hay fechas programadas
+                                            No hay fechas programadas
                                         </p>
                                     ) : (
                                         <div className="space-y-2">

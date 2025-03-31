@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { RemoveProject } from "../actions";
-import { Project } from "../types";
 import { toastWrapper } from "@/types/toasts";
+import { Project } from "../types";
 
 interface DeleteClientProps {
     open: boolean;

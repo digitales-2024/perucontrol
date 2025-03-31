@@ -17,17 +17,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
-    columns: Array<ColumnDef<TData, TValue>>;
-    data: Array<TData>;
-    globalFilter: string;
-    setGlobalFilter: (value: string) => void;
-    toolbarActions?: React.ReactNode;
+  columns: Array<ColumnDef<TData, TValue>>
+  data: Array<TData>
+  globalFilter: string
+  setGlobalFilter: (value: string) => void
+  toolbarActions?: React.ReactNode
+  isLoading?: boolean
+  emptyMessage?: string
+  onRowClick?: (data: TData) => void
 }
 
-export function DataTable<TData, TValue>({ columns, data, globalFilter, setGlobalFilter, toolbarActions }: DataTableProps<TData, TValue>)
+export function DataTable<TData, TValue>({
+    columns,
+    data,
+    globalFilter,
+    setGlobalFilter,
+    toolbarActions,
+    isLoading = false,
+    emptyMessage = "No hay resultados.",
+    onRowClick,
+}: DataTableProps<TData, TValue>)
 {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -53,15 +65,18 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
 
     return (
         <div className="overflow-x-auto">
-            <div className="flex items-center justify-between py-4">
-                <Input
-                    placeholder="Buscar..."
-                    value={globalFilter}
-                    onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="max-w-sm"
-                />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4">
+                <div className="relative max-w-sm w-full">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Buscar..."
+                        value={globalFilter}
+                        onChange={(event) => setGlobalFilter(event.target.value)}
+                        className="pl-8 w-full"
+                    />
+                </div>
                 {toolbarActions && (
-                    <div>
+                    <div className="flex justify-end">
                         {toolbarActions}
                     </div>
                 )}
@@ -80,12 +95,24 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <div className="flex justify-center items-center">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                                        <span className="ml-2">
+                                            Cargando...
+                                        </span>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row, index) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className={index % 2 === 0 ? "bg-muted/50" : ""}
+                                    className={`${index % 2 === 0 ? "bg-muted/50" : ""} ${onRowClick ? "cursor-pointer hover:bg-muted" : ""}`}
+                                    onClick={() => onRowClick && onRowClick(row.original)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
@@ -97,15 +124,20 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No hay resultados.
+                                    {emptyMessage}
                                 </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="flex flex-wrap gap-4 items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 py-4">
+                <div className="text-sm text-muted-foreground">
+                    {table.getFilteredRowModel().rows.length}
+                    {" "}
+                    resultado(s) encontrado(s)
+                </div>
+                <div className="flex flex-wrap gap-4 items-center">
                     <div className="flex items-center space-x-2">
                         <p className="text-xs md:text-sm font-medium">
                             Filas por página
@@ -117,7 +149,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                                 table.setPageSize(Number(value));
                             }}
                         >
-                            <SelectTrigger className="h-8 w-[90px]">
+                            <SelectTrigger className="h-8 w-[70px]">
                                 <SelectValue placeholder={table.getState().pagination.pageSize} />
                             </SelectTrigger>
                             <SelectContent side="top">
@@ -137,14 +169,14 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                             {" "}
                             de
                             {" "}
-                            {table.getPageCount()}
+                            {table.getPageCount() || 1}
                         </p>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1">
                             <Button
                                 variant="outline"
-                                className="hidden h-8 w-8 p-0 lg:flex"
+                                className="hidden h-8 w-8 p-0 sm:flex"
                                 onClick={() => table.setPageIndex(0)}
-                                disabled={!table.getCanPreviousPage()}
+                                disabled={!table.getCanPreviousPage() || isLoading}
                             >
                                 <span className="sr-only">
                                     Ir a la primera página
@@ -155,7 +187,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                                 variant="outline"
                                 className="h-8 w-8 p-0"
                                 onClick={() => table.previousPage()}
-                                disabled={!table.getCanPreviousPage()}
+                                disabled={!table.getCanPreviousPage() || isLoading}
                             >
                                 <span className="sr-only">
                                     Ir a la página anterior
@@ -166,7 +198,7 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                                 variant="outline"
                                 className="h-8 w-8 p-0"
                                 onClick={() => table.nextPage()}
-                                disabled={!table.getCanNextPage()}
+                                disabled={!table.getCanNextPage() || isLoading}
                             >
                                 <span className="sr-only">
                                     Ir a la página siguiente
@@ -175,9 +207,9 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
                             </Button>
                             <Button
                                 variant="outline"
-                                className="hidden h-8 w-8 p-0 lg:flex"
+                                className="hidden h-8 w-8 p-0 sm:flex"
                                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                                disabled={!table.getCanNextPage()}
+                                disabled={!table.getCanNextPage() || isLoading}
                             >
                                 <span className="sr-only">
                                     Ir a la última página
@@ -191,3 +223,4 @@ export function DataTable<TData, TValue>({ columns, data, globalFilter, setGloba
         </div>
     );
 }
+

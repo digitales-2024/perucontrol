@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
-    quotations: Array<components["schemas"]["Quotation2"]>
+    quotations: Array<components["schemas"]["Quotation3"]>
 }
 
 // Mapa de iconos para servicios
@@ -39,7 +39,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.contactName !== "" && client.contactName !== "-" ? client.contactName ?? "" : client.name ?? "-",
+            label: client.contactName !== null && client.contactName !== "-" ? client.contactName ?? "" : client.name ?? "-",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =

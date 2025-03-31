@@ -18,7 +18,7 @@ import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { formatISO, parseISO } from "date-fns";
 
-type Quotation = components["schemas"]["Quotation2"];
+type Quotation = components["schemas"]["Quotation3"];
 type TermsAndConditions = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]

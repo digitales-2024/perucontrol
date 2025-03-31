@@ -16,7 +16,7 @@ import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
 import { QuotationDownload } from "./QuotationDownload";
 
-export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
     {
         accessorKey: "client",
         header: ({ column }) => (

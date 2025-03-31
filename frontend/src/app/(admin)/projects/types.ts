@@ -1,7 +1,7 @@
 import { components } from "@/types/api";
 
 export interface Project {
-  id: string;
+  id?: string;
   area: number;
   spacesCount: number;
   orderNumber?: number;
@@ -11,5 +11,5 @@ export interface Project {
   services?: Array<components["schemas"]["Service"]>;
   quotation?: components["schemas"]["Quotation"];
   supplies?: Array<{ id: string; name: string; quantity: number; unit: string }>;
-  isActive: boolean;
+  isActive?: boolean;
 }

@@ -31,7 +31,7 @@ interface ProjectProps {
 interface UpdateClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
-    quotations: Array<components["schemas"]["Quotation2"]>
+    quotations: Array<components["schemas"]["Quotation3"]>
     project: ProjectProps
 }
 
