@@ -13,7 +13,7 @@ services:
       Jwt__Audience: "${Jwt__Audience}"
       Jwt__ExpirationMinutes: "${Jwt__ExpirationMinutes}"
       Logging__LogLevel__Default: "${Logging__LogLevel__Default}"
-      Logging__LogLevel__Microsoft.AspNetCore: "${Logging__LogLevel__Microsoft.AspNetCore}"
+      # Logging__LogLevel__Microsoft.AspNetCore: "${Logging__LogLevel__Microsoft.AspNetCore}"
       AllowedHosts: "${AllowedHosts}"
     networks:
       - proxy
