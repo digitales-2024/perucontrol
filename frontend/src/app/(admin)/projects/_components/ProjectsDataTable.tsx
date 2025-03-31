@@ -6,10 +6,11 @@ import { ProjectsTableToolbarActions } from "./ProjectsTableToolbarActions";
 import { Project } from "../types";
 import { DataTable } from "@/components/data-table/DataTable";
 import { useRouter } from "next/navigation";
+import { components } from "@/types/api";
 
 interface DataTableProps {
     columns: Array<ColumnDef<Project>>;
-    data: Array<Project>;
+    data: Array<components["schemas"]["Project"]>;
 }
 
 export function ProjectsDataTable({ columns, data }: DataTableProps)
