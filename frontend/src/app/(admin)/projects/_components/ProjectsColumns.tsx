@@ -15,10 +15,10 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useState } from "react";
 import { DeleteProject } from "./DeleteProject";
-import type { Project } from "../types";
 import { DownloadProject } from "./DownloadProject";
+import { components } from "@/types/api";
 
-export const columns: Array<ColumnDef<Project>> = [
+export const columns: Array<ColumnDef<components["schemas"]["ProjectSummarySingle"]>> = [
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
@@ -44,7 +44,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
-                    {row.original.orderNumber}
+                    {/* {row.original.orderNumber} */}
                 </span>
             );
         },
@@ -111,7 +111,7 @@ export const columns: Array<ColumnDef<Project>> = [
                         <Badge variant={!isActive ? "deleted" : "default"}>
 Pendiente
                         </Badge>
-                    ) : row.original?.status === "Approved" ? (
+                    ) : row.original?.status === "Completed" ? (
                         <Badge variant={!isActive ? "deleted" : "approved"}>
 Aprobado
                         </Badge>
