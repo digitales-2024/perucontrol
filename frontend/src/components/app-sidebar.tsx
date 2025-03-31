@@ -7,7 +7,6 @@ import {
     HandCoins,
     PieChart,
     Settings2,
-    ShieldCheck,
     Users,
 } from "lucide-react";
 
