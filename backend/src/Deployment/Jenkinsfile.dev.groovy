@@ -39,7 +39,6 @@ pipeline {
 
         // SSH command
         SSH_COM = "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
-        SCP_COM = "-o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
     }
 
     stages {
@@ -51,7 +50,6 @@ pipeline {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
                             def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}")
                             image.push()
-                            image.push("latest")
                         }
                     }
                     sh "rm Dockerfile || true"
@@ -60,71 +58,10 @@ pipeline {
         }
         stage("Restart backend service") {
             steps {
-                script {
-                    def config = readYaml file: 'backend/src/Deployment/env.yaml'
-                    def env = config.develop
-
-                    def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
-                    def sensitiveVars = env.sensitive
-
-                    // Define all your environment variables in an array
-                    def credentialsList = sensitiveVars.collect { 
-                        string(credentialsId: it, variable: it)
-                    }
-
-                    def varsNames = []
-                    varsNames.addAll(env.nonsensitive.keySet())
-                    varsNames.addAll(env.sensitive)
-                    def varsYamlStr = varsNames.collect { var -> "\"${var}\": \"\${${var}}\"" }.join(',')
-
-                    sh "cp backend/src/Deployment/docker-compose.dev.yml docker-compose.yml"
-                    sh "yq -y -i '.services[\"${PROJECT_TRIPLET}\"].image = \"${FULL_REGISTRY_URL}:${BUILD_NUMBER}\"' docker-compose.yml"
-                    sh "yq -y -i '.services[\"${PROJECT_TRIPLET}\"].environment = {${varsYamlStr}}' docker-compose.yml"
-
-                    withCredentials(credentialsList) {
-                        sshagent(['ssh-deploy']) {
-                            // Replace docker image version
-                            sh """
-                                ${SSH_COM} '
-                                mkdir -p ${REMOTE_FOLDER} &&
-                                cd ${REMOTE_FOLDER} &&
-                                docker pull ${FULL_REGISTRY_URL}:${BUILD_NUMBER}
-                                '
-                            """
-
-                            // Create a temporary script that will create the .env file
-                            // This enables us to use shell variables to properly handle 
-                            // the credentials without using binding.getVariable()
-                            sh """
-                                cat > ${WORKSPACE}/create_env.sh << 'EOL'
-#!/bin/bash
-cat << EOF
-# Non-sensitive variables
-${nonSensitiveVars.join('\n')}
-# Sensitive variables
-${sensitiveVars.collect { varName -> "${varName}=\${${varName}}" }.join('\n')}
-EOF
-EOL
-                                chmod +x ${WORKSPACE}/create_env.sh
-                            """
-
-                            // Execute the script to generate env content and send it to remote
-                            sh """
-                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env'
-                            """
-
-                            // Send the docker-compose file to the remote
-                            sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${REMOTE_USER}@${REMOTE_IP}:${REMOTE_FOLDER}"
-
-                            // Restart the service
-                            sh """
-                                ${SSH_COM} '
-                                cd ${REMOTE_FOLDER} && 
-                                docker compose up -d --no-deps ${PROJECT_TRIPLET}
-                                '
-                            """
-                        }
-                    }
+                sshagent(['ssh-deploy']) {
+                    // Replace docker image version
+                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml'"
+                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
                 }
             }
         }
