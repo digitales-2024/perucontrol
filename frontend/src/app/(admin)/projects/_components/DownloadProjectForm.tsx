@@ -108,7 +108,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
     {
         // Guardar los datos antes de generar el Excel
         const [, saveError] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id, body),
+            SaveProjectOperationSheetData(project.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -123,7 +123,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
         }
 
         // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateExcel(project.id, body), {
+        const [blob, err] = await toastWrapper(GenerateExcel(project.id!, body), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -147,7 +147,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
         const [result, error] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id, input), // Cambia a `true` si es una actualización
+            SaveProjectOperationSheetData(project.id!, input), // Cambia a `true` si es una actualización
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -168,7 +168,7 @@ export function DownloadProjectForm({ onOpenChange, project }: {
     {
         const loadOperationSheet = async() =>
         {
-            const [data, error] = await GetProjectOperationSheet(project.id);
+            const [data, error] = await GetProjectOperationSheet(project.id!);
 
             if (error)
             {

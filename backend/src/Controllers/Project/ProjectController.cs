@@ -73,12 +73,14 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     [EndpointSummary("Get all")]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectSummary>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<IEnumerable<Project>>> GetAll()
     {
         var projects = await _context
-            .Projects.Include(c => c.Client)
+            .Projects.Include(p => p.Client)
             .Include(p => p.Services)
             .Include(q => q.Quotation)
+            .Include(p => p.Appointments)
             .ToListAsync();
 
         var projectSummaries = projects
@@ -93,6 +95,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
                 Address = p.Address,
                 Quotation = p.Quotation,
                 IsActive = p.IsActive,
+                Appointments = p.Appointments.Select(a => a.DueDate).ToList(),
             })
             .ToList();
 
@@ -101,7 +104,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
 
     [EndpointSummary("Get one by Id")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ProjectSummary), StatusCodes.Status200OK)]
+    [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
@@ -127,7 +130,43 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             Area = project.Area,
             Address = project.Address,
             Quotation = project.Quotation,
-            Appointments = project.Appointments,
+            IsActive = project.IsActive,
+            Appointments = project.Appointments.ToList(),
+        };
+
+        return Ok(projectSummary);
+    }
+
+    [EndpointSummary("Get one by Id v2")]
+    [HttpGet("/{id}/v2")]
+    [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Project>> GetById2(Guid id)
+    {
+        var project = await _context
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Services)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var projectSummary = new ProjectSummarySingle
+        {
+            Id = project.Id,
+            Client = project.Client,
+            Services = project.Services,
+            Status = project.Status,
+            SpacesCount = project.SpacesCount,
+            Area = project.Area,
+            Address = project.Address,
+            Quotation = project.Quotation,
+            IsActive = project.IsActive,
+            Appointments = project.Appointments.ToList(),
         };
 
         return Ok(projectSummary);
@@ -336,7 +375,10 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         };
 
         // append appointment to projects
+        _context.Entry(newAppointment).State = EntityState.Added;
+        _context.Entry(newAppointment.ProjectOperationSheet).State = EntityState.Added;
         project.Appointments.Add(newAppointment);
+        
         await _context.SaveChangesAsync();
 
         return Created();

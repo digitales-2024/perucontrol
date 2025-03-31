@@ -16,7 +16,7 @@ import Link from "next/link";
 import { toastWrapper } from "@/types/toasts";
 import { GenerateExcel } from "../actions";
 
-export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
+export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
     {
         accessorKey: "quotationNumber",
         header: "Nro.",

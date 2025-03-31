@@ -40,7 +40,7 @@ export async function UpdateProject(id: string, newProject: components["schemas"
 
     if (error)
     {
-        console.log("Error updateing project:", error);
+        console.log("Error updating project:", error);
         return err(error);
     }
     return ok(null);
@@ -265,4 +265,92 @@ export async function GetProjectOperationSheet(projectId: string): Promise<Resul
             error: "Error en la solicitud",
         });
     }
+}
+
+export async function AddAppointment(id: string, dueDate: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/appointment", {
+        ...auth,
+        body: { dueDate },
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath(`/(admin)/projects/[${id}]/details`, "page");
+
+    if (error)
+    {
+        console.log("Error updateing dates", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function EditAppointment(
+    projId: string,
+    appId: string,
+    dueDate: string | null, // Fecha planificada (opcional)
+    orderNumber: number | null, // Número de orden (opcional)
+    actualDate: string | null, // Fecha real (opcional)
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{proj_id}/appointment/{app_id}", {
+        ...auth,
+        body: {
+            orderNumber, // Número de orden
+            dueDate, // Fecha planificada
+            actualDate, // Fecha real
+        },
+        params: {
+            path: {
+                // eslint-disable-next-line camelcase
+                proj_id: projId,
+                // eslint-disable-next-line camelcase
+                app_id: appId,
+            },
+        },
+    }));
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]/details`, "page");
+
+    if (error)
+    {
+        console.error("Error updating appointment project:", error);
+        return err(error);
+    }
+
+    return ok(null);
+}
+
+export async function DesactivateAppointment(
+    projId: string,
+    appId: string,
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{proj_id}/appointment/{app_id}", {
+        ...auth,
+        params: {
+            path: {
+                // eslint-disable-next-line camelcase
+                proj_id: projId,
+                // eslint-disable-next-line camelcase
+                app_id: appId,
+            },
+        },
+    }));
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]/details`, "page");
+
+    if (error)
+    {
+        console.error("Error desactivando la cita:", error);
+        return err(error);
+    }
+
+    return ok(null);
 }
