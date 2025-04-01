@@ -11,7 +11,9 @@ export default function Home()
                 <HeaderPage title="Inicio" description="Sistema de gestión de PeruControl" />
             </Shell>
 
-            <CalendarDemo />
+            <div className="max-w-[50rem] mx-auto">
+                <CalendarDemo />
+            </div>
         </AdminLayout>
     );
 }

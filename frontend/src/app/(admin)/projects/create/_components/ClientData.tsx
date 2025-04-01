@@ -144,7 +144,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
             <CardHeader>
                 <div className="flex justify-between">
                     <CardTitle className="text-xl font-semibold">
-                        Datos de cliente
+                        Información general
                     </CardTitle>
                     {showQuotation ? (
                         <Button onClick={handleClick} className="bg-blue-600 hover:bg-blue-700">
@@ -175,7 +175,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="text-base">
-                                        Cliente
+                                Cliente
                             </FormLabel>
                             <FormControl>
                                 <AutoComplete
@@ -184,7 +184,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                     emptyMessage="No se encontraron clientes"
                                     value={
                                         clientsOptions.find((option) => option.value ===
-                                                    field.value) ?? undefined
+                                            field.value) ?? undefined
                                     }
                                     onValueChange={(option) =>
                                     {
@@ -204,7 +204,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                        Dirección
+                                Dirección
                             </FormLabel>
                             <FormControl>
                                 <AutoComplete
@@ -213,7 +213,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                     emptyMessage="No se encontraron dirreciones"
                                     value={
                                         clientAddressOptions.find((option) => option.value ===
-                                                    field.value) ?? undefined
+                                            field.value) ?? undefined
                                     }
                                     onValueChange={(option) =>
                                     {
@@ -233,7 +233,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
-                                            Área m2
+                                    Área m2
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -253,7 +253,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
-                                            Nro. de ambientes
+                                    Nro. de ambientes
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -318,6 +318,27 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                     />
 
                 </div>
+
+                <FormField
+                    name="price"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Costo del servicio
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="number"
+                                    placeholder="S/."
+                                    {...field}
+                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
             </CardContent>
         </Card>
     );

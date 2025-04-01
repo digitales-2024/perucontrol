@@ -5,11 +5,11 @@ para el proyecto Perucontrol.
 
 ## Build Status
 
-- `develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/develop/)
+- `develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-ci/job/develop/)
 
 - `backend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-backend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-backend-develop-deploy/)
 
-- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-frontend-develop-deploy/)
+- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-frontend-develop-deploy/)
 
 ---
 

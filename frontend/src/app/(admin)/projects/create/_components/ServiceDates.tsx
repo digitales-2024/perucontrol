@@ -116,7 +116,7 @@ export function ServiceDates()
 
         // Verificar si la fecha ya existe (excepto la que estamos editando)
         const dateExists = appointments.some((dateISO: string, index: number) => index !== editingIndex &&
-        format(new Date(dateISO), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
+            format(new Date(dateISO), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
 
         if (dateExists)
         {
@@ -208,7 +208,7 @@ export function ServiceDates()
         <Card className="w-full">
             <CardHeader>
                 <CardTitle className="text-xl">
-                    Configurar fechas
+                    Cronograma
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -216,7 +216,7 @@ export function ServiceDates()
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="service-date" className="block mb-2">
-                                Fecha de Servicio
+                                Fecha Inicial
                             </Label>
                             <DatePicker
                                 value={serviceDate}
