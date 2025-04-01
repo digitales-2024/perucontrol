@@ -67,7 +67,7 @@ body {
   .dark {
     --background: hsl(231.43, 10.45%, 13.14%);
     --foreground: hsl(248.57, 13.73%, 90%);
-    --card: hsl(222.2 84% 4.9%);
+    --card: hsl(222.86, 22.58%, 6.08%);
     --card-foreground: hsl(210 40% 98%);
     --popover: hsl(222.2 84% 4.9%);
     --popover-foreground: hsl(210 40% 98%);

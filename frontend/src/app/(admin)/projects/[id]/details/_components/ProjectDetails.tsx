@@ -34,6 +34,8 @@ import { toast } from "sonner";
 import { AddAppointment, DesactivateAppointment, EditAppointment } from "../../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
+import { AppointmentDetail } from "./AppointmentDetail";
+import { Accordion } from "@/components/ui/accordion";
 
 export function ProjectDetails({ project }: { project: components["schemas"]["ProjectSummarySingle"] })
 {
@@ -549,6 +551,12 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                     <Separator />
 
                                     <div className="space-y-3">
+
+                                        <Accordion type="single" collapsible className="w-full">
+                                            {sortedAppointments.map((appointment, idx) => (
+                                                <AppointmentDetail appointment={appointment} key={appointment.id!} idx={idx} />
+                                            ))}
+                                        </Accordion>
                                         {sortedAppointments.map((appointment, index) => (
                                             <div
                                                 key={appointment.id}
@@ -562,6 +570,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                                         <h4 className="font-medium">
                                                             Servicio programado
                                                         </h4>
+                                                        {DateStatusBadge(appointment.dueDate!, appointment.actualDate ?? undefined)}
                                                         {appointment.orderNumber && (
                                                             <Badge variant="outline" className="ml-2">
                                                                 Orden #
@@ -711,3 +720,73 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
         </div>
     );
 }
+
+type DateStatus = "Pendiente" | "Retrasado" | "Completo" | "Completo con retraso"
+function datesToStatus(dueDateStr: string, actualStr?: string): DateStatus
+{
+    const dueDate = parseISO(dueDateStr);
+    const now = new Date();
+
+    if (actualStr !== undefined)
+    {
+        const actual = parseISO(actualStr!);
+
+        if (actual <= dueDate)
+        {
+            return "Completo";
+        }
+        else
+        {
+            return "Completo con retraso";
+        }
+    }
+    else
+    {
+        if (dueDate < now)
+        {
+            return "Retrasado";
+        }
+        else
+        {
+            return "Pendiente";
+        }
+    }
+}
+
+function DateStatusBadge(dueDateStr: string, actualStr?: string)
+{
+    const status = datesToStatus(dueDateStr, actualStr);
+    if (status === "Completo")
+    {
+        return (
+            <Badge variant="approved">
+                {status}
+            </Badge>
+        );
+    }
+    else if (status === "Completo con retraso")
+    {
+        return (
+            <Badge variant="destructive">
+                {status}
+            </Badge>
+        );
+    }
+    else if (status === "Retrasado")
+    {
+        return (
+            <Badge variant="destructive">
+                {status}
+            </Badge>
+        );
+    }
+    else if (status === "Pendiente")
+    {
+        return (
+            <Badge variant="default">
+                {status}
+            </Badge>
+        );
+    }
+}
+

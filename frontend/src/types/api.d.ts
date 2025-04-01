@@ -3536,7 +3536,7 @@ export interface components {
             /** Format: int32 */
             orderNumber?: number | null;
             /** Format: date-time */
-            dueDate?: string;
+            dueDate: string;
             /** Format: date-time */
             actualDate?: string | null;
             /** Format: uuid */
