@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
 import { DeleteProject } from "../../_components/DeleteProject";
-import { DownloadProject } from "../../_components/DownloadProject";
 import { Label } from "@/components/ui/label";
 import DatePicker from "@/components/ui/date-time-picker";
 import { toast } from "sonner";
@@ -43,7 +42,6 @@ export function ProjectDetails({ project, projectId }: {
     const router = useRouter();
     const [showClientDetails, setShowClientDetails] = useState(false);
     const [showDeleteProject, setShowDeleteProject] = useState(false);
-    const [showDownload, setShowDownload] = useState(false);
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [isDesactiveDialogOpen, setIsDesactiveDialogOpen] = useState(false);
     const [deletingAppointmentId, setDeletingAppointmentId] = useState<string | null>(null);
@@ -258,24 +256,14 @@ export function ProjectDetails({ project, projectId }: {
                     </Button>
                     <div className="flex items-center gap-2">
                         {project.isActive && (
-                            <>
-                                <Button
-                                    variant="outline"
-                                    className="hidden sm:flex items-center gap-2"
-                                    onClick={() => router.push(`/projects/${projectId}/update`)}
-                                >
-                                    <Edit className="h-4 w-4" />
-                                    Editar
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="hidden sm:flex items-center gap-2"
-                                    onClick={() => setShowDownload(true)}
-                                >
-                                    <FileSpreadsheet className="h-4 w-4" />
-                                    Descargar
-                                </Button>
-                            </>
+                            <Button
+                                variant="outline"
+                                className="hidden sm:flex items-center gap-2"
+                                onClick={() => router.push(`/projects/${projectId}/update`)}
+                            >
+                                <Edit className="h-4 w-4" />
+                                Editar
+                            </Button>
                         )}
                     </div>
                 </div>
@@ -303,14 +291,9 @@ export function ProjectDetails({ project, projectId }: {
                             </div>
                             <div className="flex sm:hidden space-x-2">
                                 {project.isActive && (
-                                    <>
-                                        <Button variant="outline" size="icon" onClick={() => router.push(`/projects/${projectId}/update`)}>
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="outline" size="icon" onClick={() => setShowDownload(true)}>
-                                            <FileSpreadsheet className="h-4 w-4" />
-                                        </Button>
-                                    </>
+                                    <Button variant="outline" size="icon" onClick={() => router.push(`/projects/${projectId}/update`)}>
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
                                 )}
                             </div>
                         </div>
@@ -553,8 +536,6 @@ export function ProjectDetails({ project, projectId }: {
                 project={project}
                 showTrigger={false}
             />
-
-            <DownloadProject open={showDownload} onOpenChange={setShowDownload} project={project} />
 
             <EditAppointmentDialog
                 isOpen={isEditDialogOpen}

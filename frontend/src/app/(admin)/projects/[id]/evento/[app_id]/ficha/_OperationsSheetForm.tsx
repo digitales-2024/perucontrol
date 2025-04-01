@@ -1,7 +1,6 @@
 "use client";
 
 import { DownloadProjectForm } from "@/app/(admin)/projects/_components/DownloadProjectForm";
-import { Project } from "@/app/(admin)/projects/types";
 import { components } from "@/types/api";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
@@ -12,7 +11,7 @@ export function OperationsSheetForm({
     client,
     appointment,
 }: {
-    project: Project
+    project: components["schemas"]["ProjectSummarySingle"];
     client: components["schemas"]["Client"];
     appointment: ProjectAppointment,
 })

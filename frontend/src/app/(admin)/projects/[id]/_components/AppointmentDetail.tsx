@@ -10,7 +10,6 @@ import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { DesactivateAppointment, EditAppointment } from "../../actions";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
@@ -29,8 +28,6 @@ export function AppointmentDetail({
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
     const [editActualDateOpen, setActualDueDateOpen] = useState(false);
     const [deactivateOpen, setDeactivateOpen] = useState(false);
-
-    const r = useRouter();
 
     const dueDate = parseISO(appointment.dueDate);
     const dueDateStr = dueDate.toLocaleDateString("es-PE", {
