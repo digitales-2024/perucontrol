@@ -124,6 +124,13 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
 
+    [Range(
+        0,
+        9999999.99,
+        ErrorMessage = "El precio debe ser un valor positivo y no mayor a 9,999,999.99"
+    )]
+    public required decimal Price { get; set; }
+
     [MinLength(1, ErrorMessage = "Debe haber al menos 1 visita")]
     public required IList<DateTime> Appointments { get; set; } = null!;
 
@@ -134,6 +141,7 @@ public class ProjectCreateDTO : IMapToEntity<Project>
             Address = Address,
             Area = Area,
             Status = ProjectStatus.Pending,
+            Price = Price,
             SpacesCount = SpacesCount,
         };
     }
@@ -157,6 +165,13 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public uint? SpacesCount { get; set; }
 
+    [Range(
+        0,
+        9999999.99,
+        ErrorMessage = "El precio debe ser un valor positivo y no mayor a 9,999,999.99"
+    )]
+    public decimal? Price { get; set; }
+
     public void ApplyPatch(Project entity)
     {
         if (Address != null)
@@ -165,6 +180,8 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
             entity.Area = Area.Value;
         if (SpacesCount != null)
             entity.SpacesCount = SpacesCount.Value;
+        if (Price != null)
+            entity.Price = Price.Value;
     }
 }
 

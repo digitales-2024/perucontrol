@@ -378,7 +378,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         _context.Entry(newAppointment).State = EntityState.Added;
         _context.Entry(newAppointment.ProjectOperationSheet).State = EntityState.Added;
         project.Appointments.Add(newAppointment);
-        
+
         await _context.SaveChangesAsync();
 
         return Created();

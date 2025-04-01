@@ -14,10 +14,9 @@ namespace PeruControl.Controllers;
 [Authorize]
 public class AppointmentController(
     DatabaseContext db,
-     ExcelTemplateService excelTemplate,
+    ExcelTemplateService excelTemplate,
     PDFConverterService pDFConverterService
-)
-    : ControllerBase
+) : ControllerBase
 {
     /// <summary>
     /// Retrieves appointments within a specified time range.
@@ -65,12 +64,13 @@ public class AppointmentController(
         [FromBody] ProjectOperationSheetExport export
     )
     {
-        var appointment = db.Appointments
-            .Include(a => a.Project)
+        var appointment = db
+            .Appointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .FirstOrDefault(a => a.Id == id);
-        if (appointment == null) return NotFound("Evento no encontrado.");
-        
+        if (appointment == null)
+            return NotFound("Evento no encontrado.");
+
         var project = appointment.Project;
 
         if (project == null)
@@ -146,12 +146,13 @@ public class AppointmentController(
         [FromBody] ProjectOperationSheetExport export
     )
     {
-        var appointment = db.Appointments
-            .Include(a => a.Project)
+        var appointment = db
+            .Appointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .FirstOrDefault(a => a.Id == id);
-        if (appointment == null) return NotFound("Evento no encontrado.");
-        
+        if (appointment == null)
+            return NotFound("Evento no encontrado.");
+
         var project = appointment.Project;
 
         if (project == null)
@@ -212,7 +213,6 @@ public class AppointmentController(
             "Templates/ficha_operaciones.xlsx"
         );
 
-
         var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(fileBytes, "xlsx");
 
         if (errorStr != "")
@@ -227,5 +227,4 @@ public class AppointmentController(
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
-
 }
