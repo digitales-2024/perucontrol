@@ -5,6 +5,7 @@ import Calendar from "./calendar/calendar";
 import { CalendarEvent, Mode } from "./calendar/calendar-types";
 import { GetAppointmentsByDate } from "./actions";
 import { parseISO } from "date-fns";
+import { datesToStatus } from "../(admin)/projects/[id]/details/_components/AppointmentDetail";
 
 export default function CalendarDemo()
 {
@@ -21,20 +22,51 @@ export default function CalendarDemo()
             const [data, err] = await GetAppointmentsByDate(startDate, endDate);
             if (err !== null)
             {
-                console.error("fetch error!!!");
-                console.error(err);
                 return;
             }
-            console.log("fetch data!");
-            console.log(data);
 
-            setEvents(data.map((appointment) => ({
-                id: appointment.id,
-                title: `#${appointment.project.projectNumber} - ${appointment.client.name}`,
-                color: !!appointment.actualDate ? "greed" : "red",
-                start: parseISO(appointment.dueDate),
-                end: parseISO(appointment.dueDate),
-            })));
+            setEvents(data.map((appointment) =>
+            {
+                const status = datesToStatus(appointment.dueDate, appointment.actualDate ?? undefined);
+
+                let color = "";
+                let borderColor = "";
+                let bgColor = "";
+                if (status === "Completo")
+                {
+                    color = "text-green-400";
+                    borderColor = "border-green-400";
+                    bgColor = "bg-green-400/10";
+                }
+                else if (status === "Completo con retraso")
+                {
+                    color = "text-amber-600";
+                    borderColor = "border-amber-400";
+                    bgColor = "bg-amber-400/10";
+                }
+                else if (status === "Retrasado")
+                {
+                    color = "text-red-600";
+                    borderColor = "border-red-600";
+                    bgColor = "bg-red-400/10";
+                }
+                else if (status === "Pendiente")
+                {
+                    color = "text-blue-600";
+                    borderColor = "border-blue-600";
+                    bgColor = "bg-blue-400/10";
+                }
+
+                return ({
+                    id: appointment.id,
+                    title: `#${appointment.project.projectNumber} - ${appointment.client.name}`,
+                    color,
+                    borderColor,
+                    bgColor,
+                    start: parseISO(appointment.dueDate),
+                    end: parseISO(appointment.dueDate),
+                });
+            }));
         })();
     }, [mode, date]);
 

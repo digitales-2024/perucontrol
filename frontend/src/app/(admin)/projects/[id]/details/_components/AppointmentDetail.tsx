@@ -1,7 +1,7 @@
 import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/components/ui/accordion";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Check } from "lucide-react";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis } from "lucide-react";
 import { useMemo } from "react";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
@@ -162,7 +162,7 @@ function AppointmentIcon(dueDateStr: string, actualStr?: string)
 }
 
 type DateStatus = "Pendiente" | "Retrasado" | "Completo" | "Completo con retraso"
-function datesToStatus(dueDateStr: string, actualStr?: string): DateStatus
+export function datesToStatus(dueDateStr: string, actualStr?: string): DateStatus
 {
     const dueDate = parseISO(dueDateStr);
     const now = new Date();
@@ -186,7 +186,8 @@ function datesToStatus(dueDateStr: string, actualStr?: string): DateStatus
         {
             return "Retrasado";
         }
-        else {
+        else
+        {
             return "Pendiente";
         }
     }

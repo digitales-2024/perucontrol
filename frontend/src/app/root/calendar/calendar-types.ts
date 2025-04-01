@@ -20,6 +20,8 @@ export type CalendarEvent = {
   id: string
   title: string
   color: string
+  borderColor: string
+  bgColor: string
   start: Date
   end: Date
 }

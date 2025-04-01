@@ -65,15 +65,14 @@ export default function CalendarEvent({
 
     // Generate a unique key that includes the current month to prevent animation conflicts
     const isEventInCurrentMonth = isSameMonth(event.start, date);
-    const animationKey = `${event.id}-${isEventInCurrentMonth ? "current" : "adjacent"
-    }`;
+    const animationKey = `${event.id}-${isEventInCurrentMonth ? "current" : "adjacent"}`;
 
     return (
         <MotionConfig reducedMotion="user">
             <AnimatePresence mode="wait">
                 <motion.div
                     className={cn(
-                        `px-1 py-1 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
+                        `px-1 py-1 rounded-md truncate cursor-pointer transition-all duration-300 ${event.bgColor} border ${event.borderColor}`,
                         !month && "absolute",
                         className,
                     )}
@@ -120,7 +119,7 @@ export default function CalendarEvent({
                 >
                     <motion.div
                         className={cn(
-                            `flex flex-col w-full text-${event.color}-500`,
+                            `flex flex-col w-full ${event.color}`,
                             month && "flex-row items-center justify-between",
                         )}
                         layout="position"
