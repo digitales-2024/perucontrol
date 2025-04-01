@@ -25,7 +25,7 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
     {
         if (project.isActive)
         {
-            router.push(`/projects/${project.id}/details`);
+            router.push(`/projects/${project.id}`);
         }
     };
 

@@ -5,7 +5,7 @@ import { UpdateClientData } from "./_components/UpdateData";
 
 interface Props {
     params: Promise<{
-      id: string;
+        id: string;
     }>
 }
 
@@ -39,7 +39,7 @@ export default async function ProjectsPage({ params }: Props)
 
     // get project by id
     const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}", {
-        ...auth ,
+        ...auth,
         params: {
             path: {
                 id,
@@ -55,7 +55,7 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <Shell>
-            <HeaderPage title="Editar Servicio" description="Has los cambios que necesites en el servicio y guarda" />
+            <HeaderPage title="Editar Servicio" description="Editar información general del servicio" />
             <UpdateClientData clients={clients} services={services} quotations={quotations} project={project} />
         </Shell>
     );

@@ -4,12 +4,13 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil } from "lucide-react";
-import Link from "next/link";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, Download } from "lucide-react";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
-import { EditAppointment } from "../../../actions";
+import { DesactivateAppointment, EditAppointment } from "../../actions";
+import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
+import Link from "next/link";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -26,6 +27,7 @@ export function AppointmentDetail({
 {
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
     const [editActualDateOpen, setActualDueDateOpen] = useState(false);
+    const [deactivateOpen, setDeactivateOpen] = useState(false);
 
     const dueDate = parseISO(appointment.dueDate);
     const dueDateStr = dueDate.toLocaleDateString("es-PE", {
@@ -55,6 +57,17 @@ export function AppointmentDetail({
             {
                 success: "Fecha actualizada",
                 loading: "Actualizando fecha...",
+            },
+        );
+    }
+
+    async function Deactivate()
+    {
+        await toastWrapper(
+            DesactivateAppointment(projectId, appointment.id!),
+            {
+                success: "Cita eliminada",
+                loading: "Eliminando cita...",
             },
         );
     }
@@ -146,20 +159,32 @@ export function AppointmentDetail({
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Button
-                            className="disabled:cursor-not-allowed disabled:opacity-50"
-                            disabled={deliveryDate === null}
-                            title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
-                            onClick={() =>
-                            { }}
-                        >
-                            Ficha de Operaciones
-                        </Button>
-                        <Link href={"./purchase-order/"}>
-                            <Button>
-                                Ver detalle
+                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}>
+                            <Button
+                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={deliveryDate === null}
+                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                            >
+                                <Download />
+                                Certificado
                             </Button>
                         </Link>
+                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}>
+                            <Button
+                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={deliveryDate === null}
+                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                            >
+                                <Download />
+                                Ficha de Operaciones
+                            </Button>
+                        </Link>
+                        <Button
+                            onClick={() => setDeactivateOpen(true)}
+                            variant="destructive"
+                        >
+                            Eliminar
+                        </Button>
                     </div>
 
                 </AccordionContent>
@@ -171,6 +196,11 @@ export function AppointmentDetail({
             <EditAppointmentDialog isOpen={editActualDateOpen} onClose={() => setActualDueDateOpen(false)}
                 onSave={(newDate) => UpdateActualDate(newDate)}
                 initialDate={deliveryDate ?? undefined}
+            />
+            <DesactiveAppointmentDialog
+                isOpen={deactivateOpen}
+                onClose={() => setDeactivateOpen(false)}
+                onConfirm={() => Deactivate()}
             />
         </>
     );
