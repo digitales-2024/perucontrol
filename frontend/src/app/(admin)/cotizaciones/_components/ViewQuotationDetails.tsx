@@ -16,9 +16,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
 
 interface ViewQuotationProps {
-  quotation: components["schemas"]["Quotation3"] | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+    quotation: components["schemas"]["Quotation3"] | null
+    open: boolean
+    onOpenChange: (open: boolean) => void
 }
 
 export function ViewQuotationDetails({ quotation, open, onOpenChange }: ViewQuotationProps)

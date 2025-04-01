@@ -21,10 +21,10 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         accessorKey: "quotationNumber",
         header: "Nro.",
         cell: ({ row }) => (
-            <span className={`text-xs md:text-sm ${!row.original.isActive ? "line-through text-red-500" : ""}`}>
+            <span className={`text-xs md:text-sm ${!row.original!.isActive ? "line-through text-red-500" : ""}`}>
                 #
                 {" "}
-                {row.original.quotationNumber}
+                {row.original!.quotationNumber}
             </span>
         ),
     },
@@ -48,7 +48,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         ),
         cell: ({ row }) =>
         {
-            const isActive = row.original.isActive;
+            const isActive = row.original!.isActive;
             const clientName =
                 row.original?.client?.name === "-"
                     ? row.original.client.razonSocial
@@ -253,7 +253,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                         <DeleteQuotation
                             open={showDeleteQuotation}
                             onOpenChange={setShowDeleteQuotation}
-                            quotation={row?.original}
+                            quotation={row.original!}
                             showTrigger={false}
                         />
                         {/* Ver Detalles de una cotización */}
@@ -313,7 +313,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                             <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
                                 Ver
                             </DropdownMenuItem>
-                            <Link href={`/cotizaciones/${row.original.id}`}>
+                            <Link href={`/cotizaciones/${row.original!.id}`}>
                                 <DropdownMenuItem
                                     disabled={!isActive}
                                 >
@@ -321,13 +321,13 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                                 </DropdownMenuItem>
                             </Link>
                             <DropdownMenuItem
-                                onSelect={() => downloadExcel(row.original.id!)}
+                                onSelect={() => downloadExcel(row.original!.id!)}
                                 disabled={!isActive}
                             >
                                 Descargar Cotización en Excel
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                onSelect={() => downloadPdf(row.original.id!)}
+                                onSelect={() => downloadPdf(row.original!.id!)}
                                 disabled={!isActive}
                             >
                                 Descargar Cotización en PDF
@@ -361,7 +361,7 @@ const downloadExcel = async(id: string) =>
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `cotizacion_${id}.pdf`;
+    a.download = `cotizacion_${id}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
 };
