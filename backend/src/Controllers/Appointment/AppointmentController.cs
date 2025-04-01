@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 using PeruControl.Model;
 using PeruControl.Services;
 
@@ -226,5 +227,27 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [HttpGet("mail")]
+    public async Task<IActionResult> SendEmailTest(
+    )
+    {
+        var message = new MimeKit.MimeMessage();
+        message.From.Add(new MailboxAddress("Fernando Araoz", "fernando@araozu.dev"));
+        message.To.Add(new MailboxAddress("", "larispe@acideperu.org"));
+        message.Subject = "Test email";
+
+        var builder = new BodyBuilder();
+        builder.HtmlBody = "<h1>Test email</h1>";
+        message.Body = builder.ToMessageBody();
+
+        using var client = new MailKit.Net.Smtp.SmtpClient();
+        await client.ConnectAsync("mail.privateemail.com", 465, true);
+        await client.AuthenticateAsync("fernando@araozu.dev", "--password-here--");
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+
+        return Ok();
     }
 }
