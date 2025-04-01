@@ -4,13 +4,14 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil } from "lucide-react";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, Download } from "lucide-react";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { DesactivateAppointment, EditAppointment } from "../../actions";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -161,17 +162,26 @@ export function AppointmentDetail({
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Button
-                            className="disabled:cursor-not-allowed disabled:opacity-50"
-                            disabled={deliveryDate === null}
-                            title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
-                            onClick={() =>
-                            {
-                                r.push(`/projects/${projectId}/ficha`);
-                            }}
-                        >
-                            Ficha de Operaciones
-                        </Button>
+                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}>
+                            <Button
+                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={deliveryDate === null}
+                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                            >
+                                <Download />
+                                Certificado
+                            </Button>
+                        </Link>
+                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}>
+                            <Button
+                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={deliveryDate === null}
+                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                            >
+                                <Download />
+                                Ficha de Operaciones
+                            </Button>
+                        </Link>
                         <Button
                             onClick={() => setDeactivateOpen(true)}
                             variant="destructive"

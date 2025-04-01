@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useState } from "react";
 import { DeleteProject } from "./DeleteProject";
-import { DownloadProject } from "./DownloadProject";
 import { components } from "@/types/api";
 
 type ProjectSummary = components["schemas"]["ProjectSummary"]
@@ -220,7 +219,6 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
         {
             const isActive = row.original?.isActive;
             const [showDeleteProject, setShowDeleteProject] = useState(false);
-            const [showDownload, setShowDownload] = useState(false);
 
             const projectId = row.original.id;
             return (
@@ -233,8 +231,6 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                             project={row?.original}
                             showTrigger={false}
                         />
-                        {/* Descargar Proyecto */}
-                        <DownloadProject open={showDownload} onOpenChange={setShowDownload} project={row.original} />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -258,9 +254,6 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                                     Editar
                                 </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onSelect={() => setShowDownload(true)} disabled={!isActive}>
-                                Descargar Servicio
-                            </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setShowDeleteProject(true)} disabled={!isActive}>
                                 Eliminar
                             </DropdownMenuItem>
