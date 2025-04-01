@@ -12,16 +12,18 @@ import { CreateProject } from "../../actions";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ProjectFormProps {
-  clients: Array<components["schemas"]["Client"]>;
-  services: Array<components["schemas"]["Service"]>;
-  quotations: Array<components["schemas"]["Quotation3"]>;
+    clients: Array<components["schemas"]["Client"]>;
+    services: Array<components["schemas"]["Service"]>;
+    quotations: Array<components["schemas"]["Quotation3"]>;
 }
 
 export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const r = useRouter();
 
     // Configuración del formulario con validación estricta
     const formMethods = useForm<ClientDataSchema>({
@@ -41,7 +43,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
     const {
         handleSubmit,
         formState: { errors },
-        reset,
     } = formMethods;
 
     const onSubmit = async(data: ClientDataSchema) =>
@@ -103,16 +104,8 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 return;
             }
 
-            // Restablecer a valores iniciales
-            reset({
-                clientId: "",
-                quotationId: null,
-                address: "",
-                area: 1,
-                spacesCount: 1,
-                services: [],
-                appointments: [],
-            });
+            // redirect
+            r.push(".");
         }
         catch (error)
         {

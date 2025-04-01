@@ -1,7 +1,7 @@
 "use client";
 
 import type { components } from "@/types/api";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,6 @@ import {
     Pencil,
     Plus,
     Shield,
-    Trash2,
     User,
     XCircle,
 } from "lucide-react";
@@ -37,9 +36,11 @@ import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { AppointmentDetail } from "./AppointmentDetail";
 import { Accordion } from "@/components/ui/accordion";
 
-export function ProjectDetails({ project }: { project: components["schemas"]["ProjectSummarySingle"] })
+export function ProjectDetails({ project, projectId }: {
+    project: components["schemas"]["ProjectSummarySingle"],
+    projectId: string
+})
 {
-    const { id: projectId } = useParams();
     const router = useRouter();
     const [showClientDetails, setShowClientDetails] = useState(false);
     const [showDeleteProject, setShowDeleteProject] = useState(false);
@@ -108,7 +109,6 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
 
     const formatDate = (dateString: string) =>
     {
-        console.log(dateString);
         try
         {
             const date = parseISO(dateString);
@@ -146,7 +146,6 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
 
         try
         {
-            console.log(newDateISO);
             // Llamar a la función AddAppointment con el ID del proyecto y la nueva fecha
             const [newAppointment, error] = await AddAppointment(project.id!, newDateISO);
 
@@ -176,25 +175,6 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
         }
     };
 
-    /* const openEditDialog = (appointment: { id: string; dueDate: string, actualDate: string }) =>
-    {
-        setEditingAppointment(appointment);
-        setIsEditDialogOpen(true);
-    }; */
-    const openEditDialog = (appointment: { id: string; dueDate: string; actualDate: string }, field: "dueDate" | "actualDate") =>
-    {
-        setEditingAppointment({ ...appointment, field });
-        setIsEditDialogOpen(true);
-    };
-
-    /* const handleSaveEditedDate = async(newDate: Date) =>
-    {
-        if (editingAppointment)
-        {
-            await handleEditAppointment(editingAppointment.id, newDate, null, null);
-            setEditingAppointment(null);
-        }
-    }; */
     const handleSaveEditedDate = async(newDate: Date) =>
     {
         if (editingAppointment)
@@ -242,12 +222,6 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                 setIsEditDialogOpen(false);
             }
         }
-    };
-
-    const openDesactiveDialog = (appointmentId: string) =>
-    {
-        setDeletingAppointmentId(appointmentId);
-        setIsDesactiveDialogOpen(true);
     };
 
     const handleConfirmDelete = async() =>
@@ -554,122 +528,12 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
 
                                         <Accordion type="single" collapsible className="w-full">
                                             {sortedAppointments.map((appointment, idx) => (
-                                                <AppointmentDetail appointment={appointment} key={appointment.id!} idx={idx} />
+                                                <AppointmentDetail
+                                                    projectId={projectId}
+                                                    appointment={appointment} key={appointment.id!} idx={idx}
+                                                />
                                             ))}
                                         </Accordion>
-                                        {sortedAppointments.map((appointment, index) => (
-                                            <div
-                                                key={appointment.id}
-                                                className="bg-gray-50 dark:bg-background p-4 rounded-lg border border-gray-200 hover:border-blue-200 transition-colors"
-                                            >
-                                                <div className="flex justify-between items-center mb-3">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 font-medium text-sm">
-                                                            {index + 1}
-                                                        </div>
-                                                        <h4 className="font-medium">
-                                                            Servicio programado
-                                                        </h4>
-                                                        {DateStatusBadge(appointment.dueDate!, appointment.actualDate ?? undefined)}
-                                                        {appointment.orderNumber && (
-                                                            <Badge variant="outline" className="ml-2">
-                                                                Orden #
-                                                                {appointment.orderNumber}
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => openDesactiveDialog(appointment.id!)}
-                                                        className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                                        title="Eliminar cita"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    {/* Columna de Fecha Planificada */}
-                                                    <div className="bg-white dark:bg-background p-3 rounded-md border border-gray-100">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <Clock className="h-4 w-4 text-blue-500" />
-                                                            <h4 className="font-medium text-sm">
-                                                                Fecha Planificada
-                                                            </h4>
-                                                        </div>
-                                                        <p className="text-base mb-3 pl-6">
-                                                            {appointment.dueDate ? (
-                                                                formatDate(appointment.dueDate)
-                                                            ) : (
-                                                                <span className="italic text-gray-400">
-                                                                    No registrada
-                                                                </span>
-                                                            )}
-                                                        </p>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => openEditDialog(
-                                                                { id: appointment.id!, dueDate: appointment.dueDate!, actualDate: appointment.actualDate ?? "" },
-                                                                "dueDate",
-                                                            )
-                                                            }
-                                                            className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
-                                                        >
-                                                            <Pencil className="h-3.5 w-3.5 mr-2" />
-                                                            Editar Fecha Planificada
-                                                        </Button>
-                                                    </div>
-
-                                                    {/* Columna de Fecha Real */}
-                                                    <div className="bg-white dark:bg-background p-3 rounded-md border border-gray-100">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <CheckCircle2
-                                                                className={`h-4 w-4 ${appointment.actualDate ? "text-green-500" : "text-gray-300"}`}
-                                                            />
-                                                            <h4 className="font-medium text-sm">
-                                                                Fecha Real
-                                                            </h4>
-                                                        </div>
-                                                        <p className="text-base mb-3 pl-6">
-                                                            {appointment.actualDate ? (
-                                                                formatDate(appointment.actualDate)
-                                                            ) : (
-                                                                <span className="italic text-gray-400">
-                                                                    Pendiente de registro
-                                                                </span>
-                                                            )}
-                                                        </p>
-                                                        <Button
-                                                            variant={appointment.actualDate ? "outline" : "default"}
-                                                            size="sm"
-                                                            onClick={() => openEditDialog(
-                                                                { id: appointment.id!, dueDate: appointment.dueDate ?? "", actualDate: appointment.actualDate ?? "" },
-                                                                "actualDate",
-                                                            )
-                                                            }
-                                                            className={`w-full ${appointment.actualDate
-                                                                ? "text-green-600 border-green-200 hover:bg-green-50"
-                                                                : "bg-green-600 hover:bg-green-700 text-white"
-                                                            }`}
-                                                        >
-                                                            {appointment.actualDate ? (
-                                                                <>
-                                                                    <Pencil className="h-3.5 w-3.5 mr-2" />
-                                                                    Editar Fecha Real
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Calendar className="h-3.5 w-3.5 mr-2" />
-                                                                    Registrar Fecha Real
-                                                                </>
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
                                     </div>
                                 </div>
                             </TabsContent>
@@ -719,74 +583,5 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
             />
         </div>
     );
-}
-
-type DateStatus = "Pendiente" | "Retrasado" | "Completo" | "Completo con retraso"
-function datesToStatus(dueDateStr: string, actualStr?: string): DateStatus
-{
-    const dueDate = parseISO(dueDateStr);
-    const now = new Date();
-
-    if (actualStr !== undefined)
-    {
-        const actual = parseISO(actualStr!);
-
-        if (actual <= dueDate)
-        {
-            return "Completo";
-        }
-        else
-        {
-            return "Completo con retraso";
-        }
-    }
-    else
-    {
-        if (dueDate < now)
-        {
-            return "Retrasado";
-        }
-        else
-        {
-            return "Pendiente";
-        }
-    }
-}
-
-function DateStatusBadge(dueDateStr: string, actualStr?: string)
-{
-    const status = datesToStatus(dueDateStr, actualStr);
-    if (status === "Completo")
-    {
-        return (
-            <Badge variant="approved">
-                {status}
-            </Badge>
-        );
-    }
-    else if (status === "Completo con retraso")
-    {
-        return (
-            <Badge variant="destructive">
-                {status}
-            </Badge>
-        );
-    }
-    else if (status === "Retrasado")
-    {
-        return (
-            <Badge variant="destructive">
-                {status}
-            </Badge>
-        );
-    }
-    else if (status === "Pendiente")
-    {
-        return (
-            <Badge variant="default">
-                {status}
-            </Badge>
-        );
-    }
 }
 

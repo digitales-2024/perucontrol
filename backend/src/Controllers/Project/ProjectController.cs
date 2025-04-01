@@ -78,6 +78,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     {
         var projects = await _context
             .Projects.Include(p => p.Client)
+            .OrderByDescending(p => p.ProjectNumber)
             .Include(p => p.Services)
             .Include(q => q.Quotation)
             .Include(p => p.Appointments)

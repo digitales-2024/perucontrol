@@ -32,7 +32,7 @@ export default async function ProjectDetail({ params }: Props)
     return (
         <Shell>
             <HeaderPage title={`Servicio # ${project.projectNumber}`} />
-            <ProjectDetails project={project} />
+            <ProjectDetails project={project} projectId={id} />
         </Shell>
     );
 }
