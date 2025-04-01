@@ -1,7 +1,6 @@
 import { CalendarContext } from "./calendar-context";
 import { CalendarEvent, Mode } from "./calendar-types";
 import { useState } from "react";
-import CalendarNewEventDialog from "./dialog/calendar-new-event-dialog";
 import CalendarManageEventDialog from "./dialog/calendar-manage-event-dialog";
 
 export default function CalendarProvider({
@@ -46,7 +45,6 @@ export default function CalendarProvider({
                 setSelectedEvent,
             }}
         >
-            <CalendarNewEventDialog />
             <CalendarManageEventDialog />
             {children}
         </CalendarContext.Provider>

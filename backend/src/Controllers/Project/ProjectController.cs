@@ -78,6 +78,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     {
         var projects = await _context
             .Projects.Include(p => p.Client)
+            .OrderByDescending(p => p.ProjectNumber)
             .Include(p => p.Services)
             .Include(q => q.Quotation)
             .Include(p => p.Appointments)
@@ -87,6 +88,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             .Select(p => new ProjectSummary
             {
                 Id = p.Id,
+                ProjectNumber = p.ProjectNumber,
                 Client = p.Client,
                 Services = p.Services,
                 Status = p.Status,
@@ -95,6 +97,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
                 Address = p.Address,
                 Quotation = p.Quotation,
                 IsActive = p.IsActive,
+                Price = p.Price,
                 Appointments = p.Appointments.Select(a => a.DueDate).ToList(),
             })
             .ToList();
@@ -123,6 +126,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         var projectSummary = new ProjectSummarySingle
         {
             Id = project.Id,
+            ProjectNumber = project.ProjectNumber,
             Client = project.Client,
             Services = project.Services,
             Status = project.Status,
@@ -131,6 +135,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             Address = project.Address,
             Quotation = project.Quotation,
             IsActive = project.IsActive,
+            Price = project.Price,
             Appointments = project.Appointments.ToList(),
         };
 
@@ -160,13 +165,16 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             Id = project.Id,
             Client = project.Client,
             Services = project.Services,
+            ProjectNumber = project.ProjectNumber,
             Status = project.Status,
             SpacesCount = project.SpacesCount,
             Area = project.Area,
             Address = project.Address,
             Quotation = project.Quotation,
             IsActive = project.IsActive,
+            Price = project.Price,
             Appointments = project.Appointments.ToList(),
+            CreatedAt = project.CreatedAt,
         };
 
         return Ok(projectSummary);
@@ -378,7 +386,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         _context.Entry(newAppointment).State = EntityState.Added;
         _context.Entry(newAppointment.ProjectOperationSheet).State = EntityState.Added;
         project.Appointments.Add(newAppointment);
-        
+
         await _context.SaveChangesAsync();
 
         return Created();

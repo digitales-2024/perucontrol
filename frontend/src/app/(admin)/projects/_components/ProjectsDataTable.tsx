@@ -8,9 +8,11 @@ import { DataTable } from "@/components/data-table/DataTable";
 import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 
+type ProjectSummary = components["schemas"]["ProjectSummary"]
+
 interface DataTableProps {
-    columns: Array<ColumnDef<Project>>;
-    data: Array<components["schemas"]["Project"]>;
+    columns: Array<ColumnDef<ProjectSummary>>;
+    data: Array<components["schemas"]["ProjectSummary"]>;
 }
 
 export function ProjectsDataTable({ columns, data }: DataTableProps)

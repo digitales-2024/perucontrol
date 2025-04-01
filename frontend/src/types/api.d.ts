@@ -3522,6 +3522,8 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            /** Format: double */
+            price: number;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3534,7 +3536,7 @@ export interface components {
             /** Format: int32 */
             orderNumber?: number | null;
             /** Format: date-time */
-            dueDate?: string;
+            dueDate: string;
             /** Format: date-time */
             actualDate?: string | null;
             /** Format: uuid */
@@ -3557,6 +3559,8 @@ export interface components {
             area: number;
             /** Format: uint32 */
             spacesCount: number;
+            /** Format: double */
+            price: number;
             appointments: Array<string>;
         };
         ProjectOperationSheet: {
@@ -3743,6 +3747,8 @@ export interface components {
             area?: number | null;
             /** Format: uint32 */
             spacesCount?: number | null;
+            /** Format: double */
+            price?: number | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Completed" | "Rejected";
@@ -3750,12 +3756,16 @@ export interface components {
             client: components["schemas"]["Client"];
             services: Array<components["schemas"]["Service"]>;
             quotation?: components["schemas"]["Quotation"];
+            /** Format: int32 */
+            projectNumber: number;
             address: string;
             /** Format: uint32 */
             area: number;
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            /** Format: double */
+            price: number;
             appointments: Array<string>;
             /** Format: uuid */
             id?: string;
@@ -3769,12 +3779,16 @@ export interface components {
             client: components["schemas"]["Client"];
             services: Array<components["schemas"]["Service"]>;
             quotation?: components["schemas"]["Quotation2"];
+            /** Format: int32 */
+            projectNumber: number;
             address: string;
             /** Format: uint32 */
             area: number;
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            /** Format: double */
+            price: number;
             appointments: Array<components["schemas"]["ProjectAppointment"]>;
             /** Format: uuid */
             id?: string;
@@ -3825,7 +3839,7 @@ export interface components {
         Quotation2: {
             /** Format: int32 */
             quotationNumber: number;
-            client?: components["schemas"]["Client3"];
+            client: components["schemas"]["Client3"];
             services?: Array<components["schemas"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
@@ -3838,7 +3852,20 @@ export interface components {
             creationDate: string;
             /** Format: date-time */
             expirationDate: string;
-            termsAndConditions: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            serviceListText: string;
+            serviceDescription: string;
+            serviceDetail: string;
+            /** Format: double */
+            price: number;
+            requiredAvailability: string;
+            serviceTime: string;
+            customField6: string;
+            treatedAreas: string;
+            deliverables: string;
+            customField10?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3850,7 +3877,6 @@ export interface components {
         Quotation3: {
             /** Format: int32 */
             quotationNumber: number;
-            client?: components["schemas"]["Client"];
             client: components["schemas"]["Client"];
             services?: Array<components["schemas"]["Service"]>;
             status: components["schemas"]["QuotationStatus"];

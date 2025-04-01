@@ -5,7 +5,7 @@ import { ProjectDetails } from "./_components/ProjectDetails";
 
 interface Props {
     params: Promise<{
-      id: string;
+        id: string;
     }>
 }
 
@@ -15,7 +15,7 @@ export default async function ProjectDetail({ params }: Props)
 
     // get project by id
     const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
-        ...auth ,
+        ...auth,
         params: {
             path: {
                 id,
@@ -31,8 +31,8 @@ export default async function ProjectDetail({ params }: Props)
 
     return (
         <Shell>
-            <HeaderPage title="Detalles del Proyecto" />
-            <ProjectDetails project={project} />
+            <HeaderPage title={`Servicio # ${project.projectNumber}`} />
+            <ProjectDetails project={project} projectId={id} />
         </Shell>
     );
 }
