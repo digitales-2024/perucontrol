@@ -193,6 +193,8 @@ public class ProjectSummary : BaseModel
 
     public Quotation? Quotation { get; set; } = null!;
 
+    public required int ProjectNumber { get; set; }
+
     public required string Address { get; set; }
 
     public required uint Area { get; set; }
@@ -200,6 +202,8 @@ public class ProjectSummary : BaseModel
     public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
 
     public required uint SpacesCount { get; set; }
+
+    public required decimal Price { get; set; }
 
     public required IList<DateTime> Appointments { get; set; } = null!;
 }
@@ -212,6 +216,8 @@ public class ProjectSummarySingle : BaseModel
 
     public Quotation? Quotation { get; set; } = null!;
 
+    public required int ProjectNumber { get; set; }
+
     public required string Address { get; set; }
 
     public required uint Area { get; set; }
@@ -219,6 +225,8 @@ public class ProjectSummarySingle : BaseModel
     public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
 
     public required uint SpacesCount { get; set; }
+
+    public required decimal Price { get; set; }
 
     public required ICollection<ProjectAppointment> Appointments { get; set; } = null!;
 }

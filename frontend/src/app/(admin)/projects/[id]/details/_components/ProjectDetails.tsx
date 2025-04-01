@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import {
     ArrowLeft,
@@ -106,9 +106,10 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
 
     const formatDate = (dateString: string) =>
     {
+        console.log(dateString);
         try
         {
-            const date = new Date(dateString);
+            const date = parseISO(dateString);
             return format(date, "d 'de' MMMM, yyyy", { locale: es });
         }
         catch (error)
@@ -309,19 +310,20 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                     <CardHeader className="pb-2">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-4">
                                     <CardTitle className="text-2xl">
-                                        Proyecto #
-                                        {/* {project.orderNumber! ?? "Sin número"} */}
+                                        Servicio #
+                                        {" "}
+                                        {project.projectNumber}
                                     </CardTitle>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center gap-4">
                                         {getStatusIcon(project.status)}
                                         {getStatusBadge(project.status)}
                                     </div>
                                 </div>
                                 <CardDescription>
-                                    Creado el
-                                    {formatDate(project.createdAt!)}
+                                    Creado el&nbsp;
+                                    {formatDate(project.createdAt ?? "")}
                                 </CardDescription>
                             </div>
                             <div className="flex sm:hidden space-x-2">
@@ -358,7 +360,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                         Información del Cliente
                                     </h3>
                                     <Separator />
-                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <h4 className="font-medium text-base">
@@ -390,7 +392,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                     </h3>
                                     <Separator />
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
                                             <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                                 Servicios
                                             </h4>
@@ -412,7 +414,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
                                             <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                                 Ubicación
                                             </h4>
@@ -424,7 +426,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
                                             <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                                 Dimensiones
                                             </h4>
@@ -450,7 +452,7 @@ export function ProjectDetails({ project }: { project: components["schemas"]["Pr
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
                                             <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                                 Frecuencia
                                             </h4>

@@ -32,6 +32,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             address: "",
             area: 1,
             spacesCount: 1,
+            price: 0,
             services: [],
             appointments: [],
         },
@@ -76,6 +77,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 address: data.address,
                 area: data.area,
                 spacesCount: data.spacesCount,
+                price: data.price,
                 appointments: data.appointments.map((date) =>
                 {
                     // Asegurar formato ISO string

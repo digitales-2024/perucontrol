@@ -14,23 +14,10 @@ export default async function ProjectsPage()
         throw error;
     }
 
-    const transformedProjects = projects.map((project) => ({
-        id: project.id!,
-        area: project.area,
-        spacesCount: project.spacesCount,
-        // orderNumber: project.orderNumber,
-        status: project.status,
-        address: project.address,
-        client: project.client,
-        services: project.services,
-        quotation: project.quotation,
-        isActive: project.isActive ?? false,
-    }));
-
     return (
         <Shell>
             <HeaderPage title="Gestión de Servicios" description="Gestiona los servicios de tu empresa" />
-            <ProjectsDataTable columns={columns} data={transformedProjects} />
+            <ProjectsDataTable columns={columns} data={projects} />
         </Shell>
     );
 }

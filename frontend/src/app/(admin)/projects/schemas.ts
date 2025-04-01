@@ -4,6 +4,7 @@ export const clientDataSchema = z.object({
     clientId: z.string().uuid("Debe ser un UUID válido"),
     quotationId: z.union([z.string().uuid(), z.null()]).optional(),
     services: z.array(z.string().min(1, "El servicio es requerido")),
+    price: z.number({message: "El precio es requerido"}),
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
     area: z.preprocess(

@@ -16,9 +16,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { DeleteProject } from "./DeleteProject";
 import { DownloadProject } from "./DownloadProject";
-import { Project } from "../types";
+import { components } from "@/types/api";
 
-export const columns: Array<ColumnDef<Project>> = [
+type ProjectSummary = components["schemas"]["ProjectSummary"]
+
+export const columns: Array<ColumnDef<ProjectSummary>> = [
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
@@ -27,7 +29,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        # Orden
+                # Servicio
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -44,7 +46,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
-                    {row.original.orderNumber}
+                    {row.original.projectNumber}
                 </span>
             );
         },
@@ -57,7 +59,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Cliente
+                Cliente
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -87,7 +89,7 @@ export const columns: Array<ColumnDef<Project>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Estado
+                Estado
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -103,21 +105,20 @@ export const columns: Array<ColumnDef<Project>> = [
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center text-xs md:text-sm ${
-                        !isActive ? "text-red-500" : ""
+                    className={`items-center text-center flex justify-center text-xs md:text-sm ${!isActive ? "text-red-500" : ""
                     }`}
                 >
                     {row.original?.status === "Pending" ? (
                         <Badge variant={!isActive ? "deleted" : "default"}>
-Pendiente
+                            Pendiente
                         </Badge>
-                    ) : row.original?.status === "Approved" ? (
+                    ) : row.original?.status === "Completed" ? (
                         <Badge variant={!isActive ? "deleted" : "approved"}>
-Aprobado
+                            Aprobado
                         </Badge>
                     ) : (
                         <Badge variant={!isActive ? "deleted" : "destructive"}>
-Rechazado
+                            Rechazado
                         </Badge>
                     )}
                 </span>
@@ -132,7 +133,7 @@ Rechazado
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Área m2
+                Área m2
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -160,7 +161,7 @@ Rechazado
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Nro. de Ambientes
+                Nro. de Ambientes
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -190,7 +191,7 @@ Rechazado
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Dirección
+                Dirección
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (

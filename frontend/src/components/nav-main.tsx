@@ -53,7 +53,8 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
     const [expandOpen, setExpandOpen] = useState(true);
 
     // Check if this item or any of its subitems is active
-    const isItemActive = item.url === pathname;
+    const isItemActive = pathname === item.url ||
+                         (pathname.startsWith(item.url) && item.url !== "/");
 
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
