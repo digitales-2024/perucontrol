@@ -14,7 +14,7 @@ import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
 import { AlertDialogRejectQuotation } from "./RejectQuotation";
 import Link from "next/link";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel } from "../actions";
+import { GenerateExcel, GeneratePdf } from "../actions";
 
 export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
     {
@@ -368,7 +368,7 @@ const downloadExcel = async(id: string) =>
 
 const downloadPdf = async(id: string) =>
 {
-    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+    const [blob, err] = await toastWrapper(GeneratePdf(id), {
         loading: "Generando archivo",
         success: "Excel generado",
     });
