@@ -279,7 +279,7 @@ export async function AddAppointment(id: string, dueDate: string): Promise<Resul
         },
     }));
 
-    revalidatePath(`/(admin)/projects/[${id}]/details`, "page");
+    revalidatePath(`/(admin)/projects/[${id}]`, "page");
 
     if (error)
     {
@@ -315,7 +315,7 @@ export async function EditAppointment(
     }));
 
     // Revalidar la página para obtener los datos actualizados
-    revalidatePath(`/(admin)/projects/[${projId}]/details`, "page");
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
 
     if (error)
     {
@@ -344,7 +344,7 @@ export async function DesactivateAppointment(
     }));
 
     // Revalidar la página para obtener los datos actualizados
-    revalidatePath(`/(admin)/projects/[${projId}]/details`, "page");
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
 
     if (error)
     {

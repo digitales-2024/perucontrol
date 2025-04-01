@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
@@ -25,12 +24,12 @@ import {
     XCircle,
 } from "lucide-react";
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
-import { DeleteProject } from "../../../_components/DeleteProject";
-import { DownloadProject } from "../../../_components/DownloadProject";
+import { DeleteProject } from "../../_components/DeleteProject";
+import { DownloadProject } from "../../_components/DownloadProject";
 import { Label } from "@/components/ui/label";
 import DatePicker from "@/components/ui/date-time-picker";
 import { toast } from "sonner";
-import { AddAppointment, DesactivateAppointment, EditAppointment } from "../../../actions";
+import { AddAppointment, DesactivateAppointment, EditAppointment } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { AppointmentDetail } from "./AppointmentDetail";
@@ -318,226 +317,214 @@ export function ProjectDetails({ project, projectId }: {
                     </CardHeader>
 
                     <CardContent>
-                        <Tabs defaultValue="info" className="w-full">
-                            <TabsList className="grid grid-cols-2 mb-4">
-                                <TabsTrigger value="info">
-                                    Información
-                                </TabsTrigger>
-                                <TabsTrigger value="schedule">
-                                    Cronograma
-                                </TabsTrigger>
-                            </TabsList>
-
-                            <TabsContent value="info" className="space-y-6">
-                                {/* Información del cliente */}
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-medium flex items-center gap-2">
-                                        <User className="h-5 w-5 text-blue-500" />
-                                        Información del Cliente
-                                    </h3>
-                                    <Separator />
-                                    <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <h4 className="font-medium text-base">
-                                                    {project.client?.name === "-" ? project.client?.razonSocial : project.client?.name}
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {project.client?.typeDocument.toUpperCase()}
-                                                    :
-                                                    {project.client?.typeDocumentValue}
-                                                </p>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setShowClientDetails(true)}
-                                                className="text-blue-500"
-                                            >
-                                                Ver detalles
-                                            </Button>
-                                        </div>
+                        {/* Información del cliente */}
+                        <div className="space-y-2 mt-4">
+                            <h3 className="text-lg font-medium flex items-center gap-2">
+                                <User className="h-5 w-5 text-blue-500" />
+                                Información del Cliente
+                            </h3>
+                            <Separator />
+                            <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h4 className="font-medium text-base">
+                                            {project.client?.name === "-" ? project.client?.razonSocial : project.client?.name}
+                                        </h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            {project.client?.typeDocument.toUpperCase()}
+                                            :
+                                            {project.client?.typeDocumentValue}
+                                        </p>
                                     </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setShowClientDetails(true)}
+                                        className="text-blue-500"
+                                    >
+                                        Ver detalles
+                                    </Button>
                                 </div>
+                            </div>
+                        </div>
 
-                                {/* Información del servicio */}
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-medium flex items-center gap-2">
-                                        <Shield className="h-5 w-5 text-blue-500" />
-                                        Detalles del Servicio
-                                    </h3>
-                                    <Separator />
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                            <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                                Servicios
-                                            </h4>
-                                            <div className="space-y-2">
-                                                {project.services && project.services.length > 0 ? (
-                                                    project.services.map((service) => (
-                                                        <div key={service.id} className="flex items-center gap-2">
-                                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                                            <span>
-                                                                {service.name}
-                                                            </span>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p className="text-muted-foreground">
-                                                        No hay servicios registrados
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                            <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                                Ubicación
-                                            </h4>
-                                            <div className="flex items-start gap-2">
-                                                <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
-                                                <span>
-                                                    {project.address || "Dirección no disponible"}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                            <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                                Dimensiones
-                                            </h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Área
-                                                    </p>
-                                                    <p className="font-medium">
-                                                        {project.area}
-                                                        {" "}
-                                                        m²
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Ambientes
-                                                    </p>
-                                                    <p className="font-medium">
-                                                        {project.spacesCount}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                            <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                                Frecuencia
-                                            </h4>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-blue-500" />
-                                                <span>
-                                                    {project.quotation?.frequency === "Bimonthly"
-                                                        ? "Bimestral"
-                                                        : project.quotation?.frequency === "Quarterly"
-                                                            ? "Trimestral"
-                                                            : project.quotation?.frequency === "Semiannual"
-                                                                ? "Semestral"
-                                                                : "No especificada"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Información de la cotización */}
-                                {project.quotation && (
+                        {/* Información del servicio */}
+                        <div className="space-y-2 mt-4">
+                            <h3 className="text-lg font-medium flex items-center gap-2">
+                                <Shield className="h-5 w-5 text-blue-500" />
+                                Detalles del Servicio
+                            </h3>
+                            <Separator />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Servicios
+                                    </h4>
                                     <div className="space-y-2">
-                                        <h3 className="text-lg font-medium flex items-center gap-2">
-                                            <FileSpreadsheet className="h-5 w-5 text-blue-500" />
-                                            Cotización Relacionada
-                                        </h3>
-                                        <Separator />
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h4 className="font-medium">
-                                                        Cotización #
-                                                        {project.quotation.quotationNumber}
-                                                    </h4>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                                                        <div>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                Fecha de creación
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                {formatDate(project.quotation.creationDate)}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                Fecha de expiración
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                {formatDate(project.quotation.expirationDate)}
-                                                            </p>
-                                                        </div>
-                                                    </div>
+                                        {project.services && project.services.length > 0 ? (
+                                            project.services.map((service) => (
+                                                <div key={service.id} className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span>
+                                                        {service.name}
+                                                    </span>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    {getStatusIcon(project.quotation.status)}
-                                                    {getStatusBadge(project.quotation.status)}
+                                            ))
+                                        ) : (
+                                            <p className="text-muted-foreground">
+                                                No hay servicios registrados
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Ubicación
+                                    </h4>
+                                    <div className="flex items-start gap-2">
+                                        <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
+                                        <span>
+                                            {project.address || "Dirección no disponible"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Dimensiones
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">
+                                                Área
+                                            </p>
+                                            <p className="font-medium">
+                                                {project.area}
+                                                {" "}
+                                                m²
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">
+                                                Ambientes
+                                            </p>
+                                            <p className="font-medium">
+                                                {project.spacesCount}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Frecuencia
+                                    </h4>
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="h-4 w-4 text-blue-500" />
+                                        <span>
+                                            {project.quotation?.frequency === "Bimonthly"
+                                                ? "Bimestral"
+                                                : project.quotation?.frequency === "Quarterly"
+                                                    ? "Trimestral"
+                                                    : project.quotation?.frequency === "Semiannual"
+                                                        ? "Semestral"
+                                                        : "No especificada"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Información de la cotización */}
+                        {project.quotation && (
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-medium flex items-center gap-2">
+                                    <FileSpreadsheet className="h-5 w-5 text-blue-500" />
+                                    Cotización Relacionada
+                                </h3>
+                                <Separator />
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="font-medium">
+                                                Cotización #
+                                                {project.quotation.quotationNumber}
+                                            </h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Fecha de creación
+                                                    </p>
+                                                    <p className="text-sm">
+                                                        {formatDate(project.quotation.creationDate)}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Fecha de expiración
+                                                    </p>
+                                                    <p className="text-sm">
+                                                        {formatDate(project.quotation.expirationDate)}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-                            </TabsContent>
-
-                            <TabsContent value="schedule" className="space-y-6">
-                                <div className="space-y-4">
-                                    {/* Agregar nueva fecha */}
-                                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                                        <div className="flex-1">
-                                            <Label htmlFor="add-date" className="block mb-2">
-                                                Agregar fecha
-                                            </Label>
-                                            <DatePicker
-                                                value={newDate}
-                                                onChange={setNewDate}
-                                                placeholder="Seleccione fecha"
-                                                className="w-full"
-                                            />
+                                        <div className="flex items-center">
+                                            {getStatusIcon(project.quotation.status)}
+                                            {getStatusBadge(project.quotation.status)}
                                         </div>
-                                        <Button
-                                            onClick={handleAddDate}
-                                            size="icon"
-                                            className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                                            disabled={!newDate}
-                                            type="button"
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-
-                                    <h3 className="text-lg font-medium flex items-center gap-2">
-                                        <Calendar className="h-5 w-5 text-blue-500" />
-                                        Cronograma de Servicios
-                                    </h3>
-                                    <Separator />
-
-                                    <div className="space-y-3">
-
-                                        <Accordion type="single" collapsible className="w-full">
-                                            {sortedAppointments.map((appointment, idx) => (
-                                                <AppointmentDetail
-                                                    projectId={projectId}
-                                                    appointment={appointment} key={appointment.id!} idx={idx}
-                                                />
-                                            ))}
-                                        </Accordion>
                                     </div>
                                 </div>
-                            </TabsContent>
-                        </Tabs>
+                            </div>
+                        )}
+
+                        <div className="h-8" />
+
+                        <div className="space-y-4">
+
+                            <h3 className="text-lg font-medium flex items-center gap-2">
+                                <Calendar className="h-5 w-5 text-blue-500" />
+                                Cronograma de Servicios
+                            </h3>
+                            <Separator />
+
+                            {/* Agregar nueva fecha */}
+                            <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                                <div className="flex-1">
+                                    <Label htmlFor="add-date" className="block mb-2">
+                                        Agregar fecha
+                                    </Label>
+                                    <DatePicker
+                                        value={newDate}
+                                        onChange={setNewDate}
+                                        placeholder="Seleccione fecha"
+                                        className="w-full"
+                                    />
+                                </div>
+                                <Button
+                                    onClick={handleAddDate}
+                                    size="icon"
+                                    className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
+                                    disabled={!newDate}
+                                    type="button"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            <div className="space-y-3">
+
+                                <Accordion type="single" collapsible className="w-full">
+                                    {sortedAppointments.map((appointment, idx) => (
+                                        <AppointmentDetail
+                                            projectId={projectId}
+                                            appointment={appointment} key={appointment.id!} idx={idx}
+                                        />
+                                    ))}
+                                </Accordion>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 

@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
 import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
-import { EditAppointment } from "../../../actions";
+import { DesactivateAppointment, EditAppointment } from "../../../actions";
+import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -26,6 +26,7 @@ export function AppointmentDetail({
 {
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
     const [editActualDateOpen, setActualDueDateOpen] = useState(false);
+    const [deactivateOpen, setDeactivateOpen] = useState(false);
 
     const dueDate = parseISO(appointment.dueDate);
     const dueDateStr = dueDate.toLocaleDateString("es-PE", {
@@ -55,6 +56,17 @@ export function AppointmentDetail({
             {
                 success: "Fecha actualizada",
                 loading: "Actualizando fecha...",
+            },
+        );
+    }
+
+    async function Deactivate()
+    {
+        await toastWrapper(
+            DesactivateAppointment(projectId, appointment.id!),
+            {
+                success: "Cita eliminada",
+                loading: "Eliminando cita...",
             },
         );
     }
@@ -155,11 +167,12 @@ export function AppointmentDetail({
                         >
                             Ficha de Operaciones
                         </Button>
-                        <Link href={"./purchase-order/"}>
-                            <Button>
-                                Ver detalle
-                            </Button>
-                        </Link>
+                        <Button
+                            onClick={() => setDeactivateOpen(true)}
+                            variant="destructive"
+                        >
+                            Eliminar
+                        </Button>
                     </div>
 
                 </AccordionContent>
@@ -171,6 +184,11 @@ export function AppointmentDetail({
             <EditAppointmentDialog isOpen={editActualDateOpen} onClose={() => setActualDueDateOpen(false)}
                 onSave={(newDate) => UpdateActualDate(newDate)}
                 initialDate={deliveryDate ?? undefined}
+            />
+            <DesactiveAppointmentDialog
+                isOpen={deactivateOpen}
+                onClose={() => setDeactivateOpen(false)}
+                onConfirm={() => Deactivate()}
             />
         </>
     );

@@ -84,7 +84,7 @@ export default function CalendarEvent({
                     {
                         e.stopPropagation();
 
-                        redirect(`/projects/${event.projectId}/details`);
+                        redirect(`/projects/${event.projectId}`);
                     }}
                     initial={{
                         opacity: 0,

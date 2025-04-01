@@ -247,7 +247,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                                 Acciones
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <Link href={`/projects/${projectId}/details`}>
+                            <Link href={`/projects/${projectId}`}>
                                 <DropdownMenuItem disabled={!isActive}>
                                     Ver Detalles
                                 </DropdownMenuItem>
