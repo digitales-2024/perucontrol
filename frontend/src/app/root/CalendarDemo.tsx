@@ -59,6 +59,7 @@ export default function CalendarDemo()
 
                 return ({
                     id: appointment.id,
+                    projectId: appointment.project.id!,
                     title: `#${appointment.project.projectNumber} - ${appointment.client.name}`,
                     color,
                     borderColor,

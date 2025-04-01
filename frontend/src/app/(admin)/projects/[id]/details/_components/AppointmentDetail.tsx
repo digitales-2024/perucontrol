@@ -2,7 +2,6 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
 import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis } from "lucide-react";
-import { useMemo } from "react";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -24,30 +23,6 @@ export function AppointmentDetail({
     });
 
     const deliveryDate: Date | null = (!!appointment.actualDate) ? parseISO(appointment.actualDate) : null;
-    const status = datesToStatus(appointment.dueDate, appointment.actualDate ?? undefined);
-    const statusColor = useMemo(() =>
-    {
-        if (status === "Completo")
-        {
-            return "text-green-500";
-        }
-        else if (status === "Completo con retraso")
-        {
-            return "text-amber-600";
-        }
-        else if (status === "Pendiente")
-        {
-            return "text-zinc-700";
-        }
-        else if (status === "Retrasado")
-        {
-            return "text-red-500";
-        }
-        else
-        {
-            return "";
-        }
-    }, [status]);
 
     return (
         <AccordionItem value={appointment.id!}>

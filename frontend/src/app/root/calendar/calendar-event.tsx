@@ -1,8 +1,11 @@
+"use client";
+
 import { CalendarEvent as CalendarEventType } from "./calendar-types";
 import { isSameDay, isSameMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { motion, MotionConfig, AnimatePresence } from "framer-motion";
 import { useCalendarContext } from "./calendar-context";
+import { redirect } from "next/navigation";
 
 interface EventPosition {
     left: string
@@ -80,10 +83,8 @@ export default function CalendarEvent({
                     onClick={(e) =>
                     {
                         e.stopPropagation();
-                        // setSelectedEvent(event);
-                        // setManageEventDialogOpen(true);
 
-                        // FIXME: redirect to appointment page
+                        redirect(`/projects/${event.projectId}/details`);
                     }}
                     initial={{
                         opacity: 0,

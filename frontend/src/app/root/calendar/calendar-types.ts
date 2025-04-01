@@ -18,6 +18,7 @@ export type CalendarContextType = CalendarProps & {
 }
 export type CalendarEvent = {
   id: string
+  projectId: string,
   title: string
   color: string
   borderColor: string
