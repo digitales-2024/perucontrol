@@ -328,7 +328,7 @@ public class QuotationController(
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
-            "Templates/cotizacion_plantilla.xlsx"
+            "Templates/cotizacion_plantilla_excel.xlsx"
         );
 
         // send
