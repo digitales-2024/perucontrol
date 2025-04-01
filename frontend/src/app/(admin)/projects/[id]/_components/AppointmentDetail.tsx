@@ -8,8 +8,9 @@ import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil } from "
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
-import { DesactivateAppointment, EditAppointment } from "../../../actions";
+import { DesactivateAppointment, EditAppointment } from "../../actions";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
+import { useRouter } from "next/navigation";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -27,6 +28,8 @@ export function AppointmentDetail({
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
     const [editActualDateOpen, setActualDueDateOpen] = useState(false);
     const [deactivateOpen, setDeactivateOpen] = useState(false);
+
+    const r = useRouter();
 
     const dueDate = parseISO(appointment.dueDate);
     const dueDateStr = dueDate.toLocaleDateString("es-PE", {
@@ -163,7 +166,9 @@ export function AppointmentDetail({
                             disabled={deliveryDate === null}
                             title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
                             onClick={() =>
-                            { }}
+                            {
+                                r.push(`/projects/${projectId}/ficha`);
+                            }}
                         >
                             Ficha de Operaciones
                         </Button>
