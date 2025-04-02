@@ -16,8 +16,11 @@ public class AppointmentController(
     DatabaseContext db,
     ExcelTemplateService excelTemplate,
     PDFConverterService pDFConverterService
+    // DbContext _context
 ) : ControllerBase
 {
+    // private readonly DbContext _context = _context;
+    private readonly DbContext _context = db;
     /// <summary>
     /// Retrieves appointments within a specified time range.
     /// </summary>
@@ -122,7 +125,8 @@ public class AppointmentController(
             { "{{nebulizacion_caliente}}", export.nebulizacionCaliente ? "Sí" : "No" },
             { "{{nebulizacion_cebos_total}}", export.nebulizacionCebosTotal ? "Sí" : "No" },
             { "{{colocacion_cebos_cebaderos}}", export.colocacionCebosCebaderos ? "Sí" : "No" },
-            { "{{colocacion_cebos_repuestos}}", export.colocacionCebosRepuestos ? "Sí" : "No" },
+            { "{{numero_cebo_total}}", export.NumeroCeboTotal },
+            { "{{numero_cebo_repuestos}}", export.NumeroCeboRepuestos },
             { "{{observations}}", export.observations },
             { "{{recommendations}}", export.recommendations },
         };
@@ -204,7 +208,8 @@ public class AppointmentController(
             { "{{nebulizacion_caliente}}", export.nebulizacionCaliente ? "Sí" : "No" },
             { "{{nebulizacion_cebos_total}}", export.nebulizacionCebosTotal ? "Sí" : "No" },
             { "{{colocacion_cebos_cebaderos}}", export.colocacionCebosCebaderos ? "Sí" : "No" },
-            { "{{colocacion_cebos_repuestos}}", export.colocacionCebosRepuestos ? "Sí" : "No" },
+            { "{{numero_cebo_total}}", export.NumeroCeboTotal },
+            { "{{numero_cebo_repuestos}}", export.NumeroCeboRepuestos },
             { "{{observations}}", export.observations },
             { "{{recommendations}}", export.recommendations },
         };
@@ -226,5 +231,56 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Update an existing operation sheet")]
+    [HttpPost("operation-sheet")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ProjectOperationSheet>> UpdateOperationSheet(
+        [FromBody] ProjectOperationSheetPatchDTO updateDTO
+    )
+    {
+        // Buscar la ficha operativa asociada al ProjectAppointment
+        var operationSheet = await _context
+            .Set<ProjectOperationSheet>()
+            .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
+            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == updateDTO.ProjectAppointmentId);
+    
+        if (operationSheet == null)
+        {
+            return NotFound("No se encontró una ficha operativa para la cita especificada.");
+        }
+    
+        // Aplicar los cambios al objeto existente
+        updateDTO.ApplyPatch(operationSheet);
+    
+        // Guardar los cambios en la base de datos
+        _context.Update(operationSheet);
+        await _context.SaveChangesAsync();
+    
+        return Ok(operationSheet);
+    }
+
+    [EndpointSummary("Find operation sheet by project ID")]
+    [HttpGet("operation-sheet/by-project/{projectId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProjectOperationSheet>> FindByIdProject(Guid projectId)
+    {
+        // Buscar la ficha operativa asociada al ProjectAppointment del proyecto
+        var operationSheet = await _context
+            .Set<ProjectOperationSheet>()
+            .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
+            .ThenInclude(pa => pa.Project) // Incluir la relación con el Project
+            .FirstOrDefaultAsync(x => x.ProjectAppointment.Project.Id == projectId);
+
+        if (operationSheet == null)
+        {
+            return NotFound("No se encontró una ficha operativa para el proyecto especificado.");
+        }
+
+        return Ok(operationSheet);
     }
 }

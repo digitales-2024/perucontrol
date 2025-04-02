@@ -159,6 +159,123 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Appointment/operation-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update an existing operation sheet */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/operation-sheet/by-project/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find operation sheet by project ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -3599,7 +3716,8 @@ export interface components {
             nebulizacionCaliente: boolean;
             nebulizacionCebosTotal: boolean;
             colocacionCebosCebaderos: boolean;
-            colocacionCebosRepuestos: boolean;
+            numeroCeboTotal: string;
+            numeroCeboRepuestos: string;
             degreeInsectInfectivity: components["schemas"]["InfestationDegree"];
             degreeRodentInfectivity: components["schemas"]["InfestationDegree"];
             observations: string;
@@ -3614,7 +3732,7 @@ export interface components {
         };
         ProjectOperationSheetCreateDTO: {
             /** Format: uuid */
-            projectId: string;
+            projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
             enterTime?: string | null;
@@ -3648,7 +3766,8 @@ export interface components {
             nebulizacionCaliente?: boolean | null;
             nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: boolean | null;
-            colocacionCebosRepuestos?: boolean | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
             degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;
@@ -3687,7 +3806,8 @@ export interface components {
             nebulizacionCaliente?: boolean;
             nebulizacionCebosTotal?: boolean;
             colocacionCebosCebaderos?: boolean;
-            colocacionCebosRepuestos?: boolean;
+            numeroCeboTotal?: string;
+            numeroCeboRepuestos?: string;
             degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["InfestationDegree"];
             observations?: string;
@@ -3695,7 +3815,7 @@ export interface components {
         };
         ProjectOperationSheetPatchDTO: {
             /** Format: uuid */
-            projectId?: string | null;
+            projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
             enterTime?: string | null;
@@ -3729,7 +3849,8 @@ export interface components {
             nebulizacionCaliente?: boolean | null;
             nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: boolean | null;
-            colocacionCebosRepuestos?: boolean | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
             degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;

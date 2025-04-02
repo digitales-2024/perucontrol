@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250321181416_ProjectAppointment")]
-    partial class ProjectAppointment
+    [Migration("20250402161340_UpdateProjectOperationSheetModel")]
+    partial class UpdateProjectOperationSheetModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,6 +155,70 @@ namespace PeruControl.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PeruControl.Model.Business", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankAccount")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankCCI")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Deductions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DigesaNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DirectorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Phones")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RUC")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Businesses");
+                });
+
             modelBuilder.Entity("PeruControl.Model.Certificate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -180,7 +244,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("ProjectNumber")
@@ -195,7 +259,8 @@ namespace PeruControl.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectAppointmentId")
+                        .IsUnique();
 
                     b.ToTable("Certificates");
                 });
@@ -210,6 +275,12 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
+
+                    b.Property<int>("ClientNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ClientNumber"));
 
                     b.Property<string>("ContactName")
                         .HasMaxLength(100)
@@ -332,6 +403,15 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProjectNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectNumber"));
+
                     b.Property<Guid?>("QuotationId")
                         .HasColumnType("uuid");
 
@@ -364,7 +444,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<DateTime?>("DueDate")
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -385,7 +465,7 @@ namespace PeruControl.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectAppointments");
+                    b.ToTable("ProjectAppointment");
                 });
 
             modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
@@ -401,9 +481,6 @@ namespace PeruControl.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("ColocacionCebosCebaderos")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ColocacionCebosRepuestos")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("CreatedAt")
@@ -467,6 +544,14 @@ namespace PeruControl.Migrations
 
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("NumeroCeboRepuestos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NumeroCeboTotal")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Observations")
                         .IsRequired()
@@ -590,6 +675,19 @@ namespace PeruControl.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("CustomField10")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomField6")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Deliverables")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -607,15 +705,65 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<string>("Others")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("QuotationNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("QuotationNumber"));
+
+                    b.Property<string>("RequiredAvailability")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ServiceAddress")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ServiceDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ServiceDetail")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ServiceListText")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ServiceTime")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<long>("SpacesCount")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TermsAndConditions")
+                    b.Property<string>("TreatedAreas")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.HasKey("Id");
 
@@ -869,13 +1017,13 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("PeruControl.Model.Certificate", b =>
                 {
-                    b.HasOne("PeruControl.Model.Project", "Project")
-                        .WithMany("Certificates")
-                        .HasForeignKey("ProjectId")
+                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
+                        .WithOne("Certificate")
+                        .HasForeignKey("PeruControl.Model.Certificate", "ProjectAppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Project");
+                    b.Navigation("ProjectAppointment");
                 });
 
             modelBuilder.Entity("PeruControl.Model.ClientLocation", b =>
@@ -979,12 +1127,12 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Model.Project", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("Certificates");
                 });
 
             modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
                 {
+                    b.Navigation("Certificate");
+
                     b.Navigation("ProjectOperationSheet")
                         .IsRequired();
                 });

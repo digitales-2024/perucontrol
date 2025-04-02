@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
+import { useRouter } from "next/navigation";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -41,12 +42,13 @@ export function DownloadProjectForm({
     appointment: ProjectAppointment,
 })
 {
+    const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
-            projectId: project.id,
+            projectAppointmentId: project.id,
             operationDate: appointment.actualDate!,
             enterTime: "",
             leaveTime: "",
@@ -84,7 +86,8 @@ export function DownloadProjectForm({
             nebulizacionCaliente: false,
             nebulizacionCebosTotal: false,
             colocacionCebosCebaderos: false,
-            colocacionCebosRepuestos: false,
+            numeroCeboTotal: "",
+            numeroCeboRepuestos: "",
             degreeInsectInfectivity: "Moderate",
             degreeRodentInfectivity: "Moderate",
             observations: "",
@@ -99,6 +102,7 @@ export function DownloadProjectForm({
 
     const download = async(body: DownloadProjectSchema) =>
     {
+        console.log(body);
         // Guardar los datos antes de generar el Excel
         const [, saveError] = await toastWrapper(
             SaveProjectOperationSheetData(project.id!, body),
@@ -139,6 +143,7 @@ export function DownloadProjectForm({
 
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
+        console.log(JSON.stringify(input, null, 2));
         const [result, error] = await toastWrapper(
             SaveProjectOperationSheetData(project.id!, input), // Cambia a `true` si es una actualización
             {
@@ -155,6 +160,12 @@ export function DownloadProjectForm({
         }
 
         console.log("Datos guardados exitosamente:", result);
+    };
+
+    const handleCancel = async() =>
+    {
+        onOpenChange(false);
+        router.back();
     };
 
     useEffect(() =>
@@ -182,7 +193,7 @@ export function DownloadProjectForm({
             const mergedData = {
                 ...currentValues, // Datos actuales (proyecto)
                 ...data, // Datos de la ficha operativa
-                operationDate: data.operationDate?.split("T")[0] || currentValues.operationDate, // Asegurar formato YYYY-MM-DD
+                operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601
             };
 
             // Establecer los valores en el formulario sin perder los del proyecto
@@ -190,7 +201,7 @@ export function DownloadProjectForm({
         };
 
         loadOperationSheet();
-    }, [project.id, form]);
+    }, [project.id, form, appointment.actualDate]);
 
     return (
         <div className="flex flex-col h-full">
@@ -318,7 +329,6 @@ export function DownloadProjectForm({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input
-                                                                    disabled
                                                                     placeholder="Ingrese la razón social" {...field} className="border-gray-300"
                                                                 />
                                                             </FormControl>
@@ -337,7 +347,7 @@ export function DownloadProjectForm({
                                                                 Dirección
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input disabled placeholder="Dirección" {...field} />
+                                                                <Input placeholder="Dirección" {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -354,7 +364,7 @@ export function DownloadProjectForm({
                                                                 Giro del Negocio
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input disabled placeholder="Giro del Negocio" {...field} />
+                                                                <Input placeholder="Giro del Negocio" {...field} />
                                                             </FormControl>
                                                         </FormItem>
                                                     )}
@@ -1091,37 +1101,44 @@ export function DownloadProjectForm({
                                                         <div className="space-y-8">
                                                             <FormField
                                                                 control={form.control}
-                                                                name="nebulizacionCebosTotal"
+                                                                name="numeroCeboTotal"
                                                                 render={({ field }) => (
                                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                        <FormLabel className="font-normal">
+                                                                            Nº Cebos Total
+                                                                        </FormLabel>
                                                                         <FormControl>
-                                                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            <Input
+                                                                                type="number"
+                                                                                placeholder="N° Cebos Total"
+                                                                                {...field}
+                                                                                onChange={(e) => field.onChange(e.target.value)}
+                                                                            />
                                                                         </FormControl>
-                                                                        <div className="flex items-center">
-                                                                            <FormLabel className="font-normal">
-                                                                                Nº Cebos Total
-                                                                            </FormLabel>
-                                                                        </div>
                                                                     </FormItem>
                                                                 )}
                                                             />
 
                                                             <FormField
                                                                 control={form.control}
-                                                                name="colocacionCebosRepuestos"
+                                                                name="numeroCeboRepuestos"
                                                                 render={({ field }) => (
                                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                                        <FormLabel className="font-normal">
+                                                                            Nº Cebos Repuestos
+                                                                        </FormLabel>
                                                                         <FormControl>
-                                                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                            <Input
+                                                                                type="number"
+                                                                                placeholder="N° Cebos Repuestos"
+                                                                                {...field}
+                                                                                onChange={(e) => field.onChange(e.target.value)}
+                                                                            />
                                                                         </FormControl>
-                                                                        <div className="flex items-center">
-                                                                            <FormLabel className="font-normal">
-                                                                                Nº Cebos Repuestos
-                                                                            </FormLabel>
-                                                                        </div>
                                                                     </FormItem>
                                                                 )}
                                                             />
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1212,7 +1229,7 @@ export function DownloadProjectForm({
                 <div className="flex justify-end gap-3 px-6">
                     <Button
                         type="button"
-                        onClick={() => onOpenChange(false)}
+                        onClick={handleCancel}
                         variant="outline"
                         className="flex items-center gap-2"
                     >
@@ -1230,6 +1247,10 @@ export function DownloadProjectForm({
                     <Button type="button" onClick={form.handleSubmit(download)} form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
                         <Download className="h-4 w-4" />
                         Generar Excel
+                    </Button>
+                    <Button type="button" onClick={form.handleSubmit(download)} form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2">
+                        <Download className="h-4 w-4" />
+                        Generar Pdf
                     </Button>
                 </div>
             </div>

@@ -480,9 +480,6 @@ namespace PeruControl.Migrations
                     b.Property<bool>("ColocacionCebosCebaderos")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("ColocacionCebosRepuestos")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -544,6 +541,14 @@ namespace PeruControl.Migrations
 
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("NumeroCeboRepuestos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NumeroCeboTotal")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Observations")
                         .IsRequired()
