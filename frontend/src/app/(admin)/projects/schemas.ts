@@ -25,7 +25,7 @@ export const clientDataSchema = z.object({
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;
 
 export const downloadProjectSchema = z.object({
-    projectId: z.string(),
+    projectAppointmentId: z.string(),
     operationDate: z.string(),
     enterTime: z.string(),
     leaveTime: z.string(),
@@ -69,8 +69,14 @@ export const downloadProjectSchema = z.object({
         .default(false),
     colocacionCebosCebaderos: z.boolean().optional()
         .default(false),
-    colocacionCebosRepuestos: z.boolean().optional()
-        .default(false),
+    numeroCeboTotal: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
+    numeroCeboRepuestos: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
     degreeInsectInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     degreeRodentInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     observations: z.string(),
