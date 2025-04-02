@@ -195,3 +195,54 @@ export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError
         });
     }
 }
+
+export async function GeneratePdf(id: string): Promise<Result<Blob, FetchError>>
+{
+    const c = await cookies();
+    const jwt = c.get(ACCESS_TOKEN_KEY);
+    if (!jwt)
+    {
+        return err({
+            statusCode: 401,
+            message: "No autorizado",
+            error: null,
+        });
+    }
+
+    try
+    {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Quotation/${id}/gen-pdf`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt.value}`,
+            },
+        });
+
+        if (!response.ok)
+        {
+            // attempt to get data
+            const body = await response.text();
+            console.error("Error generando pdf:");
+            console.error(body);
+
+            return err({
+                statusCode: response.status,
+                message: "Error generando pdf",
+                error: null,
+            });
+        }
+
+        const blob = await response.blob();
+        return ok(blob);
+    }
+    catch (e)
+    {
+        console.error(e);
+        return err({
+            statusCode: 503,
+            message: "Error conectando al servidor",
+            error: null,
+        });
+    }
+}
