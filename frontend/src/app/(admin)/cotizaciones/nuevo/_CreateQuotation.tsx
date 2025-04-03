@@ -597,51 +597,9 @@ export function CreateQuotation({ terms, clients, services }: {
                             Otra información
                         </h3>
 
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="terms">
-                                Terminos y Condiciones
-                            </FormLabel>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "terms")}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <Button type="button" variant="secondary" className="w-full justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
-                                    Plantillas de Términos y condiciones
-                                </Button>
-
-                                <FormField
-                                    control={form.control}
-                                    name="terms"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Plantillas de Términos y condiciones"
-                                                    className="resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-                        </div>
+                        <Button type="button" variant="secondary" className="w-[165px] justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
+                            Crear Plantilla
+                        </Button>
 
                         <div className="space-y-2">
                             <FormLabel htmlFor="requiredAvailability">

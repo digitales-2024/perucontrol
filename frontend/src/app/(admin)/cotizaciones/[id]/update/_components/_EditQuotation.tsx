@@ -8,12 +8,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateQuotationSchema, quotationSchema } from "../schemas";
-import { GetTermsAndConditionsById, UpdateQuotation } from "../actions";
+import { CreateQuotationSchema, quotationSchema } from "../../../schemas";
+import { GetTermsAndConditionsById, UpdateQuotation } from "../../../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
+import TermsAndConditions from "../../../_termsAndConditions/TermsAndConditions";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
