@@ -40,7 +40,8 @@ export const quotationSchema = z.object({
     customField6: z.string(),
     treatedAreas: z.string().min(3, "Las áreas tratadas son requeridas"),
     deliverables: z.string().min(3, "Los entregables son requeridos"),
-    customField10: z.string().optional(),
+    terms: z.string().min(3, "Los terminos son requeridos"),
+    customField10: z.string(),
 });
 
 export type CreateQuotationSchema = z.infer<typeof quotationSchema>;

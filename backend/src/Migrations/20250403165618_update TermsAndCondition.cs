@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateProjectOperationSheetModel : Migration
+    public partial class updateTermsAndCondition : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

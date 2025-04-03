@@ -39,13 +39,13 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.contactName !== null && client.contactName !== "-" ? client.contactName ?? "" : client.name ?? "-",
+            label: client.contactName !== null && client.contactName !== "-" && client.contactName !== "" ? client.contactName ?? "" : client.name ?? "-",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =
         activeQuotations?.map((quotation) => ({
             value: quotation?.id ?? "",
-            label: `${quotation.client!.name} - ${quotation!.id!.substring(0, 8)}`,
+            label: `${quotation.client!.name} - #${quotation!.quotationNumber!}`,
         })) ?? [];
 
     const handleQuotationChange = (option: Option | null) =>
@@ -62,6 +62,8 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                 "services",
                 selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? [],
             );
+            setValue("frequency", selectedQuotation.frequency);
+            setValue("price", selectedQuotation.price);
 
             // Actualizar las direcciones del cliente asociado a la cotización
             const selectedClient = clients.find((client) => client.id === selectedQuotation.client?.id);

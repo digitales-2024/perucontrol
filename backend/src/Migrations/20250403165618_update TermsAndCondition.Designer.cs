@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250402161340_UpdateProjectOperationSheetModel")]
-    partial class UpdateProjectOperationSheetModel
+    [Migration("20250403165618_update TermsAndCondition")]
+    partial class updateTermsAndCondition
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

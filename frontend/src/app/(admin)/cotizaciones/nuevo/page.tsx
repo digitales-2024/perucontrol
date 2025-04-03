@@ -31,10 +31,12 @@ export default async function CotizacionPage()
         return null;
     }
 
+    const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
+
     return (
         <Shell>
             <HeaderPage title="Crear cotización" description="Crea una nueva cotización" />
-            <CreateQuotation  terms={terms} clients={clients} services={services} />
+            <CreateQuotation  terms={activeTerms} clients={clients} services={services} />
         </Shell>
     );
 }
