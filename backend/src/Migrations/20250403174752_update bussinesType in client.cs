@@ -18,7 +18,8 @@ namespace PeruControl.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "character varying(250)",
-                oldMaxLength: 250);
+                oldMaxLength: 250
+            );
         }
 
         /// <inheritdoc />
@@ -34,7 +35,8 @@ namespace PeruControl.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(250)",
                 oldMaxLength: 250,
-                oldNullable: true);
+                oldNullable: true
+            );
         }
     }
 }

@@ -21,10 +21,6 @@ html, body {
   font-size: 22px;
 }
 
-body {
-  font-family: "Atkinson Hyperlegible", Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
@@ -153,18 +149,18 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Atkinson Hyperlegible", Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 /*---break---*/
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar: black;
+  --sidebar-foreground: white;
   --sidebar-primary: hsl(240 5.9% 10%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-accent: var(--color-primary);
+  --sidebar-accent-foreground: var(--color-primary-foreground);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
@@ -172,8 +168,8 @@ body {
 /*---break---*/
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar: black;
+  --sidebar-foreground: white;
   --sidebar-primary: hsl(224.3 76.3% 48%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
   --sidebar-accent: hsl(240 3.7% 15.9%);

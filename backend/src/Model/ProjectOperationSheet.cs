@@ -150,4 +150,3 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Recommendations { get; set; } = string.Empty;
 }
-

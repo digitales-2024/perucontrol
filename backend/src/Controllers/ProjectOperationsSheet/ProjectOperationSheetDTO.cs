@@ -4,7 +4,6 @@ namespace PeruControl.Controllers;
 
 public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet>
 {
-
     public Guid ProjectAppointmentId { get; set; }
 
     public DateTime? OperationDate { get; set; }
@@ -156,7 +155,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.NebulizacionFrio = NebulizacionFrio ?? entity.NebulizacionFrio;
         entity.NebulizacionCaliente = NebulizacionCaliente ?? entity.NebulizacionCaliente;
         entity.NebulizacionCebosTotal = NebulizacionCebosTotal ?? entity.NebulizacionCebosTotal;
-        entity.ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
+        entity.ColocacionCebosCebaderos =
+            ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
         entity.NumeroCeboTotal = NumeroCeboTotal ?? entity.NumeroCeboTotal;
         entity.NumeroCeboRepuestos = NumeroCeboRepuestos ?? entity.NumeroCeboRepuestos;
         entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;

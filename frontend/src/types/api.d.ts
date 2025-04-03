@@ -64,13 +64,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -121,13 +115,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {

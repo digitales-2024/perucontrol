@@ -28,6 +28,7 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public required string CustomField6 { get; set; }
     public required string TreatedAreas { get; set; }
     public required string Deliverables { get; set; }
+
     // public required string Terms { get; set; }
     public string? CustomField10 { get; set; }
 }
@@ -198,6 +199,7 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     public string? CustomField6 { get; set; }
     public string? TreatedAreas { get; set; }
     public string? Deliverables { get; set; }
+
     // public string? Terms { get; set; }
     public string? CustomField10 { get; set; }
 

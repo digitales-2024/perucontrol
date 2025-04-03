@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel, GetProjectOperationSheet, SaveProjectOperationSheetData } from "../actions";
+import { GenerateExcel, GeneratePDF, GetProjectOperationSheet, SaveProjectOperationSheetData } from "../actions";
 import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
@@ -97,13 +97,11 @@ export function DownloadProjectForm({
 
     const onSubmit = async(input: DownloadProjectSchema) =>
     {
-        download(input);
+        saveData(input);
     };
 
-    const download = async(body: DownloadProjectSchema) =>
+    const saveData = async(body: DownloadProjectSchema) =>
     {
-        console.log(body);
-        // Guardar los datos antes de generar el Excel
         const [, saveError] = await toastWrapper(
             SaveProjectOperationSheetData(project.id!, body),
             {
@@ -116,11 +114,14 @@ export function DownloadProjectForm({
         if (saveError)
         {
             console.error("Error al guardar los datos:", saveError);
-            return;
+            throw new Error("Error al guardar los datos");
         }
+    };
 
+    const downloadExcel = async() =>
+    {
         // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateExcel(project.id!, body), {
+        const [blob, err] = await toastWrapper(GenerateExcel(appointment.id!), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -136,6 +137,29 @@ export function DownloadProjectForm({
         const a = document.createElement("a");
         a.href = url;
         a.download = "proyectos.xlsx";
+        a.click();
+        URL.revokeObjectURL(url);
+        onOpenChange(false);
+    };
+
+    const downloadPDF = async() =>
+    {
+        const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ficha_operaciones_${appointment.id!.substring(0, 4)}.pdf`;
         a.click();
         URL.revokeObjectURL(url);
         onOpenChange(false);
@@ -1238,17 +1262,29 @@ export function DownloadProjectForm({
                     </Button>
                     <Button
                         type="button"
-                        onClick={form.handleSubmit(handleSubmit)}
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                            downloadExcel();
+                        }}
                         className="flex items-center gap-2"
                     >
                         <Save className="h-4 w-4" />
                         Guardar
                     </Button>
-                    <Button type="button" onClick={form.handleSubmit(download)} form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                    <Button type="button" onClick={form.handleSubmit(downloadExcel)} form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
                         <Download className="h-4 w-4" />
                         Generar Excel
                     </Button>
-                    <Button type="button" onClick={form.handleSubmit(download)} form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2">
+                    <Button
+                        type="button"
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                            downloadPDF();
+                        }}
+                        form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                    >
                         <Download className="h-4 w-4" />
                         Generar Pdf
                     </Button>

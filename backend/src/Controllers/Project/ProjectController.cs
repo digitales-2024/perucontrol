@@ -262,8 +262,8 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     public async Task<IActionResult> DeactivateProject(Guid id)
     {
         // Buscar el proyecto por ID
-        var project = await _context.Projects
-            .Include(p => p.Quotation) // Incluir la relación con la cotización
+        var project = await _context
+            .Projects.Include(p => p.Quotation) // Incluir la relación con la cotización
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)

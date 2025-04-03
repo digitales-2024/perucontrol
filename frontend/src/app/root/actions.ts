@@ -8,7 +8,7 @@ import { formatRFC3339 } from "date-fns";
 type Appointment = components["schemas"]["AppointmentGetDTO"];
 
 export async function GetAppointmentsByDate(startDate: Date, endDate: Date)
-	: Promise<Result<Array<Appointment>, FetchError>>
+    : Promise<Result<Array<Appointment>, FetchError>>
 {
     const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment", {
         ...auth,
