@@ -54,7 +54,7 @@ export function DownloadProjectForm({
             leaveTime: "",
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
-            businessType: client.businessType,
+            businessType: client.businessType ?? "",
             sanitaryCondition: "",
             treatedAreas: "",
             service: serviceNames,

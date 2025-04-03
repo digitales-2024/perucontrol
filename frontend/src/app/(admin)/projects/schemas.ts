@@ -20,6 +20,7 @@ export const clientDataSchema = z.object({
             .max(4294967295, "Valor demasiado grande"),
     ),
     appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
+    frequency: z.enum(["Bimonthly", "Quarterly", "Semiannual"]).optional(),
 });
 
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;

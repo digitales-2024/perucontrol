@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     Form,
@@ -24,9 +24,11 @@ import { cn } from "@/lib/utils";
 import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
-import { format, parse } from "date-fns";
+import { addDays, format, parse } from "date-fns";
 import { components, paths } from "@/types/api";
 import { redirect } from "next/navigation";
+import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
+import { Textarea } from "@/components/ui/textarea";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -47,7 +49,9 @@ export function CreateQuotation({ terms, clients, services }: {
     services: Services,
 })
 {
+    const [openTerms, setOpenTerms] = useState(false);
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
+    const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
 
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
@@ -66,7 +70,7 @@ export function CreateQuotation({ terms, clients, services }: {
             spacesCount: 0,
             hasTaxes: false,
             creationDate: format(new Date(), "yyyy-MM-dd"),
-            expirationDate: "",
+            expirationDate: format(addDays(new Date(), 7), "yyyy-MM-dd"),
             serviceAddress: "",
             paymentMethod: "",
             others: "",
@@ -79,9 +83,53 @@ export function CreateQuotation({ terms, clients, services }: {
             customField6: "",
             treatedAreas: "",
             deliverables: "",
+            // terms: "",
             customField10: "",
         },
     });
+
+    const { setValue, watch } = form;
+
+    // Observa los cambios en el campo 'serviceIds'
+    const selectedServiceIds = watch("serviceIds");
+
+    // Actualiza automáticamente el campo `serviceListText` cuando cambien los servicios seleccionados
+    useEffect(() =>
+    {
+        const selectedServices = services
+            .filter((service) => selectedServiceIds?.includes(service.id!))
+            .map((service) => service.name)
+            .join(", ");
+        setValue("serviceListText", selectedServices);
+    }, [selectedServiceIds, services, setValue]);
+
+    const handleClientChange = (option: Option | null) =>
+    {
+        const selectedClient = clients.find((client) => client.id === option?.value);
+        if (selectedClient)
+        {
+            setValue("clientId", selectedClient.id ?? "");
+
+            // Agregar la dirección fiscal como una opción adicional
+            const addressOptions = [
+                ...(selectedClient.fiscalAddress
+                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    : []),
+                ...(selectedClient.clientLocations
+                    ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
+                    .map((location) => ({
+                        value: location.address,
+                        label: location.address,
+                    })) ?? []),
+            ];
+            setClientAddressOptions(addressOptions);
+        }
+        else
+        {
+            setValue("clientId", "");
+            setClientAddressOptions([]);
+        }
+    };
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
@@ -97,13 +145,13 @@ export function CreateQuotation({ terms, clients, services }: {
         redirect("./");
     };
 
-    const handleTermsChange = async(id: string) =>
+    const handleTermsChange = async(id: string, fieldName: keyof CreateQuotationSchema) =>
     {
         const result = await GetTermsAndConditionsById(id);
         if (result)
         {
-            //const content = result[0].content;
-            // setValue("termsAndConditions", content);
+            const content = result[0].content; // Obtiene el contenido de la plantilla
+            setValue(fieldName, content); // Actualiza solo el campo correspondiente
         }
         else
         {
@@ -143,6 +191,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                             onValueChange={(option) =>
                                             {
                                                 field.onChange(option?.value ?? "");
+                                                handleClientChange(option);
                                             }}
                                         />
                                     </FormControl>
@@ -163,7 +212,20 @@ export function CreateQuotation({ terms, clients, services }: {
                                         Dirección donde se realizará el servicio. Puede ser diferente a la dirección fiscal del cliente.
                                     </FormDescription>
                                     <FormControl>
-                                        <Input placeholder="Dirección del Servicio" {...field} />
+                                        {/* <Input placeholder="Dirección del Servicio" {...field} /> */}
+                                        <AutoComplete
+                                            options={clientAddressOptions}
+                                            placeholder="Av. / Jr. / Calle Nro. Lt."
+                                            emptyMessage="No se encontraron dirreciones"
+                                            value={
+                                                clientAddressOptions.find((option) => option.value ===
+                                                                                    field.value) ?? undefined
+                                            }
+                                            onValueChange={(option) =>
+                                            {
+                                                field.onChange(option?.value || "");
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -256,9 +318,6 @@ export function CreateQuotation({ terms, clients, services }: {
                             name="serviceIds"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium">
-                                        Servicios
-                                    </FormLabel>
                                     <div className="grid grid-cols-2 gap-2 mt-2">
                                         {services.map((service) =>
                                         {
@@ -543,7 +602,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                 Terminos y Condiciones
                             </FormLabel>
                             <div className="flex flex-col gap-2">
-                                <Select onValueChange={handleTermsChange}>
+                                <Select onValueChange={(id) => handleTermsChange(id, "terms")}>
                                     <SelectTrigger className="border rounded-md">
                                         <SelectValue placeholder="Seleccione una plantilla" />
                                     </SelectTrigger>
@@ -560,106 +619,254 @@ export function CreateQuotation({ terms, clients, services }: {
                                     </SelectContent>
                                 </Select>
 
-                                <Button type="button" variant="secondary" className="w-full justify-start">
+                                <Button type="button" variant="secondary" className="w-full justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
                                     Plantillas de Términos y condiciones
                                 </Button>
+
+                                <FormField
+                                    control={form.control}
+                                    name="terms"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantillas de Términos y condiciones"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                             </div>
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="requiredAvailability"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Disponibilidad Requerida
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Disponibilidad Requerida" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="space-y-2">
+                            <FormLabel htmlFor="requiredAvailability">
+                                Disponibilidad Requerida
+                            </FormLabel>
+                            <FormDescription>
+                                Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
+                            </FormDescription>
+                            <div className="flex flex-col gap-2">
+                                <Select onValueChange={(id) => handleTermsChange(id, "requiredAvailability")}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
 
-                        <FormField
-                            control={form.control}
-                            name="serviceTime"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Hora del servicio
-                                    </FormLabel>
-                                    <FormDescription>
-                                        A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Tiempo de Servicio" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                <FormField
+                                    control={form.control}
+                                    name="requiredAvailability"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantillas de la disponibilidad requerida"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                        <FormField
-                            control={form.control}
-                            name="customField6"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Campo Personalizado 6
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Punto 6 de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Campo Personalizado 6" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            </div>
+                        </div>
 
-                        <FormField
-                            control={form.control}
-                            name="deliverables"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Entregables
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Entregables" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="space-y-2">
+                            <FormLabel htmlFor="serviceTime">
+                                Hora del servicio
+                            </FormLabel>
+                            <FormDescription>
+                                A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
+                            </FormDescription>
+                            <div className="flex flex-col gap-2">
+                                <Select onValueChange={(id) => handleTermsChange(id, "serviceTime")}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
 
-                        <FormField
-                            control={form.control}
-                            name="customField10"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Campo Personalizado 10
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Punto 10 de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Campo Personalizado 10" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                <FormField
+                                    control={form.control}
+                                    name="serviceTime"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantillas de hora del servicio"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <FormLabel htmlFor="customField6">
+                                Campo Personalizado 6
+                            </FormLabel>
+                            <FormDescription>
+                                A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
+                            </FormDescription>
+                            <div className="flex flex-col gap-2">
+                                <Select onValueChange={(id) => handleTermsChange(id, "customField6")}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <FormField
+                                    control={form.control}
+                                    name="customField6"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantilla Campo Personalizado 6"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <FormLabel htmlFor="deliverables">
+                                Entregables
+                            </FormLabel>
+                            <FormDescription>
+                                Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.
+                            </FormDescription>
+                            <div className="flex flex-col gap-2">
+                                <Select onValueChange={(id) => handleTermsChange(id, "deliverables")}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <FormField
+                                    control={form.control}
+                                    name="deliverables"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantilla de Entregables"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <FormLabel htmlFor="customField10">
+                                Campo Personalizado 10
+                            </FormLabel>
+                            <FormDescription>
+                                Punto 10 de los términos y condiciones.
+                            </FormDescription>
+                            <div className="flex flex-col gap-2">
+                                <Select onValueChange={(id) => handleTermsChange(id, "customField10")}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <FormField
+                                    control={form.control}
+                                    name="customField10"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Plantilla del Campo Personalizado 10"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+                        </div>
                     </div>
 
                     <SheetFooter>
@@ -669,6 +876,12 @@ export function CreateQuotation({ terms, clients, services }: {
                     </SheetFooter>
                 </form>
             </Form>
+
+            <TermsAndConditions
+                open={openTerms}
+                setOpen={setOpenTerms}
+                termsAndConditions={terms}
+            />
         </div>
     );
 }

@@ -32,6 +32,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             clientId: "",
             quotationId: null,
             address: "",
+            frequency: "Bimonthly",
             area: 1,
             spacesCount: 1,
             price: 0,

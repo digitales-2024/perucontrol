@@ -48,7 +48,7 @@ export async function UpdateProject(id: string, newProject: components["schemas"
 
 export async function RemoveProject(id: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}", {
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}/desactivate", {
         ...auth,
         params: {
             path: {

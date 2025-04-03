@@ -255,6 +255,37 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         return NoContent();
     }
 
+    [EndpointSummary("Deactivate Project by id")]
+    [HttpDelete("{id}/desactivate")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeactivateProject(Guid id)
+    {
+        // Buscar el proyecto por ID
+        var project = await _context.Projects
+            .Include(p => p.Quotation) // Incluir la relación con la cotización
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound("Proyecto no encontrado");
+        }
+
+        // Desactivar el proyecto
+        project.IsActive = false;
+
+        // Liberar la cotización asociada, si existe
+        if (project.Quotation != null)
+        {
+            project.Quotation = null;
+        }
+
+        // Guardar los cambios en la base de datos
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     /// TODO: Project status should be updated on every action by its appointments.
     /*[EndpointSummary("Update Project State")]*/
     /*[HttpPatch("{id}/update-state")]*/

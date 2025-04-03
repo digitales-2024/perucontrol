@@ -51,7 +51,7 @@ export default function CreateTermsForm({ onClose }: { onClose: (v: boolean) => 
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                Nombre de la plantilla
+                                        Nombre de la plantilla
                             </FormLabel>
                             <FormControl>
                                 <Input placeholder="Nombre de la plantilla" {...field} />
@@ -66,11 +66,16 @@ export default function CreateTermsForm({ onClose }: { onClose: (v: boolean) => 
                     name="terms"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>
+                            <FormLabel className="text-base">
                                 Terminos
                             </FormLabel>
                             <FormControl>
-                                <Textarea rows={4} placeholder="Términos y condiciones" {...field} />
+                                <Textarea
+                                    placeholder="Términos y condiciones"
+                                    className="resize-none"
+                                    rows={4}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
