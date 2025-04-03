@@ -123,7 +123,7 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                                                         <FormItem>
                                                             <FormLabel className="flex items-center gap-2">
                                                                 <User className="h-4 w-4 text-primary" />
-                                                                Nombre del Director
+                                                                Nombre del Director técnico
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input {...field} />
@@ -355,7 +355,7 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                                             <FormItem>
                                                 <FormLabel className="flex items-center gap-2">
                                                     <FileText className="h-4 w-4 text-primary" />
-                                                    Deducciones
+                                                    Cuenta de detracciones
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Textarea className="resize-none min-h-[80px]" {...field} />
