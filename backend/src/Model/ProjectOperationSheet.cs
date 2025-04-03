@@ -133,7 +133,10 @@ public class ProjectOperationSheet : BaseModel
     public bool ColocacionCebosCebaderos { get; set; } = false;
 
     [Required]
-    public bool ColocacionCebosRepuestos { get; set; } = false;
+    public string NumeroCeboTotal { get; set; } = string.Empty;
+
+    [Required]
+    public string NumeroCeboRepuestos { get; set; } = string.Empty;
 
     [Required]
     public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;

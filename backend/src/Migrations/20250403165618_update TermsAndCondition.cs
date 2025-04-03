@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class Squash : Migration
+    public partial class updateTermsAndCondition : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,10 +81,49 @@ namespace PeruControl.Migrations
             );
 
             migrationBuilder.CreateTable(
+                name: "Businesses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DigesaNumber = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    RUC = table.Column<string>(type: "text", nullable: false),
+                    Phones = table.Column<string>(type: "text", nullable: false),
+                    DirectorName = table.Column<string>(type: "text", nullable: false),
+                    BankName = table.Column<string>(type: "text", nullable: false),
+                    BankAccount = table.Column<string>(type: "text", nullable: false),
+                    BankCCI = table.Column<string>(type: "text", nullable: false),
+                    Deductions = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
+                    ModifiedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
+                }
+            );
+
+            migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClientNumber = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     TypeDocument = table.Column<string>(
                         type: "character varying(3)",
                         maxLength: 3,
@@ -145,6 +184,24 @@ namespace PeruControl.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clients", x => x.Id);
+                }
+            );
+
+            migrationBuilder.CreateTable(
+                name: "ProjectOrderNumbers",
+                columns: table => new
+                {
+                    ProjectOrderNumberId = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
+                    ProjectOrderNumberValue = table.Column<int>(type: "integer", nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectOrderNumbers", x => x.ProjectOrderNumberId);
                 }
             );
 
@@ -415,6 +472,12 @@ namespace PeruControl.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuotationNumber = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Frequency = table.Column<int>(type: "integer", nullable: false),
@@ -429,7 +492,63 @@ namespace PeruControl.Migrations
                         type: "timestamp with time zone",
                         nullable: false
                     ),
-                    TermsAndConditions = table.Column<string>(type: "TEXT", nullable: false),
+                    ServiceAddress = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    ),
+                    PaymentMethod = table.Column<string>(
+                        type: "character varying(100)",
+                        maxLength: 100,
+                        nullable: false
+                    ),
+                    Others = table.Column<string>(
+                        type: "character varying(500)",
+                        maxLength: 500,
+                        nullable: false
+                    ),
+                    ServiceListText = table.Column<string>(
+                        type: "character varying(1000)",
+                        maxLength: 1000,
+                        nullable: false
+                    ),
+                    ServiceDescription = table.Column<string>(
+                        type: "character varying(500)",
+                        maxLength: 500,
+                        nullable: false
+                    ),
+                    ServiceDetail = table.Column<string>(
+                        type: "character varying(1000)",
+                        maxLength: 1000,
+                        nullable: false
+                    ),
+                    Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    RequiredAvailability = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    ),
+                    ServiceTime = table.Column<string>(
+                        type: "character varying(100)",
+                        maxLength: 100,
+                        nullable: false
+                    ),
+                    CustomField6 = table.Column<string>(
+                        type: "character varying(255)",
+                        maxLength: 255,
+                        nullable: false
+                    ),
+                    TreatedAreas = table.Column<string>(
+                        type: "character varying(500)",
+                        maxLength: 500,
+                        nullable: false
+                    ),
+                    Deliverables = table.Column<string>(
+                        type: "character varying(500)",
+                        maxLength: 500,
+                        nullable: false
+                    ),
+                    CustomField10 = table.Column<string>(type: "TEXT", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(
                         type: "timestamp with time zone",
@@ -461,17 +580,18 @@ namespace PeruControl.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuotationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    Area = table.Column<long>(type: "bigint", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    SpacesCount = table.Column<long>(type: "bigint", nullable: false),
-                    OrderNumber = table
+                    ProjectNumber = table
                         .Column<int>(type: "integer", nullable: false)
                         .Annotation(
                             "Npgsql:ValueGenerationStrategy",
                             NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
                         ),
+                    QuotationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    Area = table.Column<long>(type: "bigint", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    SpacesCount = table.Column<long>(type: "bigint", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(
                         type: "timestamp with time zone",
@@ -534,6 +654,73 @@ namespace PeruControl.Migrations
             );
 
             migrationBuilder.CreateTable(
+                name: "ProjectAppointment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderNumber = table.Column<int>(type: "integer", nullable: true),
+                    DueDate = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    ActualDate = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: true
+                    ),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
+                    ModifiedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectAppointment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectAppointment_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
+
+            migrationBuilder.CreateTable(
+                name: "ProjectService",
+                columns: table => new
+                {
+                    ProjectsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ServicesId = table.Column<Guid>(type: "uuid", nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectService", x => new { x.ProjectsId, x.ServicesId });
+                    table.ForeignKey(
+                        name: "FK_ProjectService_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade
+                    );
+                    table.ForeignKey(
+                        name: "FK_ProjectService_Services_ServicesId",
+                        column: x => x.ServicesId,
+                        principalTable: "Services",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
+
+            migrationBuilder.CreateTable(
                 name: "Certificates",
                 columns: table => new
                 {
@@ -544,7 +731,7 @@ namespace PeruControl.Migrations
                             "Npgsql:ValueGenerationStrategy",
                             NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
                         ),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectAppointmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     TreatedArea = table.Column<string>(type: "text", nullable: false),
                     CreationDate = table.Column<DateTime>(
                         type: "timestamp with time zone",
@@ -570,9 +757,9 @@ namespace PeruControl.Migrations
                 {
                     table.PrimaryKey("PK_Certificates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Certificates_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Certificates_ProjectAppointment_ProjectAppointmentId",
+                        column: x => x.ProjectAppointmentId,
+                        principalTable: "ProjectAppointment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade
                     );
@@ -584,7 +771,7 @@ namespace PeruControl.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectAppointmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     OperationDate = table.Column<DateTime>(
                         type: "timestamp with time zone",
                         nullable: false
@@ -620,7 +807,8 @@ namespace PeruControl.Migrations
                     NebulizacionCaliente = table.Column<bool>(type: "boolean", nullable: false),
                     NebulizacionCebosTotal = table.Column<bool>(type: "boolean", nullable: false),
                     ColocacionCebosCebaderos = table.Column<bool>(type: "boolean", nullable: false),
-                    ColocacionCebosRepuestos = table.Column<bool>(type: "boolean", nullable: false),
+                    NumeroCeboTotal = table.Column<string>(type: "text", nullable: false),
+                    NumeroCeboRepuestos = table.Column<string>(type: "text", nullable: false),
                     DegreeInsectInfectivity = table.Column<int>(type: "integer", nullable: false),
                     DegreeRodentInfectivity = table.Column<int>(type: "integer", nullable: false),
                     Observations = table.Column<string>(type: "text", nullable: false),
@@ -641,36 +829,9 @@ namespace PeruControl.Migrations
                 {
                     table.PrimaryKey("PK_ProjectOperationSheet", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectOperationSheet_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade
-                    );
-                }
-            );
-
-            migrationBuilder.CreateTable(
-                name: "ProjectService",
-                columns: table => new
-                {
-                    ProjectsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ServicesId = table.Column<Guid>(type: "uuid", nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectService", x => new { x.ProjectsId, x.ServicesId });
-                    table.ForeignKey(
-                        name: "FK_ProjectService_Projects_ProjectsId",
-                        column: x => x.ProjectsId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade
-                    );
-                    table.ForeignKey(
-                        name: "FK_ProjectService_Services_ServicesId",
-                        column: x => x.ServicesId,
-                        principalTable: "Services",
+                        name: "FK_ProjectOperationSheet_ProjectAppointment_ProjectAppointment~",
+                        column: x => x.ProjectAppointmentId,
+                        principalTable: "ProjectAppointment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade
                     );
@@ -722,9 +883,10 @@ namespace PeruControl.Migrations
             );
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_ProjectId",
+                name: "IX_Certificates_ProjectAppointmentId",
                 table: "Certificates",
-                column: "ProjectId"
+                column: "ProjectAppointmentId",
+                unique: true
             );
 
             migrationBuilder.CreateIndex(
@@ -741,9 +903,15 @@ namespace PeruControl.Migrations
             );
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectOperationSheet_ProjectId",
+                name: "IX_ProjectAppointment_ProjectId",
+                table: "ProjectAppointment",
+                column: "ProjectId"
+            );
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectOperationSheet_ProjectAppointmentId",
                 table: "ProjectOperationSheet",
-                column: "ProjectId",
+                column: "ProjectAppointmentId",
                 unique: true
             );
 
@@ -791,11 +959,15 @@ namespace PeruControl.Migrations
 
             migrationBuilder.DropTable(name: "AspNetUserTokens");
 
+            migrationBuilder.DropTable(name: "Businesses");
+
             migrationBuilder.DropTable(name: "Certificates");
 
             migrationBuilder.DropTable(name: "ClientLocations");
 
             migrationBuilder.DropTable(name: "ProjectOperationSheet");
+
+            migrationBuilder.DropTable(name: "ProjectOrderNumbers");
 
             migrationBuilder.DropTable(name: "ProjectService");
 
@@ -809,9 +981,11 @@ namespace PeruControl.Migrations
 
             migrationBuilder.DropTable(name: "AspNetUsers");
 
-            migrationBuilder.DropTable(name: "Projects");
+            migrationBuilder.DropTable(name: "ProjectAppointment");
 
             migrationBuilder.DropTable(name: "Services");
+
+            migrationBuilder.DropTable(name: "Projects");
 
             migrationBuilder.DropTable(name: "Quotations");
 

@@ -96,7 +96,9 @@ public class ProjectOperationSheetExport
 
     public bool colocacionCebosCebaderos { get; set; } = false;
 
-    public bool colocacionCebosRepuestos { get; set; } = false;
+    public string NumeroCeboTotal { get; set; } = string.Empty;
+
+    public string NumeroCeboRepuestos { get; set; } = string.Empty;
 
     public InfestationDegree degreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
     public InfestationDegree degreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;

@@ -4,7 +4,7 @@ namespace PeruControl.Controllers;
 
 public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet>
 {
-    public required Guid ProjectId { get; set; }
+    public Guid ProjectAppointmentId { get; set; }
 
     public DateTime? OperationDate { get; set; }
 
@@ -64,7 +64,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public bool? NebulizacionCaliente { get; set; } = false;
     public bool? NebulizacionCebosTotal { get; set; } = false;
     public bool? ColocacionCebosCebaderos { get; set; } = false;
-    public bool? ColocacionCebosRepuestos { get; set; } = false;
+    public string? NumeroCeboTotal { get; set; } = string.Empty;
+    public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
@@ -111,7 +112,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             NebulizacionCaliente = NebulizacionCaliente ?? false,
             NebulizacionCebosTotal = NebulizacionCebosTotal ?? false,
             ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? false,
-            ColocacionCebosRepuestos = ColocacionCebosRepuestos ?? false,
+            NumeroCeboTotal = NumeroCeboTotal ?? string.Empty,
+            NumeroCeboRepuestos = NumeroCeboRepuestos ?? string.Empty,
             DegreeInsectInfectivity = DegreeInsectInfectivity ?? InfestationDegree.Negligible,
             DegreeRodentInfectivity = DegreeRodentInfectivity ?? InfestationDegree.Negligible,
             Observations = Observations ?? string.Empty,
@@ -155,8 +157,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.NebulizacionCebosTotal = NebulizacionCebosTotal ?? entity.NebulizacionCebosTotal;
         entity.ColocacionCebosCebaderos =
             ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
-        entity.ColocacionCebosRepuestos =
-            ColocacionCebosRepuestos ?? entity.ColocacionCebosRepuestos;
+        entity.NumeroCeboTotal = NumeroCeboTotal ?? entity.NumeroCeboTotal;
+        entity.NumeroCeboRepuestos = NumeroCeboRepuestos ?? entity.NumeroCeboRepuestos;
         entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;
         entity.DegreeRodentInfectivity = DegreeRodentInfectivity ?? entity.DegreeRodentInfectivity;
         entity.Observations = Observations ?? entity.Observations;
@@ -168,7 +170,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
 public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
 {
-    public Guid? ProjectId { get; set; }
+    public Guid ProjectAppointmentId { get; set; }
 
     public DateTime? OperationDate { get; set; }
 
@@ -228,7 +230,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public bool? NebulizacionCaliente { get; set; } = false;
     public bool? NebulizacionCebosTotal { get; set; } = false;
     public bool? ColocacionCebosCebaderos { get; set; } = false;
-    public bool? ColocacionCebosRepuestos { get; set; } = false;
+    public string? NumeroCeboTotal { get; set; } = string.Empty;
+    public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
@@ -304,8 +307,10 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.NebulizacionCebosTotal = (bool)NebulizacionCebosTotal;
         if (ColocacionCebosCebaderos != null)
             entity.ColocacionCebosCebaderos = (bool)ColocacionCebosCebaderos;
-        if (ColocacionCebosRepuestos != null)
-            entity.ColocacionCebosRepuestos = (bool)ColocacionCebosRepuestos;
+        if (NumeroCeboTotal != null)
+            entity.NumeroCeboTotal = NumeroCeboTotal;
+        if (NumeroCeboRepuestos != null)
+            entity.NumeroCeboRepuestos = NumeroCeboRepuestos;
         if (DegreeInsectInfectivity != null)
             entity.DegreeInsectInfectivity = (InfestationDegree)DegreeInsectInfectivity;
         if (DegreeRodentInfectivity != null)

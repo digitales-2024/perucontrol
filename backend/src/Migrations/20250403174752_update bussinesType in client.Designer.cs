@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250330002107_QuotationsAlter")]
-    partial class QuotationsAlter
+    [Migration("20250403174752_update bussinesType in client")]
+    partial class updatebussinesTypeinclient
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -272,7 +272,6 @@ namespace PeruControl.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BusinessType")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
@@ -403,6 +402,9 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("ProjectNumber")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
@@ -480,9 +482,6 @@ namespace PeruControl.Migrations
                     b.Property<bool>("ColocacionCebosCebaderos")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("ColocacionCebosRepuestos")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -544,6 +543,14 @@ namespace PeruControl.Migrations
 
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("NumeroCeboRepuestos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NumeroCeboTotal")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Observations")
                         .IsRequired()

@@ -229,6 +229,7 @@ public class QuotationController(
             { "{{custom_6}}", quotation.CustomField6 },
             { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
             { "{{entregables}}", quotation.Deliverables },
+            // { "{{terminos}}", quotation.Terms },
             { "{{custom_10}}", quotation.CustomField10 ?? "" },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
@@ -324,11 +325,12 @@ public class QuotationController(
             { "{{custom_6}}", quotation.CustomField6 },
             { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
             { "{{entregables}}", quotation.Deliverables },
+            // { "{{terminos}}", quotation.Terms },
             { "{{custom_10}}", quotation.CustomField10 ?? "" },
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
-            "Templates/cotizacion_plantilla.xlsx"
+            "Templates/cotizacion_plantilla_excel.xlsx"
         );
 
         // send

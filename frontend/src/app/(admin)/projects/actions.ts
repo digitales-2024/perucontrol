@@ -48,7 +48,7 @@ export async function UpdateProject(id: string, newProject: components["schemas"
 
 export async function RemoveProject(id: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}", {
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}/desactivate", {
         ...auth,
         params: {
             path: {
@@ -94,7 +94,7 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
 
     try
     {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Project/${id}/gen-operations-sheet`, {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/gen-operations-sheet/excel`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -151,7 +151,7 @@ export async function SaveProjectOperationSheetData(
 
     try
     {
-        const url = `${process.env.INTERNAL_BACKEND_URL}/api/ProjectOperationSheet/create-or-update`;
+        const url = `${process.env.INTERNAL_BACKEND_URL}/api/Appointment/operation-sheet`;
         console.log("URL de la API:", url);
 
         const response = await fetch(url, {
@@ -215,7 +215,7 @@ export async function GetProjectOperationSheet(projectId: string): Promise<Resul
 
     try
     {
-        const url = `${process.env.INTERNAL_BACKEND_URL}/api/ProjectOperationSheet/by-project/${projectId}`;
+        const url = `${process.env.INTERNAL_BACKEND_URL}/api/Appointment/operation-sheet/by-project/${projectId}`;
         console.log("URL de la API:", url);
 
         const response = await fetch(url, {

@@ -28,6 +28,8 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public required string CustomField6 { get; set; }
     public required string TreatedAreas { get; set; }
     public required string Deliverables { get; set; }
+
+    // public required string Terms { get; set; }
     public string? CustomField10 { get; set; }
 }
 
@@ -133,6 +135,10 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [StringLength(500, ErrorMessage = "Los entregables no pueden exceder 500 caracteres")]
     public required string Deliverables { get; set; }
 
+    // [Required(ErrorMessage = "Los terminos y condiciones son obligatorios")]
+    // [StringLength(500, ErrorMessage = "Los términos y condiciones no pueden exceder")]
+    // public required string Terms { get; set; }
+
     [Column(TypeName = "TEXT")]
     public string? CustomField10 { get; set; }
 
@@ -159,6 +165,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
             CustomField6 = CustomField6,
             TreatedAreas = TreatedAreas,
             Deliverables = Deliverables,
+            // Terms = Terms,
             CustomField10 = CustomField10,
         };
     }
@@ -192,6 +199,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     public string? CustomField6 { get; set; }
     public string? TreatedAreas { get; set; }
     public string? Deliverables { get; set; }
+
+    // public string? Terms { get; set; }
     public string? CustomField10 { get; set; }
 
     public void ApplyPatch(Quotation entity)
@@ -232,6 +241,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.TreatedAreas = TreatedAreas;
         if (Deliverables != null)
             entity.Deliverables = Deliverables;
+        // if (Terms != null)
+        //     entity.Terms = Terms;
         if (CustomField10 != null)
             entity.CustomField10 = CustomField10;
     }
