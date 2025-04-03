@@ -1,10 +1,9 @@
 "use server";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { DownloadProjectSchema } from "./schemas";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 
@@ -79,7 +78,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     });
 }
 
-export async function GenerateExcel(id: string, body: DownloadProjectSchema): Promise<Result<Blob, FetchError>>
+export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -100,7 +99,6 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt.value}`,
             },
-            body: JSON.stringify(body),
         });
 
         if (!response.ok)
@@ -129,6 +127,11 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
             error: null,
         });
     }
+}
+
+export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
 }
 
 export async function SaveProjectOperationSheetData(

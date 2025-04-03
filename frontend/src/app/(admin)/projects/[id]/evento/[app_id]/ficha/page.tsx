@@ -38,7 +38,7 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <Shell>
-            <HeaderPage title="Ficha de proyecto" description="Llenar, guardar y generar la ficha de servicios." />
+            <HeaderPage title="Ficha de Operaciones" description="Llenar, guardar y generar la ficha de operaciones." />
             <OperationsSheetForm project={project} client={project.client} appointment={appointment} />
         </Shell>
     );
