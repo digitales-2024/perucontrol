@@ -227,4 +227,34 @@ public class AppointmentController(
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
+
+    [EndpointSummary("Generate pdf test")]
+    [HttpPost("/gen-operations-sheet/pdf")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateOperationsSheetPdf2(
+    )
+    {
+        using var ms = new MemoryStream();
+
+        using (var fs = new FileStream("Templates/ficha_operaciones_new.ods", FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "xlsx");
+
+        if (errorStr != "")
+        {
+            return BadRequest(errorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
 }
