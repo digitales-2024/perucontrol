@@ -16,6 +16,8 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public string? TreatedAreas { get; set; }
 
+    public RodentConsumption? RodentConsumption { get; set; }
+
     public string? Insects { get; set; }
 
     public string? Rodents { get; set; }
@@ -89,6 +91,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             TreatedAreas = TreatedAreas ?? string.Empty,
             Insects = Insects ?? string.Empty,
             Rodents = Rodents ?? string.Empty,
+            RodentConsumption = RodentConsumption,
             OtherPlagues = OtherPlagues ?? string.Empty,
             Insecticide = Insecticide ?? string.Empty,
             Insecticide2 = Insecticide2 ?? string.Empty,
@@ -119,48 +122,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             Recommendations = Recommendations ?? string.Empty,
         };
     }
-
-    // Método para actualizar una entidad existente
-    public ProjectOperationSheet MapToEntity(ProjectOperationSheet entity)
-    {
-        entity.OperationDate = OperationDate ?? entity.OperationDate;
-        entity.EnterTime = EnterTime ?? entity.EnterTime;
-        entity.LeaveTime = LeaveTime ?? entity.LeaveTime;
-        entity.TreatedAreas = TreatedAreas ?? entity.TreatedAreas;
-        entity.Insects = Insects ?? entity.Insects;
-        entity.Rodents = Rodents ?? entity.Rodents;
-        entity.OtherPlagues = OtherPlagues ?? entity.OtherPlagues;
-        entity.Insecticide = Insecticide ?? entity.Insecticide;
-        entity.Insecticide2 = Insecticide2 ?? entity.Insecticide2;
-        entity.Rodenticide = Rodenticide ?? entity.Rodenticide;
-        entity.Desinfectant = Desinfectant ?? entity.Desinfectant;
-        entity.OtherProducts = OtherProducts ?? entity.OtherProducts;
-        entity.InsecticideAmount = InsecticideAmount ?? entity.InsecticideAmount;
-        entity.InsecticideAmount2 = InsecticideAmount2 ?? entity.InsecticideAmount2;
-        entity.RodenticideAmount = RodenticideAmount ?? entity.RodenticideAmount;
-        entity.DesinfectantAmount = DesinfectantAmount ?? entity.DesinfectantAmount;
-        entity.OtherProductsAmount = OtherProductsAmount ?? entity.OtherProductsAmount;
-        entity.Staff1 = Staff1 ?? entity.Staff1;
-        entity.Staff2 = Staff2 ?? entity.Staff2;
-        entity.Staff3 = Staff3 ?? entity.Staff3;
-        entity.Staff4 = Staff4 ?? entity.Staff4;
-        entity.AspersionManual = AspersionManual ?? entity.AspersionManual;
-        entity.AspercionMotor = AspercionMotor ?? entity.AspercionMotor;
-        entity.NebulizacionFrio = NebulizacionFrio ?? entity.NebulizacionFrio;
-        entity.NebulizacionCaliente = NebulizacionCaliente ?? entity.NebulizacionCaliente;
-        entity.ColocacionCebosCebaderos =
-            ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
-        entity.NumeroCeboTotal = NumeroCeboTotal ?? entity.NumeroCeboTotal;
-        entity.NumeroCeboRepuestos = NumeroCeboRepuestos ?? entity.NumeroCeboRepuestos;
-        entity.NroPlanchasPegantes = NroPlanchasPegantes ?? entity.NroPlanchasPegantes;
-        entity.NroJaulasTomahawk = NroJaulasTomahawk ?? entity.NroJaulasTomahawk;
-        entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;
-        entity.DegreeRodentInfectivity = DegreeRodentInfectivity ?? entity.DegreeRodentInfectivity;
-        entity.Observations = Observations ?? entity.Observations;
-        entity.Recommendations = Recommendations ?? entity.Recommendations;
-
-        return entity;
-    }
 }
 
 public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
@@ -172,6 +133,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public TimeSpan? EnterTime { get; set; }
 
     public TimeSpan? LeaveTime { get; set; }
+
+    public RodentConsumption? RodentConsumption { get; set; }
 
     public string? SanitaryCondition { get; set; }
 
@@ -244,6 +207,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.EnterTime = (TimeSpan)EnterTime;
         if (LeaveTime != null)
             entity.LeaveTime = (TimeSpan)LeaveTime;
+        if (RodentConsumption != null)
+            entity.RodentConsumption = (RodentConsumption)RodentConsumption;
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)
