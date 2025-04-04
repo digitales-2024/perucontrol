@@ -20,8 +20,8 @@ export function OperationsSheetForm({
         <div>
             <DownloadProjectForm
                 project={project}
-                client={client}
                 appointment={appointment}
+                client={client}
                 onOpenChange={() =>
                 { }}
             />

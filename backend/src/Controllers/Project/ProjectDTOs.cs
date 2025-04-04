@@ -94,7 +94,7 @@ public class ProjectOperationSheetExport
 
     public bool nebulizacionCebosTotal { get; set; } = false;
 
-    public bool colocacionCebosCebaderos { get; set; } = false;
+    public string colocacionCebosCebaderos { get; set; } = string.Empty;
 
     public string NumeroCeboTotal { get; set; } = string.Empty;
 
