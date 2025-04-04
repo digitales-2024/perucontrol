@@ -14,14 +14,10 @@ namespace PeruControl.Controllers;
 [Authorize]
 public class AppointmentController(
     DatabaseContext db,
-    ExcelTemplateService excelTemplate,
+    OdsTemplateService odsTemplate,
     PDFConverterService pDFConverterService
-// DbContext _context
 ) : ControllerBase
 {
-    // private readonly DbContext _context = _context;
-    private readonly DbContext _context = db;
-
     /// <summary>
     /// Retrieves appointments within a specified time range.
     /// </summary>
@@ -84,15 +80,15 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        var placeholders = new Dictionary<string, string> { };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
+        var placeholders = new Dictionary<string, string> { { "{fecha}", "322" } };
+        var fileBytes = odsTemplate.GenerateOdsFromTemplate(
             placeholders,
-            "Templates/ficha_operaciones.xlsx"
+            "Templates/ficha_operaciones_new.ods"
         );
         return File(
             fileBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "quotation.xlsx"
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "ficha_operaciones.ods"
         );
     }
 
@@ -141,8 +137,7 @@ public class AppointmentController(
     )
     {
         // Buscar la ficha operativa asociada al ProjectAppointment
-        var operationSheet = await _context
-            .Set<ProjectOperationSheet>()
+        var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
             .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == updateDTO.ProjectAppointmentId);
 
@@ -155,8 +150,8 @@ public class AppointmentController(
         updateDTO.ApplyPatch(operationSheet);
 
         // Guardar los cambios en la base de datos
-        _context.Update(operationSheet);
-        await _context.SaveChangesAsync();
+        db.Update(operationSheet);
+        await db.SaveChangesAsync();
 
         return Ok(operationSheet);
     }
@@ -168,8 +163,7 @@ public class AppointmentController(
     public async Task<ActionResult<ProjectOperationSheet>> FindByIdProject(Guid projectId)
     {
         // Buscar la ficha operativa asociada al ProjectAppointment del proyecto
-        var operationSheet = await _context
-            .Set<ProjectOperationSheet>()
+        var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
             .ThenInclude(pa => pa.Project) // Incluir la relación con el Project
             .FirstOrDefaultAsync(x => x.ProjectAppointment.Project.Id == projectId);

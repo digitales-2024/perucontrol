@@ -39,7 +39,6 @@ public class ProjectOperationSheet : BaseModel
     public string Rodents { get; set; } = string.Empty;
 
     // Consumo de Roedores
-    [Required]
     public RodentConsumption? RodentConsumption { get; set; }
 
     // otras
@@ -136,10 +135,8 @@ public class ProjectOperationSheet : BaseModel
     // Grado de infestación
     //
 
-    [Required]
     public InfestationDegree? DegreeInsectInfectivity { get; set; }
 
-    [Required]
     public InfestationDegree? DegreeRodentInfectivity { get; set; }
 
     //
