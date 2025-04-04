@@ -140,7 +140,7 @@ export function DownloadProjectForm({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "proyectos.xlsx";
+        a.download = "servicio.ods";
         a.click();
         URL.revokeObjectURL(url);
         onOpenChange(false);
@@ -150,7 +150,7 @@ export function DownloadProjectForm({
     {
         const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
             loading: "Generando archivo",
-            success: "Excel generado",
+            success: "PDF generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
         });
 
@@ -171,7 +171,6 @@ export function DownloadProjectForm({
 
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
-        console.log(JSON.stringify(input, null, 2));
         const [result, error] = await toastWrapper(
             SaveProjectOperationSheetData(project.id!, input), // Cambia a `true` si es una actualización
             {
@@ -1246,7 +1245,15 @@ export function DownloadProjectForm({
                         <Save className="h-4 w-4" />
                         Guardar
                     </Button>
-                    <Button type="button" onClick={form.handleSubmit(downloadExcel)} form="projectForm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                    <Button type="button"
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                            downloadExcel();
+                        }}
+                        form="projectForm"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                    >
                         <Download className="h-4 w-4" />
                         Generar Excel
                     </Button>

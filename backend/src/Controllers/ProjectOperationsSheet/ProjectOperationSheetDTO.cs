@@ -187,7 +187,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public bool? AspercionMotor { get; set; } = false;
     public bool? NebulizacionFrio { get; set; } = false;
     public bool? NebulizacionCaliente { get; set; } = false;
-    // public bool? NebulizacionCebosTotal { get; set; } = false;
+    public bool? NebulizacionCebosTotal { get; set; } = false;
     public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
