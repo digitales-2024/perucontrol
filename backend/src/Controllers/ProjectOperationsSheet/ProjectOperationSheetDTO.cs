@@ -111,7 +111,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             AspercionMotor = AspercionMotor ?? false,
             NebulizacionFrio = NebulizacionFrio ?? false,
             NebulizacionCaliente = NebulizacionCaliente ?? false,
-            ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? false,
+            ColocacionCebosCebaderos = string.Empty,
             NumeroCeboTotal = NumeroCeboTotal ?? string.Empty,
             NumeroCeboRepuestos = NumeroCeboRepuestos ?? string.Empty,
             NroPlanchasPegantes = NroPlanchasPegantes ?? string.Empty,
@@ -187,7 +187,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public bool? NebulizacionFrio { get; set; } = false;
     public bool? NebulizacionCaliente { get; set; } = false;
     public bool? NebulizacionCebosTotal { get; set; } = false;
-    public bool? ColocacionCebosCebaderos { get; set; } = false;
+    public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
@@ -254,7 +254,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
         if (NebulizacionCaliente != null)
             entity.NebulizacionCaliente = (bool)NebulizacionCaliente;
         if (ColocacionCebosCebaderos != null)
-            entity.ColocacionCebosCebaderos = (bool)ColocacionCebosCebaderos;
+            entity.ColocacionCebosCebaderos = ColocacionCebosCebaderos;
         if (NumeroCeboTotal != null)
             entity.NumeroCeboTotal = NumeroCeboTotal;
         if (NumeroCeboRepuestos != null)
