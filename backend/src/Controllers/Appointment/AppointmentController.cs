@@ -80,7 +80,7 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        var placeholders = new Dictionary<string, string> { };
+        var placeholders = new Dictionary<string, string> { { "{fecha}", "322" } };
         var fileBytes = odsTemplate.GenerateOdsFromTemplate(
             placeholders,
             "Templates/ficha_operaciones_new.ods"
