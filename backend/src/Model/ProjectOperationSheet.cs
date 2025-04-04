@@ -189,4 +189,3 @@ public enum RodentConsumption
     Deteriorated,
     NoConsumption,
 }
-
