@@ -65,7 +65,7 @@ public class ProjectOperationSheet : BaseModel
 
     /// Colocación de cebos
     [Required]
-    public bool ColocacionCebosCebaderos { get; set; } = false;
+    public string ColocacionCebosCebaderos { get; set; } = string.Empty;
 
     [Required]
     public string NumeroCeboTotal { get; set; } = string.Empty;
@@ -185,4 +185,46 @@ public enum RodentConsumption
     Total,
     Deteriorated,
     NoConsumption,
+}
+
+public static class RodentConsumptionConverter
+{
+    public static (string, string, string, string) ToCheckbox(
+        this RodentConsumption rodentConsumption
+    )
+    {
+        return rodentConsumption switch
+        {
+            RodentConsumption.Partial => ("x", "", "", ""),
+            RodentConsumption.Total => ("", "x", "", ""),
+            RodentConsumption.Deteriorated => ("", "", "x", ""),
+            RodentConsumption.NoConsumption => ("", "", "", "x"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(rodentConsumption),
+                rodentConsumption,
+                null
+            ),
+        };
+    }
+}
+
+public static class InfestationDegreeExtension
+{
+    public static (string, string, string, string) ToCheckbox(
+        this InfestationDegree rodentConsumption
+    )
+    {
+        return rodentConsumption switch
+        {
+            InfestationDegree.High => ("x", "", "", ""),
+            InfestationDegree.Moderate => ("", "x", "", ""),
+            InfestationDegree.Low => ("", "", "x", ""),
+            InfestationDegree.Negligible => ("", "", "", "x"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(rodentConsumption),
+                rodentConsumption,
+                null
+            ),
+        };
+    }
 }
