@@ -12,8 +12,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public TimeSpan? LeaveTime { get; set; }
 
-    public string? SanitaryCondition { get; set; }
-
     public string? TreatedAreas { get; set; }
 
     public RodentConsumption? RodentConsumption { get; set; }
@@ -44,13 +42,17 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public string? OtherProductsAmount { get; set; }
 
-    public string? RatExtermination1 { get; set; }
+    // public string? SanitaryCondition { get; set; }
 
-    public string? RatExtermination2 { get; set; }
+    // public string? RatExtermination1 { get; set; }
 
-    public string? RatExtermination3 { get; set; }
+    // public string? RatExtermination2 { get; set; }
 
-    public string? RatExtermination4 { get; set; }
+    // public string? RatExtermination3 { get; set; }
+
+    // public string? RatExtermination4 { get; set; }
+
+    // public bool? NebulizacionCebosTotal { get; set; } = false;
 
     public string? Staff1 { get; set; }
 
@@ -64,8 +66,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public bool? AspercionMotor { get; set; } = false;
     public bool? NebulizacionFrio { get; set; } = false;
     public bool? NebulizacionCaliente { get; set; } = false;
-    public bool? NebulizacionCebosTotal { get; set; } = false;
-    public bool? ColocacionCebosCebaderos { get; set; } = false;
+    public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
@@ -111,7 +112,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             AspercionMotor = AspercionMotor ?? false,
             NebulizacionFrio = NebulizacionFrio ?? false,
             NebulizacionCaliente = NebulizacionCaliente ?? false,
-            ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? false,
+            ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? string.Empty,
             NumeroCeboTotal = NumeroCeboTotal ?? string.Empty,
             NumeroCeboRepuestos = NumeroCeboRepuestos ?? string.Empty,
             NroPlanchasPegantes = NroPlanchasPegantes ?? string.Empty,
@@ -136,7 +137,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 
     public RodentConsumption? RodentConsumption { get; set; }
 
-    public string? SanitaryCondition { get; set; }
+    // public string? SanitaryCondition { get; set; }
 
     public string? TreatedAreas { get; set; }
 
@@ -166,13 +167,13 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 
     public string? OtherProductsAmount { get; set; }
 
-    public string? RatExtermination1 { get; set; }
+    // public string? RatExtermination1 { get; set; }
 
-    public string? RatExtermination2 { get; set; }
+    // public string? RatExtermination2 { get; set; }
 
-    public string? RatExtermination3 { get; set; }
+    // public string? RatExtermination3 { get; set; }
 
-    public string? RatExtermination4 { get; set; }
+    // public string? RatExtermination4 { get; set; }
 
     public string? Staff1 { get; set; }
 
@@ -186,8 +187,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public bool? AspercionMotor { get; set; } = false;
     public bool? NebulizacionFrio { get; set; } = false;
     public bool? NebulizacionCaliente { get; set; } = false;
-    public bool? NebulizacionCebosTotal { get; set; } = false;
-    public bool? ColocacionCebosCebaderos { get; set; } = false;
+    // public bool? NebulizacionCebosTotal { get; set; } = false;
+    public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
@@ -254,7 +255,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
         if (NebulizacionCaliente != null)
             entity.NebulizacionCaliente = (bool)NebulizacionCaliente;
         if (ColocacionCebosCebaderos != null)
-            entity.ColocacionCebosCebaderos = (bool)ColocacionCebosCebaderos;
+            entity.ColocacionCebosCebaderos = ColocacionCebosCebaderos;
         if (NumeroCeboTotal != null)
             entity.NumeroCeboTotal = NumeroCeboTotal;
         if (NumeroCeboRepuestos != null)

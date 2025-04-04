@@ -66,7 +66,7 @@ public class ProjectOperationSheet : BaseModel
 
     /// Colocación de cebos
     [Required]
-    public bool ColocacionCebosCebaderos { get; set; } = false;
+    public string ColocacionCebosCebaderos { get; set; } = string.Empty;
 
     [Required]
     public string NumeroCeboTotal { get; set; } = string.Empty;
