@@ -55,11 +55,7 @@ public class AppointmentController(
         );
     }
 
-    [EndpointSummary("Generate Operations Sheet excel")]
-    [HttpPost("{id}/gen-operations-sheet/excel")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheetExcel(Guid id)
+    private (byte[], string) SpreadsheetTemplate(Guid id)
     {
         var appointment = db
             .Appointments.Include(a => a.Project)
@@ -67,11 +63,11 @@ public class AppointmentController(
             .Include(a => a.ProjectOperationSheet)
             .FirstOrDefault(a => a.Id == id);
         if (appointment == null)
-            return NotFound("Evento no encontrado.");
+            return (new byte[0], "Evento no encontrado.");
 
         var business = db.Businesses.FirstOrDefault();
         if (business == null)
-            return NotFound("Datos de la empresa no encontrados.");
+            return (new byte[0], "Datos de la empresa no encontrados.");
 
         var project = appointment.Project;
         var sheet = appointment.ProjectOperationSheet;
@@ -79,7 +75,8 @@ public class AppointmentController(
 
         if (project == null || sheet == null || client == null)
         {
-            return NotFound(
+            return (
+                new byte[0],
                 $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
             );
         }
@@ -151,6 +148,21 @@ public class AppointmentController(
             placeholders,
             "Templates/ficha_operaciones_new.ods"
         );
+        return (fileBytes, "");
+    }
+
+    [EndpointSummary("Generate Operations Sheet excel")]
+    [HttpPost("{id}/gen-operations-sheet/excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateOperationsSheetExcel(Guid id)
+    {
+        var (fileBytes, err) = SpreadsheetTemplate(id);
+        if (err != "")
+        {
+            return BadRequest(err);
+        }
+
         return File(
             fileBytes,
             "application/vnd.oasis.opendocument.spreadsheet",
@@ -164,25 +176,16 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheetPdf(Guid id)
     {
-        using var ms = new MemoryStream();
-
-        using (
-            var fs = new FileStream(
-                "Templates/ficha_operaciones_new.ods",
-                FileMode.Open,
-                FileAccess.Read
-            )
-        )
+        var (fileBytes, odsErr) = SpreadsheetTemplate(id);
+        if (odsErr != "")
         {
-            fs.CopyTo(ms);
+            return BadRequest(odsErr);
         }
-        ms.Position = 0;
 
-        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "xlsx");
-
-        if (errorStr != "")
+        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        if (pdfErr != "")
         {
-            return BadRequest(errorStr);
+            return BadRequest(pdfErr);
         }
         if (pdfBytes == null)
         {
