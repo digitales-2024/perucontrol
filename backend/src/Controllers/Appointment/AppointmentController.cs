@@ -63,9 +63,7 @@ public class AppointmentController(
     [HttpPost("{id}/gen-operations-sheet/excel")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheetExcel(
-        Guid id
-    )
+    public IActionResult GenerateOperationsSheetExcel(Guid id)
     {
         var appointment = db
             .Appointments.Include(a => a.Project)
@@ -86,9 +84,7 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        var placeholders = new Dictionary<string, string>
-        {
-        };
+        var placeholders = new Dictionary<string, string> { };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
             "Templates/ficha_operaciones.xlsx"
@@ -104,9 +100,7 @@ public class AppointmentController(
     [HttpPost("{id}/gen-operations-sheet/pdf")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheetPdf(
-        Guid id
-    )
+    public IActionResult GenerateOperationsSheetPdf(Guid id)
     {
         using var ms = new MemoryStream();
 

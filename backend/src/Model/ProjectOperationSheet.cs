@@ -22,13 +22,13 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public required TimeSpan LeaveTime { get; set; }
 
-    // condición_sanitaria
-    [Required]
-    public string SanitaryCondition { get; set; } = string.Empty;
-
     // areas_tratadas
     [Required]
     public string TreatedAreas { get; set; } = string.Empty;
+
+    //
+    // Diagnóstico
+    //
 
     // insectos
     [Required]
@@ -38,9 +38,52 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Rodents { get; set; } = string.Empty;
 
+    // Consumo de Roedores
+    // FIXME:
+
     // otras
     [Required]
     public string OtherPlagues { get; set; } = string.Empty;
+
+    //
+    // Método utilizado
+    //
+
+    /// Aspercion
+    [Required]
+    public bool AspersionManual { get; set; } = false;
+
+    [Required]
+    public bool AspercionMotor { get; set; } = false;
+
+    /// Nebulización
+    [Required]
+    public bool NebulizacionFrio { get; set; } = false;
+
+    [Required]
+    public bool NebulizacionCaliente { get; set; } = false;
+
+    /// Colocación de cebos
+    [Required]
+    public bool ColocacionCebosCebaderos { get; set; } = false;
+
+    [Required]
+    public string NumeroCeboTotal { get; set; } = string.Empty;
+
+    [Required]
+    public string NumeroCeboRepuestos { get; set; } = string.Empty;
+
+    // Planchas pegantes
+    [Required]
+    public string NroPlanchasPegantes { get; set; } = string.Empty;
+
+    // Jaulas Tomahawk
+    [Required]
+    public string NroJaulasTomahawk { get; set; } = string.Empty;
+
+    //
+    // Productos utilizados, cantidad y concentración
+    //
 
     // insecticida
     [Required]
@@ -50,18 +93,6 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Insecticide2 { get; set; } = string.Empty;
 
-    // rodenticida
-    [Required]
-    public string Rodenticide { get; set; } = string.Empty;
-
-    // desinfectante
-    [Required]
-    public string Desinfectant { get; set; } = string.Empty;
-
-    // otros_productos
-    [Required]
-    public string OtherProducts { get; set; } = string.Empty;
-
     // insecticida_cantidad
     [Required]
     public string InsecticideAmount { get; set; } = string.Empty;
@@ -70,33 +101,49 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string InsecticideAmount2 { get; set; } = string.Empty;
 
+    //
+
+    // rodenticida
+    [Required]
+    public string Rodenticide { get; set; } = string.Empty;
+
     // rodenticida_cantidad
     [Required]
     public string RodenticideAmount { get; set; } = string.Empty;
+
+    //
+
+    // desinfectante
+    [Required]
+    public string Desinfectant { get; set; } = string.Empty;
 
     // desinfectante_cantidad
     [Required]
     public string DesinfectantAmount { get; set; } = string.Empty;
 
+    //
+
+    // otros_productos
+    [Required]
+    public string OtherProducts { get; set; } = string.Empty;
+
     // producto_otros_cantidad
     [Required]
     public string OtherProductsAmount { get; set; } = string.Empty;
 
-    // monitoreo_desratizacion_1
-    [Required]
-    public string RatExtermination1 { get; set; } = string.Empty;
+    //
+    // Grado de infestación
+    //
 
-    // monitoreo_desratizacion_2
     [Required]
-    public string RatExtermination2 { get; set; } = string.Empty;
+    public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
-    // monitoreo_desratizacion_3
     [Required]
-    public string RatExtermination3 { get; set; } = string.Empty;
+    public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
 
-    // monitoreo_desratizacion_4
-    [Required]
-    public string RatExtermination4 { get; set; } = string.Empty;
+    //
+    // Personal que intervino en los trabajos
+    //
 
     // personal_1
     [Required]
@@ -114,36 +161,9 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Staff4 { get; set; } = string.Empty;
 
-    [Required]
-    public bool AspersionManual { get; set; } = false;
-
-    [Required]
-    public bool AspercionMotor { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionFrio { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionCaliente { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionCebosTotal { get; set; } = false;
-
-    [Required]
-    public bool ColocacionCebosCebaderos { get; set; } = false;
-
-    [Required]
-    public string NumeroCeboTotal { get; set; } = string.Empty;
-
-    [Required]
-    public string NumeroCeboRepuestos { get; set; } = string.Empty;
-
-    [Required]
-    public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
-
-    [Required]
-    public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
-
+    //
+    // Orden, limpieza, infraestructura y elementos innecesarios
+    //
     [Required]
     public string Observations { get; set; } = string.Empty;
 

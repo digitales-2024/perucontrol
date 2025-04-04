@@ -67,6 +67,9 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
 
+    public string? NroPlanchasPegantes { get; set; } = string.Empty;
+    public string? NroJaulasTomahawk { get; set; } = string.Empty;
+
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
     public InfestationDegree? DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
@@ -83,7 +86,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             OperationDate = OperationDate?.ToUniversalTime() ?? DateTime.UtcNow,
             EnterTime = EnterTime ?? TimeSpan.Zero,
             LeaveTime = LeaveTime ?? TimeSpan.Zero,
-            SanitaryCondition = SanitaryCondition ?? string.Empty,
             TreatedAreas = TreatedAreas ?? string.Empty,
             Insects = Insects ?? string.Empty,
             Rodents = Rodents ?? string.Empty,
@@ -98,10 +100,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             RodenticideAmount = RodenticideAmount ?? string.Empty,
             DesinfectantAmount = DesinfectantAmount ?? string.Empty,
             OtherProductsAmount = OtherProductsAmount ?? string.Empty,
-            RatExtermination1 = RatExtermination1 ?? string.Empty,
-            RatExtermination2 = RatExtermination2 ?? string.Empty,
-            RatExtermination3 = RatExtermination3 ?? string.Empty,
-            RatExtermination4 = RatExtermination4 ?? string.Empty,
             Staff1 = Staff1 ?? string.Empty,
             Staff2 = Staff2 ?? string.Empty,
             Staff3 = Staff3 ?? string.Empty,
@@ -110,10 +108,11 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             AspercionMotor = AspercionMotor ?? false,
             NebulizacionFrio = NebulizacionFrio ?? false,
             NebulizacionCaliente = NebulizacionCaliente ?? false,
-            NebulizacionCebosTotal = NebulizacionCebosTotal ?? false,
             ColocacionCebosCebaderos = ColocacionCebosCebaderos ?? false,
             NumeroCeboTotal = NumeroCeboTotal ?? string.Empty,
             NumeroCeboRepuestos = NumeroCeboRepuestos ?? string.Empty,
+            NroPlanchasPegantes = NroPlanchasPegantes ?? string.Empty,
+            NroJaulasTomahawk = NroJaulasTomahawk ?? string.Empty,
             DegreeInsectInfectivity = DegreeInsectInfectivity ?? InfestationDegree.Negligible,
             DegreeRodentInfectivity = DegreeRodentInfectivity ?? InfestationDegree.Negligible,
             Observations = Observations ?? string.Empty,
@@ -127,7 +126,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.OperationDate = OperationDate ?? entity.OperationDate;
         entity.EnterTime = EnterTime ?? entity.EnterTime;
         entity.LeaveTime = LeaveTime ?? entity.LeaveTime;
-        entity.SanitaryCondition = SanitaryCondition ?? entity.SanitaryCondition;
         entity.TreatedAreas = TreatedAreas ?? entity.TreatedAreas;
         entity.Insects = Insects ?? entity.Insects;
         entity.Rodents = Rodents ?? entity.Rodents;
@@ -142,10 +140,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.RodenticideAmount = RodenticideAmount ?? entity.RodenticideAmount;
         entity.DesinfectantAmount = DesinfectantAmount ?? entity.DesinfectantAmount;
         entity.OtherProductsAmount = OtherProductsAmount ?? entity.OtherProductsAmount;
-        entity.RatExtermination1 = RatExtermination1 ?? entity.RatExtermination1;
-        entity.RatExtermination2 = RatExtermination2 ?? entity.RatExtermination2;
-        entity.RatExtermination3 = RatExtermination3 ?? entity.RatExtermination3;
-        entity.RatExtermination4 = RatExtermination4 ?? entity.RatExtermination4;
         entity.Staff1 = Staff1 ?? entity.Staff1;
         entity.Staff2 = Staff2 ?? entity.Staff2;
         entity.Staff3 = Staff3 ?? entity.Staff3;
@@ -154,11 +148,12 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
         entity.AspercionMotor = AspercionMotor ?? entity.AspercionMotor;
         entity.NebulizacionFrio = NebulizacionFrio ?? entity.NebulizacionFrio;
         entity.NebulizacionCaliente = NebulizacionCaliente ?? entity.NebulizacionCaliente;
-        entity.NebulizacionCebosTotal = NebulizacionCebosTotal ?? entity.NebulizacionCebosTotal;
         entity.ColocacionCebosCebaderos =
             ColocacionCebosCebaderos ?? entity.ColocacionCebosCebaderos;
         entity.NumeroCeboTotal = NumeroCeboTotal ?? entity.NumeroCeboTotal;
         entity.NumeroCeboRepuestos = NumeroCeboRepuestos ?? entity.NumeroCeboRepuestos;
+        entity.NroPlanchasPegantes = NroPlanchasPegantes ?? entity.NroPlanchasPegantes;
+        entity.NroJaulasTomahawk = NroJaulasTomahawk ?? entity.NroJaulasTomahawk;
         entity.DegreeInsectInfectivity = DegreeInsectInfectivity ?? entity.DegreeInsectInfectivity;
         entity.DegreeRodentInfectivity = DegreeRodentInfectivity ?? entity.DegreeRodentInfectivity;
         entity.Observations = Observations ?? entity.Observations;
@@ -249,8 +244,6 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.EnterTime = (TimeSpan)EnterTime;
         if (LeaveTime != null)
             entity.LeaveTime = (TimeSpan)LeaveTime;
-        if (SanitaryCondition != null)
-            entity.SanitaryCondition = SanitaryCondition;
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)
@@ -279,14 +272,6 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.DesinfectantAmount = DesinfectantAmount;
         if (OtherProductsAmount != null)
             entity.OtherProductsAmount = OtherProductsAmount;
-        if (RatExtermination1 != null)
-            entity.RatExtermination1 = RatExtermination1;
-        if (RatExtermination2 != null)
-            entity.RatExtermination2 = RatExtermination2;
-        if (RatExtermination3 != null)
-            entity.RatExtermination3 = RatExtermination3;
-        if (RatExtermination4 != null)
-            entity.RatExtermination4 = RatExtermination4;
         if (Staff1 != null)
             entity.Staff1 = Staff1;
         if (Staff2 != null)
@@ -303,8 +288,6 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.NebulizacionFrio = (bool)NebulizacionFrio;
         if (NebulizacionCaliente != null)
             entity.NebulizacionCaliente = (bool)NebulizacionCaliente;
-        if (NebulizacionCebosTotal != null)
-            entity.NebulizacionCebosTotal = (bool)NebulizacionCebosTotal;
         if (ColocacionCebosCebaderos != null)
             entity.ColocacionCebosCebaderos = (bool)ColocacionCebosCebaderos;
         if (NumeroCeboTotal != null)
