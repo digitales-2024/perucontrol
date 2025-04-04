@@ -60,6 +60,7 @@ public class AppointmentController(
         var appointment = db
             .Appointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
+            .Include(a => a.Project).ThenInclude(p => p.Services)
             .Include(a => a.ProjectOperationSheet)
             .FirstOrDefault(a => a.Id == id);
         if (appointment == null)
