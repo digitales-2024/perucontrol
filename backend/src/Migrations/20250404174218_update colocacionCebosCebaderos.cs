@@ -5,7 +5,7 @@
 namespace PeruControl.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateColocacionCebosCebaderos : Migration
+    public partial class updatecolocacionCebosCebaderos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

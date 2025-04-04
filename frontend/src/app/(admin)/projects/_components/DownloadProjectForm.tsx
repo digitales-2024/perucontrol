@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, Building2, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MapPinHouse, MilkOff, MousePointer2, Package, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
 import { parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -51,6 +51,8 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
+
+    console.log(JSON.stringify(client, null, 2));
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
@@ -124,6 +126,7 @@ export function DownloadProjectForm({
 
     const downloadExcel = async() =>
     {
+        console.log(appointment);
         // Genera el Excel
         const [blob, err] = await toastWrapper(GenerateExcel(appointment.id!), {
             loading: "Generando archivo",
@@ -221,7 +224,15 @@ export function DownloadProjectForm({
                 ...currentValues, // Datos actuales (proyecto)
                 ...data, // Datos de la ficha operativa
                 rodentConsumption: data.rodentConsumption ?? undefined, // Convertir null a undefined
-                operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601
+                /* operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601 */
+                /* operationDate: appointment.actualDate?.split("T")[0] ??
+               data.operationDate?.split("T")[0] ??
+               currentValues.operationDate?.split("T")[0], */
+                operationDate: appointment.actualDate
+                    ? new Date(appointment.actualDate).toISOString()
+                    : data.operationDate
+                        ? new Date(data.operationDate).toISOString()
+                        : currentValues.operationDate,
                 degreeInsectInfectivity: data.degreeInsectInfectivity ?? undefined, // Convertir null a undefined
                 degreeRodentInfectivity: data.degreeRodentInfectivity ?? undefined, // Convertir null a undefined
             };
@@ -287,8 +298,12 @@ export function DownloadProjectForm({
                                                                     {
                                                                         if (date)
                                                                         {
-                                                                            const formattedDate = date.toISOString();
-                                                                            field.onChange(formattedDate);
+                                                                            const utcDate = new Date(Date.UTC(
+                                                                                date.getFullYear(),
+                                                                                date.getMonth(),
+                                                                                date.getDate(),
+                                                                            ));
+                                                                            field.onChange(utcDate.toISOString());
                                                                         }
                                                                         else
                                                                         {
@@ -336,70 +351,6 @@ export function DownloadProjectForm({
                                                         )}
                                                     />
                                                 </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-
-                                    <Card className="border shadow-sm mt-6">
-                                        <CardHeader className="py-3">
-                                            <CardTitle className="text-md font-medium">
-                                                Información del Cliente
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <Separator />
-                                        <CardContent className="pt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="razonSocial"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Package className="h-4 w-4 text-blue-500" />
-                                                                Razón Social/Nombre
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Ingrese la razón social" {...field} className="border-gray-300"
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="address"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <MapPinHouse className="h-4 w-4 text-blue-500" />
-                                                                Dirección
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Dirección" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="businessType"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Building2 className="h-4 w-4 text-blue-500" />
-                                                                Giro del Negocio
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Giro del Negocio" {...field} />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -662,9 +613,7 @@ export function DownloadProjectForm({
                                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                                                         <FormControl>
                                                                             <Input
-                                                                                placeholder="Colocación de cebos cebaderos"
-                                                                                {...field}
-                                                                                onChange={(e) => field.onChange(e.target.value)}
+                                                                                placeholder="Colocación de cebos cebaderos" {...field}
                                                                             />
                                                                         </FormControl>
                                                                     </FormItem>
@@ -956,6 +905,25 @@ export function DownloadProjectForm({
 
                                                 <FormField
                                                     control={form.control}
+                                                    name="insecticideAmount"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                                <Hash className="h-4 w-4 text-blue-500" />
+                                                                Cantidad de Insecticida
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Cantidad de Insecticida"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
                                                     name="insecticide2"
                                                     render={({ field }) => (
                                                         <FormItem>
@@ -965,6 +933,25 @@ export function DownloadProjectForm({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder="Nombre del insecticida 2" {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="insecticideAmount2"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                                <Hash className="h-4 w-4 text-blue-500" />
+                                                                Cantidad de Insecticida 2
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Cantidad de Insecticida 2"
+                                                                    {...field}
+                                                                />
                                                             </FormControl>
                                                         </FormItem>
                                                     )}
@@ -988,6 +975,25 @@ export function DownloadProjectForm({
 
                                                 <FormField
                                                     control={form.control}
+                                                    name="insecticideAmount2"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                                <Hash className="h-4 w-4 text-blue-500" />
+                                                                Cantidad de Insecticida 2
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Cantidad de Insecticida 2"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
                                                     name="desinfectant"
                                                     render={({ field }) => (
                                                         <FormItem>
@@ -997,6 +1003,25 @@ export function DownloadProjectForm({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder="Nombre del desinfectante" {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="desinfectantAmount"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                                <Hash className="h-4 w-4 text-blue-500" />
+                                                                Cantidad de Desinfectante
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Cantidad de Desinfectante"
+                                                                    {...field}
+                                                                />
                                                             </FormControl>
                                                         </FormItem>
                                                     )}
@@ -1017,106 +1042,6 @@ export function DownloadProjectForm({
                                                         </FormItem>
                                                     )}
                                                 />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-
-                                    <Card className="border shadow-sm">
-                                        <CardHeader className="py-3">
-                                            <CardTitle className="text-md font-medium">
-                                                Cantidades de Productos
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <Separator />
-                                        <CardContent className="pt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="insecticideAmount"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Insecticida
-                                                            </FormLabel>
-                                                            <FormDescription>
-                                                                Indique la cantidad en ml o g
-                                                            </FormDescription>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Cantidad de Insecticida"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="insecticideAmount2"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Insecticida 2
-                                                            </FormLabel>
-                                                            <FormDescription>
-                                                                Indique la cantidad en ml o g
-                                                            </FormDescription>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Cantidad de Insecticida 2"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="rodenticideAmount"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Rodenticida
-                                                            </FormLabel>
-                                                            <FormDescription>
-                                                                Indique la cantidad en ml o g
-                                                            </FormDescription>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Cantidad de Rodenticida"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="desinfectantAmount"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                                <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Desinfectante
-                                                            </FormLabel>
-                                                            <FormDescription>
-                                                                Indique la cantidad en ml o g
-                                                            </FormDescription>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Cantidad de Desinfectante"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
 
                                                 <FormField
                                                     control={form.control}
@@ -1127,9 +1052,6 @@ export function DownloadProjectForm({
                                                                 <Hash className="h-4 w-4 text-blue-500" />
                                                                 Cantidad de Otros Productos
                                                             </FormLabel>
-                                                            <FormDescription>
-                                                                Indique la cantidad en ml o g
-                                                            </FormDescription>
                                                             <FormControl>
                                                                 <Input
                                                                     placeholder="Cantidad de Otros Productos"
@@ -1238,7 +1160,6 @@ export function DownloadProjectForm({
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();
-                            // downloadExcel();
                         }}
                         className="flex items-center gap-2"
                     >

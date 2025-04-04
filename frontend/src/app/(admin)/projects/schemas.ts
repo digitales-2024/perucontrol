@@ -62,7 +62,7 @@ export const downloadProjectSchema = z.object({
         .default(false),
     nebulizacionCaliente: z.boolean().optional()
         .default(false),
-    colocacionCebosCebaderos: z.string().optional(),
+    colocacionCebosCebaderos: z.string(),
     numeroCeboTotal: z.preprocess(
         (val) => (typeof val === "number" ? val.toString() : val),
         z.string(),
@@ -71,8 +71,14 @@ export const downloadProjectSchema = z.object({
         (val) => (typeof val === "number" ? val.toString() : val),
         z.string(),
     ),
-    nroPlanchasPegantes: z.string(),
-    nroJaulasTomahawk: z.string(),
+    nroPlanchasPegantes: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
+    nroJaulasTomahawk: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
     degreeInsectInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     degreeRodentInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     observations: z.string(),

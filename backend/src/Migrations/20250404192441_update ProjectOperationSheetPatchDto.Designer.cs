@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250404172812_Update ColocacionCebosCebaderos")]
-    partial class UpdateColocacionCebosCebaderos
+    [Migration("20250404192441_update ProjectOperationSheetPatchDto")]
+    partial class updateProjectOperationSheetPatchDto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -488,10 +488,10 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int>("DegreeInsectInfectivity")
+                    b.Property<int?>("DegreeInsectInfectivity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DegreeRodentInfectivity")
+                    b.Property<int?>("DegreeRodentInfectivity")
                         .HasColumnType("integer");
 
                     b.Property<string>("Desinfectant")
@@ -584,7 +584,7 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RodentConsumption")
+                    b.Property<int?>("RodentConsumption")
                         .HasColumnType("integer");
 
                     b.Property<string>("Rodenticide")

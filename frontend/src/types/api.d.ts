@@ -3727,7 +3727,7 @@ export interface components {
             treatedAreas: string;
             insects: string;
             rodents: string;
-            rodentConsumption: components["schemas"]["NullableOfRodentConsumption"];
+            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             otherPlagues: string;
             aspersionManual: boolean;
             aspercionMotor: boolean;
@@ -3748,8 +3748,8 @@ export interface components {
             desinfectantAmount: string;
             otherProducts: string;
             otherProductsAmount: string;
-            degreeInsectInfectivity: components["schemas"]["NullableOfInfestationDegree"];
-            degreeRodentInfectivity: components["schemas"]["NullableOfInfestationDegree"];
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             staff1: string;
             staff2: string;
             staff3: string;
@@ -3836,7 +3836,7 @@ export interface components {
             nebulizacionFrio?: boolean;
             nebulizacionCaliente?: boolean;
             nebulizacionCebosTotal?: boolean;
-            colocacionCebosCebaderos?: boolean;
+            colocacionCebosCebaderos?: string;
             numeroCeboTotal?: string;
             numeroCeboRepuestos?: string;
             degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
@@ -3874,9 +3874,12 @@ export interface components {
             aspercionMotor?: boolean | null;
             nebulizacionFrio?: boolean | null;
             nebulizacionCaliente?: boolean | null;
+            nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: string | null;
             numeroCeboTotal?: string | null;
             numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
             degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;

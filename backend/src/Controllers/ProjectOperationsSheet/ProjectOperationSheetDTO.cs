@@ -69,7 +69,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
-
     public string? NroPlanchasPegantes { get; set; } = string.Empty;
     public string? NroJaulasTomahawk { get; set; } = string.Empty;
 
@@ -191,6 +190,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
+    public string? NroPlanchasPegantes { get; set; } = string.Empty;
+    public string? NroJaulasTomahawk { get; set; } = string.Empty;
 
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
 
@@ -260,6 +261,10 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.NumeroCeboTotal = NumeroCeboTotal;
         if (NumeroCeboRepuestos != null)
             entity.NumeroCeboRepuestos = NumeroCeboRepuestos;
+        if (NroPlanchasPegantes != null)
+            entity.NroPlanchasPegantes = NroPlanchasPegantes;
+        if (NroJaulasTomahawk != null)
+            entity.NroJaulasTomahawk = NroJaulasTomahawk;
         if (DegreeInsectInfectivity != null)
             entity.DegreeInsectInfectivity = (InfestationDegree)DegreeInsectInfectivity;
         if (DegreeRodentInfectivity != null)
