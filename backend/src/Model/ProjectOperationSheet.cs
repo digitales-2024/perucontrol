@@ -39,7 +39,8 @@ public class ProjectOperationSheet : BaseModel
     public string Rodents { get; set; } = string.Empty;
 
     // Consumo de Roedores
-    // FIXME:
+    [Required]
+    public RodentConsumption? RodentConsumption { get; set; }
 
     // otras
     [Required]
@@ -136,10 +137,10 @@ public class ProjectOperationSheet : BaseModel
     //
 
     [Required]
-    public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
+    public InfestationDegree? DegreeInsectInfectivity { get; set; }
 
     [Required]
-    public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
+    public InfestationDegree? DegreeRodentInfectivity { get; set; }
 
     //
     // Personal que intervino en los trabajos
@@ -169,4 +170,22 @@ public class ProjectOperationSheet : BaseModel
 
     [Required]
     public string Recommendations { get; set; } = string.Empty;
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum InfestationDegree
+{
+    High,
+    Moderate,
+    Low,
+    Negligible,
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum RodentConsumption
+{
+    Partial,
+    Total,
+    Deteriorated,
+    NoConsumption,
 }

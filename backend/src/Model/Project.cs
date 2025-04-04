@@ -12,15 +12,6 @@ public enum ProjectStatus
     Rejected,
 }
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum InfestationDegree
-{
-    High,
-    Moderate,
-    Low,
-    Negligible,
-}
-
 public class Project : BaseModel
 {
     [JsonIgnore]
