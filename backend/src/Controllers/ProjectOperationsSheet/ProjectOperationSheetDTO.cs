@@ -136,8 +136,6 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 
     public RodentConsumption? RodentConsumption { get; set; }
 
-    // public string? SanitaryCondition { get; set; }
-
     public string? TreatedAreas { get; set; }
 
     public string? Insects { get; set; }
@@ -165,14 +163,6 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public string? DesinfectantAmount { get; set; }
 
     public string? OtherProductsAmount { get; set; }
-
-    // public string? RatExtermination1 { get; set; }
-
-    // public string? RatExtermination2 { get; set; }
-
-    // public string? RatExtermination3 { get; set; }
-
-    // public string? RatExtermination4 { get; set; }
 
     public string? Staff1 { get; set; }
 

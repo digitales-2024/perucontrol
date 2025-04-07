@@ -43,7 +43,7 @@ public class AppointmentController(
             appointments.Select(a => new AppointmentGetDTO
             {
                 Project = a.Project,
-                OrderNumber = a.OrderNumber,
+                CertificateNumber = a.CertificateNumber,
                 DueDate = a.DueDate,
                 ActualDate = a.ActualDate,
                 Client = a.Project.Client,
@@ -55,12 +55,13 @@ public class AppointmentController(
         );
     }
 
-    private (byte[], string) SpreadsheetTemplate(Guid id)
+    private (byte[], string) OperationSheetSpreadsheetTemplate(Guid id)
     {
         var appointment = db
             .Appointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
-            .Include(a => a.Project).ThenInclude(p => p.Services)
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Services)
             .Include(a => a.ProjectOperationSheet)
             .FirstOrDefault(a => a.Id == id);
         if (appointment == null)
@@ -158,7 +159,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheetExcel(Guid id)
     {
-        var (fileBytes, err) = SpreadsheetTemplate(id);
+        var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
         if (err != "")
         {
             return BadRequest(err);
@@ -177,7 +178,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheetPdf(Guid id)
     {
-        var (fileBytes, odsErr) = SpreadsheetTemplate(id);
+        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
         if (odsErr != "")
         {
             return BadRequest(odsErr);
@@ -197,23 +198,23 @@ public class AppointmentController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
-    [EndpointSummary("Update an existing operation sheet")]
-    [HttpPost("operation-sheet")]
+    [EndpointSummary("Update an operation sheet")]
+    [HttpPatch("{appointmentid}/operation-sheet")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectOperationSheet>> UpdateOperationSheet(
+        Guid appointmentid,
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
-        // Buscar la ficha operativa asociada al ProjectAppointment
         var operationSheet = await db.Set<ProjectOperationSheet>()
-            .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
-            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == updateDTO.ProjectAppointmentId);
+            .Include(x => x.ProjectAppointment)
+            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointmentid);
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha operativa para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
         }
 
         // Aplicar los cambios al objeto existente
@@ -240,9 +241,103 @@ public class AppointmentController(
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha operativa para el proyecto especificado.");
+            return NotFound(
+                "No se encontró una ficha de operaciones para el proyecto especificado."
+            );
         }
 
         return Ok(operationSheet);
+    }
+
+    [EndpointSummary("Update a certfificate")]
+    [HttpPatch("{appointmentid}/certificate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ProjectOperationSheet>> UpdateCertificate(
+        Guid appointmentid,
+        [FromBody] AppointmentCertificatePatchDTO updateDTO
+    )
+    {
+        var certificate = await db.Set<Certificate>()
+            .Include(c => c.ProjectAppointment)
+            .FirstOrDefaultAsync(c => c.ProjectAppointment.Id == appointmentid);
+
+        if (certificate == null)
+        {
+            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+        }
+
+        // Aplicar los cambios al objeto existente
+        updateDTO.ApplyPatch(certificate);
+
+        // Guardar los cambios en la base de datos
+        db.Update(certificate);
+        await db.SaveChangesAsync();
+
+        return Ok(certificate);
+    }
+
+    [EndpointSummary("Get Certificate of an appointment")]
+    [HttpGet("{appointmentid}/certificate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid projectId)
+    {
+        var appointment = await db.Set<ProjectAppointment>()
+            .Include(p => p.Certificate)
+            .FirstOrDefaultAsync(a => a.Id == projectId);
+
+        if (appointment == null)
+            return NotFound("No se encontró la Cita para el Certificado");
+
+        return Ok(appointment.Certificate);
+    }
+
+    [EndpointSummary("Generate Certificate excel")]
+    [HttpPost("{id}/certificate/excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificateExcel(Guid id)
+    {
+        // FIXME: use a different template
+        var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
+        if (err != "")
+        {
+            return BadRequest(err);
+        }
+
+        return File(
+            fileBytes,
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "ficha_operaciones.ods"
+        );
+    }
+
+    [EndpointSummary("Generate Certificate PDF")]
+    [HttpPost("{id}/certificate/pdf")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificatePdf(Guid id)
+    {
+        // FIXME: use a different template
+        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
+        if (odsErr != "")
+        {
+            return BadRequest(odsErr);
+        }
+
+        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 }
