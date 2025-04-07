@@ -198,23 +198,23 @@ public class AppointmentController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
-    [EndpointSummary("Update an existing operation sheet")]
-    [HttpPost("operation-sheet")]
+    [EndpointSummary("Update an operation sheet")]
+    [HttpPatch("{appointment_id}/operation-sheet")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectOperationSheet>> UpdateOperationSheet(
+        Guid appointment_id,
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
-        // Buscar la ficha operativa asociada al ProjectAppointment
         var operationSheet = await db.Set<ProjectOperationSheet>()
-            .Include(x => x.ProjectAppointment) // Incluir la relación con ProjectAppointment
-            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == updateDTO.ProjectAppointmentId);
+            .Include(x => x.ProjectAppointment)
+            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointment_id);
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha operativa para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
         }
 
         // Aplicar los cambios al objeto existente
@@ -241,9 +241,40 @@ public class AppointmentController(
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha operativa para el proyecto especificado.");
+            return NotFound(
+                "No se encontró una ficha de operaciones para el proyecto especificado."
+            );
         }
 
         return Ok(operationSheet);
+    }
+
+    [EndpointSummary("Update a certfificate")]
+    [HttpPatch("{appointment_id}/certificate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ProjectOperationSheet>> UpdateCertificate(
+        Guid appointment_id,
+        [FromBody] AppointmentCertificatePatchDTO updateDTO
+    )
+    {
+        var certificate = await db.Set<Certificate>()
+            .Include(c => c.ProjectAppointment)
+            .FirstOrDefaultAsync(c => c.ProjectAppointment.Id == appointment_id);
+
+        if (certificate == null)
+        {
+            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+        }
+
+        // Aplicar los cambios al objeto existente
+        updateDTO.ApplyPatch(certificate);
+
+        // Guardar los cambios en la base de datos
+        db.Update(certificate);
+        await db.SaveChangesAsync();
+
+        return Ok(certificate);
     }
 }

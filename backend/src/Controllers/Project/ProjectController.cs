@@ -468,25 +468,4 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         await _context.SaveChangesAsync();
         return Ok();
     }
-
-    [EndpointSummary("Generate Appointment Operations Sheet")]
-    [HttpPost("{proj_id}/appointment/{app_id}/ops-sheet")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheet(
-        Guid id,
-        [FromBody] ProjectOperationSheetExport export
-    )
-    {
-        return Ok();
-    }
-
-    [EndpointSummary("Generate Appointment Certificate")]
-    [HttpPost("{proj_id}/appointment/{app_id}/certificate")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificate(Guid id, [FromBody] ProjectOperationSheetExport export)
-    {
-        return Ok();
-    }
 }

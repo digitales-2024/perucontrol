@@ -15,3 +15,16 @@ public class AppointmentGetDTO
     public required DateTime CreatedAt { get; set; }
     public required DateTime ModifiedAt { get; set; }
 }
+
+public class AppointmentCertificatePatchDTO : IEntityPatcher<Certificate>
+{
+    public DateTime? ExpirationDate { get; set; } = null;
+
+    public void ApplyPatch(Certificate entity)
+    {
+        if (ExpirationDate.HasValue)
+        {
+            entity.ExpirationDate = ExpirationDate.Value;
+        }
+    }
+}
