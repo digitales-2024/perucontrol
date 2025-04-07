@@ -24,5 +24,5 @@ public class ProjectAppointment : BaseModel
     public DateTime? ActualDate { get; set; }
 
     [JsonIgnore]
-    public required Certificate Certificate { get; set; } = null!;
+    public Certificate Certificate { get; set; } = null!;
 }

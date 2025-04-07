@@ -55,7 +55,7 @@ public class AppointmentController(
         );
     }
 
-    private (byte[], string) SpreadsheetTemplate(Guid id)
+    private (byte[], string) OperationSheetSpreadsheetTemplate(Guid id)
     {
         var appointment = db
             .Appointments.Include(a => a.Project)
@@ -159,7 +159,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheetExcel(Guid id)
     {
-        var (fileBytes, err) = SpreadsheetTemplate(id);
+        var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
         if (err != "")
         {
             return BadRequest(err);
@@ -178,7 +178,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateOperationsSheetPdf(Guid id)
     {
-        var (fileBytes, odsErr) = SpreadsheetTemplate(id);
+        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
         if (odsErr != "")
         {
             return BadRequest(odsErr);
@@ -292,5 +292,52 @@ public class AppointmentController(
             return NotFound("No se encontró la Cita para el Certificado");
 
         return Ok(appointment.Certificate);
+    }
+
+    [EndpointSummary("Generate Certificate excel")]
+    [HttpPost("{id}/certificate/excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificateExcel(Guid id)
+    {
+        // FIXME: use a different template
+        var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
+        if (err != "")
+        {
+            return BadRequest(err);
+        }
+
+        return File(
+            fileBytes,
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "ficha_operaciones.ods"
+        );
+    }
+
+    [EndpointSummary("Generate Certificate PDF")]
+    [HttpPost("{id}/certificate/pdf")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificatePdf(Guid id)
+    {
+        // FIXME: use a different template
+        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
+        if (odsErr != "")
+        {
+            return BadRequest(odsErr);
+        }
+
+        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 }
