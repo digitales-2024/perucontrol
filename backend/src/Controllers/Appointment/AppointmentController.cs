@@ -43,7 +43,7 @@ public class AppointmentController(
             appointments.Select(a => new AppointmentGetDTO
             {
                 Project = a.Project,
-                OrderNumber = a.OrderNumber,
+                CertificateNumber = a.CertificateNumber,
                 DueDate = a.DueDate,
                 ActualDate = a.ActualDate,
                 Client = a.Project.Client,

@@ -11,7 +11,7 @@ public class ProjectAppointment : BaseModel
     /// On initial creation, this value is null, and it must be set when the appointment
     /// is performed.
     /// This number is taken from the ProjectOrderNumber entity.
-    public int? OrderNumber { get; set; } = null;
+    public int? CertificateNumber { get; set; } = null;
 
     /// All the data linked to the appointment.
     [JsonIgnore]
