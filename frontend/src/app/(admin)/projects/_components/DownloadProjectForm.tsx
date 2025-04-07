@@ -224,10 +224,6 @@ export function DownloadProjectForm({
                 ...currentValues, // Datos actuales (proyecto)
                 ...data, // Datos de la ficha operativa
                 rodentConsumption: data.rodentConsumption ?? undefined, // Convertir null a undefined
-                /* operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601 */
-                /* operationDate: appointment.actualDate?.split("T")[0] ??
-               data.operationDate?.split("T")[0] ??
-               currentValues.operationDate?.split("T")[0], */
                 operationDate: appointment.actualDate
                     ? new Date(appointment.actualDate).toISOString()
                     : data.operationDate
