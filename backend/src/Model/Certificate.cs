@@ -16,7 +16,5 @@ public class Certificate : BaseModel
     [Required]
     public Guid ProjectAppointmentId { get; set; }
 
-    public required string TreatedArea { get; set; }
-    public required DateTime CreationDate { get; set; }
     public required DateTime ExpirationDate { get; set; }
 }
