@@ -43,7 +43,7 @@ public class AppointmentController(
             appointments.Select(a => new AppointmentGetDTO
             {
                 Project = a.Project,
-                OrderNumber = a.OrderNumber,
+                CertificateNumber = a.CertificateNumber,
                 DueDate = a.DueDate,
                 ActualDate = a.ActualDate,
                 Client = a.Project.Client,
@@ -60,7 +60,8 @@ public class AppointmentController(
         var appointment = db
             .Appointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
-            .Include(a => a.Project).ThenInclude(p => p.Services)
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Services)
             .Include(a => a.ProjectOperationSheet)
             .FirstOrDefault(a => a.Id == id);
         if (appointment == null)
