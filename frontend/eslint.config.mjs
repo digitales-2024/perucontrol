@@ -64,6 +64,7 @@ const eslintConfig = [
                     "ignoreDestructuring": true,
                     "ignoreImports": true,
                     "ignoreGlobals": true,
+                    "properties": "never",
                 },
             ],
             "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],

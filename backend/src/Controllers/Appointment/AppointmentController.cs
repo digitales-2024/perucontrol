@@ -199,18 +199,18 @@ public class AppointmentController(
     }
 
     [EndpointSummary("Update an operation sheet")]
-    [HttpPatch("{appointment_id}/operation-sheet")]
+    [HttpPatch("{appointmentid}/operation-sheet")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectOperationSheet>> UpdateOperationSheet(
-        Guid appointment_id,
+        Guid appointmentid,
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
         var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment)
-            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointment_id);
+            .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointmentid);
 
         if (operationSheet == null)
         {
@@ -250,18 +250,18 @@ public class AppointmentController(
     }
 
     [EndpointSummary("Update a certfificate")]
-    [HttpPatch("{appointment_id}/certificate")]
+    [HttpPatch("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectOperationSheet>> UpdateCertificate(
-        Guid appointment_id,
+        Guid appointmentid,
         [FromBody] AppointmentCertificatePatchDTO updateDTO
     )
     {
         var certificate = await db.Set<Certificate>()
             .Include(c => c.ProjectAppointment)
-            .FirstOrDefaultAsync(c => c.ProjectAppointment.Id == appointment_id);
+            .FirstOrDefaultAsync(c => c.ProjectAppointment.Id == appointmentid);
 
         if (certificate == null)
         {
@@ -276,5 +276,21 @@ public class AppointmentController(
         await db.SaveChangesAsync();
 
         return Ok(certificate);
+    }
+
+    [EndpointSummary("Get Certificate of an appointment")]
+    [HttpGet("{appointmentid}/certificate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid projectId)
+    {
+        var appointment = await db.Set<ProjectAppointment>()
+            .Include(p => p.Certificate)
+            .FirstOrDefaultAsync(a => a.Id == projectId);
+
+        if (appointment == null)
+            return NotFound("No se encontró la Cita para el Certificado");
+
+        return Ok(appointment.Certificate);
     }
 }

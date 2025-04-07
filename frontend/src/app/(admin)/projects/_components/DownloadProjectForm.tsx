@@ -52,8 +52,6 @@ export function DownloadProjectForm({
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
 
-    console.log(JSON.stringify(client, null, 2));
-
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
@@ -252,19 +250,19 @@ export function DownloadProjectForm({
                         <TabsList className="w-full h-auto bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 p-1.5 rounded-xl flex flex-wrap gap-1 border border-blue-200 dark:border-blue-800">
                             <TabsTrigger value="general" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <ClipboardList className="h-4 w-4 mr-2" />
-                Información General
+                                Información General
                             </TabsTrigger>
                             <TabsTrigger value="plagas" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <Bug className="h-4 w-4 mr-2" />
-                Plagas y Métodos
+                                Plagas y Métodos
                             </TabsTrigger>
                             <TabsTrigger value="metodos" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <SprayCan className="h-4 w-4 mr-2" />
-                Productos y Grados
+                                Productos y Grados
                             </TabsTrigger>
                             <TabsTrigger value="personal" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <Users className="h-4 w-4 mr-2" />
-                Personal
+                                Personal
                             </TabsTrigger>
                         </TabsList>
                     </div>
@@ -471,7 +469,7 @@ export function DownloadProjectForm({
                                                 />
 
                                                 <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <MilkOff className="h-4 w-4 text-blue-500"  />
+                                                    <MilkOff className="h-4 w-4 text-blue-500" />
                                                     Consumo de roedores
                                                 </FormLabel>
                                                 <div className="space-y-2">
