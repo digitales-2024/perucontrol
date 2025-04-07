@@ -11,5 +11,5 @@ public class Certificate : BaseModel
     [Required]
     public Guid ProjectAppointmentId { get; set; }
 
-    public required DateTime ExpirationDate { get; set; }
+    public DateTime? ExpirationDate { get; set; } = null;
 }
