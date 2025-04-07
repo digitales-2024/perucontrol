@@ -347,8 +347,8 @@ public class AppointmentController(
     )
     {
         var message = new MimeKit.MimeMessage();
-        message.From.Add(new MailboxAddress("Fernando Araoz", "fernando@araozu.dev"));
-        message.To.Add(new MailboxAddress("", "larispe@acideperu.org"));
+        message.From.Add(new MailboxAddress("Fernando Araoz", "fernando.araozu@gmail.com"));
+        message.To.Add(new MailboxAddress("", "faraoz@unsa.edu.pe"));
         message.Subject = "Test email";
 
         var builder = new BodyBuilder();
@@ -356,8 +356,8 @@ public class AppointmentController(
         message.Body = builder.ToMessageBody();
 
         using var client = new MailKit.Net.Smtp.SmtpClient();
-        await client.ConnectAsync("mail.privateemail.com", 465, true);
-        await client.AuthenticateAsync("fernando@araozu.dev", "--password-here--");
+        await client.ConnectAsync("smtp.gmail.com", 465, true);
+        await client.AuthenticateAsync("fernando.araozu@gmail.com", "--app-password-here--");
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
 
