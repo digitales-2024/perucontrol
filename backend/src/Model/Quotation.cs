@@ -118,6 +118,10 @@ public class Quotation : BaseModel
     [StringLength(500, ErrorMessage = "Los entregables no pueden exceder 500 caracteres")]
     public required string Deliverables { get; set; }
 
+    // [Required(ErrorMessage = "Los terminos y condiciones son obligatorios")]
+    // [StringLength(600, ErrorMessage = "Los terminos y condiciones no pueden exceder")]
+    // public required string Terms { get; set; }
+
     [Column(TypeName = "TEXT")]
     public string? CustomField10 { get; set; }
 

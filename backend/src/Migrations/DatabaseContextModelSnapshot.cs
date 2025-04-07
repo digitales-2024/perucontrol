@@ -227,10 +227,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -243,16 +240,6 @@ namespace PeruControl.Migrations
 
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("ProjectNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectNumber"));
-
-                    b.Property<string>("TreatedArea")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -269,7 +256,6 @@ namespace PeruControl.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BusinessType")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
@@ -436,6 +422,9 @@ namespace PeruControl.Migrations
                     b.Property<DateTime?>("ActualDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("CertificateNumber")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -451,9 +440,6 @@ namespace PeruControl.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
-
-                    b.Property<int?>("OrderNumber")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -477,21 +463,19 @@ namespace PeruControl.Migrations
                     b.Property<bool>("AspersionManual")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("ColocacionCebosCebaderos")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ColocacionCebosRepuestos")
-                        .HasColumnType("boolean");
+                    b.Property<string>("ColocacionCebosCebaderos")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int>("DegreeInsectInfectivity")
+                    b.Property<int?>("DegreeInsectInfectivity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DegreeRodentInfectivity")
+                    b.Property<int?>("DegreeRodentInfectivity")
                         .HasColumnType("integer");
 
                     b.Property<string>("Desinfectant")
@@ -539,11 +523,24 @@ namespace PeruControl.Migrations
                     b.Property<bool>("NebulizacionCaliente")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("NebulizacionCebosTotal")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("NroJaulasTomahawk")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NroPlanchasPegantes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NumeroCeboRepuestos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NumeroCeboTotal")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Observations")
                         .IsRequired()
@@ -567,25 +564,12 @@ namespace PeruControl.Migrations
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("RatExtermination1")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination2")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination3")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RatExtermination4")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Recommendations")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("RodentConsumption")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Rodenticide")
                         .IsRequired()
@@ -596,10 +580,6 @@ namespace PeruControl.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Rodents")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SanitaryCondition")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1123,7 +1103,8 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
                 {
-                    b.Navigation("Certificate");
+                    b.Navigation("Certificate")
+                        .IsRequired();
 
                     b.Navigation("ProjectOperationSheet")
                         .IsRequired();

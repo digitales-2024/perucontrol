@@ -64,13 +64,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -121,13 +115,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -153,6 +141,246 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/operation-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an operation sheet */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/operation-sheet/by-project/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find operation sheet by project ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointment_id}/certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a certfificate */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointment_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "text/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find certificate by project ID */
+        get: {
+            parameters: {
+                query?: {
+                    projectId?: string;
+                };
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -475,311 +703,6 @@ export interface paths {
         trace?: never;
     };
     "/api/Business/{id}/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reactivate by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Certificate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Certificate"]>;
-                        "application/json": Array<components["schemas"]["Certificate"]>;
-                        "text/json": Array<components["schemas"]["Certificate"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Create */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CertificateCreateDTO"];
-                    "text/json": components["schemas"]["CertificateCreateDTO"];
-                    "application/*+json": components["schemas"]["CertificateCreateDTO"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Certificate"];
-                        "application/json": components["schemas"]["Certificate"];
-                        "text/json": components["schemas"]["Certificate"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Certificate/{id}/gen-certificate-word": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Certificate Word */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Certificate/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get one by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Certificate"];
-                        "application/json": components["schemas"]["Certificate"];
-                        "text/json": components["schemas"]["Certificate"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Deactivate by id */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Partial edit one by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CertificatePatchDTO"];
-                    "text/json": components["schemas"]["CertificatePatchDTO"];
-                    "application/*+json": components["schemas"]["CertificatePatchDTO"];
-                };
-            };
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Certificate/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -1410,6 +1333,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Project/{id}/desactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Deactivate Project by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Project/{id}/appointment": {
         parameters: {
             query?: never;
@@ -1568,126 +1538,6 @@ export interface paths {
                 };
             };
         };
-        trace?: never;
-    };
-    "/api/Project/{proj_id}/appointment/{app_id}/ops-sheet": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Appointment Operations Sheet */
-        post: {
-            parameters: {
-                query?: {
-                    id?: string;
-                };
-                header?: never;
-                path: {
-                    proj_id: string;
-                    app_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Project/{proj_id}/appointment/{app_id}/certificate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Appointment Certificate */
-        post: {
-            parameters: {
-                query?: {
-                    id?: string;
-                };
-                header?: never;
-                path: {
-                    proj_id: string;
-                    app_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/Project/{id}/reactivate": {
@@ -3285,6 +3135,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AppointmentCertificatePatchDTO: {
+            /** Format: date-time */
+            expirationDate?: string | null;
+        };
         AppointmentCreateDTO: {
             /** Format: date-time */
             dueDate?: string;
@@ -3292,7 +3146,7 @@ export interface components {
         AppointmentGetDTO: {
             project: components["schemas"]["Project"];
             /** Format: int32 */
-            orderNumber?: number | null;
+            certificateNumber?: number | null;
             /** Format: date-time */
             dueDate: string;
             /** Format: date-time */
@@ -3346,41 +3200,13 @@ export interface components {
             bankCCI?: string | null;
             deductions?: string | null;
         };
-        Certificate: {
-            /** Format: int32 */
-            projectNumber: number;
-            /** Format: uuid */
-            projectAppointmentId: string;
-            treatedArea: string;
-            /** Format: date-time */
-            creationDate: string;
-            /** Format: date-time */
-            expirationDate: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        CertificateCreateDTO: {
-            /** Format: uuid */
-            projectId: string;
-            treatedArea: string;
-            /** Format: date-time */
-            creationDate: string;
-            /** Format: date-time */
-            expirationDate: string;
-        };
-        CertificatePatchDTO: Record<string, never>;
         Client: {
             /** Format: int32 */
             clientNumber: number;
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
@@ -3401,7 +3227,7 @@ export interface components {
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
@@ -3422,7 +3248,7 @@ export interface components {
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
@@ -3441,7 +3267,7 @@ export interface components {
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
@@ -3485,8 +3311,6 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
-        /** @enum {unknown} */
-        InfestationDegree: "High" | "Moderate" | "Low" | "Negligible";
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -3505,6 +3329,8 @@ export interface components {
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual" | null;
+        /** @enum {unknown|null} */
+        NullableOfRodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption" | null;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -3534,7 +3360,7 @@ export interface components {
         };
         ProjectAppointment: {
             /** Format: int32 */
-            orderNumber?: number | null;
+            certificateNumber?: number | null;
             /** Format: date-time */
             dueDate: string;
             /** Format: date-time */
@@ -3570,38 +3396,36 @@ export interface components {
             operationDate: string;
             enterTime: string;
             leaveTime: string;
-            sanitaryCondition: string;
             treatedAreas: string;
             insects: string;
             rodents: string;
+            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             otherPlagues: string;
-            insecticide: string;
-            insecticide2: string;
-            rodenticide: string;
-            desinfectant: string;
-            otherProducts: string;
-            insecticideAmount: string;
-            insecticideAmount2: string;
-            rodenticideAmount: string;
-            desinfectantAmount: string;
-            otherProductsAmount: string;
-            ratExtermination1: string;
-            ratExtermination2: string;
-            ratExtermination3: string;
-            ratExtermination4: string;
-            staff1: string;
-            staff2: string;
-            staff3: string;
-            staff4: string;
             aspersionManual: boolean;
             aspercionMotor: boolean;
             nebulizacionFrio: boolean;
             nebulizacionCaliente: boolean;
-            nebulizacionCebosTotal: boolean;
-            colocacionCebosCebaderos: boolean;
-            colocacionCebosRepuestos: boolean;
-            degreeInsectInfectivity: components["schemas"]["InfestationDegree"];
-            degreeRodentInfectivity: components["schemas"]["InfestationDegree"];
+            colocacionCebosCebaderos: string;
+            numeroCeboTotal: string;
+            numeroCeboRepuestos: string;
+            nroPlanchasPegantes: string;
+            nroJaulasTomahawk: string;
+            insecticide: string;
+            insecticide2: string;
+            insecticideAmount: string;
+            insecticideAmount2: string;
+            rodenticide: string;
+            rodenticideAmount: string;
+            desinfectant: string;
+            desinfectantAmount: string;
+            otherProducts: string;
+            otherProductsAmount: string;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            staff1: string;
+            staff2: string;
+            staff3: string;
+            staff4: string;
             observations: string;
             recommendations: string;
             /** Format: uuid */
@@ -3614,13 +3438,13 @@ export interface components {
         };
         ProjectOperationSheetCreateDTO: {
             /** Format: uuid */
-            projectId: string;
+            projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
             enterTime?: string | null;
             leaveTime?: string | null;
-            sanitaryCondition?: string | null;
             treatedAreas?: string | null;
+            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             insects?: string | null;
             rodents?: string | null;
             otherPlagues?: string | null;
@@ -3634,10 +3458,6 @@ export interface components {
             rodenticideAmount?: string | null;
             desinfectantAmount?: string | null;
             otherProductsAmount?: string | null;
-            ratExtermination1?: string | null;
-            ratExtermination2?: string | null;
-            ratExtermination3?: string | null;
-            ratExtermination4?: string | null;
             staff1?: string | null;
             staff2?: string | null;
             staff3?: string | null;
@@ -3646,61 +3466,24 @@ export interface components {
             aspercionMotor?: boolean | null;
             nebulizacionFrio?: boolean | null;
             nebulizacionCaliente?: boolean | null;
-            nebulizacionCebosTotal?: boolean | null;
-            colocacionCebosCebaderos?: boolean | null;
-            colocacionCebosRepuestos?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
             degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;
             recommendations?: string | null;
         };
-        ProjectOperationSheetExport: {
-            operationDate?: string;
-            enterTime?: string;
-            leaveTime?: string;
-            sanitaryCondition?: string;
-            treatedAreas?: string;
-            insects?: string;
-            rodents?: string;
-            otherPlagues?: string;
-            insecticide?: string;
-            insecticide2?: string;
-            rodenticide?: string;
-            desinfectant?: string;
-            otherProducts?: string;
-            insecticideAmount?: string;
-            insecticideAmount2?: string;
-            rodenticideAmount?: string;
-            desinfectantAmount?: string;
-            otherProductsAmount?: string;
-            ratExtermination1?: string;
-            ratExtermination2?: string;
-            ratExtermination3?: string;
-            ratExtermination4?: string;
-            staff1?: string;
-            staff2?: string;
-            staff3?: string;
-            staff4?: string;
-            aspersionManual?: boolean;
-            aspersionMotor?: boolean;
-            nebulizacionFrio?: boolean;
-            nebulizacionCaliente?: boolean;
-            nebulizacionCebosTotal?: boolean;
-            colocacionCebosCebaderos?: boolean;
-            colocacionCebosRepuestos?: boolean;
-            degreeInsectInfectivity?: components["schemas"]["InfestationDegree"];
-            degreeRodentInfectivity?: components["schemas"]["InfestationDegree"];
-            observations?: string;
-            recommendations?: string;
-        };
         ProjectOperationSheetPatchDTO: {
             /** Format: uuid */
-            projectId?: string | null;
+            projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
             enterTime?: string | null;
             leaveTime?: string | null;
-            sanitaryCondition?: string | null;
+            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             treatedAreas?: string | null;
             insects?: string | null;
             rodents?: string | null;
@@ -3715,10 +3498,6 @@ export interface components {
             rodenticideAmount?: string | null;
             desinfectantAmount?: string | null;
             otherProductsAmount?: string | null;
-            ratExtermination1?: string | null;
-            ratExtermination2?: string | null;
-            ratExtermination3?: string | null;
-            ratExtermination4?: string | null;
             staff1?: string | null;
             staff2?: string | null;
             staff3?: string | null;
@@ -3728,8 +3507,11 @@ export interface components {
             nebulizacionFrio?: boolean | null;
             nebulizacionCaliente?: boolean | null;
             nebulizacionCebosTotal?: boolean | null;
-            colocacionCebosCebaderos?: boolean | null;
-            colocacionCebosRepuestos?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
             degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
             observations?: string | null;

@@ -178,6 +178,21 @@ export const CreateClient = () =>
                                                 </FormItem>
                                             )}
                                         />
+                                        {/* Giro del negocio */}
+                                        <FormField
+                                            control={form.control}
+                                            name="businessType"
+                                            render={({ field }) => (
+                                                <FormItem className="truncate">
+                                                    <FormLabel className="text-xs md:text-sm">
+                                                Giro del Negocio
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Giro del Negocio" {...field} />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
                                         <FormField
                                             control={form.control}
                                             name="name"
@@ -263,22 +278,6 @@ export const CreateClient = () =>
                                                 <Input placeholder="Dirección" {...field} />
                                             </FormControl>
                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Giro del negocio */}
-                                <FormField
-                                    control={form.control}
-                                    name="businessType"
-                                    render={({ field }) => (
-                                        <FormItem className="truncate">
-                                            <FormLabel className="text-xs md:text-sm">
-                                                Giro del Negocio
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Giro del Negocio" {...field} />
-                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />

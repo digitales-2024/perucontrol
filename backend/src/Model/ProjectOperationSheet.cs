@@ -22,13 +22,13 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public required TimeSpan LeaveTime { get; set; }
 
-    // condición_sanitaria
-    [Required]
-    public string SanitaryCondition { get; set; } = string.Empty;
-
     // areas_tratadas
     [Required]
     public string TreatedAreas { get; set; } = string.Empty;
+
+    //
+    // Diagnóstico
+    //
 
     // insectos
     [Required]
@@ -38,9 +38,52 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Rodents { get; set; } = string.Empty;
 
+    // Consumo de Roedores
+    public RodentConsumption? RodentConsumption { get; set; }
+
     // otras
     [Required]
     public string OtherPlagues { get; set; } = string.Empty;
+
+    //
+    // Método utilizado
+    //
+
+    /// Aspercion
+    [Required]
+    public bool AspersionManual { get; set; } = false;
+
+    [Required]
+    public bool AspercionMotor { get; set; } = false;
+
+    /// Nebulización
+    [Required]
+    public bool NebulizacionFrio { get; set; } = false;
+
+    [Required]
+    public bool NebulizacionCaliente { get; set; } = false;
+
+    /// Colocación de cebos
+    [Required]
+    public string ColocacionCebosCebaderos { get; set; } = string.Empty;
+
+    [Required]
+    public string NumeroCeboTotal { get; set; } = string.Empty;
+
+    [Required]
+    public string NumeroCeboRepuestos { get; set; } = string.Empty;
+
+    // Planchas pegantes
+    [Required]
+    public string NroPlanchasPegantes { get; set; } = string.Empty;
+
+    // Jaulas Tomahawk
+    [Required]
+    public string NroJaulasTomahawk { get; set; } = string.Empty;
+
+    //
+    // Productos utilizados, cantidad y concentración
+    //
 
     // insecticida
     [Required]
@@ -50,18 +93,6 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Insecticide2 { get; set; } = string.Empty;
 
-    // rodenticida
-    [Required]
-    public string Rodenticide { get; set; } = string.Empty;
-
-    // desinfectante
-    [Required]
-    public string Desinfectant { get; set; } = string.Empty;
-
-    // otros_productos
-    [Required]
-    public string OtherProducts { get; set; } = string.Empty;
-
     // insecticida_cantidad
     [Required]
     public string InsecticideAmount { get; set; } = string.Empty;
@@ -70,33 +101,47 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string InsecticideAmount2 { get; set; } = string.Empty;
 
+    //
+
+    // rodenticida
+    [Required]
+    public string Rodenticide { get; set; } = string.Empty;
+
     // rodenticida_cantidad
     [Required]
     public string RodenticideAmount { get; set; } = string.Empty;
+
+    //
+
+    // desinfectante
+    [Required]
+    public string Desinfectant { get; set; } = string.Empty;
 
     // desinfectante_cantidad
     [Required]
     public string DesinfectantAmount { get; set; } = string.Empty;
 
+    //
+
+    // otros_productos
+    [Required]
+    public string OtherProducts { get; set; } = string.Empty;
+
     // producto_otros_cantidad
     [Required]
     public string OtherProductsAmount { get; set; } = string.Empty;
 
-    // monitoreo_desratizacion_1
-    [Required]
-    public string RatExtermination1 { get; set; } = string.Empty;
+    //
+    // Grado de infestación
+    //
 
-    // monitoreo_desratizacion_2
-    [Required]
-    public string RatExtermination2 { get; set; } = string.Empty;
+    public InfestationDegree? DegreeInsectInfectivity { get; set; }
 
-    // monitoreo_desratizacion_3
-    [Required]
-    public string RatExtermination3 { get; set; } = string.Empty;
+    public InfestationDegree? DegreeRodentInfectivity { get; set; }
 
-    // monitoreo_desratizacion_4
-    [Required]
-    public string RatExtermination4 { get; set; } = string.Empty;
+    //
+    // Personal que intervino en los trabajos
+    //
 
     // personal_1
     [Required]
@@ -114,36 +159,72 @@ public class ProjectOperationSheet : BaseModel
     [Required]
     public string Staff4 { get; set; } = string.Empty;
 
-    [Required]
-    public bool AspersionManual { get; set; } = false;
-
-    [Required]
-    public bool AspercionMotor { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionFrio { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionCaliente { get; set; } = false;
-
-    [Required]
-    public bool NebulizacionCebosTotal { get; set; } = false;
-
-    [Required]
-    public bool ColocacionCebosCebaderos { get; set; } = false;
-
-    [Required]
-    public bool ColocacionCebosRepuestos { get; set; } = false;
-
-    [Required]
-    public InfestationDegree DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
-
-    [Required]
-    public InfestationDegree DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
-
+    //
+    // Orden, limpieza, infraestructura y elementos innecesarios
+    //
     [Required]
     public string Observations { get; set; } = string.Empty;
 
     [Required]
     public string Recommendations { get; set; } = string.Empty;
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum InfestationDegree
+{
+    High,
+    Moderate,
+    Low,
+    Negligible,
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum RodentConsumption
+{
+    Partial,
+    Total,
+    Deteriorated,
+    NoConsumption,
+}
+
+public static class RodentConsumptionConverter
+{
+    public static (string, string, string, string) ToCheckbox(
+        this RodentConsumption rodentConsumption
+    )
+    {
+        return rodentConsumption switch
+        {
+            RodentConsumption.Partial => ("x", "", "", ""),
+            RodentConsumption.Total => ("", "x", "", ""),
+            RodentConsumption.Deteriorated => ("", "", "x", ""),
+            RodentConsumption.NoConsumption => ("", "", "", "x"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(rodentConsumption),
+                rodentConsumption,
+                null
+            ),
+        };
+    }
+}
+
+public static class InfestationDegreeExtension
+{
+    public static (string, string, string, string) ToCheckbox(
+        this InfestationDegree rodentConsumption
+    )
+    {
+        return rodentConsumption switch
+        {
+            InfestationDegree.High => ("x", "", "", ""),
+            InfestationDegree.Moderate => ("", "x", "", ""),
+            InfestationDegree.Low => ("", "", "x", ""),
+            InfestationDegree.Negligible => ("", "", "", "x"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(rodentConsumption),
+                rodentConsumption,
+                null
+            ),
+        };
+    }
 }

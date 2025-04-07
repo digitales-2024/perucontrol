@@ -26,7 +26,7 @@ public class Client : BaseModel
 
     [MinLength(0)]
     [MaxLength(250)]
-    public required string BusinessType { get; set; }
+    public string? BusinessType { get; set; }
 
     [MinLength(1)]
     [MaxLength(100)]
@@ -72,7 +72,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
 
     [MinLength(0)]
     [MaxLength(250, ErrorMessage = "El tipo de negocio debe tener como máximo 250 caracteres")]
-    public required string BusinessType { get; set; }
+    public string? BusinessType { get; set; }
 
     [MinLength(1, ErrorMessage = "El nombre no puede estar vacio")]
     [MaxLength(100, ErrorMessage = "El nombre debe tener como máximo 100 caracteres")]

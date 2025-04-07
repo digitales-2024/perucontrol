@@ -1,10 +1,9 @@
 "use server";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { DownloadProjectSchema } from "./schemas";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 
@@ -48,7 +47,7 @@ export async function UpdateProject(id: string, newProject: components["schemas"
 
 export async function RemoveProject(id: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}", {
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}/desactivate", {
         ...auth,
         params: {
             path: {
@@ -79,7 +78,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     });
 }
 
-export async function GenerateExcel(id: string, body: DownloadProjectSchema): Promise<Result<Blob, FetchError>>
+export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -94,13 +93,12 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
 
     try
     {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Project/${id}/gen-operations-sheet`, {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/gen-operations-sheet/excel`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt.value}`,
             },
-            body: JSON.stringify(body),
         });
 
         if (!response.ok)
@@ -131,140 +129,50 @@ export async function GenerateExcel(id: string, body: DownloadProjectSchema): Pr
     }
 }
 
+export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
+}
+
 export async function SaveProjectOperationSheetData(
     id: string,
     body: components["schemas"]["ProjectOperationSheetCreateDTO"],
 ): Promise<Result<null, FetchError>>
 {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-
-    if (!jwt)
-    {
-        console.error("No autorizado: No hay JWT.");
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
-    }
-
-    try
-    {
-        const url = `${process.env.INTERNAL_BACKEND_URL}/api/ProjectOperationSheet/create-or-update`;
-        console.log("URL de la API:", url);
-
-        const response = await fetch(url, {
-            method: "POST", // Siempre POST
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt.value}`,
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/operation-sheet", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: body.projectAppointmentId!,
             },
-            body: JSON.stringify(body),
-        });
+        },
+        body,
+    }));
 
-        console.log("Respuesta de la API:", response);
-
-        if (!response.ok)
-        {
-            let errorBody;
-            try
-            {
-                errorBody = await response.json();
-            }
-            catch (e)
-            {
-                errorBody = "No se pudo obtener información adicional del error.";
-                console.error("Error guardando datos del proyecto :", e);
-            }
-            console.error("Error guardando datos del proyecto:", errorBody);
-            return err({
-                statusCode: response.status,
-                message: "Error guardando datos del proyecto",
-                error: JSON.stringify(errorBody, null, 2),
-            });
-        }
-
-        return ok(null);
-    }
-    catch (e)
+    if (error)
     {
-        console.error("Error en la solicitud:", e);
-        return err({
-            statusCode: 500,
-            message: "Error en la solicitud",
-            error: "Error en la solicitud",
-        });
+        return err(error);
     }
+    return ok(null);
 }
 
-export async function GetProjectOperationSheet(projectId: string): Promise<Result<components["schemas"]["ProjectOperationSheet"] | null, FetchError>>
+export async function GetProjectOperationSheet(projectId: string)
+    : Promise<Result<components["schemas"]["ProjectOperationSheet"] | null, FetchError>>
 {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-
-    if (!jwt)
-    {
-        console.error("No autorizado: No hay JWT.");
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
-    }
-
-    try
-    {
-        const url = `${process.env.INTERNAL_BACKEND_URL}/api/ProjectOperationSheet/by-project/${projectId}`;
-        console.log("URL de la API:", url);
-
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${jwt.value}`,
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/operation-sheet/by-project/{projectId}", {
+        ...auth,
+        params: {
+            path: {
+                projectId: projectId,
             },
-        });
+        },
+    }));
 
-        if (response.status === 404)
-        {
-            console.warn("No se encontró una ficha operativa para el proyecto especificado.");
-            return ok(null); // Retorna null en lugar de un error
-        }
-
-        if (!response.ok)
-        {
-            let errorBody;
-            const contentType = response.headers.get("Content-Type");
-
-            if (contentType && contentType.includes("application/json"))
-            {
-                errorBody = await response.json();
-            }
-            else
-            {
-                errorBody = await response.text(); // Manejar texto plano
-            }
-
-            console.error("Error obteniendo la ficha operativa:", errorBody);
-            return err({
-                statusCode: response.status,
-                message: "Error obteniendo la ficha operativa",
-                error: errorBody,
-            });
-        }
-
-        const data = await response.json();
-        return ok(data);
-    }
-    catch (e)
+    if (error)
     {
-        console.error("Error en la solicitud:", e);
-        return err({
-            statusCode: 500,
-            message: "Error en la solicitud",
-            error: "Error en la solicitud",
-        });
+        return err(error);
     }
+    return ok(data);
 }
 
 export async function AddAppointment(id: string, dueDate: string): Promise<Result<null, FetchError>>
@@ -306,9 +214,7 @@ export async function EditAppointment(
         },
         params: {
             path: {
-                // eslint-disable-next-line camelcase
                 proj_id: projId,
-                // eslint-disable-next-line camelcase
                 app_id: appId,
             },
         },
@@ -335,9 +241,9 @@ export async function DesactivateAppointment(
         ...auth,
         params: {
             path: {
-                // eslint-disable-next-line camelcase
+
                 proj_id: projId,
-                // eslint-disable-next-line camelcase
+
                 app_id: appId,
             },
         },

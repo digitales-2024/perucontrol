@@ -20,24 +20,25 @@ export const clientDataSchema = z.object({
             .max(4294967295, "Valor demasiado grande"),
     ),
     appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
+    frequency: z.enum(["Bimonthly", "Quarterly", "Semiannual"]).optional(),
 });
 
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;
 
 export const downloadProjectSchema = z.object({
-    projectId: z.string(),
+    projectAppointmentId: z.string(),
     operationDate: z.string(),
     enterTime: z.string(),
     leaveTime: z.string(),
     razonSocial: z.string(),
     address: z.string(),
     businessType: z.string(),
-    sanitaryCondition: z.string(),
     treatedAreas: z.string(),
     service: z.array(z.string()),
     certificateNumber: z.string(),
     insects: z.string(),
     rodents: z.string(),
+    rodentConsumption: z.enum(["Partial", "Total", "Deteriorated", "NoConsumption"]).optional(),
     otherPlagues: z.string(),
     insecticide: z.string(),
     insecticide2: z.string(),
@@ -49,10 +50,6 @@ export const downloadProjectSchema = z.object({
     rodenticideAmount: z.string(),
     desinfectantAmount: z.string(),
     otherProductsAmount: z.string(),
-    ratExtermination1: z.string(),
-    ratExtermination2: z.string(),
-    ratExtermination3: z.string(),
-    ratExtermination4: z.string(),
     staff1: z.string(),
     staff2: z.string(),
     staff3: z.string(),
@@ -65,12 +62,23 @@ export const downloadProjectSchema = z.object({
         .default(false),
     nebulizacionCaliente: z.boolean().optional()
         .default(false),
-    nebulizacionCebosTotal: z.boolean().optional()
-        .default(false),
-    colocacionCebosCebaderos: z.boolean().optional()
-        .default(false),
-    colocacionCebosRepuestos: z.boolean().optional()
-        .default(false),
+    colocacionCebosCebaderos: z.string(),
+    numeroCeboTotal: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
+    numeroCeboRepuestos: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
+    nroPlanchasPegantes: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
+    nroJaulasTomahawk: z.preprocess(
+        (val) => (typeof val === "number" ? val.toString() : val),
+        z.string(),
+    ),
     degreeInsectInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     degreeRodentInfectivity: z.enum(["High", "Moderate", "Low", "Negligible"]).optional(),
     observations: z.string(),

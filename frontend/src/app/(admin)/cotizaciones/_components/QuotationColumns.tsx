@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
 import { useState } from "react";
-import { ViewQuotationDetails } from "./ViewQuotationDetails";
+// import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
@@ -242,7 +242,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original?.isActive;
             const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            const [showDetailQuotation, setShowDetailQuotation] = useState(false);
+            // const [showDetailQuotation, setShowDetailQuotation] = useState(false);
             const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
             const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
 
@@ -257,11 +257,11 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                             showTrigger={false}
                         />
                         {/* Ver Detalles de una cotización */}
-                        <ViewQuotationDetails
+                        {/* <ViewQuotationDetails
                             open={showDetailQuotation}
                             onOpenChange={setShowDetailQuotation}
                             quotation={row.original}
-                        />
+                        /> */}
                         {/* Acceptar Cotizacion */}
                         <AlertDialogAcceptQuotation
                             open={showAcceptQuotaion}
@@ -310,9 +310,11 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                                 Rechazar cotización
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
-                                Ver
-                            </DropdownMenuItem>
+                            <Link href={`/cotizaciones/${row.original.id}`}>
+                                <DropdownMenuItem>
+                                    Ver Detalles
+                                </DropdownMenuItem>
+                            </Link>
                             <Link href={`/cotizaciones/${row.original!.id}`}>
                                 <DropdownMenuItem
                                     disabled={!isActive}

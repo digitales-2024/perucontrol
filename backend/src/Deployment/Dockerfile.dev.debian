@@ -1,0 +1,49 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+# Install required packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    fontconfig \
+    libreoffice \
+    libreoffice-l10n-en-us \
+    libreoffice-l10n-es \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy fonts
+COPY Fonts /usr/local/share/fonts/Fonts
+# Update font cache
+RUN fc-cache -f -v
+
+# Create symlink to ensure 'soffice' command works
+RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+
+# Create directory for LibreOffice user profile to avoid permissions issues
+RUN mkdir -p /tmp/.config && chmod 777 /tmp/.config
+
+#
+# Configure Docker to run as non-root user
+#
+ARG USER_ID
+ARG GROUP_ID
+
+RUN groupadd -g $GROUP_ID developer && \
+    useradd -u $USER_ID -g developer -m developer && \
+    mkdir -p /home/developer && \
+    chown -R developer:developer /home/developer && \
+    mkdir -p /app && \
+    chown -R developer:developer /app
+
+# Switch to the app directory and user before installing tools
+WORKDIR /app
+USER developer
+
+# Install .NET Entity Framework CLI tool
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/home/developer/.dotnet/tools"
+
+# Set development environment
+ENV ASPNETCORE_ENVIRONMENT=Development
+# Optionally expose ports if needed
+# EXPOSE 5000 5001
+
+# Command to run when container starts
+ENTRYPOINT ["/bin/bash"]

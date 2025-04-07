@@ -16,7 +16,7 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     public void ApplyPatch(ProjectAppointment entity)
     {
         if (OrderNumber != null)
-            entity.OrderNumber = OrderNumber;
+            entity.CertificateNumber = OrderNumber;
         if (DueDate != null)
             entity.DueDate = (DateTime)DueDate;
         if (ActualDate != null)
