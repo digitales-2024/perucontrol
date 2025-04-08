@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { ProjectForm } from "./_components/ProjectForm";
 
@@ -24,7 +23,7 @@ export default async function ProjectsPage()
     }
 
     // get all quotation
-    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", {...auth}));
+    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", { ...auth }));
 
     if (quotationsError)
     {
@@ -33,9 +32,9 @@ export default async function ProjectsPage()
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Nuevo Servicio" description="Registra un nuevo servicio" />
             <ProjectForm clients={clients} services={services} quotations={quotations} />
-        </Shell>
+        </>
     );
 }

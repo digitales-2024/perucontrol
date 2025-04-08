@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { ViewQuotationDetails } from "../_components/ViewQuotationDetails";
 
@@ -30,9 +29,9 @@ export default async function QuotationDetail({ params }: Props)
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title={"Cotizacion"} description="Detalle de la cotización" />
             <ViewQuotationDetails quotation={quotation} />
-        </Shell>
+        </>
     );
 }

@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { ClientsDataTable } from "./_components/ClientsDataTable";
 import { columns } from "./_components/ClientsColumns";
 import { backend, wrapper } from "@/types/backend";
@@ -12,12 +11,12 @@ export default async function ClientsPage()
     {
         console.error("Error getting all clients:", error);
         return (
-            <Shell>
+            <>
                 <HeaderPage title="Gestión de clientes" description="No se pudieron cargar los clientes." />
                 <p className="text-red-500 text-sm">
                     Ocurrió un error al obtener los clientes.
                 </p>
-            </Shell>
+            </>
         );
     }
 
@@ -32,9 +31,9 @@ export default async function ClientsPage()
     }));
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Gestión de clientes" description="Gestiona los clientes de tu empresa" />
             <ClientsDataTable columns={columns} data={formattedClients} />
-        </Shell>
+        </>
     );
 }
