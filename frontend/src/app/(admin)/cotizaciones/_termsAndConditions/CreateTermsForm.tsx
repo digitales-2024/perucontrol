@@ -51,7 +51,7 @@ export default function CreateTermsForm({ onClose }: { onClose: (v: boolean) => 
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                        Nombre de la plantilla
+                                Nombre de la plantilla
                             </FormLabel>
                             <FormControl>
                                 <Input placeholder="Nombre de la plantilla" {...field} />

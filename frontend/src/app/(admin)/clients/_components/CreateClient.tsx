@@ -185,7 +185,7 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem className="truncate">
                                                     <FormLabel className="text-xs md:text-sm">
-                                                Giro del Negocio
+                                                        Giro del Negocio
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Giro del Negocio" {...field} />

@@ -61,18 +61,18 @@ export function AlertDialogRejectQuotation({
                             ¿Esta seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                      Esta acción actualizara el estado de la cotización.
+                            Esta acción actualizara el estado de la cotización.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
                         <DrawerClose className="border py-1 px-4 text-sm">
-                      Cancelar
+                            Cancelar
                         </DrawerClose>
                         <Button
                             onClick={handleUpdateStatus}
                             disabled={disabled}
                         >
-                      Continuar
+                            Continuar
                         </Button>
                     </DrawerFooter>
                 </DrawerContent>
@@ -98,13 +98,13 @@ export function AlertDialogRejectQuotation({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                      Cancelar
+                        Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUpdateStatus}
                         disabled={disabled}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

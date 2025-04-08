@@ -71,20 +71,20 @@ export function ProjectDetails({ project, projectId }: {
         case "Approved":
             return (
                 <Badge variant="approved">
-                        Aprobado
+                    Aprobado
                 </Badge>
             );
         case "Rejected":
             return (
                 <Badge variant="destructive">
-                        Rechazado
+                    Rechazado
                 </Badge>
             );
         case "Pending":
         default:
             return (
                 <Badge variant="default">
-                        Pendiente
+                    Pendiente
                 </Badge>
             );
         }

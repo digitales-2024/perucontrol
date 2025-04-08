@@ -9,12 +9,14 @@ export default async function ClientsPage()
     if (error)
     {
         console.log("Error getting business info", error);
-        <>
-            <HeaderPage title="Información de PeruControl" description="No se pudo cargar la información." />
-            <p className="text-red-500 text-sm">
-                Ocurrió un error al obtener la información de la empresa.
-            </p>
-        </>;
+        return (
+            <>
+                <HeaderPage title="Información de PeruControl" description="No se pudo cargar la información." />
+                <p className="text-red-500 text-sm">
+                    Ocurrió un error al obtener la información de la empresa.
+                </p>
+            </>
+        );
     }
 
     return (

@@ -40,7 +40,7 @@ export function NavProjects({
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarGroupLabel>
-Projects
+                Projects
             </SidebarGroupLabel>
             <SidebarMenu>
                 {projects.map((item) => (
@@ -58,7 +58,7 @@ Projects
                                 <SidebarMenuAction showOnHover>
                                     <MoreHorizontal />
                                     <span className="sr-only">
-More
+                                        More
                                     </span>
                                 </SidebarMenuAction>
                             </DropdownMenuTrigger>
@@ -70,20 +70,20 @@ More
                                 <DropdownMenuItem>
                                     <Folder className="text-muted-foreground" />
                                     <span>
-View Project
+                                        View Project
                                     </span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <Share className="text-muted-foreground" />
                                     <span>
-Share Project
+                                        Share Project
                                     </span>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
                                     <Trash2 className="text-muted-foreground" />
                                     <span>
-Delete Project
+                                        Delete Project
                                     </span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -94,7 +94,7 @@ Delete Project
                     <SidebarMenuButton>
                         <MoreHorizontal />
                         <span>
-More
+                            More
                         </span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
