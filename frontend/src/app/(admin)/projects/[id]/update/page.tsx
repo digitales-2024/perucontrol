@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { UpdateClientData } from "./_components/UpdateData";
 
@@ -54,9 +53,9 @@ export default async function ProjectsPage({ params }: Props)
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Editar Servicio" description="Editar información general del servicio" />
             <UpdateClientData clients={clients} services={services} quotations={quotations} project={project} />
-        </Shell>
+        </>
     );
 }

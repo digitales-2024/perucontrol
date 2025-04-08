@@ -1,5 +1,4 @@
 import { backend, wrapper } from "@/types/backend";
-import { Shell } from "@/components/common/Shell";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { QuotationDataTable } from "./_components/QuotationsDataTable";
 import { columns } from "./_components/QuotationColumns";
@@ -45,10 +44,8 @@ export default async function CotizacionPage()
 
     return (
         <QuotationProvider value={{ quotations: quotationsData, terms: activeTerms, clients, services }}>
-            <Shell>
-                <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
-                <QuotationDataTable columns={columns} data={quotationsData} />
-            </Shell>
+            <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
+            <QuotationDataTable columns={columns} data={quotationsData} />
         </QuotationProvider>
     );
 }

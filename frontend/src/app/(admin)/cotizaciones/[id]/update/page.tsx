@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import EditQuotation from "./_components/_EditQuotation";
 export default async function EditarCotizacionPage({ params }: { params: Promise<{ id: string }> })
@@ -51,9 +50,9 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Editar cotización" description="Modifica los detalles de la cotización" />
             <EditQuotation quotation={quotation} termsAndConditions={terms} clients={clients} services={services} />
-        </Shell>
+        </>
     );
 }

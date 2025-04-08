@@ -48,7 +48,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-              Número de documento
+                Número de documento
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -76,7 +76,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Razón Social
+                Razón Social
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -104,7 +104,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-            Nombre
+                Nombre
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -132,7 +132,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-              Nombre de Contacto
+                Nombre de Contacto
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (
@@ -160,7 +160,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Client"]>> = [
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 hover:bg-transparent text-sm md:text-base"
             >
-        Correo Electrónico
+                Correo Electrónico
                 {column.getIsSorted() === "asc" ? (
                     <ArrowUp className="ml-1 h-4 w-4" />
                 ) : column.getIsSorted() === "desc" ? (

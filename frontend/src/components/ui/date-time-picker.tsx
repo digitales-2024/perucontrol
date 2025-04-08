@@ -154,7 +154,7 @@ export default function DatePicker({
                 {isMobile && (
                     <div className="p-3 border-t">
                         <Button variant="outline" className="w-full" onClick={() => onChange(undefined)}>
-              Limpiar selección
+                            Limpiar selección
                         </Button>
                     </div>
                 )}

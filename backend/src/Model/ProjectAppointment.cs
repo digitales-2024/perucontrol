@@ -23,6 +23,10 @@ public class ProjectAppointment : BaseModel
     /// The actual date the appointment was performed
     public DateTime? ActualDate { get; set; }
 
+    /// Services performed on this appointment
+    [JsonIgnore]
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;
 }

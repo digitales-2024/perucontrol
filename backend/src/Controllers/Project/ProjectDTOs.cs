@@ -133,8 +133,9 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     )]
     public required decimal Price { get; set; }
 
-    [MinLength(1, ErrorMessage = "Debe haber al menos 1 visita")]
-    public required IList<DateTime> Appointments { get; set; } = null!;
+    [MinLength(1, ErrorMessage = "Debe haber al menos 1 fecha")]
+    public required IList<AppointmentCreateDTOThroughProject> AppointmentCreateDTOs { get; set; } =
+        null!;
 
     public Project MapToEntity()
     {
@@ -147,6 +148,15 @@ public class ProjectCreateDTO : IMapToEntity<Project>
             SpacesCount = SpacesCount,
         };
     }
+}
+
+public class AppointmentCreateDTOThroughProject
+{
+    public required DateTime DueDate { get; set; }
+
+    [Description("Array of Service IDs")]
+    [MinLength(1, ErrorMessage = "La fecha debe tener al menos 1 servicio")]
+    public required IList<Guid> Services { get; set; } = null!;
 }
 
 public class ProjectPatchDTO : IEntityPatcher<Project>

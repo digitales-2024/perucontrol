@@ -316,21 +316,29 @@ public class AppointmentController(
 
     [EndpointSummary("Generate Certificate PDF")]
     [HttpPost("{id}/certificate/pdf")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateCertificatePdf(Guid id)
     {
-        // FIXME: use a different template
-        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
-        if (odsErr != "")
-        {
-            return BadRequest(odsErr);
-        }
+        using var ms = new MemoryStream();
 
-        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
-        if (pdfErr != "")
+        using (
+            var fs = new FileStream(
+                "Templates/certificado_plantilla.svg",
+                FileMode.Open,
+                FileAccess.Read
+            )
+        )
         {
-            return BadRequest(pdfErr);
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "svg");
+
+        if (errorStr != "")
+        {
+            return BadRequest(errorStr);
         }
         if (pdfBytes == null)
         {

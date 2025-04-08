@@ -1160,7 +1160,8 @@ export function DownloadProjectForm({
                         <Save className="h-4 w-4" />
                         Guardar
                     </Button>
-                    <Button type="button"
+                    <Button
+                        type="button"
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();

@@ -46,7 +46,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
             {showTrigger ? (
                 <DrawerTrigger asChild>
                     <Button variant="outline">
-                  Eliminar
+                        Eliminar
                     </Button>
                 </DrawerTrigger>
             ) : null}
@@ -68,7 +68,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
                             aria-label="Delete selected rows"
                             onClick={onDeleteQuotationHandler}
                         >
-                      Continuar
+                            Continuar
                         </Button>
                     </DrawerFooter>
                 </DrawerContent>

@@ -415,7 +415,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
-                                                            Fumigación
+                                                        Fumigación
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -435,7 +435,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
-                                                            Desinsectación
+                                                        Desinsectación
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -455,7 +455,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
-                                                            Desratización
+                                                        Desratización
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -475,7 +475,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
-                                                            Desinfección
+                                                        Desinfección
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -497,7 +497,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal text-sm">
-                                                            Limpieza y desinfección de tanques elevados y cisternas de agua
+                                                        Limpieza y desinfección de tanques elevados y cisternas de agua
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -517,7 +517,7 @@ export function DownloadCertificateForm({
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal text-sm">
-                                                            Limpieza y desinfección de tanques cisternas de agua potable
+                                                        Limpieza y desinfección de tanques cisternas de agua potable
                                                     </FormLabel>
                                                 </FormItem>
                                             )}
@@ -549,7 +549,8 @@ export function DownloadCertificateForm({
                         Guardar
                     </Button>
 
-                    <Button type="button"
+                    <Button
+                        type="button"
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();

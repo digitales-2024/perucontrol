@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { OperationsSheetForm } from "./_OperationsSheetForm";
 
@@ -37,9 +36,9 @@ export default async function ProjectsPage({ params }: Props)
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Ficha de Operaciones" description="Llenar, guardar y generar la ficha de operaciones." />
             <OperationsSheetForm project={project} client={project.client} appointment={appointment} />
-        </Shell>
+        </>
     );
 }
