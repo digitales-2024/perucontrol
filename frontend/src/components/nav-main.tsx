@@ -97,7 +97,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                                         <SidebarMenuSubButton
                                             asChild
                                             data-active={subItem.url === pathname}
-                                            className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                                            className="data-[active=true]:text-accent data-[active=true]:underline"
                                         >
                                             <Link href={subItem.url}>
                                                 <span>
