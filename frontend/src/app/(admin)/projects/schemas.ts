@@ -86,3 +86,26 @@ export const downloadProjectSchema = z.object({
 });
 
 export type DownloadProjectSchema = z.infer<typeof downloadProjectSchema>;
+
+// Esquema para el certificado
+export const certificateSchema = z.object({
+    certificateNumber: z.string().optional(),
+    clientName: z.string().optional(),
+    location: z.string().optional(),
+    businessType: z.string().optional(),
+    treatedArea: z.string().optional(),
+    serviceDate: z.string().optional(),
+    expirationDate: z.string().min(1, "La fecha de vencimiento es requerida"),
+    technicalDirector: z.string().optional(),
+    responsible: z.string().optional(),
+    services: z.object({
+        fumigation: z.boolean().default(false),
+        disinsection: z.boolean().default(false),
+        deratization: z.boolean().default(false),
+        disinfection: z.boolean().default(false),
+        tankCleaning: z.boolean().default(false),
+        drinkingWaterTankCleaning: z.boolean().default(false),
+    }),
+});
+
+export type CertificateSchema = z.infer<typeof certificateSchema>

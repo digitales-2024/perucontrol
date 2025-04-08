@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -23,29 +22,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "@/components/ui/date-time-picker";
 import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
-
-// Definir el esquema para el certificado
-const certificateSchema = z.object({
-    certificateNumber: z.string().min(1, "El número de certificado es requerido"),
-    clientName: z.string().min(1, "El nombre del cliente es requerido"),
-    location: z.string().min(1, "La ubicación es requerida"),
-    businessType: z.string().min(1, "El giro del negocio es requerido"),
-    treatedArea: z.string().min(1, "El área tratada es requerida"),
-    serviceDate: z.string().min(1, "La fecha de servicio es requerida"),
-    expirationDate: z.string().min(1, "La fecha de vencimiento es requerida"),
-    technicalDirector: z.string().min(1, "El director técnico es requerido"),
-    responsible: z.string().min(1, "El responsable es requerido"),
-    services: z.object({
-        fumigation: z.boolean().default(false),
-        disinsection: z.boolean().default(false),
-        deratization: z.boolean().default(false),
-        disinfection: z.boolean().default(false),
-        tankCleaning: z.boolean().default(false),
-        drinkingWaterTankCleaning: z.boolean().default(false),
-    }),
-});
-
-type CertificateSchema = z.infer<typeof certificateSchema>
+import { toastWrapper } from "@/types/toasts";
+import { certificateSchema, CertificateSchema } from "../schemas";
+import { GenerateCertificateExcel, GenerateCertificatePDF, GetCertificateOfAppointmentById, SaveCertificateData } from "../actions";
+import { useEffect } from "react";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -64,13 +44,13 @@ export function DownloadCertificateForm({
     const form = useForm<CertificateSchema>({
         resolver: zodResolver(certificateSchema),
         defaultValues: {
+            expirationDate: "",
             certificateNumber: "",
             clientName: project.client?.name ?? project.client?.razonSocial ?? "",
             location: project?.address ?? "",
             businessType: project.client?.businessType ?? "",
             treatedArea: project.quotation?.treatedAreas ?? "",
             serviceDate: appointment.actualDate ?? new Date().toISOString(),
-            expirationDate: "",
             technicalDirector: "",
             responsible: "",
             services: {
@@ -84,18 +64,144 @@ export function DownloadCertificateForm({
         },
     });
 
-    const onSubmit = async(data: CertificateSchema) =>
+    useEffect(() =>
     {
-        console.log("Datos del certificado:", data);
-    // Aquí iría la lógica para guardar los datos del certificado
-    // Similar a saveData en el componente de referencia
+        const loadCertificate = async() =>
+        {
+            const [data, error] = await GetCertificateOfAppointmentById(appointment.id!);
+
+            if (error)
+            {
+                console.error("Error al cargar el certificado:", error);
+                return;
+            }
+
+            if (data?.expirationDate)
+            {
+                form.setValue("expirationDate", data.expirationDate);
+            }
+        };
+
+        loadCertificate();
+    }, [appointment.id, form]);
+
+    const onSubmit = async() =>
+    {
+        await saveData();
+    };
+
+    const saveData = async() =>
+    {
+        try
+        {
+            const expirationDate = form.getValues("expirationDate");
+            if (!expirationDate)
+            {
+                throw new Error("La fecha de vencimiento es requerida");
+            }
+
+            const body = {
+                projectAppointmentId: appointment.id!,
+                expirationDate,
+            };
+
+            const [, error] = await toastWrapper(
+                SaveCertificateData(project.id!, body),
+                {
+                    loading: "Guardando datos...",
+                    success: "Datos guardados correctamente",
+                    error: (e) => `Error al guardar los datos: ${e.message}`,
+                },
+            );
+
+            if (error)
+            {
+                throw error;
+            }
+
+            return true;
+        }
+        catch (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return false;
+        }
     };
 
     const downloadPDF = async() =>
     {
-    // Aquí iría la lógica para generar el PDF del certificado
-    // Similar a downloadPDF en el componente de referencia
-        console.log("Generando PDF del certificado...");
+        const [blob, err] = await toastWrapper(GenerateCertificatePDF(appointment.id!), {
+            loading: "Generando archivo",
+            success: "PDF generado",
+            error: (e) => `Error al generar el PDF: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el PDF:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `certificado_${appointment.id!.substring(0, 4)}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        onOpenChange(false);
+    };
+
+    const downloadExcel = async() =>
+    {
+        console.log(appointment);
+        // Genera el Excel
+        const [blob, err] = await toastWrapper(GenerateCertificateExcel(appointment.id!), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "servicio.ods";
+        a.click();
+        URL.revokeObjectURL(url);
+        onOpenChange(false);
+    };
+
+    const handleSubmit = async() =>
+    {
+        const expirationDate = form.getValues("expirationDate");
+
+        const body =
+      {
+          projectAppointmentId: appointment.id!,
+          expirationDate,
+      };
+        const [result, error] = await toastWrapper(
+            // SaveCertificateData(project.id!, input), // Cambia a `true` si es una actualización
+            SaveCertificateData(project.id!, body),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return;
+        }
+
+        console.log("Datos guardados exitosamente:", result);
     };
 
     const handleCancel = async() =>
@@ -113,7 +219,7 @@ export function DownloadCertificateForm({
                             <CardHeader className="py-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
                                 <CardTitle className="text-md font-medium flex items-center">
                                     <FileDigit className="h-4 w-4 text-blue-500 mr-2" />
-                    Información del Certificado
+                                    Información del Certificado
                                 </CardTitle>
                             </CardHeader>
                             <Separator />
@@ -126,7 +232,7 @@ export function DownloadCertificateForm({
                                             <FormItem>
                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                     <FileDigit className="h-4 w-4 text-blue-500" />
-                            Número de Certificado
+                                                    Número de Certificado
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="Ej: 001641" {...field} className="border-gray-300" />
@@ -153,8 +259,8 @@ export function DownloadCertificateForm({
                                                             {
                                                                 if (date)
                                                                 {
-                                                                    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-                                                                    field.onChange(utcDate.toISOString());
+                                                                    const formattedDate = date.toISOString();
+                                                                    field.onChange(formattedDate);
                                                                 }
                                                                 else
                                                                 {
@@ -175,7 +281,7 @@ export function DownloadCertificateForm({
                                                 <FormItem>
                                                     <FormLabel className="flex items-center gap-2 font-medium">
                                                         <CalendarIcon className="h-4 w-4 text-blue-500" />
-                              Fecha de Vencimiento
+                                                        Fecha de Vencimiento
                                                     </FormLabel>
                                                     <FormControl>
                                                         <DatePicker
@@ -184,8 +290,8 @@ export function DownloadCertificateForm({
                                                             {
                                                                 if (date)
                                                                 {
-                                                                    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-                                                                    field.onChange(utcDate.toISOString());
+                                                                    const formattedDate = date.toISOString();
+                                                                    field.onChange(formattedDate);
                                                                 }
                                                                 else
                                                                 {
@@ -207,7 +313,7 @@ export function DownloadCertificateForm({
                             <CardHeader className="py-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
                                 <CardTitle className="text-md font-medium flex items-center">
                                     <Building2 className="h-4 w-4 text-blue-500 mr-2" />
-                    Información del Cliente
+                                    Información del Cliente
                                 </CardTitle>
                             </CardHeader>
                             <Separator />
@@ -220,10 +326,10 @@ export function DownloadCertificateForm({
                                             <FormItem>
                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                     <Building2 className="h-4 w-4 text-blue-500" />
-                            Razón Social/Nombre
+                                                    Razón Social/Nombre
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nombre del cliente" {...field} className="border-gray-300" />
+                                                    <Input placeholder="Nombre del cliente" disabled {...field} className="border-gray-300" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -237,10 +343,10 @@ export function DownloadCertificateForm({
                                             <FormItem>
                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                     <Building2 className="h-4 w-4 text-blue-500" />
-                            Giro del Negocio
+                                                    Giro del Negocio
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Giro del negocio" {...field} className="border-gray-300" />
+                                                    <Input placeholder="Giro del negocio" disabled {...field} className="border-gray-300" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -254,10 +360,10 @@ export function DownloadCertificateForm({
                                             <FormItem className="md:col-span-2">
                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                     <MapPin className="h-4 w-4 text-blue-500" />
-                            Ubicación
+                                                    Ubicación
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Dirección completa" {...field} className="border-gray-300" />
+                                                    <Input placeholder="Dirección completa" disabled {...field} className="border-gray-300" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -271,10 +377,10 @@ export function DownloadCertificateForm({
                                             <FormItem className="md:col-span-2">
                                                 <FormLabel className="flex items-center gap-2 font-medium">
                                                     <MapPin className="h-4 w-4 text-blue-500" />
-                            Área Tratada
+                                                    Área Tratada
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Descripción del área tratada" {...field} className="border-gray-300" />
+                                                    <Input placeholder="Descripción del área tratada" disabled {...field} className="border-gray-300" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -288,7 +394,7 @@ export function DownloadCertificateForm({
                             <CardHeader className="py-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
                                 <CardTitle className="text-md font-medium flex items-center">
                                     <Bug className="h-4 w-4 text-blue-500 mr-2" />
-                    Servicios Realizados
+                                    Servicios Realizados
                                 </CardTitle>
                             </CardHeader>
                             <Separator />
@@ -305,6 +411,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
@@ -324,6 +431,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
@@ -343,6 +451,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
@@ -362,6 +471,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal">
@@ -383,6 +493,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal text-sm">
@@ -402,6 +513,7 @@ export function DownloadCertificateForm({
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-blue-500"
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormLabel className="font-normal text-sm">
@@ -427,16 +539,37 @@ export function DownloadCertificateForm({
 
                     <Button
                         type="button"
-                        onClick={form.handleSubmit(onSubmit)}
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                        }}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
                     >
                         <Save className="h-4 w-4" />
                         Guardar
                     </Button>
 
+                    <Button type="button"
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                            downloadExcel();
+                        }}
+                        form="projectForm"
+                        className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+                    >
+                        <Download className="h-4 w-4" />
+                        Generar Excel
+                    </Button>
+
                     <Button
                         type="button"
-                        onClick={downloadPDF}
+                        onClick={async() =>
+                        {
+                            await form.handleSubmit(handleSubmit)();
+                            downloadPDF();
+                        }
+                        }
                         form="certificateForm"
                         className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
                     >

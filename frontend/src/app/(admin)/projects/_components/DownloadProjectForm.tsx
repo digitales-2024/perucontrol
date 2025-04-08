@@ -151,7 +151,7 @@ export function DownloadProjectForm({
     {
         const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
             loading: "Generando archivo",
-            success: "PDF generado",
+            success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
         });
 
@@ -1167,7 +1167,7 @@ export function DownloadProjectForm({
                             downloadExcel();
                         }}
                         form="projectForm"
-                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                        className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Excel
@@ -1179,7 +1179,8 @@ export function DownloadProjectForm({
                             await form.handleSubmit(handleSubmit)();
                             downloadPDF();
                         }}
-                        form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                        form="projectForm"
+                        className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Pdf
