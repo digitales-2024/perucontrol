@@ -276,9 +276,7 @@ export interface paths {
         /** Get Certificate of an appointment */
         get: {
             parameters: {
-                query?: {
-                    projectId?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     appointmentid: string;
@@ -3427,7 +3425,7 @@ export interface components {
         /** @enum {unknown|null} */
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
-        NullableOfQuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual" | null;
+        NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
         /** @enum {unknown|null} */
         NullableOfRodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption" | null;
         ProblemDetails: {
@@ -3823,7 +3821,7 @@ export interface components {
             customField10?: string | null;
         };
         /** @enum {unknown} */
-        QuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual";
+        QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
             /** Format: uuid */
             clientId?: string | null;

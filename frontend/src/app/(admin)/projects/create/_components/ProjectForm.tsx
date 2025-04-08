@@ -123,7 +123,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
         <FormProvider {...formMethods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <ClientData clients={clients} services={services} quotations={quotations} />
-                <ServiceDates />
+                <ServiceDates services={services} />
 
                 {/* Mostrar errores generales del formulario */}
                 {Object.keys(errors).length > 0 && (

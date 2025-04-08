@@ -182,13 +182,13 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                     <div className="space-y-2">
                         <h3 className="text-lg font-medium flex items-center gap-2">
                             <Calendar className="h-5 w-5 text-blue-500" />
-              Fechas y Estado
+                            Fechas y Estado
                         </h3>
                         <Separator />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Fecha de Creación
+                                    Fecha de Creación
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <Clock className="h-4 w-4 text-blue-500" />
@@ -200,7 +200,7 @@ Fecha de Creación
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Fecha de Expiración
+                                    Fecha de Expiración
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-blue-500" />
@@ -212,7 +212,7 @@ Fecha de Expiración
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Estado
+                                    Estado
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     {getStatusIcon(quotation.status)}
@@ -228,23 +228,23 @@ Estado
                     <div className="space-y-2">
                         <h3 className="text-lg font-medium flex items-center gap-2">
                             <DollarSign className="h-5 w-5 text-blue-500" />
-              Información de Pago
+                            Información de Pago
                         </h3>
                         <Separator />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Precio
+                                    Precio
                                 </h4>
                                 <p className="text-lg font-semibold">
-S/
+                                    S/
                                     {quotation.price.toFixed(2)}
                                 </p>
                             </div>
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Método de Pago
+                                    Método de Pago
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <CreditCard className="h-4 w-4 text-blue-500" />
@@ -254,7 +254,7 @@ Método de Pago
                                 </div>
                                 {quotation.others && (
                                     <p className="text-sm text-muted-foreground mt-1">
-Otros:
+                                        Otros:
                                         {quotation.others}
                                     </p>
                                 )}
@@ -262,7 +262,7 @@ Otros:
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-IGV
+                                    IGV
                                 </h4>
                                 <div className="flex items-center">
                                     {quotation.hasTaxes ? (
@@ -288,7 +288,7 @@ IGV
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Servicios
+                                    Servicios
                                 </h4>
                                 <div className="space-y-2">
                                     {quotation.services && quotation.services.length > 0 ? (
@@ -359,7 +359,11 @@ Frecuencia
                                                 ? "Trimestral"
                                                 : quotation.frequency === "Semiannual"
                                                     ? "Semestral"
-                                                    : "No especificada"}
+                                                    : quotation.frequency === "Monthly"
+                                                        ? "No especificada"
+                                                        : quotation.frequency === "Fortnightly"
+                                                            ? "Quincenal"
+                                                            : "No especificada"}
                                     </span>
                                 </div>
                             </div>
@@ -377,7 +381,7 @@ Frecuencia
                             {quotation.serviceDescription && (
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Descripción del Servicio
+                                        Descripción del Servicio
                                     </h4>
                                     <p>
                                         {quotation.serviceDescription}
@@ -388,7 +392,7 @@ Descripción del Servicio
                             {quotation.serviceDetail && (
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Detalle del Servicio
+                                        Detalle del Servicio
                                     </h4>
                                     <p>
                                         {quotation.serviceDetail}
@@ -399,7 +403,7 @@ Detalle del Servicio
                             {quotation.treatedAreas && (
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Áreas Tratadas
+                                        Áreas Tratadas
                                     </h4>
                                     <p>
                                         {quotation.treatedAreas}
@@ -410,7 +414,7 @@ Detalle del Servicio
                             {quotation.deliverables && (
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Entregables
+                                        Entregables
                                     </h4>
                                     <p>
                                         {quotation.deliverables}
@@ -421,7 +425,7 @@ Entregables
                             {quotation.requiredAvailability && (
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-Disponibilidad Requerida
+                                      Disponibilidad Requerida
                                     </h4>
                                     <p>
                                         {quotation.requiredAvailability}
@@ -448,7 +452,7 @@ Disponibilidad Requerida
             <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-background border-t p-4 flex justify-between">
                 <Button variant="outline" onClick={handleGoBack} className="flex-1">
                     <ArrowLeft className="h-4 w-4 mr-2" />
-      Volver
+                    Volver
                 </Button>
             </div>
 
