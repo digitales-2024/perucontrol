@@ -282,11 +282,11 @@ public class AppointmentController(
     [HttpGet("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid projectId)
+    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid appointmentid)
     {
         var appointment = await db.Set<ProjectAppointment>()
             .Include(p => p.Certificate)
-            .FirstOrDefaultAsync(a => a.Id == projectId);
+            .FirstOrDefaultAsync(a => a.Id == appointmentid);
 
         if (appointment == null)
             return NotFound("No se encontró la Cita para el Certificado");
@@ -316,21 +316,29 @@ public class AppointmentController(
 
     [EndpointSummary("Generate Certificate PDF")]
     [HttpPost("{id}/certificate/pdf")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateCertificatePdf(Guid id)
     {
-        // FIXME: use a different template
-        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
-        if (odsErr != "")
-        {
-            return BadRequest(odsErr);
-        }
+        using var ms = new MemoryStream();
 
-        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
-        if (pdfErr != "")
+        using (
+            var fs = new FileStream(
+                "Templates/certificado_plantilla.svg",
+                FileMode.Open,
+                FileAccess.Read
+            )
+        )
         {
-            return BadRequest(pdfErr);
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "svg");
+
+        if (errorStr != "")
+        {
+            return BadRequest(errorStr);
         }
         if (pdfBytes == null)
         {
