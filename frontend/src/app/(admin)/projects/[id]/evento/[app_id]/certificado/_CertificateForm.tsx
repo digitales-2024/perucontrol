@@ -8,13 +8,9 @@ type ProjectAppointment = ProjectSummarySingle["appointments"][number]
 
 export function CertificateForm({
     project,
-    // projectOperationSheet,
-    // client,
     appointment,
 }: {
     project: components["schemas"]["ProjectSummarySingle"];
-    // projectOperationSheet: components["schemas"]["ProjectOperationSheet"]
-    // client: components["schemas"]["Client"];
     appointment: ProjectAppointment,
 })
 {
@@ -22,9 +18,7 @@ export function CertificateForm({
         <div>
             <DownloadCertificateForm
                 project={project}
-                // projectOperationSheet={projectOperationSheet}
                 appointment={appointment}
-                // client={client}
                 onOpenChange={() =>
                 { }}
             />
