@@ -65,9 +65,9 @@ export function CreateQuotation({ terms, clients, services }: {
         defaultValues: {
             clientId: "",
             serviceIds: [],
-            frequency: "Bimonthly",
             area: 0,
             spacesCount: 0,
+            frequency: "Bimonthly",
             hasTaxes: false,
             creationDate: format(new Date(), "yyyy-MM-dd"),
             expirationDate: format(addDays(new Date(), 7), "yyyy-MM-dd"),
@@ -138,6 +138,7 @@ export function CreateQuotation({ terms, clients, services }: {
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
+        console.log("Entro");
         const [, err] = await toastWrapper(RegisterQuotation(input), {
             loading: "Cargando...",
             success: "Cotización registrada exitosamente",
@@ -547,7 +548,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                             Método de Pago
                                         </FormLabel>
                                         <FormDescription>
-                                            Método de Pago a mostrar en la cotización. Ejm: Transferencia, Efectivo, YAPE, etc.
+                                            Método de Pagos para la cotización. Ejm: Transferencia, Efectivo, YAPE, etc.
                                         </FormDescription>
                                         <FormControl>
                                             <Input placeholder="Transferencia" {...field} />
