@@ -549,7 +549,8 @@ export function DownloadCertificateForm({
                         Guardar
                     </Button>
 
-                    <Button type="button"
+                    <Button
+                        type="button"
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();

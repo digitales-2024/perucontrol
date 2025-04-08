@@ -284,7 +284,7 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                                 />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" onClick={(ev) => ev.stopPropagation()}>
                             <DropdownMenuLabel>
                                 Acciones
                             </DropdownMenuLabel>

@@ -19,6 +19,7 @@ import {
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
+import Link from "next/link";
 
 type NavMainItem = {
     title: string
@@ -50,11 +51,11 @@ export function NavMain({
 
 function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
-    const [expandOpen, setExpandOpen] = useState(true);
-
     // Check if this item or any of its subitems is active
     const isItemActive = pathname === item.url ||
-                         (pathname.startsWith(item.url) && item.url !== "/");
+        (pathname.startsWith(item.url) && item.url !== "/");
+
+    const [expandOpen, setExpandOpen] = useState(isItemActive);
 
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
@@ -72,12 +73,12 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                         }
                     }}
                 >
-                    <a href={item.url}>
+                    <Link href={item.url}>
                         <item.icon />
                         <span>
                             {item.title}
                         </span>
-                    </a>
+                    </Link>
                 </SidebarMenuButton>
                 {item.items?.length ? (
                     <>
@@ -96,13 +97,13 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                                         <SidebarMenuSubButton
                                             asChild
                                             data-active={subItem.url === pathname}
-                                            className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                                            className="data-[active=true]:text-accent data-[active=true]:underline"
                                         >
-                                            <a href={subItem.url}>
+                                            <Link href={subItem.url}>
                                                 <span>
                                                     {subItem.title}
                                                 </span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
                                 ))}

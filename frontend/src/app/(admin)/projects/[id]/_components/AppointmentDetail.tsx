@@ -189,11 +189,13 @@ export function AppointmentDetail({
 
                 </AccordionContent>
             </AccordionItem>
-            <EditAppointmentDialog isOpen={editDueDateOpen} onClose={() => setEditDueDateOpen(false)}
+            <EditAppointmentDialog
+                isOpen={editDueDateOpen} onClose={() => setEditDueDateOpen(false)}
                 onSave={(newDate) => UpdateDueDate(newDate)}
                 initialDate={dueDate}
             />
-            <EditAppointmentDialog isOpen={editActualDateOpen} onClose={() => setActualDueDateOpen(false)}
+            <EditAppointmentDialog
+                isOpen={editActualDateOpen} onClose={() => setActualDueDateOpen(false)}
                 onSave={(newDate) => UpdateActualDate(newDate)}
                 initialDate={deliveryDate ?? undefined}
             />

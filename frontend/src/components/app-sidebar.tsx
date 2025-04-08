@@ -34,16 +34,62 @@ const data = {
             title: "Clientes",
             url: "/clients",
             icon: Users,
+            items: [
+                {
+                    title: "Todos los clientes",
+                    url: "/clients",
+                },
+                {
+                    title: "Nuevo cliente",
+                    url: "#",
+                },
+            ],
         },
         {
             title: "Cotizaciones",
             url: "/cotizaciones",
             icon: HandCoins,
+            items: [
+                {
+                    title: "Todas las cotizaciones",
+                    url: "/cotizaciones",
+                },
+                {
+                    title: "Nueva cotización",
+                    url: "/cotizaciones/nuevo",
+                },
+            ],
         },
         {
             title: "Servicios",
             url: "/projects",
             icon: BugOff,
+            items: [
+                {
+                    title: "Todos los servicios",
+                    url: "/projects",
+                },
+                {
+                    title: "Nuevo servicio",
+                    url: "/projects/create",
+                },
+                {
+                    title: "Fichas de operacion",
+                    url: "#",
+                },
+                {
+                    title: "Certificados",
+                    url: "#",
+                },
+                {
+                    title: "Cronograma anual",
+                    url: "#",
+                },
+                {
+                    title: "Informes",
+                    url: "#",
+                },
+            ],
         },
         {
             title: "Ajustes",
