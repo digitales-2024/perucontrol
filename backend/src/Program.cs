@@ -109,6 +109,7 @@ builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
 builder.Services.AddScoped<PDFConverterService>();
+builder.Services.AddScoped<ServiceCacheProvider>();
 
 var app = builder.Build();
 
@@ -135,9 +136,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Seed the database
 using (var scope = app.Services.CreateScope())
 {
+    //
+    // Seed the database
+    //
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     await DatabaseSeeder.SeedDefaultUserAsync(app.Services, logger);
     await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
@@ -149,6 +152,14 @@ using (var scope = app.Services.CreateScope())
         logger.LogInformation("Seeding development data");
         await DatabaseSeeder.SeedClients(app.Services, logger);
     }
+
+    //
+    // Initialize service cache
+    //
+    var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    var cacheProvider = scope.ServiceProvider.GetRequiredService<ServiceCacheProvider>();
+    var services = await db.Set<Service>().ToListAsync();
+    cacheProvider.Initialize(services);
 }
 
 app.UseGlobalExceptionHandler();
