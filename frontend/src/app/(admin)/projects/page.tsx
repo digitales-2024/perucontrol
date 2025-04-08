@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { ProjectsDataTable } from "./_components/ProjectsDataTable";
 import { columns } from "./_components/ProjectsColumns";
 import { backend, wrapper } from "@/types/backend";
@@ -15,9 +14,9 @@ export default async function ProjectsPage()
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Gestión de Servicios" description="Gestiona los servicios de tu empresa" />
             <ProjectsDataTable columns={columns} data={projects} />
-        </Shell>
+        </>
     );
 }

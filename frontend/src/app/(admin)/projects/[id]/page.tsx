@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { ProjectDetails } from "./_components/ProjectDetails";
 
@@ -30,9 +29,9 @@ export default async function ProjectDetail({ params }: Props)
     }
 
     return (
-        <Shell>
+        <>
             <HeaderPage title={`Servicio # ${project.projectNumber}`} />
             <ProjectDetails project={project} projectId={id} />
-        </Shell>
+        </>
     );
 }
