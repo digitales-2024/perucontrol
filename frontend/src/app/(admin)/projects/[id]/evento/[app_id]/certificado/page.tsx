@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
-import { OperationsSheetForm } from "./_OperationsSheetForm";
+import { CertificateForm } from "./_CertificateForm";
 
 interface Props {
     params: Promise<{
@@ -13,7 +13,6 @@ export default async function ProjectsPage({ params }: Props)
 {
     const { id, app_id: appId } = await params;
 
-    // get project by id
     const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
         ...auth,
         params: {
@@ -22,6 +21,7 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
+
     if (projectError)
     {
         console.error("Error getting project:", projectError);
@@ -37,8 +37,8 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <>
-            <HeaderPage title="Ficha de Operaciones" description="Llenar, guardar y generar la ficha de operaciones." />
-            <OperationsSheetForm project={project} client={project.client} appointment={appointment} />
+            <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
+            <CertificateForm /* projectOperationSheet={projectOperationSheet} */ project={project} appointment={appointment} />
         </>
     );
 }

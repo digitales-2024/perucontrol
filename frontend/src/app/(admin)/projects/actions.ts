@@ -260,3 +260,100 @@ export async function DesactivateAppointment(
 
     return ok(null);
 }
+
+export async function SaveCertificateData(
+    id:  string,
+    body: components["schemas"]["Certificate"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: body.projectAppointmentId!,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GenerateCertificateExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    const c = await cookies();
+    const jwt = c.get(ACCESS_TOKEN_KEY);
+    if (!jwt)
+    {
+        return err({
+            statusCode: 401,
+            message: "No autorizado",
+            error: null,
+        });
+    }
+
+    try
+    {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/certificate/excel`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt.value}`,
+            },
+        });
+
+        if (!response.ok)
+        {
+            // attempt to get data
+            const body = await response.text();
+            console.error("Error generando excel:");
+            console.error(body);
+
+            return err({
+                statusCode: response.status,
+                message: "Error generando excel",
+                error: null,
+            });
+        }
+
+        const blob = await response.blob();
+        return ok(blob);
+    }
+    catch (e)
+    {
+        console.error(e);
+        return err({
+            statusCode: 503,
+            message: "Error conectando al servidor",
+            error: null,
+        });
+    }
+}
+
+export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
+}
+
+export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
+}

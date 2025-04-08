@@ -1,5 +1,4 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { CreateQuotation } from "./_CreateQuotation";
 
@@ -34,9 +33,9 @@ export default async function CotizacionPage()
     const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
 
     return (
-        <Shell>
+        <>
             <HeaderPage title="Crear cotización" description="Crea una nueva cotización" />
-            <CreateQuotation  terms={activeTerms} clients={clients} services={services} />
-        </Shell>
+            <CreateQuotation terms={activeTerms} clients={clients} services={services} />
+        </>
     );
 }

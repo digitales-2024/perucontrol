@@ -101,13 +101,13 @@ export function AlertDialogAcceptQuotation({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                      Cancelar
+                        Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUpdateStatus}
                         disabled={disabled}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

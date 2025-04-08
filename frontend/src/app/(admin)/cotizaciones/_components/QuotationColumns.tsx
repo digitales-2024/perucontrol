@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
 import { useState } from "react";
-// import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
@@ -242,12 +241,11 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
         {
             const isActive = row.original?.isActive;
             const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            // const [showDetailQuotation, setShowDetailQuotation] = useState(false);
             const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
             const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
 
             return (
-                <div>
+                <div onClick={(e) => e.stopPropagation()}>
                     <div>
                         {/* Eliminar una cotización */}
                         <DeleteQuotation
@@ -256,12 +254,6 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation3"]>> = [
                             quotation={row.original!}
                             showTrigger={false}
                         />
-                        {/* Ver Detalles de una cotización */}
-                        {/* <ViewQuotationDetails
-                            open={showDetailQuotation}
-                            onOpenChange={setShowDetailQuotation}
-                            quotation={row.original}
-                        /> */}
                         {/* Acceptar Cotizacion */}
                         <AlertDialogAcceptQuotation
                             open={showAcceptQuotaion}

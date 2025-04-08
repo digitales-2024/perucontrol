@@ -49,10 +49,13 @@ const eslintConfig = [
             "react/jsx-tag-spacing": "error",
             "react/self-closing-comp": "error",
             "react/jsx-first-prop-new-line": ["error", "multiline-multiprop"],
+            "react/jsx-indent": ["warn", 4],
+            "react/jsx-indent-props": ["warn", 4],
         },
     },
     {
         rules: {
+            "@next/next/no-img-element": "off",
             "indent": ["error", 4],
             "brace-style": ["error", "allman"],
             "no-tabs": "off",

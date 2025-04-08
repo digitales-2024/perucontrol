@@ -59,12 +59,12 @@ export function AlertDialogAcceptProject({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                      Cancelar
+                        Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUpdateStatus}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

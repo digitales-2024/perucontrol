@@ -57,7 +57,7 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                     <CardHeader>
                         <CardTitle className="text-xl flex items-center gap-2">
                             <Building className="h-5 w-5 text-primary" />
-                                Información de la Empresa
+                            Información de la Empresa
                         </CardTitle>
                         <CardDescription>
                             Gestione la información de su empresa que aparecerá en documentos y cotizaciones

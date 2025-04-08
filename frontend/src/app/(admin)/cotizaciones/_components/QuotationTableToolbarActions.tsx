@@ -11,7 +11,7 @@ export function QuotationTableToolbarActions({})
             <Link href="/cotizaciones/nuevo">
                 <Button>
                     <Plus />
-        Crear cotización
+                    Crear cotización
                 </Button>
             </Link>
         </div>

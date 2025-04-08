@@ -44,10 +44,10 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                 <DrawerContent>
                     <DrawerHeader>
                         <DrawerTitle>
-                        ¿Esta absolutamente seguro?
+                            ¿Esta absolutamente seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -69,7 +69,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
             {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                      Eliminar
+                        Eliminar
                     </Button>
                 </AlertDialogTrigger>
             ) : null}
@@ -90,7 +90,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                         aria-label="Delete selected rows"
                         onClick={onDeleteClientsHandler}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
