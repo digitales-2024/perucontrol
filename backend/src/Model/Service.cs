@@ -12,8 +12,11 @@ public class Service : BaseModel
     // Reference properties
     [JsonIgnore]
     public virtual ICollection<Quotation> Quotation { get; set; } = new HashSet<Quotation>();
+
     [JsonIgnore]
-    public virtual ICollection<ProjectAppointment> Appointments { get; set; } = new HashSet<ProjectAppointment>();
+    public virtual ICollection<ProjectAppointment> Appointments { get; set; } =
+        new HashSet<ProjectAppointment>();
+
     [JsonIgnore]
     public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 }

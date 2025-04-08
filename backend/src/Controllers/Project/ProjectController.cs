@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectController(DatabaseContext db)
+public class ProjectController(DatabaseContext db, ServiceCacheProvider services)
     : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     [EndpointSummary("Create")]
@@ -38,24 +39,28 @@ public class ProjectController(DatabaseContext db)
         if (createDTO.Services.Count == 0)
             return BadRequest("Debe ingresar al menos un servicio");
 
-        var services = await _context
-            .Set<Service>()
-            .Where(s => createDTO.Services.Contains(s.Id))
-            .ToListAsync();
-
-        if (services.Count != createDTO.Services.Count)
+        if (!services.ValidateIds(createDTO.Services))
             return NotFound("Algunos servicios no fueron encontrados");
-        entity.Services = services;
+
+        entity.Services = services.GetServices(createDTO.Services);
+
+        // Validate all appointments have valid service IDS
+        foreach (var appointment in createDTO.AppointmentCreateDTOs)
+        {
+            if (!services.ValidateIds(appointment.Services))
+                return NotFound("Algunos servicios no fueron encontrados");
+        }
 
         // Create Appointments
         var appointments = createDTO
-            .Appointments.Select(app => new ProjectAppointment
+            .AppointmentCreateDTOs.Select(app => new ProjectAppointment
             {
-                DueDate = app,
+                DueDate = app.DueDate,
+                Services = services.GetServices(app.Services),
                 Certificate = new(),
                 ProjectOperationSheet = new()
                 {
-                    OperationDate = app.Date,
+                    OperationDate = app.DueDate,
                     EnterTime = new TimeSpan(9, 0, 0),
                     LeaveTime = new TimeSpan(13, 0, 0),
                 },
