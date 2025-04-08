@@ -48,6 +48,7 @@ const eslintConfig = [
             "react/jsx-no-useless-fragment": "error",
             "react/jsx-tag-spacing": "error",
             "react/self-closing-comp": "error",
+            "react/jsx-first-prop-new-line": ["error", "multiline-multiprop"],
         },
     },
     {

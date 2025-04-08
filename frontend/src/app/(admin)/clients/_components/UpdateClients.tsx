@@ -108,11 +108,12 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                             <FormLabel>
                                                 Tipo de documento
                                             </FormLabel>
-                                            <Select disabled value={field.value} onValueChange={(value) =>
-                                            {
-                                                field.onChange(value);
-                                                setTypeDocument(value);
-                                            }}
+                                            <Select
+                                                disabled value={field.value} onValueChange={(value) =>
+                                                {
+                                                    field.onChange(value);
+                                                    setTypeDocument(value);
+                                                }}
                                             >
                                                 <FormControl className="mb-0">
                                                     <SelectTrigger>
