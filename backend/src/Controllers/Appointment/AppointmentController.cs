@@ -282,11 +282,11 @@ public class AppointmentController(
     [HttpGet("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid projectId)
+    public async Task<ActionResult<Certificate>> FindCertificateByAppointmentId(Guid appointmentid)
     {
         var appointment = await db.Set<ProjectAppointment>()
             .Include(p => p.Certificate)
-            .FirstOrDefaultAsync(a => a.Id == projectId);
+            .FirstOrDefaultAsync(a => a.Id == appointmentid);
 
         if (appointment == null)
             return NotFound("No se encontró la Cita para el Certificado");

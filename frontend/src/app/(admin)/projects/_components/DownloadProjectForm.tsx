@@ -151,7 +151,7 @@ export function DownloadProjectForm({
     {
         const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
             loading: "Generando archivo",
-            success: "PDF generado",
+            success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
         });
 
@@ -222,10 +222,6 @@ export function DownloadProjectForm({
                 ...currentValues, // Datos actuales (proyecto)
                 ...data, // Datos de la ficha operativa
                 rodentConsumption: data.rodentConsumption ?? undefined, // Convertir null a undefined
-                /* operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601 */
-                /* operationDate: appointment.actualDate?.split("T")[0] ??
-               data.operationDate?.split("T")[0] ??
-               currentValues.operationDate?.split("T")[0], */
                 operationDate: appointment.actualDate
                     ? new Date(appointment.actualDate).toISOString()
                     : data.operationDate
@@ -1171,7 +1167,7 @@ export function DownloadProjectForm({
                             downloadExcel();
                         }}
                         form="projectForm"
-                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                        className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Excel
@@ -1183,7 +1179,8 @@ export function DownloadProjectForm({
                             await form.handleSubmit(handleSubmit)();
                             downloadPDF();
                         }}
-                        form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                        form="projectForm"
+                        className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Pdf
