@@ -130,13 +130,13 @@ export default function DatePicker({
                         locale={es}
                         className={cn("capitalize", isMobile && "text-sm")}
                         classNames={{
-                            // eslint-disable-next-line camelcase
+
                             day_selected:
                 "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                            // eslint-disable-next-line camelcase
+
                             day_today: "bg-accent text-accent-foreground",
                             day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100", isMobile && "h-8 w-8"),
-                            // eslint-disable-next-line camelcase
+
                             head_cell: cn(
                                 "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
                                 isMobile && "w-8 text-[0.7rem]",
@@ -145,7 +145,7 @@ export default function DatePicker({
                                 "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                                 isMobile && "h-8 w-8",
                             ),
-                            // eslint-disable-next-line camelcase
+
                             nav_button: cn("[&:hover]:bg-accent [&:hover]:text-accent-foreground", isMobile && "h-7 w-7"),
                             table: "border-collapse space-y-1",
                         }}

@@ -83,9 +83,14 @@ export function CreateQuotation({ terms, clients, services }: {
             customField6: "",
             treatedAreas: "",
             deliverables: "",
-            // terms: "",
             customField10: "",
         },
+    });
+
+    useEffect(() =>
+    {
+        console.log("errors:");
+        console.log(form.formState.errors);
     });
 
     const { setValue, watch } = form;
@@ -219,7 +224,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                             emptyMessage="No se encontraron dirreciones"
                                             value={
                                                 clientAddressOptions.find((option) => option.value ===
-                                                                                    field.value) ?? undefined
+                                                    field.value) ?? undefined
                                             }
                                             onValueChange={(option) =>
                                             {
