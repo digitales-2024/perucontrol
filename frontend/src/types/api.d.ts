@@ -3469,13 +3469,14 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        ProjectAppointment: {
+        ProjectAppointmentDTO: {
             /** Format: int32 */
             certificateNumber?: number | null;
             /** Format: date-time */
             dueDate: string;
             /** Format: date-time */
             actualDate?: string | null;
+            servicesIds: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3682,7 +3683,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
-            appointments: Array<components["schemas"]["ProjectAppointment"]>;
+            appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;

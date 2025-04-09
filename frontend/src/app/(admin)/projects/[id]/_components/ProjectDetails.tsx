@@ -2,7 +2,7 @@
 
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -244,6 +244,13 @@ export function ProjectDetails({ project, projectId }: {
             setIsDesactiveDialogOpen(false);
         }
     };
+
+    const servicesMap = useMemo(() =>
+    {
+        const map = new Map<string, string>();
+        project.services.forEach((service) => map.set(service.id!, service.name));
+        return map;
+    }, [project]);
 
     return (
         <div className="container mx-auto p-4">
@@ -502,6 +509,7 @@ export function ProjectDetails({ project, projectId }: {
                                     {sortedAppointments.map((appointment, idx) => (
                                         <AppointmentDetail
                                             projectId={projectId}
+                                            servicesMap={servicesMap}
                                             appointment={appointment} key={appointment.id!} idx={idx}
                                         />
                                     ))}
