@@ -276,9 +276,7 @@ export interface paths {
         /** Get Certificate of an appointment */
         get: {
             parameters: {
-                query?: {
-                    projectId?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     appointmentid: string;
@@ -449,9 +447,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
                     };
                 };
                 /** @description Not Found */
@@ -3229,6 +3227,12 @@ export interface components {
             /** Format: date-time */
             dueDate?: string;
         };
+        AppointmentCreateDTOThroughProject: {
+            /** Format: date-time */
+            dueDate: string;
+            /** @description Array of Service IDs */
+            services: Array<string>;
+        };
         AppointmentGetDTO: {
             project: components["schemas"]["Project"];
             /** Format: int32 */
@@ -3410,6 +3414,14 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        FileResult: {
+            contentType?: string | null;
+            fileDownloadName?: string | null;
+            /** Format: date-time */
+            lastModified?: string | null;
+            entityTag?: components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -3427,7 +3439,7 @@ export interface components {
         /** @enum {unknown|null} */
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
-        NullableOfQuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual" | null;
+        NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
         /** @enum {unknown|null} */
         NullableOfRodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption" | null;
         ProblemDetails: {
@@ -3486,7 +3498,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
-            appointments: Array<string>;
+            appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
@@ -3823,7 +3835,7 @@ export interface components {
             customField10?: string | null;
         };
         /** @enum {unknown} */
-        QuotationFrequency: "Bimonthly" | "Quarterly" | "Semiannual";
+        QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
             /** Format: uuid */
             clientId?: string | null;

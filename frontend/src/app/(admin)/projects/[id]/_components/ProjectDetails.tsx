@@ -552,4 +552,3 @@ export function ProjectDetails({ project, projectId }: {
         </div>
     );
 }
-

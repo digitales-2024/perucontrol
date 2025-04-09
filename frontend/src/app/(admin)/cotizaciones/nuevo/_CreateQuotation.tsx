@@ -391,6 +391,12 @@ export function CreateQuotation({ terms, clients, services }: {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
+                                            <SelectItem value="Fortnightly">
+                                                Quincenal
+                                            </SelectItem>
+                                            <SelectItem value="Monthly">
+                                                Mensual
+                                            </SelectItem>
                                             <SelectItem value="Bimonthly">
                                                 Bimestral
                                             </SelectItem>

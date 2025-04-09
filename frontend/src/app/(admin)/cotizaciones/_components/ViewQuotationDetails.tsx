@@ -359,7 +359,11 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                                 ? "Trimestral"
                                                 : quotation.frequency === "Semiannual"
                                                     ? "Semestral"
-                                                    : "No especificada"}
+                                                    : quotation.frequency === "Monthly"
+                                                        ? "No especificada"
+                                                        : quotation.frequency === "Fortnightly"
+                                                            ? "Quincenal"
+                                                            : "No especificada"}
                                     </span>
                                 </div>
                             </div>

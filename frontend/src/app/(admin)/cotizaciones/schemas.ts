@@ -4,7 +4,7 @@ export const quotationSchema = z.object({
     clientId: z.string().min(5, "El cliente es requerido")
         .uuid("Formato de ID inválido"),
     serviceIds: z.array(z.string().min(1, "El servicio es requerido")),
-    frequency: z.enum(["Bimonthly", "Quarterly", "Semiannual"]),
+    frequency: z.enum(["Monthly", "Fortnightly", "Bimonthly", "Quarterly", "Semiannual"]),
     area: z.preprocess(
         (val) => (typeof val === "string" ? parseInt(val, 10) : val),
         z
