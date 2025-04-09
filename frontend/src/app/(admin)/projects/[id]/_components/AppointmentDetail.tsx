@@ -4,23 +4,26 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, Download } from "lucide-react";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, Download, ListChecks } from "lucide-react";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { DesactivateAppointment, EditAppointment } from "../../actions";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
 
 export function AppointmentDetail({
     appointment,
+    servicesMap,
     projectId,
     idx,
 }: {
     appointment: ProjectAppointment,
+    servicesMap: Map<string, string>,
     projectId: string,
     idx: number,
 })
@@ -94,6 +97,27 @@ export function AppointmentDetail({
                 </AccordionTriggerAsChild>
                 <AccordionContent>
 
+                    <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4">
+                        <div className="text-center">
+                            <ListChecks className={"inline-block"} />
+                        </div>
+                        <div>
+                            <p className="text-xs text-zinc-700">
+                                Servicios a realizar
+                            </p>
+                            <p className="text-lg">
+                                {appointment.servicesIds.map((id) => (
+                                    <Badge key={id} variant="outline" className="text-xs bg-blue-50">
+                                        {servicesMap.get(id) ?? "-"}
+                                    </Badge>
+                                ))}
+                            </p>
+                        </div>
+                        <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
+                            <Pencil />
+                            Editar
+                        </Button>
+                    </div>
                     <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4">
                         <div className="text-center">
                             <Flag className={"inline-block"} />

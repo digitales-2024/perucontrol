@@ -46,11 +46,30 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
 
         entity.Services = services.GetServicesForEntityFramework(createDTO.Services, _context);
 
-        // Validate all appointments have valid service IDS
+        // merge all appointments with the same date
+        var mergedAppointments = createDTO.AppointmentCreateDTOs
+            .GroupBy(a => a.DueDate)
+            .Select(g => new AppointmentCreateDTOThroughProject
+            {
+                DueDate = g.Key,
+                Services = g.SelectMany(a => a.Services).Distinct().ToList(),
+            })
+            .ToList();
+
+        createDTO.AppointmentCreateDTOs = mergedAppointments;
+
+        // Validate all appointments have valid service IDs, present in the parent service list
         foreach (var appointment in createDTO.AppointmentCreateDTOs)
         {
-            if (!services.ValidateIds(appointment.Services))
-                return NotFound("Algunos servicios no fueron encontrados para las fechas de cita");
+            foreach (var serviceId in appointment.Services)
+            {
+                if (!entity.Services.Any(s => s.Id == serviceId))
+                {
+                    return BadRequest(
+                        $"El servicio {serviceId} no está en la lista de servicios del proyecto"
+                    );
+                }
+            }
         }
 
         // Create Appointments
@@ -123,6 +142,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .Include(p => p.Services)
             .Include(p => p.Quotation)
             .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -143,7 +163,13 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             Quotation = project.Quotation,
             IsActive = project.IsActive,
             Price = project.Price,
-            Appointments = project.Appointments.ToList(),
+            Appointments = project.Appointments.Select(a => new ProjectAppointmentDTO
+            {
+                CertificateNumber = a.CertificateNumber,
+                DueDate = a.DueDate,
+                ActualDate = a.ActualDate,
+                ServicesIds = a.Services.Select(s => s.Id).ToList(),
+            }).ToList(),
         };
 
         return Ok(projectSummary);
@@ -160,6 +186,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .Include(p => p.Services)
             .Include(p => p.Quotation)
             .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -180,7 +207,13 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             Quotation = project.Quotation,
             IsActive = project.IsActive,
             Price = project.Price,
-            Appointments = project.Appointments.ToList(),
+            Appointments = project.Appointments.Select(a => new ProjectAppointmentDTO
+            {
+                CertificateNumber = a.CertificateNumber,
+                DueDate = a.DueDate,
+                ActualDate = a.ActualDate,
+                ServicesIds = a.Services.Select(s => s.Id).ToList(),
+            }).ToList(),
             CreatedAt = project.CreatedAt,
         };
 

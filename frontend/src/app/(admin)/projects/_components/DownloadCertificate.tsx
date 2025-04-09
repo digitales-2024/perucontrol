@@ -34,7 +34,7 @@ export function DownloadCertificateForm({
 }: {
     onOpenChange: (v: boolean) => void
     project: components["schemas"]["ProjectSummarySingle"];
-    appointment: components["schemas"]["ProjectAppointment"];
+    appointment: components["schemas"]["ProjectAppointmentDTO"];
 })
 {
     const router = useRouter();
