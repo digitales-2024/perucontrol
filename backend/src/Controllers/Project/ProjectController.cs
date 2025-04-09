@@ -44,7 +44,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         if (!services.ValidateIds(createDTO.Services))
             return NotFound("Algunos servicios no fueron encontrados");
 
-        entity.Services = services.GetServices(createDTO.Services);
+        entity.Services = services.GetServicesForEntityFramework(createDTO.Services, _context);
 
         // Validate all appointments have valid service IDS
         foreach (var appointment in createDTO.AppointmentCreateDTOs)
@@ -58,7 +58,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .AppointmentCreateDTOs.Select(app => new ProjectAppointment
             {
                 DueDate = app.DueDate,
-                Services = services.GetServices(app.Services),
+                Services = services.GetServicesForEntityFramework(app.Services, _context),
                 Certificate = new(),
                 ProjectOperationSheet = new()
                 {
