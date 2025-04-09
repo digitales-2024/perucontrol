@@ -46,6 +46,18 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
 
         entity.Services = services.GetServicesForEntityFramework(createDTO.Services, _context);
 
+        // merge all appointments with the same date
+        var mergedAppointments = createDTO.AppointmentCreateDTOs
+            .GroupBy(a => a.DueDate)
+            .Select(g => new AppointmentCreateDTOThroughProject
+            {
+                DueDate = g.Key,
+                Services = g.SelectMany(a => a.Services).Distinct().ToList(),
+            })
+            .ToList();
+
+        createDTO.AppointmentCreateDTOs = mergedAppointments;
+
         // Validate all appointments have valid service IDS
         foreach (var appointment in createDTO.AppointmentCreateDTOs)
         {
