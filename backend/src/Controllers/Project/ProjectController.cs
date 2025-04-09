@@ -360,7 +360,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             {
                 var newIdResult = await _context
                     .Database.SqlQueryRaw<int>(
-                        "UPDATE ProjectOrderNumbers SET \"ProjectOrderNumberValue\" = \"ProjectOrderNumberValue\" + 1 RETURNING \"ProjectOrderNumberValue\""
+                        "UPDATE \"ProjectOrderNumbers\" SET \"ProjectOrderNumberValue\" = \"ProjectOrderNumberValue\" + 1 RETURNING \"ProjectOrderNumberValue\""
                     )
                     .ToListAsync();
 
