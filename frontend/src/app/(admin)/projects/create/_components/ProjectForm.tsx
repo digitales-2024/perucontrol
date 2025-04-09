@@ -125,7 +125,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 <ServiceDates services={services} />
 
                 {/* Mostrar errores generales del formulario */}
-                {console.log(JSON.stringify(errors, null, 2))}
                 {Object.keys(errors).length > 0 && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
                         <p className="font-medium">
