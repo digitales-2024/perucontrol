@@ -4,9 +4,9 @@ namespace PeruControl.Services;
 
 public class ServiceCacheProvider
 {
-    private readonly List<Service> _services = new();
+    private static List<Service> _services = new();
 
-    public IReadOnlyList<Service> Services => _services;
+    public static IReadOnlyList<Service> Services => _services;
 
     public void Initialize(IEnumerable<Service> services)
     {

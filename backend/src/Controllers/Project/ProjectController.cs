@@ -48,7 +48,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         foreach (var appointment in createDTO.AppointmentCreateDTOs)
         {
             if (!services.ValidateIds(appointment.Services))
-                return NotFound("Algunos servicios no fueron encontrados");
+                return NotFound("Algunos servicios no fueron encontrados para las fechas de cita");
         }
 
         // Create Appointments

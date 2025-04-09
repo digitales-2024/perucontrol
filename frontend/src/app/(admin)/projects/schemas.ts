@@ -19,7 +19,11 @@ export const clientDataSchema = z.object({
             .min(1, "Debe ser mayor a 0")
             .max(4294967295, "Valor demasiado grande"),
     ),
-    appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
+    // appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
+    appointments: z.array(z.object({
+        dueDate: z.string().min(1, "La fecha es requerida"), // Fecha en formato ISO
+        services: z.array(z.string().min(1, "Debe seleccionar al menos un servicio")), // IDs de los servicios
+    })),
     frequency: z.enum(["Fortnightly","Monthly","Bimonthly", "Quarterly", "Semiannual"]).optional(),
 });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 type AppointmentWithServices = {
-  date: string;
+  dueDate: string;
   services: Array<string>;
 };
 
@@ -33,7 +33,7 @@ export function ServiceDates({ services }:
   })
 {
     const { setValue, watch } = useFormContext();
-    const appointments = watch("appointments") ?? []; // Ahora será un array de strings ISO
+    const appointments: Array<AppointmentWithServices> = watch("appointments") ?? []; // Ahora será un array de objetos AppointmentWithServices
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
@@ -41,46 +41,14 @@ export function ServiceDates({ services }:
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
     const [selectedServiceIds, setSelectedServiceIds] = useState<Array<string>>([]);
+    const [availableServices, setAvailableServices] = useState(services);
 
-    // Función para generar fechas basadas en la frecuencia
-    // const generateDates = (startDate: Date, frequency: FrequencyType): Array<string> =>
-    // {
-    //     const dates: Array<string> = [];
-    //     let currentDate = new Date(startDate);
-    //     const currentYear = new Date().getFullYear();
+    // Efecto para actualizar los servicios disponibles cada vez que cambien las citas
+    useEffect(() =>
+    {
+        updateAvailableServices();
 
-    //     while (currentDate.getFullYear() <= currentYear)
-    //     {
-    //         dates.push(currentDate.toISOString());
-
-    //         // Determinar cuántos meses agregar según la frecuencia
-    //         /* const monthsToAdd = frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6;
-    //         currentDate = addMonths(currentDate, monthsToAdd); */
-    //         // Determinar cuántos días o meses agregar según la frecuencia
-    //         if (frequency === "Fortnightly")
-    //         {
-    //             currentDate.setDate(currentDate.getDate() + 15); // Agregar 15 días
-    //         }
-    //         else if (frequency === "Monthly")
-    //         {
-    //             currentDate = addMonths(currentDate, 1); // Agregar 1 mes
-    //         }
-    //         else if (frequency === "Bimonthly")
-    //         {
-    //             currentDate = addMonths(currentDate, 2); // Agregar 2 meses
-    //         }
-    //         else if (frequency === "Quarterly")
-    //         {
-    //             currentDate = addMonths(currentDate, 3); // Agregar 3 meses
-    //         }
-    //         else if (frequency === "Semiannual")
-    //         {
-    //             currentDate = addMonths(currentDate, 6); // Agregar 6 meses
-    //         }
-    //     }
-
-    //     return dates;
-    // };
+    }, [appointments]);
 
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
     {
@@ -97,7 +65,7 @@ export function ServiceDates({ services }:
         while (currentDate.getFullYear() <= currentYear)
         {
             dates.push({
-                date: currentDate.toISOString(),
+                dueDate: currentDate.toISOString(),
                 services: [...selectedServiceIds], // Asociar los servicios seleccionados
             });
 
@@ -126,9 +94,16 @@ export function ServiceDates({ services }:
         return dates;
     };
 
+    const updateAvailableServices = () =>
+    {
+        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
+        const updatedServices = services.filter((service) => !assignedServiceIds.includes(service.id!));
+        setAvailableServices(updatedServices);
+    };
+
     const handleProgramService = () =>
     {
-        if (!serviceDate)
+        if (!serviceDate || !frequency)
         {
             toast.error("Por favor seleccione una fecha de servicio");
             return;
@@ -141,38 +116,47 @@ export function ServiceDates({ services }:
         }
 
         const generatedDates = generateDates(serviceDate, frequency as FrequencyType);
-        setValue("appointments", generatedDates);
+        setValue("appointments", [...appointments ,...generatedDates]);
+        setSelectedServiceIds([]); // Limpiar los servicios seleccionados después de programar
         toast.success("Fechas generadas correctamente");
     };
 
     const handleAddDate = () =>
     {
+
         if (!newDate)
         {
             toast.error("Por favor seleccione una fecha para agregar");
             return;
         }
 
-        const newDateISO = newDate.toISOString();
-
+        const newAppointment = {
+            dueDate: newDate.toISOString(), // Convertir a formato ISO
+            services: [...selectedServiceIds],
+        };
         // Verificar si la fecha ya existe
-        const dateExists = appointments.some((dateISO: string) => format(new Date(dateISO), "yyyy-MM-dd") === format(newDate, "yyyy-MM-dd"));
-
-        if (dateExists)
-        {
-            toast.error("Esta fecha ya está programada");
-            return;
-        }
-
-        setValue("appointments", [...appointments, newDateISO]);
-        setNewDate(undefined);
+        setValue("appointments", [...appointments, newAppointment]);
+        setNewDate(undefined); // Limpiar la fecha nueva después de agregar
+        setSelectedServiceIds([]);
         toast.success("Fecha agregada correctamente");
     };
 
     const handleDeleteDate = (index: number) =>
     {
-        const updatedDates = appointments.filter((_: string, i: number) => i !== index);
+        const removedAppointment = appointments[index];
+        const updatedDates = appointments.filter((_, i) => i !== index);
         setValue("appointments", updatedDates);
+
+        // Agregar los servicios de la fecha eliminada de vuelta a la lista de servicios disponibles
+        const updatedServices = [
+            ...availableServices,
+            ...services.filter((service) => removedAppointment.services.includes(service.id!)),
+        ];
+
+        // Eliminar duplicados
+        const uniqueServices = Array.from(new Set(updatedServices.map((s) => s.id))).map((id) => updatedServices.find((s) => s.id === id));
+
+        setAvailableServices(uniqueServices.filter((service): service is NonNullable<typeof service> => service !== undefined));
         toast.success("Fecha eliminada correctamente");
     };
 
@@ -200,8 +184,8 @@ export function ServiceDates({ services }:
         const updatedDateISO = updatedDate.toISOString();
 
         // Verificar si la fecha ya existe (excepto la que estamos editando)
-        const dateExists = appointments.some((dateISO: string, index: number) => index !== editingIndex &&
-            format(new Date(dateISO), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
+        const dateExists = appointments.some((appointment, index) => index !== editingIndex &&
+            format(new Date(appointment.dueDate), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
 
         if (dateExists)
         {
@@ -210,7 +194,10 @@ export function ServiceDates({ services }:
         }
 
         const updatedDates = [...appointments];
-        updatedDates[editingIndex] = updatedDateISO;
+        updatedDates[editingIndex] = {
+            dueDate: updatedDateISO,
+            services: [...selectedServiceIds], // Ensure services are updated as well
+        };
         setValue("appointments", updatedDates);
 
         setIsEditDialogOpen(false);
@@ -240,24 +227,22 @@ export function ServiceDates({ services }:
 
     const EditDateDialog = () =>
     {
-        /* const initialDate = editingIndex !== null ? new Date(appointments[editingIndex]) : undefined;
-        const [tempDate, setTempDate] = useState<Date | undefined>(initialDate); */
         const initialDate =
-    editingIndex !== null && appointments[editingIndex] ? new Date(appointments[editingIndex].date) : undefined;
+    editingIndex !== null && appointments[editingIndex] ? new Date(appointments[editingIndex].dueDate) : undefined;
         const [tempDate, setTempDate] = useState<Date | undefined>(initialDate);
 
         const dialogContent = (
             <>
                 <div className="py-4">
                     <Label className="block mb-2 font-medium">
-Fecha
+                        Fecha
                     </Label>
                     <DatePicker value={tempDate} onChange={setTempDate} placeholder="Seleccione nueva fecha" className="w-full" />
                 </div>
 
                 <div className="py-2">
                     <Label className="block mb-2 font-medium">
-Servicios a realizar
+                        Servicios a realizar
                     </Label>
                     <div className="space-y-2 max-h-60 overflow-y-auto p-3 border rounded-md bg-gray-50">
                         {services.map((service) => (
@@ -277,7 +262,7 @@ Servicios a realizar
                     {selectedServiceIds.length > 0 && (
                         <div className="mt-2">
                             <Label className="text-xs text-muted-foreground">
-Servicios seleccionados:
+                                Servicios seleccionados:
                             </Label>
                             <ServiceBadges serviceIds={selectedServiceIds} />
                         </div>
@@ -293,7 +278,7 @@ Servicios seleccionados:
                     <DrawerContent>
                         <DrawerHeader>
                             <DrawerTitle>
-Editar fecha y servicios
+                                Editar fecha y servicios
                             </DrawerTitle>
                         </DrawerHeader>
                         <div className="px-4">
@@ -311,7 +296,7 @@ Editar fecha y servicios
                                 }}
                                 type="button"
                             >
-                    Cancelar
+                                Cancelar
                             </Button>
                             <Button
                                 className="flex-1 bg-blue-600 hover:bg-blue-700"
@@ -319,43 +304,12 @@ Editar fecha y servicios
                                 type="button"
                                 disabled={!tempDate || selectedServiceIds.length === 0}
                             >
-                    Guardar
-                            </Button>
-                        </DrawerFooter>
-                    </DrawerContent>
-                </Drawer>
-            );
-            /* return (
-                <Drawer open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                    <DrawerContent>
-                        <DrawerHeader>
-                            <DrawerTitle>
-                                Editar fecha
-                            </DrawerTitle>
-                        </DrawerHeader>
-                        <div className="px-4 py-2">
-                            <DatePicker
-                                value={tempDate}
-                                onChange={setTempDate}
-                                placeholder="Seleccione nueva fecha"
-                                className="w-full"
-                            />
-                        </div>
-                        <DrawerFooter className="flex-row gap-3 pt-2">
-                            <Button variant="outline" className="flex-1" onClick={() => setIsEditDialogOpen(false)} type="button">
-                                Cancelar
-                            </Button>
-                            <Button
-                                className="flex-1 bg-blue-600 hover:bg-blue-700"
-                                onClick={() => handleSaveEdit(tempDate)}
-                                type="button"
-                            >
                                 Guardar
                             </Button>
                         </DrawerFooter>
                     </DrawerContent>
                 </Drawer>
-            ); */
+            );
         }
 
         return (
@@ -363,7 +317,7 @@ Editar fecha y servicios
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle>
-Editar fecha y servicios
+                            Editar fecha y servicios
                         </DialogTitle>
                     </DialogHeader>
                     {dialogContent}
@@ -378,7 +332,7 @@ Editar fecha y servicios
                             }}
                             type="button"
                         >
-                  Cancelar
+                            Cancelar
                         </Button>
                         <Button
                             className="bg-blue-600 hover:bg-blue-700"
@@ -386,39 +340,12 @@ Editar fecha y servicios
                             type="button"
                             disabled={!tempDate || selectedServiceIds.length === 0}
                         >
-                  Guardar
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        );
-        /* return (
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>
-                            Editar fecha
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <DatePicker
-                            value={tempDate}
-                            onChange={setTempDate}
-                            placeholder="Seleccione nueva fecha"
-                            className="w-full"
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} type="button">
-                            Cancelar
-                        </Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleSaveEdit(tempDate)} type="button">
                             Guardar
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        ); */
+        );
     };
 
     return (
@@ -426,7 +353,7 @@ Editar fecha y servicios
             <CardHeader className="pb-3">
                 <CardTitle className="text-xl flex items-center">
                     <CalendarIcon className="h-5 w-5 mr-2 text-blue-500" />
-            Cronograma de Servicios
+                    Cronograma de Servicios
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -434,13 +361,13 @@ Editar fecha y servicios
                     <CardHeader className="py-3">
                         <CardTitle className="text-md font-medium flex items-center">
                             <ListChecks className="h-4 w-4 mr-2 text-blue-500" />
-                Seleccionar Servicios
+                            Seleccionar Servicios
                         </CardTitle>
                     </CardHeader>
                     <Separator className="bg-blue-100" />
                     <CardContent className="pt-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                            {services.map((service) => (
+                            {availableServices.map((service) => (
                                 <div
                                     key={service.id}
                                     className="flex items-center space-x-2 p-2 rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-colors"
@@ -465,7 +392,7 @@ Editar fecha y servicios
                                 <div className="flex items-center text-sm text-blue-700 mb-1">
                                     <CheckCircle2 className="h-4 w-4 mr-1 text-blue-500" />
                                     <span>
-Servicios seleccionados:
+                                        Servicios seleccionados:
                                     </span>
                                 </div>
                                 <ServiceBadges serviceIds={selectedServiceIds} />
@@ -478,7 +405,7 @@ Servicios seleccionados:
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="service-date" className="block mb-2 font-medium">
-                  Fecha Inicial
+                                Fecha Inicial
                             </Label>
                             <DatePicker
                                 value={serviceDate}
@@ -490,183 +417,6 @@ Servicios seleccionados:
                         </div>
                         <div>
                             <Label htmlFor="frequency" className="block mb-2 font-medium">
-                  Frecuencia
-                            </Label>
-                            <Select value={frequency} onValueChange={(value) => setValue("frequency", value as FrequencyType)}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Frecuencia" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Fortnightly">
-Quincenal
-                                    </SelectItem>
-                                    <SelectItem value="Monthly">
-Mensual
-                                    </SelectItem>
-                                    <SelectItem value="Bimonthly">
-Bimestral
-                                    </SelectItem>
-                                    <SelectItem value="Quarterly">
-Trimestral
-                                    </SelectItem>
-                                    <SelectItem value="Semiannual">
-Semestral
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-start">
-                        <Button
-                            type="button"
-                            onClick={handleProgramService}
-                            className="bg-blue-600 hover:bg-blue-700"
-                            disabled={!serviceDate || !frequency || selectedServiceIds.length === 0}
-                        >
-                Programar Servicio
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                        <div className="flex-1">
-                            <Label htmlFor="add-date" className="block mb-2 font-medium">
-                  Agregar fecha
-                            </Label>
-                            <DatePicker
-                                value={newDate}
-                                onChange={setNewDate}
-                                placeholder="Seleccione fecha"
-                                className="w-full"
-                                iconColor="text-blue-500"
-                            />
-                        </div>
-                        <Button
-                            onClick={handleAddDate}
-                            size="icon"
-                            className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                            disabled={!newDate || selectedServiceIds.length === 0}
-                            type="button"
-                        >
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <div>
-                        <Label className="block mb-2 font-medium">
-Fechas programadas
-                        </Label>
-                        <Card className="border border-gray-200">
-                            <ScrollArea className={isMobile ? "h-[250px]" : "h-[300px]"}>
-                                <div className="p-2">
-                                    {appointments.length === 0 ? (
-                                        <p className="text-center text-muted-foreground py-4">
-No hay fechas programadas
-                                        </p>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            {appointments.map((appointment: AppointmentWithServices, index: number) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col p-3 border rounded-md hover:bg-gray-50 transition-colors"
-                                                >
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center">
-                                                            <CalendarIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                                            <span className="font-medium">
-                                                                {formatDate(appointment.date)}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center space-x-1">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                type="button"
-                                                                onClick={() => handleEditDate(index)}
-                                                                className="h-8 w-8 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                                                            >
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                type="button"
-                                                                onClick={() => handleDeleteDate(index)}
-                                                                className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-
-                                                    {appointment.services && appointment.services.length > 0 && (
-                                                        <div className="mt-2 pl-6">
-                                                            <div className="flex items-center text-xs text-muted-foreground mb-1">
-                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                                <span>
-Servicios programados:
-                                                                </span>
-                                                            </div>
-                                                            <ServiceBadges serviceIds={appointment.services} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </ScrollArea>
-                        </Card>
-                    </div>
-                </div>
-            </CardContent>
-
-            <EditDateDialog />
-        </Card>
-    );
-
-    /* return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle className="text-xl">
-                    Cronograma
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <h4 className="text-sm font-medium">
-                        Seleccionar servicios
-                    </h4>
-                    {services.map((service) => (
-                        <div key={service.id} className="flex items-center">
-                            <Checkbox
-                                checked={selectedServiceIds.includes(service.id!)}
-                                onCheckedChange={() => handleServiceSelection(service.id!)}
-                            />
-                            <span className="ml-2">
-                                {service.name}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                        <div className="flex-1">
-                            <Label htmlFor="service-date" className="block mb-2">
-                                Fecha Inicial
-                            </Label>
-                            <DatePicker
-                                value={serviceDate}
-                                onChange={(date) => setValue("serviceDate", date)}
-                                placeholder="Seleccione fecha"
-                                className="w-full"
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="frequency" className="block mb-2">
                                 Frecuencia
                             </Label>
                             <Select value={frequency} onValueChange={(value) => setValue("frequency", value as FrequencyType)}>
@@ -699,7 +449,7 @@ Servicios programados:
                             type="button"
                             onClick={handleProgramService}
                             className="bg-blue-600 hover:bg-blue-700"
-                            disabled={!serviceDate || !frequency}
+                            disabled={!serviceDate || !frequency || selectedServiceIds.length === 0}
                         >
                             Programar Servicio
                         </Button>
@@ -709,16 +459,22 @@ Servicios programados:
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
-                            <Label htmlFor="add-date" className="block mb-2">
+                            <Label htmlFor="add-date" className="block mb-2 font-medium">
                                 Agregar fecha
                             </Label>
-                            <DatePicker value={newDate} onChange={setNewDate} placeholder="Seleccione fecha" className="w-full" />
+                            <DatePicker
+                                value={newDate}
+                                onChange={setNewDate}
+                                placeholder="Seleccione fecha"
+                                className="w-full"
+                                iconColor="text-blue-500"
+                            />
                         </div>
                         <Button
                             onClick={handleAddDate}
                             size="icon"
                             className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                            disabled={!newDate}
+                            disabled={!newDate || selectedServiceIds.length === 0}
                             type="button"
                         >
                             <Plus className="h-4 w-4" />
@@ -726,11 +482,11 @@ Servicios programados:
                     </div>
 
                     <div>
-                        <Label className="block mb-2">
+                        <Label className="block mb-2 font-medium">
                             Fechas programadas
                         </Label>
                         <Card className="border border-gray-200">
-                            <ScrollArea className={isMobile ? "h-[200px]" : "h-[300px]"}>
+                            <ScrollArea className={isMobile ? "h-[250px]" : "h-[300px]"}>
                                 <div className="p-2">
                                     {appointments.length === 0 ? (
                                         <p className="text-center text-muted-foreground py-4">
@@ -738,16 +494,16 @@ Servicios programados:
                                         </p>
                                     ) : (
                                         <div className="space-y-2">
-                                            {appointments
-                                                .map((dateISO: string, index: number) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center justify-between p-2 border rounded-md"
-                                                    >
+                                            {appointments.map((appointment: AppointmentWithServices, index: number) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex flex-col p-3 border rounded-md hover:bg-gray-50 transition-colors"
+                                                >
+                                                    <div className="flex items-center justify-between">
                                                         <div className="flex items-center">
                                                             <CalendarIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                                            <span>
-                                                                {formatDate(dateISO)}
+                                                            <span className="font-medium">
+                                                                {formatDate(appointment.dueDate)}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center space-x-1">
@@ -771,7 +527,20 @@ Servicios programados:
                                                             </Button>
                                                         </div>
                                                     </div>
-                                                ))}
+
+                                                    {appointment.services && appointment.services.length > 0 && (
+                                                        <div className="mt-2 pl-6">
+                                                            <div className="flex items-center text-xs text-muted-foreground mb-1">
+                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                                                <span>
+                                                                    Servicios programados:
+                                                                </span>
+                                                            </div>
+                                                            <ServiceBadges serviceIds={appointment.services} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>
@@ -783,5 +552,5 @@ Servicios programados:
 
             <EditDateDialog />
         </Card>
-    ); */
+    );
 }

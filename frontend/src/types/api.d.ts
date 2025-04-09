@@ -447,9 +447,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
                     };
                 };
                 /** @description Not Found */
@@ -3227,6 +3227,12 @@ export interface components {
             /** Format: date-time */
             dueDate?: string;
         };
+        AppointmentCreateDTOThroughProject: {
+            /** Format: date-time */
+            dueDate: string;
+            /** @description Array of Service IDs */
+            services: Array<string>;
+        };
         AppointmentGetDTO: {
             project: components["schemas"]["Project"];
             /** Format: int32 */
@@ -3408,6 +3414,14 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        FileResult: {
+            contentType?: string | null;
+            fileDownloadName?: string | null;
+            /** Format: date-time */
+            lastModified?: string | null;
+            entityTag?: components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -3484,7 +3498,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
-            appointments: Array<string>;
+            appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
