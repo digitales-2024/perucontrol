@@ -48,16 +48,26 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     const onSubmit = async(data: ClientDataSchema) =>
     {
+        console.log("Datos del formulario:", JSON.stringify(data, null, 2));
         try
         {
             setIsSubmitting(true);
 
+            // Transformar las citas para asegurarse de que dueDate sea una cadena en formato ISO
+            const transformedAppointments = data.appointments.map((appointment) => ({
+                ...appointment,
+                dueDate: new Date(appointment.dueDate).toISOString(), // Convertir a formato ISO
+            }));
+
             // Validación adicional para asegurar el formato correcto
-            const isValidAppointments = data.appointments.every((dateStr) =>
+            const isValidAppointments = transformedAppointments.every((appointment) =>
             {
                 try
                 {
-                    return !isNaN(new Date(dateStr).getTime());
+                    return (
+                        !isNaN(new Date(appointment.dueDate).getTime()) &&
+                        appointment.services.length > 0
+                    );
                 }
                 catch
                 {
@@ -80,18 +90,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 area: data.area,
                 spacesCount: data.spacesCount,
                 price: data.price,
-                appointments: data.appointments.map((date) =>
-                {
-                    // Asegurar formato ISO string
-                    try
-                    {
-                        return new Date(date).toISOString();
-                    }
-                    catch
-                    {
-                        return date; // Si ya está en formato correcto
-                    }
-                }),
+                appointmentCreateDTOs: transformedAppointments,
             };
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
@@ -123,7 +122,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
         <FormProvider {...formMethods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <ClientData clients={clients} services={services} quotations={quotations} />
-                <ServiceDates />
+                <ServiceDates services={services} />
 
                 {/* Mostrar errores generales del formulario */}
                 {Object.keys(errors).length > 0 && (

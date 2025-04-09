@@ -15,6 +15,8 @@ public enum QuotationStatus
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum QuotationFrequency
 {
+    Fortnightly,
+    Monthly,
     Bimonthly,
     Quarterly,
     Semiannual,
@@ -29,6 +31,8 @@ public static class QuotationFrequencyExtensions
             QuotationFrequency.Bimonthly => "BIMENSUALES",
             QuotationFrequency.Quarterly => "TRIMESTRALES",
             QuotationFrequency.Semiannual => "SEMESTRALES",
+            QuotationFrequency.Monthly => "MENSUALES",
+            QuotationFrequency.Fortnightly => "QUINCENALES",
             _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
     }
