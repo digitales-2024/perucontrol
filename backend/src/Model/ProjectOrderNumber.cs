@@ -8,7 +8,7 @@ public class ProjectOrderNumber
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int ProjectOrderNumberId { get; set; }
+    public int ProjectOrderNumberId { get; set; }
 
     public required int ProjectOrderNumberValue { get; set; }
 }

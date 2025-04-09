@@ -27,7 +27,10 @@ public class ServiceCacheProvider
         return true;
     }
 
-    public ICollection<Service> GetServices(IEnumerable<Guid> serviceIds)
+    public ICollection<Service> GetServicesForEntityFramework(
+        IEnumerable<Guid> serviceIds,
+        DatabaseContext context
+    )
     {
         var services = new List<Service>();
 
@@ -36,6 +39,8 @@ public class ServiceCacheProvider
             var service = _services.FirstOrDefault(s => s.Id == serviceId);
             if (service != null)
             {
+                // This tells EF Core: "This is an existing entity with this ID, don't insert it"
+                context.Attach(service);
                 services.Add(service);
             }
         }

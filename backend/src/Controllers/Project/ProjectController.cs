@@ -10,6 +10,8 @@ namespace PeruControl.Controllers;
 public class ProjectController(DatabaseContext db, ServiceCacheProvider services)
     : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
+    private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
+
     [EndpointSummary("Create")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -42,7 +44,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         if (!services.ValidateIds(createDTO.Services))
             return NotFound("Algunos servicios no fueron encontrados");
 
-        entity.Services = services.GetServices(createDTO.Services);
+        entity.Services = services.GetServicesForEntityFramework(createDTO.Services, _context);
 
         // Validate all appointments have valid service IDS
         foreach (var appointment in createDTO.AppointmentCreateDTOs)
@@ -56,7 +58,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .AppointmentCreateDTOs.Select(app => new ProjectAppointment
             {
                 DueDate = app.DueDate,
-                Services = services.GetServices(app.Services),
+                Services = services.GetServicesForEntityFramework(app.Services, _context),
                 Certificate = new(),
                 ProjectOperationSheet = new()
                 {
@@ -348,6 +350,35 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             return NotFound("Evento no encontrado");
         if (appointment.Project.Id != proj_id)
             return BadRequest("Evento no pertenece al proyecto");
+
+        // If the appointment cert id is not null, AND
+        // the real date is being set, create and set the appointment cert id
+        if (appointment.CertificateNumber == null && dto.ActualDate.HasValue)
+        {
+            await _orderNumberLock.WaitAsync();
+            try
+            {
+                var newIdResult = await _context
+                    .Database.SqlQueryRaw<int>(
+                        "UPDATE \"ProjectOrderNumbers\" SET \"ProjectOrderNumberValue\" = \"ProjectOrderNumberValue\" + 1 RETURNING \"ProjectOrderNumberValue\""
+                    )
+                    .ToListAsync();
+
+                if (newIdResult.Count() == 0)
+                {
+                    throw new InvalidOperationException(
+                        "No se encontró el último ID de la cotización. Sistema corrupto."
+                    );
+                }
+
+                var newId = newIdResult[0];
+                appointment.CertificateNumber = newId;
+            }
+            finally
+            {
+                _orderNumberLock.Release();
+            }
+        }
 
         dto.ApplyPatch(appointment);
         await _context.SaveChangesAsync();
