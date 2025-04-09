@@ -27,7 +27,10 @@ public class ServiceCacheProvider
         return true;
     }
 
-    public ICollection<Service> GetServicesForEntityFramework(IEnumerable<Guid> serviceIds, DatabaseContext context)
+    public ICollection<Service> GetServicesForEntityFramework(
+        IEnumerable<Guid> serviceIds,
+        DatabaseContext context
+    )
     {
         var services = new List<Service>();
 

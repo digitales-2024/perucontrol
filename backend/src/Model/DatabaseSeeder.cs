@@ -81,6 +81,30 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {count} default services", defaultServices.Count);
     }
 
+    public static async Task SeedDefaultCertificateNumber(
+        IServiceProvider serviceProvider,
+        ILogger logger
+    )
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.ProjectOrderNumbers.AnyAsync())
+        {
+            logger.LogInformation("Services already seeded");
+            return;
+        }
+
+        var defaultOrderNombre = new ProjectOrderNumber { ProjectOrderNumberValue = 0 };
+
+        await context.ProjectOrderNumbers.AddAsync(defaultOrderNombre);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Seeded initial Certificate Number at ",
+            defaultOrderNombre.ProjectOrderNumberValue
+        );
+    }
+
     public static async Task SeedBusiness(IServiceProvider serviceProvider, ILogger logger)
     {
         using var scope = serviceProvider.CreateScope();
