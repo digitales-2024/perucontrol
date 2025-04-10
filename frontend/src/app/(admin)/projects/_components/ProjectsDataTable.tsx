@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 // import { ProjectsTableToolbarActions } from "./ProjectsTableToolbarActions";
-import { Project } from "../types";
+// import { Project } from "../types";
 import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { ProjectTable } from "@/components/data-table/ProjectDataTable";
@@ -17,26 +17,26 @@ interface DataTableProps {
 
 export function ProjectsDataTable({ columns, data }: DataTableProps)
 {
-    const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
+    /* const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
     const [showAcceptQuotation, setShowAcceptQuotation] = useState(false);
     const [showRejectQuotation, setShowRejectQuotation] = useState(false);
-    const [selectedQuotation, setSelectedQuotation] = useState<ProjectSummary | null>(null);
+    const [selectedQuotation, setSelectedQuotation] = useState<ProjectSummary | null>(null); */
 
     // Contar cotizaciones por estado
-    const getProjectByStatus = (status: string) =>
+    /* const getProjectByStatus = (status: string) =>
     {
         if (status === "todos") return data.length;
         if (status === "activo") return data.filter((quotation) => quotation.isActive).length;
         if (status === "inactivo") return data.filter((quotation) => !quotation.isActive).length;
         return 0;
-    };
+    }; */
 
     const router = useRouter();
 
     return (
         <>
             {/* Modales */}
-            {selectedQuotation && (
+            {/* selectedQuotation &&  */(
                 <>
                     {/* <DeleteQuotation
                         open={showDeleteQuotation}
