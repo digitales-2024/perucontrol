@@ -120,7 +120,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     return (
         <FormProvider {...formMethods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
                 <ClientData clients={clients} services={services} quotations={quotations} />
                 <ServiceDates services={services} />
 

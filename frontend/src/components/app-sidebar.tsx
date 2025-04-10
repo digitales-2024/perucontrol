@@ -41,7 +41,7 @@ const data = {
                 },
                 {
                     title: "Nuevo cliente",
-                    url: "#",
+                    url: "/clients/nuevo",
                 },
             ],
         },

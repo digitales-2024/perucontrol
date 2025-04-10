@@ -1,41 +1,51 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
+import { Calendar1 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import { useState } from "react";
-import { DeleteProject } from "./DeleteProject";
 import { components } from "@/types/api";
+import { format } from "date-fns";
 
 type ProjectSummary = components["schemas"]["ProjectSummary"]
 
 export const columns: Array<ColumnDef<ProjectSummary>> = [
+    {
+        accessorKey: "createdAt",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+            >
+                FECHA DE EMISIÓN
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            const formattedDate = row.original.createdAt
+                ? format(new Date(row.original.createdAt), "yyyy-MM-dd")
+                : "N/A";
+            return (
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <Calendar1 className="mr-1" />
+                    {formattedDate}
+                </span>
+            );
+        },
+    },
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
             >
-                # Servicio
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                # SERVICIO
             </Button>
         ),
         cell: ({ row }) =>
@@ -56,16 +66,9 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
             >
-                Cliente
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                CLIENTE
             </Button>
         ),
         cell: ({ row }) =>
@@ -81,21 +84,86 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
         },
     },
     {
+        accessorKey: "area",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+            >
+                ÁREA m2
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    {row.original.area}
+                </span>
+            );
+        },
+    },
+    {
+        accessorKey: "spacesCount",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+            >
+                NRO. DE AMBIENTES
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    {row.original.spacesCount}
+                </span>
+            );
+        },
+    },
+    {
+        accessorKey: "price",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+            >
+                PRECIO
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
+                }`}
+                >
+                    {row.original?.price.toLocaleString("es-PE", {
+                        style: "currency",
+                        currency: "PEN",
+                    })}
+                </span>
+            );
+        },
+    },
+    {
         accessorKey: "state",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
             >
-                Estado
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                ESTADO
             </Button>
         ),
         cell: ({ row }) =>
@@ -104,8 +172,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
 
             return (
                 <span
-                    className={`items-center text-center flex justify-center text-xs md:text-sm ${!isActive ? "text-red-500" : ""
-                    }`}
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
                     {row.original?.status === "Pending" ? (
                         <Badge variant={!isActive ? "deleted" : "default"}>
@@ -125,79 +192,14 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
         },
     },
     {
-        accessorKey: "area",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
-            >
-                Área m2
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-            return (
-                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
-                    {row.original.area}
-                </span>
-            );
-        },
-    },
-    {
-        accessorKey: "spacesCount",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
-            >
-                Nro. de Ambientes
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-            return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    {row.original.spacesCount}
-                </span>
-            );
-        },
-    },
-    {
         accessorKey: "address",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
             >
-                Dirección
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                DIRECCIÓN
             </Button>
         ),
         cell: ({ row }) =>
@@ -212,56 +214,56 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             );
         },
     },
-    {
-        id: "acciones",
-        header: "Acciones",
-        cell: function Cell({ row })
-        {
-            const isActive = row.original?.isActive;
-            const [showDeleteProject, setShowDeleteProject] = useState(false);
+    // {
+    //     id: "acciones",
+    //     header: "Acciones",
+    //     cell: function Cell({ row })
+    //     {
+    //         const isActive = row.original?.isActive;
+    //         const [showDeleteProject, setShowDeleteProject] = useState(false);
 
-            const projectId = row.original.id;
-            return (
-                <div onClick={(e) => e.stopPropagation()}>
-                    <div>
-                        {/* Eliminar un proyecto */}
-                        <DeleteProject
-                            open={showDeleteProject}
-                            onOpenChange={setShowDeleteProject}
-                            project={row?.original}
-                            showTrigger={false}
-                        />
-                    </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
-                                <Ellipsis className="size-4" aria-hidden="true" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                Acciones
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <Link href={`/projects/${projectId}`}>
-                                <DropdownMenuItem disabled={!isActive}>
-                                    Ver Detalles
-                                </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuSeparator />
-                            <Link href={`/projects/${projectId}/update/`}>
-                                <DropdownMenuItem disabled={!isActive}>
-                                    Editar
-                                </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem onSelect={() => setShowDeleteProject(true)} disabled={!isActive}>
-                                Eliminar
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            );
-        },
-    },
+    //         const projectId = row.original.id;
+    //         return (
+    //             <div onClick={(e) => e.stopPropagation()}>
+    //                 <div>
+    //                     {/* Eliminar un proyecto */}
+    //                     <DeleteProject
+    //                         open={showDeleteProject}
+    //                         onOpenChange={setShowDeleteProject}
+    //                         project={row?.original}
+    //                         showTrigger={false}
+    //                     />
+    //                 </div>
+    //                 <DropdownMenu>
+    //                     <DropdownMenuTrigger asChild>
+    //                         <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
+    //                             <Ellipsis className="size-4" aria-hidden="true" />
+    //                         </Button>
+    //                     </DropdownMenuTrigger>
+    //                     <DropdownMenuContent align="end">
+    //                         <DropdownMenuLabel>
+    //                             Acciones
+    //                         </DropdownMenuLabel>
+    //                         <DropdownMenuSeparator />
+    //                         <Link href={`/projects/${projectId}`}>
+    //                             <DropdownMenuItem disabled={!isActive}>
+    //                                 Ver Detalles
+    //                             </DropdownMenuItem>
+    //                         </Link>
+    //                         <DropdownMenuSeparator />
+    //                         <Link href={`/projects/${projectId}/update/`}>
+    //                             <DropdownMenuItem disabled={!isActive}>
+    //                                 Editar
+    //                             </DropdownMenuItem>
+    //                         </Link>
+    //                         <DropdownMenuItem onSelect={() => setShowDeleteProject(true)} disabled={!isActive}>
+    //                             Eliminar
+    //                         </DropdownMenuItem>
+    //                     </DropdownMenuContent>
+    //                 </DropdownMenu>
+    //             </div>
+    //         );
+    //     },
+    // },
 ];
 
