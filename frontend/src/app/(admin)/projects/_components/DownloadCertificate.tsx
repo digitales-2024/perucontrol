@@ -32,20 +32,21 @@ export function DownloadCertificateForm({
     project,
     appointment,
 }: {
-  onOpenChange: (v: boolean) => void
-  project: components["schemas"]["ProjectSummarySingle"];
-  appointment: components["schemas"]["ProjectAppointment"];
+    onOpenChange: (v: boolean) => void
+    project: components["schemas"]["ProjectSummarySingle"];
+    appointment: components["schemas"]["ProjectAppointmentDTO"];
 })
 {
     const router = useRouter();
 
     const serviceNames = project.services.map((service) => service.name);
+    const certificateNumber = appointment.certificateNumber?.toString(10).padStart(3, "0") ?? "";
 
     const form = useForm<CertificateSchema>({
         resolver: zodResolver(certificateSchema),
         defaultValues: {
             expirationDate: "",
-            certificateNumber: "",
+            certificateNumber,
             clientName: project.client?.name ?? project.client?.razonSocial ?? "",
             location: project?.address ?? "",
             businessType: project.client?.businessType ?? "",
@@ -181,10 +182,10 @@ export function DownloadCertificateForm({
         const expirationDate = form.getValues("expirationDate");
 
         const body =
-      {
-          projectAppointmentId: appointment.id!,
-          expirationDate,
-      };
+        {
+            projectAppointmentId: appointment.id!,
+            expirationDate,
+        };
         const [result, error] = await toastWrapper(
             // SaveCertificateData(project.id!, input), // Cambia a `true` si es una actualización
             SaveCertificateData(project.id!, body),
@@ -235,7 +236,7 @@ export function DownloadCertificateForm({
                                                     Número de Certificado
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Ej: 001641" {...field} className="border-gray-300" />
+                                                    <Input disabled placeholder="Ej: 001641" {...field} className="border-gray-300" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

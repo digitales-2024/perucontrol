@@ -240,7 +240,15 @@ public class ProjectSummarySingle : BaseModel
 
     public required decimal Price { get; set; }
 
-    public required ICollection<ProjectAppointment> Appointments { get; set; } = null!;
+    public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }
+}
+
+public class ProjectAppointmentDTO : BaseModel
+{
+    public int? CertificateNumber { get; set; } = null;
+    public required DateTime DueDate { get; set; }
+    public DateTime? ActualDate { get; set; }
+    public required ICollection<Guid> ServicesIds { get; set; }
 }
 
 public class ProjectStatusPatchDTO

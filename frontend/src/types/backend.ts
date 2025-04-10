@@ -94,7 +94,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error,
             });
         }
@@ -102,7 +102,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         {
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error!,
             });
         }
