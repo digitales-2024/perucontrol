@@ -2,13 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
-import localFont from "next/font/local";
-
-const geistSans = localFont({
-    src: "./fonts/GeistVF.woff",
-    variable: "--font-geist-sans",
-    weight: "100 900",
-});
 
 export const metadata: Metadata = {
     title: "PeruControl",
@@ -24,7 +17,7 @@ export default function RootLayout({
     return (
         <html lang="es" suppressHydrationWarning>
             <body
-                className={`antialiased ${geistSans.variable}`}
+                className={"antialiased"}
             >
                 <Toaster
                     richColors
