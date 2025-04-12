@@ -1,11 +1,12 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Calendar1 } from "lucide-react";
+import { Calendar1, CircleUserRound, Hash, LandPlot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { components } from "@/types/api";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type ProjectSummary = components["schemas"]["ProjectSummary"]
 
@@ -55,6 +56,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <Hash className="mr-1" />
                     {row.original.projectNumber}
                 </span>
             );
@@ -78,6 +80,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <CircleUserRound className="mr-1" />
                     {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
                 </span>
             );
@@ -101,6 +104,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <LandPlot className="mr-1" />
                     {row.original.area}
                 </span>
             );
@@ -124,6 +128,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <Hash className="mr-1" />
                     {row.original.spacesCount}
                 </span>
             );
@@ -156,7 +161,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
         },
     },
     {
-        accessorKey: "state",
+        accessorKey: "status",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -171,99 +176,65 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             const isActive = row.original.isActive;
 
             return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    {row.original?.status === "Pending" ? (
-                        <Badge variant={!isActive ? "deleted" : "default"}>
-                            Pendiente
-                        </Badge>
-                    ) : row.original?.status === "Completed" ? (
-                        <Badge variant={!isActive ? "deleted" : "approved"}>
-                            Aprobado
-                        </Badge>
-                    ) : (
-                        <Badge variant={!isActive ? "deleted" : "destructive"}>
-                            Rechazado
-                        </Badge>
-                    )}
-                </span>
+                row.original?.status === "Pending" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "default"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-blue-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Pendiente
+                    </Badge>
+                ) : row.original?.status === "Completed" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "approved"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-green-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Completado
+                    </Badge>
+                ) : (
+                    <Badge
+                        variant={!isActive ? "deleted" : "destructive"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-red-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Rechazado
+                    </Badge>
+                )
             );
         },
     },
     {
-        accessorKey: "address",
+        accessorKey: "state",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
             >
-                DIRECCIÓN
+                ESTADO
             </Button>
         ),
         cell: ({ row }) =>
         {
             const isActive = row.original.isActive;
             return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                <Badge
+                    className={cn(
+                        "px-2 py-1 text-xs font-medium rounded-full",
+                        isActive ? "bg-green-500 text-white" : "bg-red-300 text-red-800",
+                    )}
                 >
-                    {row.original.address}
-                </span>
+                    {isActive ? "Activo" : "Inactivo"}
+                </Badge>
             );
         },
     },
-    // {
-    //     id: "acciones",
-    //     header: "Acciones",
-    //     cell: function Cell({ row })
-    //     {
-    //         const isActive = row.original?.isActive;
-    //         const [showDeleteProject, setShowDeleteProject] = useState(false);
-
-    //         const projectId = row.original.id;
-    //         return (
-    //             <div onClick={(e) => e.stopPropagation()}>
-    //                 <div>
-    //                     {/* Eliminar un proyecto */}
-    //                     <DeleteProject
-    //                         open={showDeleteProject}
-    //                         onOpenChange={setShowDeleteProject}
-    //                         project={row?.original}
-    //                         showTrigger={false}
-    //                     />
-    //                 </div>
-    //                 <DropdownMenu>
-    //                     <DropdownMenuTrigger asChild>
-    //                         <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
-    //                             <Ellipsis className="size-4" aria-hidden="true" />
-    //                         </Button>
-    //                     </DropdownMenuTrigger>
-    //                     <DropdownMenuContent align="end">
-    //                         <DropdownMenuLabel>
-    //                             Acciones
-    //                         </DropdownMenuLabel>
-    //                         <DropdownMenuSeparator />
-    //                         <Link href={`/projects/${projectId}`}>
-    //                             <DropdownMenuItem disabled={!isActive}>
-    //                                 Ver Detalles
-    //                             </DropdownMenuItem>
-    //                         </Link>
-    //                         <DropdownMenuSeparator />
-    //                         <Link href={`/projects/${projectId}/update/`}>
-    //                             <DropdownMenuItem disabled={!isActive}>
-    //                                 Editar
-    //                             </DropdownMenuItem>
-    //                         </Link>
-    //                         <DropdownMenuItem onSelect={() => setShowDeleteProject(true)} disabled={!isActive}>
-    //                             Eliminar
-    //                         </DropdownMenuItem>
-    //                     </DropdownMenuContent>
-    //                 </DropdownMenu>
-    //             </div>
-    //         );
-    //     },
-    // },
 ];
 

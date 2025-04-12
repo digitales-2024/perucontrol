@@ -7,14 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { components } from "@/types/api";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clientDataSchema, ClientDataSchema } from "../../../schemas";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { UpdateProject } from "../../../actions";
 import { toastWrapper } from "@/types/toasts";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 interface ProjectProps {
     id?: string;
@@ -46,6 +46,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
 export function UpdateClientData({ clients, services, quotations, project }: UpdateClientDataProps)
 {
     const [quotation, setQuotation] = useState(project.quotation?.id ?? "");
+    const router = useRouter();
     // const [showQuotation, setShowQuotation] = useState(true);
 
     const form = useForm<ClientDataSchema>({
@@ -105,94 +106,65 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
         redirect("./");
     };
 
+    const handleGoBack = () =>
+    {
+        router.back();
+    };
+
     return (
-        <Card>
-            <CardHeader>
-                <div className="flex justify-between">
-                    <CardTitle className="text-xl font-semibold">
-                        Datos de cliente
-                    </CardTitle>
-                    <AutoComplete
-                        options={quotationsOptions}
-                        placeholder="Buscar cotización..."
-                        emptyMessage="No se encontraron clientes"
-                        value={
-                            quotationsOptions.find((option) => option.value ===
+        <>
+            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2 mt-5">
+                <ArrowLeft className="h-4 w-4" />
+                Volver
+            </Button>
+
+            <Card className="mt-5">
+                <CardHeader>
+                    <div className="flex justify-between">
+                        <CardTitle className="text-xl font-semibold">
+                            Datos del proyecto
+                        </CardTitle>
+                        <AutoComplete
+                            options={quotationsOptions}
+                            placeholder="Buscar cotización..."
+                            emptyMessage="No se encontraron clientes"
+                            value={
+                                quotationsOptions.find((option) => option.value ===
                                 quotation) ?? undefined
-                        }
-                        onValueChange={(option) =>
-                        {
-                            setQuotation(option?.value || "");
-                            handleQuotationChange(option);
-                        }}
-                    />
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                        {/* Cliente */}
-                        <FormField
-                            control={form.control}
-                            name="clientId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Cliente
-                                    </FormLabel>
-                                    <FormControl>
-                                        <AutoComplete
-                                            options={clientsOptions}
-                                            placeholder="Buscar cliente..."
-                                            emptyMessage="No se encontraron clientes"
-                                            value={
-                                                clientsOptions.find((option) => option.value ===
+                            }
+                            onValueChange={(option) =>
+                            {
+                                setQuotation(option?.value || "");
+                                handleQuotationChange(option);
+                            }}
+                        />
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                            {/* Cliente */}
+                            <FormField
+                                control={form.control}
+                                name="clientId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-base">
+                                            Cliente
+                                        </FormLabel>
+                                        <FormControl>
+                                            <AutoComplete
+                                                options={clientsOptions}
+                                                placeholder="Buscar cliente..."
+                                                emptyMessage="No se encontraron clientes"
+                                                value={
+                                                    clientsOptions.find((option) => option.value ===
                                                     field.value) ?? undefined
-                                            }
-                                            onValueChange={(option) =>
-                                            {
-                                                field.onChange(option?.value || "");
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Dirección */}
-                        <FormField
-                            control={form.control}
-                            name="address"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Dirección
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Área y Número de ambientes */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="area"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Área m2
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="m2"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                }
+                                                onValueChange={(option) =>
+                                                {
+                                                    field.onChange(option?.value || "");
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -200,84 +172,125 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                 )}
                             />
 
+                            {/* Dirección */}
                             <FormField
                                 control={form.control}
-                                name="spacesCount"
+                                name="address"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            Nro. de ambientes
+                                            Dirección
                                         </FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="#"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                            />
+                                            <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                        </div>
 
-                        {/* Servicios y Número de Orden */}
-                        <div className="space-y-4">
-                            {/* Servicios */}
-                            <FormField
-                                control={form.control}
-                                name="services"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-base font-medium">
-                                            Servicios
-                                        </FormLabel>
-                                        <div className="grid grid-cols-2 gap-4 mt-2">
-                                            {services.map((service) =>
-                                            {
-                                                const isSelected = field.value?.includes(service.id!);
-                                                return (
-                                                    <div
-                                                        key={service.id}
-                                                        className={cn(
-                                                            "relative flex items-center p-2 rounded-lg border-2 cursor-pointer transition-all",
-                                                            "hover:border-blue-400 hover:bg-blue-50",
-                                                            isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200",
-                                                        )}
-                                                        onClick={() =>
-                                                        {
-                                                            const newValue = isSelected
-                                                                ? field.value?.filter((id) => id !== service.id)
-                                                                : [...(field.value || []), service.id!];
-                                                            field.onChange(newValue);
-                                                        }}
-                                                    >
-                                                        <div className="mr-4">
-                                                            {serviceIcons[service.name] ?? <ShieldCheck className="h-3 w-3" />}
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="text-sm font-medium">
-                                                                {service.name}
-                                                            </h3>
-                                                        </div>
-                                                        {isSelected && <div className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full" />}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                            {/* Área y Número de ambientes */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="area"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Área m2
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="m2"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                        <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">
-                            Guardar
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
+                                <FormField
+                                    control={form.control}
+                                    name="spacesCount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Nro. de ambientes
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="#"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            {/* Servicios y Número de Orden */}
+                            <div className="space-y-4">
+                                {/* Servicios */}
+                                <FormField
+                                    control={form.control}
+                                    name="services"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-base font-medium">
+                                                Servicios
+                                            </FormLabel>
+                                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                                {services.map((service) =>
+                                                {
+                                                    const isSelected = field.value?.includes(service.id!);
+                                                    return (
+                                                        <div
+                                                            key={service.id}
+                                                            className={cn(
+                                                                "relative flex items-center p-2 rounded-lg border-2 cursor-pointer transition-all",
+                                                                "hover:border-blue-400 hover:bg-blue-50",
+                                                                isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200",
+                                                            )}
+                                                            onClick={() =>
+                                                            {
+                                                                const newValue = isSelected
+                                                                    ? field.value?.filter((id) => id !== service.id)
+                                                                    : [...(field.value || []), service.id!];
+                                                                field.onChange(newValue);
+                                                            }}
+                                                        >
+                                                            <div className="mr-4">
+                                                                {serviceIcons[service.name] ?? <ShieldCheck className="h-3 w-3" />}
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="text-sm font-medium">
+                                                                    {service.name}
+                                                                </h3>
+                                                            </div>
+                                                            {isSelected && <div className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full" />}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">
+                                Guardar
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
+        </>
     );
 }

@@ -257,7 +257,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             Datos de la cotización
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="creationDate"
@@ -337,7 +337,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             name="serviceIds"
                             render={({ field }) => (
                                 <FormItem>
-                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                                         {services.map((service) =>
                                         {
                                             const isSelected = field.value?.includes(service.id!);
@@ -426,7 +426,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             )}
                         />
 
-                        <div className="grid grid-cols-2 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                             {/* Área m2 */}
                             <FormField
                                 control={form.control}

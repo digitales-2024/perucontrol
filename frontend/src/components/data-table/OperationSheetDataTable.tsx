@@ -52,13 +52,14 @@ type DateRangeField = {
   format: string
 }
 
-interface ClientTableProps<T> {
+interface OperationSheetTableProps<T> {
   columns: Array<ColumnDef<T>>
   data: Array<T>
   statusOptions?: Array<StatusOption>
   statusField?: keyof T | string
   statusFilter?: (data: Array<T>, status: string) => Array<T>
-  typeDocumentFilter?: (data: Array<T>, typeDocument: string) => Array<T>,
+  igvFilter?: (data: Array<T>, igv: string) => Array<T>,
+  stateFilter?: (data: Array<T>, state: string) => Array<T>,
   searchFields?: Array<keyof T | string>
   dateRangeField?: DateRangeField | null
   actionButtons?: Array<ActionButton<T>>
@@ -69,13 +70,14 @@ interface ClientTableProps<T> {
   className?: string
 }
 
-export function ClientTable<T extends object>({
+export function OperationSheetTable<T extends object>({
     columns,
     data,
     statusOptions,
     statusField,
     statusFilter,
-    typeDocumentFilter,
+    igvFilter,
+    stateFilter,
     searchFields,
     dateRangeField,
     actionButtons,
@@ -84,7 +86,7 @@ export function ClientTable<T extends object>({
     toolbarActions,
     emptyMessage = "No se encontraron resultados",
     className,
-}: ClientTableProps<T>)
+}: OperationSheetTableProps<T>)
 {
     const [activeTab, setActiveTab] = useState("todos");
     const [searchTerm, setSearchTerm] = useState("");
@@ -118,10 +120,10 @@ export function ClientTable<T extends object>({
             });
         }
 
-        // Filtar por tipo de documento
-        if (typeDocumentFilter && activeTab !== "todos")
+        // Filtar por IGV
+        if (igvFilter && activeTab !== "todos")
         {
-            result = typeDocumentFilter(result, activeTab);
+            result = igvFilter(result, activeTab);
         }
         else if (statusField && activeTab !== "todos")
         {
@@ -129,8 +131,26 @@ export function ClientTable<T extends object>({
             result = result.filter((item) =>
             {
                 const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "dni") return fieldValue === "dni";
-                if (activeTab === "ruc") return fieldValue === "ruc";
+                if (activeTab === "con") return fieldValue === "con";
+                if (activeTab === "sin") return fieldValue === "sin";
+                return true;
+            });
+        }
+
+        // Filtrar por estado
+        if (stateFilter && activeTab !== "todos")
+        {
+            result = stateFilter(result, activeTab);
+        }
+        else if (statusField && activeTab !== "todos")
+        {
+            // Filtrado básico por campo de estado si no se proporciona una función personalizada
+            result = result.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                if (activeTab === "pendiente") return fieldValue === "Pendiente";
+                if (activeTab === "aprovado") return fieldValue === "Aprobado";
+                if (activeTab === "rechazado") return fieldValue === "Rechazado";
                 return true;
             });
         }
@@ -168,7 +188,7 @@ export function ClientTable<T extends object>({
         }
 
         setFilteredData(result);
-    }, [data, activeTab, searchTerm, dateRange, statusField, statusFilter, typeDocumentFilter, searchFields, dateRangeField]);
+    }, [data, activeTab, searchTerm, dateRange, statusField, statusFilter, stateFilter, igvFilter, searchFields, dateRangeField]);
 
     // Configurar la tabla
     const table = useReactTable({
@@ -233,7 +253,7 @@ export function ClientTable<T extends object>({
             )}
 
             {/* Barra de búsqueda y filtros */}
-            <div className="flex flex-wrap flex-col sm:flex-row justify-between p-4 gap-4">
+            <div className="flex flex-col sm:flex-row justify-between p-4 gap-4">
                 <div className="relative w-full sm:w-64">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -244,7 +264,7 @@ export function ClientTable<T extends object>({
                     />
                 </div>
 
-                <div className="flex flex-wrap sm:items-center gap-2">
+                <div className="flex items-center gap-2">
                     {dateRangeField && (
                         <>
                             <Popover>
@@ -295,7 +315,7 @@ export function ClientTable<T extends object>({
                     )}
 
                     {toolbarActions && (
-                        <div className="flex items-center gap-2 ml-0 sm:ml-auto">
+                        <div className="flex items-center gap-2 ml-auto">
                             {toolbarActions}
                         </div>)}
                 </div>
@@ -347,7 +367,7 @@ export function ClientTable<T extends object>({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className={cn("h-8 w-8 p-0", action.className)}
+                                                                        className={cn("h-8 w-8 p-0 ml-2", action.className)}
                                                                         onClick={() => !isDisabled && action.onClick(row.original)}
                                                                         disabled={isDisabled}
                                                                     >

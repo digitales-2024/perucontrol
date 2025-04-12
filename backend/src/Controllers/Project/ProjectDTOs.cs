@@ -243,6 +243,29 @@ public class ProjectSummarySingle : BaseModel
     public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }
 }
 
+public class ProjectSummarySingle2 : BaseModel
+{
+    public required Client Client { get; set; } = null!;
+
+    public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public Quotation? Quotation { get; set; } = null!;
+
+    public required int ProjectNumber { get; set; }
+
+    public required string Address { get; set; }
+
+    public required uint Area { get; set; }
+
+    public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+
+    public required uint SpacesCount { get; set; }
+
+    public required decimal Price { get; set; }
+
+    public required IList<DateTime> Appointments { get; set; } = null!;
+}
+
 public class ProjectAppointmentDTO : BaseModel
 {
     public int? CertificateNumber { get; set; } = null;

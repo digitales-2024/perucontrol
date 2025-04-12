@@ -173,34 +173,17 @@ export function QuotationTable<T extends object>({
                 const fieldValue = dateRangeField.field in item ? item[dateRangeField.field as keyof T] : null;
                 if (!fieldValue) return false;
 
-                let itemDate: Date;
-                if (fieldValue instanceof Date)
-                {
-                    itemDate = fieldValue;
-                }
-                else
-                {
-                    // Intentar convertir string a Date
-                    try
-                    {
-                        // Si el formato es DD/MM/YYYY
-                        if (dateRangeField.format.startsWith("dd"))
-                        {
-                            const parts = String(fieldValue).split("/");
-                            itemDate = new Date(`${parts[1]}/${parts[0]}/${parts[2]}`);
-                        }
-                        else
-                        {
-                            itemDate = new Date(String(fieldValue));
-                        }
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
+                const itemDate = new Date(fieldValue as string);
+                if (isNaN(itemDate.getTime())) return false;
 
-                return itemDate >= dateRange.from! && itemDate <= dateRange.to!;
+                // Set time to midnight for accurate date comparison
+                const from = new Date(dateRange.from!);
+                const to = new Date(dateRange.to!);
+                from.setHours(0, 0, 0, 0);
+                to.setHours(23, 59, 59, 999);
+                itemDate.setHours(0, 0, 0, 0);
+
+                return itemDate >= from && itemDate <= to;
             });
         }
 
@@ -270,7 +253,7 @@ export function QuotationTable<T extends object>({
             )}
 
             {/* Barra de búsqueda y filtros */}
-            <div className="flex flex-col sm:flex-row justify-between p-4 gap-4">
+            <div className="flex flex-col flex-wrap sm:flex-row justify-between p-4 gap-4">
                 <div className="relative w-full sm:w-64">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -281,7 +264,7 @@ export function QuotationTable<T extends object>({
                     />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     {dateRangeField && (
                         <>
                             <Popover>
@@ -306,7 +289,17 @@ export function QuotationTable<T extends object>({
                                         initialFocus
                                         mode="range"
                                         defaultMonth={dateRange.from}
-                                        selected={dateRange}
+                                        selected={{
+                                            from: dateRange.from,
+                                            to: dateRange.to,
+                                        }}
+                                        onSelect={(range) =>
+                                        {
+                                            setDateRange({
+                                                from: range?.from,
+                                                to: range?.to,
+                                            });
+                                        }}
                                         numberOfMonths={2}
                                         locale={es}
                                     />
@@ -322,7 +315,7 @@ export function QuotationTable<T extends object>({
                     )}
 
                     {toolbarActions && (
-                        <div className="flex items-center gap-2 ml-auto">
+                        <div className="flex items-center gap-2 ml-0 s,ml-auto">
                             {toolbarActions}
                         </div>)}
                 </div>
@@ -374,7 +367,7 @@ export function QuotationTable<T extends object>({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className={cn("h-8 w-8 p-0", action.className)}
+                                                                        className={cn("h-8 w-8 p-0 ml-2", action.className)}
                                                                         onClick={() => !isDisabled && action.onClick(row.original)}
                                                                         disabled={isDisabled}
                                                                     >

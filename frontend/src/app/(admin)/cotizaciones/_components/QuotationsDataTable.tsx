@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Download, Eye, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, Eye, Pencil, Plus, Trash2, X } from "lucide-react";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { QuotationTable } from "@/components/data-table/QuotationDataTable";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
@@ -13,6 +13,7 @@ import { GenerateExcel, GeneratePdf } from "../actions";
 import type { Quotation } from "./QuotationColumns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 interface DataTableProps {
     columns: Array<ColumnDef<Quotation, unknown>>
@@ -116,8 +117,11 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
             disabled: (row: Quotation) => !row.isActive,
         },
         {
-            label: "Descargar Excel",
-            icon: <Download className="h-4 w-4 text-green-500" />,
+            label: "Descargar",
+            icon: (
+                <Badge variant="excel">
+                    Excel
+                </Badge>),
             onClick: (row: Quotation) =>
             {
                 downloadExcel(row.id!);
@@ -125,8 +129,11 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
             disabled: (row: Quotation) => !row.isActive,
         },
         {
-            label: "Descargar PDF",
-            icon: <Download className="h-4 w-4 text-red-500" />,
+            label: "Descargar",
+            icon: (
+                <Badge variant="pdf">
+                    PDF
+                </Badge>),
             onClick: (row: Quotation) =>
             {
                 downloadPdf(row.id!);
@@ -134,16 +141,6 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
             disabled: (row: Quotation) => !row.isActive,
         },
     ];
-
-    // Acciones de la barra de herramientas
-    const toolbarActions = (
-        <Link href="/cotizaciones/nuevo">
-            <Button>
-                <Plus />
-                Crear cotización
-            </Button>
-        </Link>
-    );
 
     // Función para filtrar por estado
     const filterByStatus = (data: Array<Quotation>, status: string) =>
@@ -170,6 +167,16 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
         if (state === "rechazado") return data.filter((quotation) => quotation.status === "Rejected");
         return data;
     };
+
+    // Acciones de la barra de herramientas
+    const toolbarActions = (
+        <Link href="/cotizaciones/nuevo">
+            <Button>
+                <Plus />
+                Crear cotización
+            </Button>
+        </Link>
+    );
 
     return (
         <>
@@ -208,7 +215,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                 igvFilter={filterByIgv}
                 stateFilter={filterByState}
                 searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status","hasTaxes"]}
-                dateRangeField={null} // No usamos filtro de fechas para clientes
+                dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
                 onRowClick={(row) =>
                 {

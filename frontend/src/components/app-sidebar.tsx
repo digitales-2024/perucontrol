@@ -75,11 +75,11 @@ const data = {
                 },
                 {
                     title: "Fichas de operacion",
-                    url: "#",
+                    url: "/projects/ver/ficha",
                 },
                 {
                     title: "Certificados",
-                    url: "#",
+                    url: "/projects/ver/certificado",
                 },
                 {
                     title: "Cronograma anual",
