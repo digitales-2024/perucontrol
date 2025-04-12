@@ -55,6 +55,35 @@ public class AppointmentController(
         );
     }
 
+    [EndpointSummary("Get all appointments")]
+    [HttpGet("all")]
+    [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<AppointmentGetDTO2>>> GetAllAppointments()
+    {
+        var appointments = await db.Appointments
+            .Include(a => a.Services)
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Client)
+            .ToListAsync();
+
+        var result = appointments.Select(a => new AppointmentGetDTO2
+        {
+            Id = a.Id,
+            IsActive = a.IsActive,
+            CreatedAt = a.CreatedAt,
+            ModifiedAt = a.ModifiedAt,
+            AppointmentNumber = a.AppointmentNumber,
+            CertificateNumber = a.CertificateNumber,
+            DueDate = a.DueDate,
+            ActualDate = a.ActualDate ?? DateTime.MinValue,
+            Services = a.Services,
+            Project = a.Project,
+            Client = a.Project.Client,
+        });
+
+        return Ok(result);
+    }
+
     private (byte[], string) OperationSheetSpreadsheetTemplate(Guid id)
     {
         var appointment = db
@@ -347,5 +376,35 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Get all certificates")]
+    [HttpGet("allCertificates")]
+    [ProducesResponseType<IEnumerable<CertificateGet>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<CertificateGet>>> GetAllCertificates()
+    {
+        var certificates = await db.Certificates
+        .Include(c => c.ProjectAppointment)
+            .ThenInclude(pa => pa.Services) // Incluye los servicios directamente del ProjectAppointment
+        .Include(c => c.ProjectAppointment)
+            .ThenInclude(pa => pa.Project)
+                .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
+        .ToListAsync();
+
+        var result = certificates.Select(a => new CertificateGet
+        {
+            Id = a.Id,
+            IsActive = a.IsActive,
+            CreatedAt = a.CreatedAt,
+            ModifiedAt = a.ModifiedAt,
+            ProjectAppointment = a.ProjectAppointment,
+            ProjectAppointmentId = a.ProjectAppointmentId,
+            ExpirationDate = a.ExpirationDate ?? DateTime.MinValue,
+            Project = a.ProjectAppointment.Project,
+            Client = a.ProjectAppointment.Project.Client,
+            Services = a.ProjectAppointment.Services
+        });
+
+        return Ok(result);
     }
 }

@@ -21,12 +21,12 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck, ArrowLeft } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { addDays, format, parse } from "date-fns";
 import { components, paths } from "@/types/api";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -53,11 +53,16 @@ export function CreateQuotation({ terms, clients, services }: {
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
 
+    const router = useRouter();
+
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.name ?? "-",
+            label:
+                client.name !== "" && client.name !== "-"
+                    ? client.name
+                    : client.razonSocial ?? "-",
         })) ?? [];
 
     const form = useForm<CreateQuotationSchema>({
@@ -165,9 +170,17 @@ export function CreateQuotation({ terms, clients, services }: {
         }
     };
 
-    return (
-        <div>
+    const handleGoBack = () =>
+    {
+        router.back();
+    };
 
+    return (
+        <div className="mt-5">
+            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Volver
+            </Button>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <div className="mx-4 grid gap-3">
@@ -244,7 +257,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             Datos de la cotización
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="creationDate"
@@ -324,7 +337,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             name="serviceIds"
                             render={({ field }) => (
                                 <FormItem>
-                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                                         {services.map((service) =>
                                         {
                                             const isSelected = field.value?.includes(service.id!);
@@ -413,7 +426,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             )}
                         />
 
-                        <div className="grid grid-cols-2 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                             {/* Área m2 */}
                             <FormField
                                 control={form.control}

@@ -1,9 +1,15 @@
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeruControl.Model;
 
 public class ProjectAppointment : BaseModel
 {
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int AppointmentNumber { get; set; }
+
     [JsonIgnore]
     public Project Project { get; set; } = null!;
 
@@ -25,7 +31,7 @@ public class ProjectAppointment : BaseModel
 
     /// Services performed on this appointment
     [JsonIgnore]
-    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();    
 
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;

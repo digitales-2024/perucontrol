@@ -39,7 +39,10 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.contactName !== null && client.contactName !== "-" && client.contactName !== "" ? client.contactName ?? "" : client.name ?? "-",
+            label:
+                client.name !== "" && client.name !== "-"
+                    ? client.name
+                    : client.razonSocial ?? "-",
         })) ?? [];
 
     const quotationsOptions: Array<Option> =

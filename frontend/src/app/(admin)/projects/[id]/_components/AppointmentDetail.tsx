@@ -92,12 +92,13 @@ export function AppointmentDetail({
                             {dueDateStr}
                             <span className={"ml-2 inline-block h-2 w-2 rounded-full "} />
                         </div>
-                        <ChevronDown className="transition-transform chevron" />
+                        <ChevronDown className="transition-transform chevron hidden md:inline" />
                     </button>
                 </AccordionTriggerAsChild>
                 <AccordionContent>
 
-                    <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4">
+                    {/* <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4"> */}
+                    <div className="my-2 grid grid-cols-[2rem_1fr] md:grid-cols-[2rem_1fr_7rem] items-start md:items-center gap-2 md:gap-4">
                         <div className="text-center">
                             <ListChecks className={"inline-block"} />
                         </div>
@@ -105,20 +106,30 @@ export function AppointmentDetail({
                             <p className="text-xs text-zinc-700">
                                 Servicios a realizar
                             </p>
-                            <p className="text-lg">
+                            {/* <p className="text-lg">
                                 {appointment.servicesIds.map((id) => (
                                     <Badge key={id} variant="outline" className="text-xs bg-blue-50">
                                         {servicesMap.get(id) ?? "-"}
                                     </Badge>
                                 ))}
-                            </p>
+                            </p> */}
+                            <div className="text-lg flex flex-wrap">
+                                {appointment.servicesIds.map((id) => (
+                                    <Badge key={id} variant="outline" className="text-xs bg-blue-50 mr-1 mb-1">
+                                        {servicesMap.get(id) ?? "-"}
+                                    </Badge>
+                                ))}
+                            </div>
                         </div>
-                        <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
-                            <Pencil />
-                            Editar
-                        </Button>
+                        <div className="col-span-2 md:col-span-1 mt-2 md:mt-0 pl-8 md:pl-0">
+                            <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
+                                <Pencil />
+                                Editar
+                            </Button>
+                        </div>
                     </div>
-                    <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4">
+                    {/* <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4"> */}
+                    <div className="my-2 grid grid-cols-[2rem_1fr] md:grid-cols-[2rem_1fr_7rem] items-start md:items-center gap-2 md:gap-4">
                         <div className="text-center">
                             <Flag className={"inline-block"} />
                         </div>
@@ -135,12 +146,15 @@ export function AppointmentDetail({
                                 })}
                             </p>
                         </div>
-                        <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
-                            <Pencil />
-                            Editar
-                        </Button>
+                        <div className="col-span-2 md:col-span-1 mt-2 md:mt-0 pl-8 md:pl-0">
+                            <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
+                                <Pencil />
+                                Editar
+                            </Button>
+                        </div>
                     </div>
-                    <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4">
+                    {/* <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4"> */}
+                    <div className="my-2 grid grid-cols-[2rem_1fr] md:grid-cols-[2rem_1fr_7rem] items-start md:items-center gap-2 md:gap-4">
                         <div className="text-center">
                             {AppointmentIcon(appointment.dueDate, appointment.actualDate ?? undefined)}
                         </div>
@@ -167,25 +181,28 @@ export function AppointmentDetail({
                                 )}
                             </p>
                         </div>
-                        <Button variant="outline" onClick={() => setActualDueDateOpen(true)}>
-                            {deliveryDate === null ? (
-                                <>
-                                    <CheckIcon />
-                                    Completar
-                                </>
-                            ) : (
-                                <>
-                                    <Pencil />
-                                    Editar
-                                </>
-                            )}
-                        </Button>
+                        <div className="col-span-2 md:col-span-1 mt-2 md:mt-0 pl-8 md:pl-0">
+                            <Button variant="outline" onClick={() => setActualDueDateOpen(true)}>
+                                {deliveryDate === null ? (
+                                    <>
+                                        <CheckIcon />
+                                        Completar
+                                    </>
+                                ) : (
+                                    <>
+                                        <Pencil />
+                                        Editar
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     </div>
 
-                    <div className="flex justify-end gap-2">
+                    {/* <div className="flex justify-end gap-2"> */}
+                    <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
                         <Link href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}>
                             <Button
-                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
                                 disabled={deliveryDate === null}
                                 title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
                             >
@@ -195,7 +212,7 @@ export function AppointmentDetail({
                         </Link>
                         <Link href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}>
                             <Button
-                                className="disabled:cursor-not-allowed disabled:opacity-50"
+                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
                                 disabled={deliveryDate === null}
                                 title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
                             >
@@ -206,6 +223,7 @@ export function AppointmentDetail({
                         <Button
                             onClick={() => setDeactivateOpen(true)}
                             variant="destructive"
+                            className="text-xs md:text-sm"
                         >
                             Eliminar
                         </Button>

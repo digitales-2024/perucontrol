@@ -24,7 +24,6 @@ import {
     XCircle,
 } from "lucide-react";
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
-import { DeleteProject } from "../../_components/DeleteProject";
 import { Label } from "@/components/ui/label";
 import DatePicker from "@/components/ui/date-time-picker";
 import { toast } from "sonner";
@@ -41,7 +40,7 @@ export function ProjectDetails({ project, projectId }: {
 {
     const router = useRouter();
     const [showClientDetails, setShowClientDetails] = useState(false);
-    const [showDeleteProject, setShowDeleteProject] = useState(false);
+    // const [showDeleteProject, setShowDeleteProject] = useState(false);
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [isDesactiveDialogOpen, setIsDesactiveDialogOpen] = useState(false);
     const [deletingAppointmentId, setDeletingAppointmentId] = useState<string | null>(null);
@@ -253,7 +252,7 @@ export function ProjectDetails({ project, projectId }: {
     }, [project]);
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 space-y-6">
             <div className="flex flex-col space-y-6">
                 {/* Cabecera con botón de regreso */}
                 <div className="flex items-center justify-between">
@@ -280,8 +279,8 @@ export function ProjectDetails({ project, projectId }: {
                     <CardHeader className="pb-2">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <div className="flex items-center gap-4">
-                                    <CardTitle className="text-2xl">
+                                <div className="flex flex-wrap items-center gap-4">
+                                    <CardTitle className="text-xl md:text-2xl">
                                         Servicio #
                                         {" "}
                                         {project.projectNumber}
@@ -309,18 +308,18 @@ export function ProjectDetails({ project, projectId }: {
                     <CardContent>
                         {/* Información del cliente */}
                         <div className="space-y-2 mt-4">
-                            <h3 className="text-lg font-medium flex items-center gap-2">
+                            <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                                 <User className="h-5 w-5 text-blue-500" />
                                 Información del Cliente
                             </h3>
                             <Separator />
                             <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
-                                <div className="flex justify-between items-start">
+                                <div className="flex flex-wrap justify-between items-start">
                                     <div>
-                                        <h4 className="font-medium text-base">
+                                        <h4 className="font-medium text-xs md:text-base">
                                             {project.client?.name === "-" ? project.client?.razonSocial : project.client?.name}
                                         </h4>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-xs md:text-sm text-muted-foreground">
                                             {project.client?.typeDocument.toUpperCase()}
                                             :
                                             {project.client?.typeDocumentValue}
@@ -340,7 +339,7 @@ export function ProjectDetails({ project, projectId }: {
 
                         {/* Información del servicio */}
                         <div className="space-y-2 mt-4">
-                            <h3 className="text-lg font-medium flex items-center gap-2">
+                            <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                                 <Shield className="h-5 w-5 text-blue-500" />
                                 Detalles del Servicio
                             </h3>
@@ -355,7 +354,7 @@ export function ProjectDetails({ project, projectId }: {
                                             project.services.map((service) => (
                                                 <div key={service.id} className="flex items-center gap-2">
                                                     <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                                    <span>
+                                                    <span className="text-xs md:text-base">
                                                         {service.name}
                                                     </span>
                                                 </div>
@@ -374,7 +373,7 @@ export function ProjectDetails({ project, projectId }: {
                                     </h4>
                                     <div className="flex items-start gap-2">
                                         <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
-                                        <span>
+                                        <span className="text-xs md:text-base">
                                             {project.address || "Dirección no disponible"}
                                         </span>
                                     </div>
@@ -389,7 +388,7 @@ export function ProjectDetails({ project, projectId }: {
                                             <p className="text-sm text-muted-foreground">
                                                 Área
                                             </p>
-                                            <p className="font-medium">
+                                            <p className="text-sm md:text-base font-medium">
                                                 {project.area}
                                                 {" "}
                                                 m²
@@ -399,7 +398,7 @@ export function ProjectDetails({ project, projectId }: {
                                             <p className="text-sm text-muted-foreground">
                                                 Ambientes
                                             </p>
-                                            <p className="font-medium">
+                                            <p className="text-sm md:text-base font-medium">
                                                 {project.spacesCount}
                                             </p>
                                         </div>
@@ -412,7 +411,7 @@ export function ProjectDetails({ project, projectId }: {
                                     </h4>
                                     <div className="flex items-center gap-2">
                                         <Calendar className="h-4 w-4 text-blue-500" />
-                                        <span>
+                                        <span className="text-xs md:text-base">
                                             {project.quotation?.frequency === "Bimonthly"
                                                 ? "Bimestral"
                                                 : project.quotation?.frequency === "Quarterly"
@@ -429,15 +428,15 @@ export function ProjectDetails({ project, projectId }: {
                         {/* Información de la cotización */}
                         {project.quotation && (
                             <div className="space-y-2">
-                                <h3 className="text-lg font-medium flex items-center gap-2">
+                                <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                                     <FileSpreadsheet className="h-5 w-5 text-blue-500" />
                                     Cotización Relacionada
                                 </h3>
                                 <Separator />
                                 <div className="bg-gray-50 p-4 rounded-lg">
-                                    <div className="flex justify-between items-start">
+                                    <div className="flex flex-wrap gap-2 justify-between items-start">
                                         <div>
-                                            <h4 className="font-medium">
+                                            <h4 className="font-medium text-base md:text-xl">
                                                 Cotización #
                                                 {project.quotation.quotationNumber}
                                             </h4>
@@ -446,7 +445,7 @@ export function ProjectDetails({ project, projectId }: {
                                                     <p className="text-sm text-muted-foreground">
                                                         Fecha de creación
                                                     </p>
-                                                    <p className="text-sm">
+                                                    <p className="text-xs">
                                                         {formatDate(project.quotation.creationDate)}
                                                     </p>
                                                 </div>
@@ -454,13 +453,13 @@ export function ProjectDetails({ project, projectId }: {
                                                     <p className="text-sm text-muted-foreground">
                                                         Fecha de expiración
                                                     </p>
-                                                    <p className="text-sm">
+                                                    <p className="text-xs">
                                                         {formatDate(project.quotation.expirationDate)}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center">
+                                        <div className="flex gap-2 items-center">
                                             {getStatusIcon(project.quotation.status)}
                                             {getStatusBadge(project.quotation.status)}
                                         </div>
@@ -473,7 +472,7 @@ export function ProjectDetails({ project, projectId }: {
 
                         <div className="space-y-4">
 
-                            <h3 className="text-lg font-medium flex items-center gap-2">
+                            <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
                                 <Calendar className="h-5 w-5 text-blue-500" />
                                 Cronograma de Servicios
                             </h3>
@@ -537,13 +536,6 @@ export function ProjectDetails({ project, projectId }: {
                     showTrigger={false}
                 />
             )}
-
-            <DeleteProject
-                open={showDeleteProject}
-                onOpenChange={setShowDeleteProject}
-                project={project}
-                showTrigger={false}
-            />
 
             <EditAppointmentDialog
                 isOpen={isEditDialogOpen}

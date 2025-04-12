@@ -45,6 +45,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Appointment/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all appointments */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                        "application/json": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                        "text/json": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Appointment/{id}/gen-operations-sheet/excel": {
         parameters: {
             query?: never;
@@ -465,6 +503,44 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/allCertificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all certificates */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["CertificateGet"]>;
+                        "application/json": Array<components["schemas"]["CertificateGet"]>;
+                        "text/json": Array<components["schemas"]["CertificateGet"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1417,6 +1493,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/{id}/v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one by Id v3 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectSummarySingle2"];
+                        "application/json": components["schemas"]["ProjectSummarySingle2"];
+                        "text/json": components["schemas"]["ProjectSummarySingle2"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Project/{id}/desactivate": {
         parameters: {
             query?: never;
@@ -1535,7 +1662,7 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Deactivate Appointment
+         * Desactivate Appointment
          * @description Deactivates an appointment from a project
          */
         delete: {
@@ -3250,6 +3377,26 @@ export interface components {
             /** Format: date-time */
             modifiedAt: string;
         };
+        AppointmentGetDTO2: {
+            /** Format: int32 */
+            appointmentNumber?: number;
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: date-time */
+            actualDate?: string;
+            services?: Array<components["schemas"]["Service"]>;
+            project?: components["schemas"]["Project"];
+            client?: components["schemas"]["Client"];
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         AppointmentPatchDTO: {
             /** Format: int32 */
             orderNumber?: number | null;
@@ -3295,6 +3442,23 @@ export interface components {
             projectAppointmentId: string;
             /** Format: date-time */
             expirationDate?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        CertificateGet: {
+            projectAppointment?: components["schemas"]["ProjectAppointment"];
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            expirationDate?: string;
+            project?: components["schemas"]["Project"];
+            client?: components["schemas"]["Client"];
+            services?: Array<components["schemas"]["Service"]>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3461,6 +3625,23 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectAppointment: {
+            /** Format: int32 */
+            appointmentNumber: number;
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            /** Format: date-time */
+            dueDate: string;
+            /** Format: date-time */
+            actualDate?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -3684,6 +3865,29 @@ export interface components {
             /** Format: double */
             price: number;
             appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectSummarySingle2: {
+            client: components["schemas"]["Client"];
+            services: Array<components["schemas"]["Service"]>;
+            quotation?: components["schemas"]["Quotation2"];
+            /** Format: int32 */
+            projectNumber: number;
+            address: string;
+            /** Format: uint32 */
+            area: number;
+            status: components["schemas"]["ProjectStatus"];
+            /** Format: uint32 */
+            spacesCount: number;
+            /** Format: double */
+            price: number;
+            appointments: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
