@@ -407,7 +407,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Appointment/{id}/certificate/excel": {
+    "/api/Appointment/{id}/certificate/word": {
         parameters: {
             query?: never;
             header?: never;
@@ -416,7 +416,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Certificate excel */
+        /** Generate Certificate word */
         post: {
             parameters: {
                 query?: never;
@@ -467,7 +467,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Certificate PDF */
+        /**
+         * Generate Certificate PDF
+         * @description Generates the Certificate in PDF format for an Appointment. The id parameter is the Appointment ID.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -3658,6 +3661,7 @@ export interface components {
             /** Format: date-time */
             actualDate?: string | null;
             servicesIds: Array<string>;
+            projectOperationSheet: components["schemas"]["ProjectOperationSheet"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;

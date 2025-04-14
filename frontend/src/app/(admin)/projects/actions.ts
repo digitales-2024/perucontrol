@@ -337,6 +337,8 @@ export async function GenerateCertificateExcel(id: string): Promise<Result<Blob,
 
 export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
 {
+    console.log("cert id:");
+    console.log(id);
     return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
 }
 

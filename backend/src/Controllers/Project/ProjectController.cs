@@ -143,6 +143,8 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .Include(p => p.Quotation)
             .Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.ProjectOperationSheet)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -166,10 +168,14 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             Appointments = project
                 .Appointments.Select(a => new ProjectAppointmentDTO
                 {
+                    Id = a.Id,
+                    CreatedAt = a.CreatedAt,
+                    ModifiedAt = a.ModifiedAt,
                     CertificateNumber = a.CertificateNumber,
                     DueDate = a.DueDate,
                     ActualDate = a.ActualDate,
                     ServicesIds = a.Services.Select(s => s.Id).ToList(),
+                    ProjectOperationSheet = a.ProjectOperationSheet,
                 })
                 .ToList(),
         };
@@ -189,6 +195,8 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
             .Include(p => p.Quotation)
             .Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.ProjectOperationSheet)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -220,6 +228,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
                     DueDate = a.DueDate,
                     ActualDate = a.ActualDate,
                     ServicesIds = a.Services.Select(s => s.Id).ToList(),
+                    ProjectOperationSheet = a.ProjectOperationSheet,
                 })
                 .ToList(),
             CreatedAt = project.CreatedAt,
