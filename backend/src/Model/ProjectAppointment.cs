@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
@@ -23,6 +23,10 @@ public class ProjectAppointment : BaseModel
     [JsonIgnore]
     public ProjectOperationSheet ProjectOperationSheet { get; set; } = null!;
 
+    /// All the data linked to the appointment.
+    [JsonIgnore]
+    public RodentRegister RodentRegister { get; set; } = null!;
+
     /// The date by which the appointment should be performed
     public required DateTime DueDate { get; set; }
 
@@ -31,7 +35,7 @@ public class ProjectAppointment : BaseModel
 
     /// Services performed on this appointment
     [JsonIgnore]
-    public ICollection<Service> Services { get; set; } = new HashSet<Service>();    
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;

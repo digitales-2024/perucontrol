@@ -100,8 +100,7 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync();
 
         logger.LogInformation(
-            "Seeded initial Certificate Number at ",
-            defaultOrderNombre.ProjectOrderNumberValue
+            "Seeded initial Certificate Number at " + defaultOrderNombre.ProjectOrderNumberValue
         );
     }
 

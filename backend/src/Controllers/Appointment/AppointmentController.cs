@@ -60,8 +60,8 @@ public class AppointmentController(
     [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AppointmentGetDTO2>>> GetAllAppointments()
     {
-        var appointments = await db.Appointments
-            .Include(a => a.Services)
+        var appointments = await db
+            .Appointments.Include(a => a.Services)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -383,13 +383,13 @@ public class AppointmentController(
     [ProducesResponseType<IEnumerable<CertificateGet>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CertificateGet>>> GetAllCertificates()
     {
-        var certificates = await db.Certificates
-        .Include(c => c.ProjectAppointment)
+        var certificates = await db
+            .Certificates.Include(c => c.ProjectAppointment)
             .ThenInclude(pa => pa.Services) // Incluye los servicios directamente del ProjectAppointment
-        .Include(c => c.ProjectAppointment)
+            .Include(c => c.ProjectAppointment)
             .ThenInclude(pa => pa.Project)
-                .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
-        .ToListAsync();
+            .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
+            .ToListAsync();
 
         var result = certificates.Select(a => new CertificateGet
         {
@@ -402,7 +402,7 @@ public class AppointmentController(
             ExpirationDate = a.ExpirationDate ?? DateTime.MinValue,
             Project = a.ProjectAppointment.Project,
             Client = a.ProjectAppointment.Project.Client,
-            Services = a.ProjectAppointment.Services
+            Services = a.ProjectAppointment.Services,
         });
 
         return Ok(result);
