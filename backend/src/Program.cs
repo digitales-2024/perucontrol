@@ -145,6 +145,7 @@ using (var scope = app.Services.CreateScope())
     await DatabaseSeeder.SeedDefaultUserAsync(app.Services, logger);
     await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
     await DatabaseSeeder.SeedBusiness(app.Services, logger);
+    await DatabaseSeeder.SeedDefaultCertificateNumber(app.Services, logger);
 
     // Apply more seeds when not in prod or staging
     if (!app.Environment.IsProduction() && !app.Environment.IsStaging())

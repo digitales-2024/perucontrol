@@ -220,15 +220,15 @@ export async function EditAppointment(
         },
     }));
 
-    // Revalidar la página para obtener los datos actualizados
-    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
-
     if (error)
     {
         console.error("Error updating appointment project:", error);
         console.error(projId, appId);
         return err(error);
     }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
 
     return ok(null);
 }
