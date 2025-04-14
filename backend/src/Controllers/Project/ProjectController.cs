@@ -220,6 +220,45 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         return Ok(projectSummary);
     }
 
+    [EndpointSummary("Get one by Id v3")]
+    [HttpGet("/{id}/v3")]
+    [ProducesResponseType<ProjectSummarySingle2>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Project>> GetById3(Guid id)
+    {
+        var project = await _context
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Services)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var projectSummary = new ProjectSummarySingle2
+        {
+            Id = project.Id,
+            Client = project.Client,
+            Services = project.Services,
+            ProjectNumber = project.ProjectNumber,
+            Status = project.Status,
+            SpacesCount = project.SpacesCount,
+            Area = project.Area,
+            Address = project.Address,
+            Quotation = project.Quotation,
+            IsActive = project.IsActive,
+            Price = project.Price,
+            Appointments = project.Appointments.Select(a => a.DueDate).ToList(),
+            CreatedAt = project.CreatedAt,
+        };
+
+        return Ok(projectSummary);
+    }
+
     [EndpointSummary("Update project")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -418,7 +457,7 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         return Ok();
     }
 
-    [EndpointSummary("Deactivate Appointment")]
+    [EndpointSummary("Desactivate Appointment")]
     [EndpointDescription("Deactivates an appointment from a project")]
     [HttpDelete("{proj_id}/appointment/{app_id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

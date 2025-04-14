@@ -23,3 +23,14 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
             entity.ActualDate = ActualDate;
     }
 }
+
+public class AppointmentGetDTO2: PeruControl.Model.BaseModel
+{
+  public int AppointmentNumber { get; set; }
+  public int? CertificateNumber { get; set; }
+  public DateTime DueDate { get; set; }
+  public DateTime ActualDate { get; set; }
+  public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+  public virtual Project Project { get; set; } = null!;
+  public virtual Client Client { get; set; } = null!;
+  }

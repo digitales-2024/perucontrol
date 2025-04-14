@@ -117,12 +117,12 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                 <CardHeader className="pb-2">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <div className="flex items-center gap-2">
-                                <CardTitle className="text-2xl">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <CardTitle className="text-xl md:text-2xl">
                                     Cotización #
                                     {quotation.quotationNumber || "Sin número"}
                                 </CardTitle>
-                                <div className="flex items-center">
+                                <div className="flex items-center gap-2">
                                     {getStatusIcon(quotation.status)}
                                     {getStatusBadge(quotation.status)}
                                 </div>
@@ -148,19 +148,19 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                 <CardContent>
                     {/* Información del cliente */}
-                    <div className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                    <div className="space-y-2 mt-4">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                             <User className="h-5 w-5 text-blue-500" />
                             Información del Cliente
                         </h3>
                         <Separator />
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <div className="flex justify-between items-start">
+                            <div className="flex flex-wrap justify-between items-start">
                                 <div>
-                                    <h4 className="font-medium text-base">
+                                    <h4 className="font-medium text-xs md:text-base">
                                         {quotation.client?.name === "-" ? quotation.client?.razonSocial : quotation.client?.name}
                                     </h4>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-xs md:text-sm text-muted-foreground">
                                         {quotation.client?.typeDocument.toUpperCase()}
                                         :
                                         {quotation.client?.typeDocumentValue}
@@ -180,7 +180,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                     {/* Información de fechas y estado */}
                     <div className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                             <Calendar className="h-5 w-5 text-blue-500" />
                             Fechas y Estado
                         </h3>
@@ -192,7 +192,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <Clock className="h-4 w-4 text-blue-500" />
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {formatDate(quotation.creationDate)}
                                     </span>
                                 </div>
@@ -204,7 +204,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-blue-500" />
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {formatDate(quotation.expirationDate)}
                                     </span>
                                 </div>
@@ -216,7 +216,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     {getStatusIcon(quotation.status)}
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {getStatusBadge(quotation.status)}
                                     </span>
                                 </div>
@@ -226,7 +226,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                     {/* Información de pago */}
                     <div className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                             <DollarSign className="h-5 w-5 text-blue-500" />
                             Información de Pago
                         </h3>
@@ -236,7 +236,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                     Precio
                                 </h4>
-                                <p className="text-lg font-semibold">
+                                <p className="text-base md:text-lg font-semibold">
                                     S/
                                     {quotation.price.toFixed(2)}
                                 </p>
@@ -248,7 +248,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <CreditCard className="h-4 w-4 text-blue-500" />
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {quotation.paymentMethod || "No especificado"}
                                     </span>
                                 </div>
@@ -270,7 +270,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     ) : (
                                         <X className="h-5 w-5 text-red-500 mr-1" />
                                     )}
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {quotation.hasTaxes ? "Incluido" : "No incluido"}
                                     </span>
                                 </div>
@@ -280,7 +280,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                     {/* Información del servicio */}
                     <div className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                             <Shield className="h-5 w-5 text-blue-500" />
                             Detalles del Servicio
                         </h3>
@@ -295,7 +295,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         quotation.services.map((service) => (
                                             <div key={service.id} className="flex items-center gap-2">
                                                 <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                                <span>
+                                                <span className="text-xs md:text-base">
                                                     {service.name}
                                                 </span>
                                             </div>
@@ -314,7 +314,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-start gap-2">
                                     <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {quotation.serviceAddress || "Dirección no disponible"}
                                     </span>
                                 </div>
@@ -329,7 +329,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         <p className="text-sm text-muted-foreground">
                                             Área
                                         </p>
-                                        <p className="font-medium">
+                                        <p className="text-base font-medium">
                                             {quotation.area}
                                             {" "}
                                             m²
@@ -339,7 +339,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         <p className="text-sm text-muted-foreground">
                                             Ambientes
                                         </p>
-                                        <p className="font-medium">
+                                        <p className="text-base font-medium">
                                             {quotation.spacesCount}
                                         </p>
                                     </div>
@@ -352,7 +352,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-blue-500" />
-                                    <span>
+                                    <span className="text-xs md:text-base">
                                         {quotation.frequency === "Bimonthly"
                                             ? "Bimestral"
                                             : quotation.frequency === "Quarterly"
@@ -372,7 +372,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                     {/* Descripción y detalles */}
                     <div className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                             <FileText className="h-5 w-5 text-blue-500" />
                             Descripción y Detalles
                         </h3>
@@ -383,7 +383,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Descripción del Servicio
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.serviceDescription}
                                     </p>
                                 </div>
@@ -394,7 +394,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Detalle del Servicio
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.serviceDetail}
                                     </p>
                                 </div>
@@ -405,7 +405,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Áreas Tratadas
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.treatedAreas}
                                     </p>
                                 </div>
@@ -416,7 +416,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Entregables
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.deliverables}
                                     </p>
                                 </div>
@@ -427,7 +427,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Disponibilidad Requerida
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.requiredAvailability}
                                     </p>
                                 </div>
@@ -438,7 +438,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                         Tiempo de Servicio
                                     </h4>
-                                    <p>
+                                    <p className="text-sm md:text-base">
                                         {quotation.serviceTime}
                                     </p>
                                 </div>

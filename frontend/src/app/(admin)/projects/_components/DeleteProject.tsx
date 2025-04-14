@@ -12,12 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { RemoveProject } from "../actions";
 import { toastWrapper } from "@/types/toasts";
-import { Project } from "../types";
+import { ProjectSummary } from "./ProjectsDataTable";
 
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    project: Project,
+    project: ProjectSummary,
     showTrigger?: boolean;
 }
 
