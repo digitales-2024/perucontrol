@@ -159,7 +159,7 @@ export async function DownloadFile(
 
             return err({
                 statusCode: response.status,
-                message: "Error generando documento",
+                message: body ?? "Error generando documento",
                 error: null,
             });
         }

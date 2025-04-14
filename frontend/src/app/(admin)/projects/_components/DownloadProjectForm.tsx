@@ -51,6 +51,7 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
+    const operationSheet = appointment.projectOperationSheet;
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
@@ -62,7 +63,7 @@ export function DownloadProjectForm({
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
             businessType: client.businessType ?? "",
-            treatedAreas: "",
+            treatedAreas: operationSheet.treatedAreas,
             service: serviceNames,
             certificateNumber: "",
             insects: "",
