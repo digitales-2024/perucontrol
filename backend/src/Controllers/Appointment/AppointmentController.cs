@@ -15,7 +15,8 @@ namespace PeruControl.Controllers;
 public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
-    PDFConverterService pDFConverterService
+    PDFConverterService pDFConverterService,
+    SvgTemplateService svgTemplateService
 ) : ControllerBase
 {
     /// <summary>
@@ -345,21 +346,17 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateCertificatePdf(Guid id)
     {
-        using var ms = new MemoryStream();
-
-        using (
-            var fs = new FileStream(
-                "Templates/certificado_plantilla.svg",
-                FileMode.Open,
-                FileAccess.Read
-            )
-        )
+        var placeholders = new Dictionary<string, string>
         {
-            fs.CopyTo(ms);
-        }
-        ms.Position = 0;
+            {"UBICADO", "--"}
+        };
 
-        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "svg");
+        var svgBytes = svgTemplateService.GenerateSvgFromTemplate(
+            placeholders,
+            "Templates/certificado_plantilla.svg"
+        );
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(svgBytes.ToArray(), "svg");
 
         if (errorStr != "")
         {

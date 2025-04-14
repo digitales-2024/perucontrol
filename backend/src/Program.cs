@@ -109,6 +109,7 @@ builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
 builder.Services.AddScoped<PDFConverterService>();
+builder.Services.AddScoped<SvgTemplateService>();
 builder.Services.AddScoped<ServiceCacheProvider>();
 
 var app = builder.Build();
