@@ -226,6 +226,7 @@ export async function EditAppointment(
     if (error)
     {
         console.error("Error updating appointment project:", error);
+        console.error(projId, appId);
         return err(error);
     }
 
@@ -262,7 +263,7 @@ export async function DesactivateAppointment(
 }
 
 export async function SaveCertificateData(
-    id:  string,
+    id: string,
     body: components["schemas"]["Certificate"],
 ): Promise<Result<null, FetchError>>
 {
