@@ -21,16 +21,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 type AppointmentWithServices = {
-  dueDate: string;
-  services: Array<string>;
+    dueDate: string;
+    services: Array<string>;
 };
 
 type FrequencyType = "Bimonthly" | "Quarterly" | "Semiannual" | "Monthly" | "Fortnightly"
 
 export function ServiceDates({ services }:
-  {
-    services: Array<components["schemas"]["Service"]>
-  })
+    {
+        services: Array<components["schemas"]["Service"]>
+    })
 {
     const { setValue, watch } = useFormContext();
     const appointments: Array<AppointmentWithServices> = watch("appointments") ?? []; // Ahora será un array de objetos AppointmentWithServices
@@ -116,7 +116,7 @@ export function ServiceDates({ services }:
         }
 
         const generatedDates = generateDates(serviceDate, frequency as FrequencyType);
-        setValue("appointments", [...appointments ,...generatedDates]);
+        setValue("appointments", [...appointments, ...generatedDates]);
         setSelectedServiceIds([]); // Limpiar los servicios seleccionados después de programar
         toast.success("Fechas generadas correctamente");
     };
@@ -228,7 +228,7 @@ export function ServiceDates({ services }:
     const EditDateDialog = () =>
     {
         const initialDate =
-    editingIndex !== null && appointments[editingIndex] ? new Date(appointments[editingIndex].dueDate) : undefined;
+            editingIndex !== null && appointments[editingIndex] ? new Date(appointments[editingIndex].dueDate) : undefined;
         const [tempDate, setTempDate] = useState<Date | undefined>(initialDate);
 
         const dialogContent = (
@@ -486,7 +486,7 @@ export function ServiceDates({ services }:
                             Fechas programadas
                         </Label>
                         <Card className="border border-gray-200">
-                            <ScrollArea className={isMobile ? "h-[250px]" : "h-[300px]"}>
+                            <ScrollArea className={isMobile ? "h-[15rem]" : "h-[40rem]"}>
                                 <div className="p-2">
                                     {appointments.length === 0 ? (
                                         <p className="text-center text-muted-foreground py-4">

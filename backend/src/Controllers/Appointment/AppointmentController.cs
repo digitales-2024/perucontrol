@@ -323,11 +323,11 @@ public class AppointmentController(
         return Ok(appointment.Certificate);
     }
 
-    [EndpointSummary("Generate Certificate excel")]
-    [HttpPost("{id}/certificate/excel")]
+    [EndpointSummary("Generate Certificate word")]
+    [HttpPost("{id}/certificate/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificateExcel(Guid id)
+    public IActionResult GenerateCertificateWord(Guid id)
     {
         // FIXME: use a different template
         var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
@@ -336,11 +336,7 @@ public class AppointmentController(
             return BadRequest(err);
         }
 
-        return File(
-            fileBytes,
-            "application/vnd.oasis.opendocument.spreadsheet",
-            "ficha_operaciones.ods"
-        );
+        return File(fileBytes, "application/vnd.oasis.opendocument.text", "ficha_operaciones.odt");
     }
 
     [EndpointSummary("Generate Certificate PDF")]
