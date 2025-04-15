@@ -4,8 +4,6 @@ import { components } from "@/types/api";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { ACCESS_TOKEN_KEY } from "@/variables";
 
 export async function CreateProject(body: components["schemas"]["ProjectCreateDTO"]): Promise<Result<null, FetchError>>
 {
