@@ -407,4 +407,83 @@ public class AppointmentController(
 
         return Ok(result);
     }
+
+    private (byte[], string) CertificateTemplate(Guid id)
+    {
+        var appointment = db
+            .Appointments.Include(a => a.Project)
+            .ThenInclude(p => p.Client)
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Services)
+            .Include(a => a.ProjectOperationSheet)
+            .Include(a => a.Certificate)
+            .FirstOrDefault(a => a.Id == id);
+        if (appointment == null)
+            return (new byte[0], "Evento no encontrado.");
+
+        var business = db.Businesses.FirstOrDefault();
+        if (business == null)
+            return (new byte[0], "Datos de la empresa no encontrados.");
+
+        var project = appointment.Project;
+        var sheet = appointment.ProjectOperationSheet;
+        var client = project.Client;
+        var certificate = appointment.Certificate;
+
+        if (certificate == null || project == null || sheet == null || client == null)
+        {
+            return (
+                new byte[0],
+                $"Certificado no encontrado (${id}). Actualize la página."
+            );
+        }
+
+        var serviceNames = project.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+
+        var (c_f, c_dt, c_dr, c_df, c_te, c_tc ) = certificate.ProjectAppointment.Services?.ToCheckbox() ?? ("", "", "", "", "", "");
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{client_name}", client.Name },
+            { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
+            { "{razon_social}", client.RazonSocial ?? "-" },
+            { "{client_address}", project.Address },
+            { "{client_bysiness_type}", client.BusinessType ?? "" },
+            { "{client_area}", sheet.TreatedAreas },
+            { "{servicios}", serviceNamesStr },
+            { "{fumigacion}", c_f },
+            { "{desinsectacion}", c_dt },
+            { "{desratizacion}", c_dr },
+            { "{desinfeccion}", c_df },
+            { "{tanques_elevados}", c_te },
+            { "{tanques_cisternas}", c_tc },
+            { "cert_creation_date", sheet.OperationDate.ToString("dd/MM/yyyy") },
+            { "client_expiration_date", certificate.ExpirationDate?.ToString("dd/MM/yyyy") ?? "-" },
+        };
+        var fileBytes = odsTemplate.GenerateOdsFromTemplate(
+            placeholders,
+            "Templates/certificado_plantilla_word.docx"
+        );
+        return (fileBytes, "");
+    }
+
+    [EndpointSummary("Generate Certificate Word")]
+    [HttpPost("{id}/gen-certificate/word")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateCertificateWord(Guid id)
+    {
+        var (fileBytes, err) = CertificateTemplate(id);
+        if (!string.IsNullOrEmpty(err))
+        {
+            return BadRequest(err);
+        }
+
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "certificado_servicio.docx"
+        );
+    }
 }
