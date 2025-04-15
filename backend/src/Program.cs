@@ -98,7 +98,7 @@ builder.Services.AddOpenApi(options =>
 });
 
 // Register modules
-var modules = new IModule[] { new AuthModule(), new ClientModule() };
+var modules = new IModule[] { new AuthModule(), new ClientModule(), new ProjectModule() };
 foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);

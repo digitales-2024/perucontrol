@@ -7,8 +7,11 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectController(DatabaseContext db, ServiceCacheProvider services)
-    : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
+public class ProjectController(
+    DatabaseContext db,
+    ServiceCacheProvider services,
+    ProjectService projectService
+) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
 
@@ -494,5 +497,31 @@ public class ProjectController(DatabaseContext db, ServiceCacheProvider services
         appointment.IsActive = false;
         await _context.SaveChangesAsync();
         return Ok();
+    }
+
+    [EndpointSummary("Generate Schedule Excel")]
+    [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule/excel")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GenerateScheduleExcel(Guid id)
+    {
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (excelBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // send
+        return File(
+            excelBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "schedule.xlsx"
+        );
     }
 }
