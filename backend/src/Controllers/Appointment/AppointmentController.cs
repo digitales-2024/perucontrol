@@ -15,7 +15,7 @@ namespace PeruControl.Controllers;
 public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
-    PDFConverterService pDFConverterService,
+    PDFConverterService pdfConverterService,
     SvgTemplateService svgTemplateService,
     WordTemplateService wordTemplateService
 ) : ControllerBase
@@ -239,6 +239,7 @@ public class AppointmentController(
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
+        Console.WriteLine("??");
         var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment)
             .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointmentid);
