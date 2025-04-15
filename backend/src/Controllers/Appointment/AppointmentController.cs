@@ -16,7 +16,8 @@ public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
     PDFConverterService pDFConverterService,
-    SvgTemplateService svgTemplateService
+    SvgTemplateService svgTemplateService,
+    WordTemplateService wordTemplateService
 ) : ControllerBase
 {
     /// <summary>
@@ -324,21 +325,111 @@ public class AppointmentController(
         return Ok(appointment.Certificate);
     }
 
-    [EndpointSummary("Generate Certificate word")]
+    [EndpointSummary("Generate Certificate Word")]
     [HttpPost("{id}/certificate/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateCertificateWord(Guid id)
     {
-        // FIXME: use a different template
-        var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
-        if (err != "")
+        var projectAppointment = db
+            .ProjectAppointments
+            .Include(pa => pa.Services)
+            .Include(pa => pa.Certificate)
+            .Include(pa => pa.ProjectOperationSheet)
+            .Include(pa => pa.Project)
+            .ThenInclude(p => p.Client)
+            .FirstOrDefault(pa => pa.Id == id);
+
+        if (projectAppointment is null)
         {
-            return BadRequest(err);
+            return NotFound("No se encontró el certificado.");
         }
 
-        return File(fileBytes, "application/vnd.oasis.opendocument.text", "ficha_operaciones.odt");
+        var business = db.Businesses.FirstOrDefault();
+        if (business == null)
+            return NotFound ("Datos de la empresa no encontrados.");
+
+        if (projectAppointment.Certificate.ExpirationDate is null)
+        {
+            return BadRequest("La fecha de vencimiento no está establecida.");
+        }
+
+        if (projectAppointment.ActualDate is null)
+        {
+            return BadRequest("Este servicio no ha sido terminado.");
+        }
+
+        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
+        if (sheetTreatedAreas is null || sheetTreatedAreas == "")
+        {
+            return BadRequest("Las áreas tratadas no se ingresaron en la ficha de operaciones.");
+        }
+
+        var project = projectAppointment.Project;
+        var sheet = projectAppointment.ProjectOperationSheet;
+        var client = project.Client;
+        var certificate = projectAppointment.Certificate;
+
+        var serviceNames = project.Services.Select(s => s.Name).ToList();
+        var serviceNamesStr = string.Join(", ", serviceNames);
+
+        /* var (c_f, c_dt, c_dr, c_df, c_te, c_tc) = projectAppointment.Services?.ToCheckbox() ?? ("", "", "", "", "", ""); */
+
+        var (fum, inse, ratiz, infec, cis1, cis2) = ("", "", "", "", "", "");
+        foreach (var service in projectAppointment.Services)
+        {
+            switch (service.Name)
+            {
+                case "Fumigación":
+                    fum = "X";
+                    break;
+                case "Desinfección":
+                    inse = "X";
+                    break;
+                case "Desinsectación":
+                    ratiz = "X";
+                    break;
+                case "Desratización":
+                    infec = "X";
+                    break;
+                case "Limpieza de tanque":
+                    cis1 = "X";
+                    cis2 = "X";
+                    break;
+            }
+        }
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{client_name}", client.Name },
+            { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
+            { "{razon_social}", client.RazonSocial ?? "-" },
+            { "{client_address}", project.Address },
+            { "{client_bysiness_type}", client.BusinessType ?? "" },
+            { "{client_area}", sheet.TreatedAreas },
+            { "{servicios}", serviceNamesStr },
+            { "{fumigacion}", fum },
+            { "{desinsectacion}", ratiz },
+            { "{desratizacion}", infec },
+            { "{desinfeccion}", inse },
+            { "{tanques_elevados}", cis1 },
+            { "{tanques_cisternas}", cis2 },
+            { "cert_creation_date", sheet.OperationDate.ToString("dd/MM/yyyy") },
+            { "client_expiration_date", certificate.ExpirationDate?.ToString("dd/MM/yyyy") ?? "-" },
+        };
+
+        var fileBytes = wordTemplateService.GenerateWordFromTemplate(
+            placeholders,
+            "Templates/certificado_plantilla_word.docx"
+        );
+
+        return File(
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "certificado_servicio.docx"
+        );
     }
+
 
     [EndpointSummary("Generate Certificate PDF")]
     [EndpointDescription(

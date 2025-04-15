@@ -65,7 +65,7 @@ export function DownloadProjectForm({
             businessType: client.businessType ?? "",
             treatedAreas: operationSheet.treatedAreas,
             service: serviceNames,
-            certificateNumber: "",
+            certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
             insects: "",
             rodents: "",
             rodentConsumption: "Partial",
@@ -243,7 +243,7 @@ export function DownloadProjectForm({
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-auto">
                 <Tabs defaultValue="general" className="w-full">
-                    <div className="px-6">
+                    <div className="px-6 mt-5">
                         <TabsList className="w-full h-auto bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 p-1.5 rounded-xl flex flex-wrap gap-1 border border-blue-200 dark:border-blue-800">
                             <TabsTrigger value="general" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <ClipboardList className="h-4 w-4 mr-2" />
@@ -524,7 +524,7 @@ export function DownloadProjectForm({
                                                 <div className="border rounded-lg p-4 bg-gray-50 dark:bg-background">
                                                     <div className="grid grid-cols-3 gap-4">
                                                         {/* Columna de categorías */}
-                                                        <div className="space-y-8">
+                                                        <div className="space-y-9">
                                                             <div className="pt-1">
                                                                 <h3 className="text-sm font-semibold flex items-center">
                                                                     <SprayCanIcon className="h-4 w-4 text-blue-500 mr-2" />

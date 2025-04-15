@@ -360,3 +360,8 @@ export async function GetCertificateOfAppointmentById(id: string): Promise<Resul
     }
     return ok(data);
 }
+
+export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
+}
