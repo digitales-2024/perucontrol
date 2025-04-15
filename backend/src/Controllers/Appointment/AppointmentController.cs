@@ -15,7 +15,7 @@ namespace PeruControl.Controllers;
 public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
-    PDFConverterService pDFConverterService,
+    PDFConverterService pdfConverterService,
     SvgTemplateService svgTemplateService,
     WordTemplateService wordTemplateService
 ) : ControllerBase
@@ -215,7 +215,7 @@ public class AppointmentController(
             return BadRequest(odsErr);
         }
 
-        var (pdfBytes, pdfErr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(fileBytes, "ods");
         if (pdfErr != "")
         {
             return BadRequest(pdfErr);
@@ -239,6 +239,7 @@ public class AppointmentController(
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
+        Console.WriteLine("??");
         var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment)
             .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointmentid);
@@ -347,7 +348,7 @@ public class AppointmentController(
 
         var business = db.Businesses.FirstOrDefault();
         if (business == null)
-            return NotFound ("Datos de la empresa no encontrados.");
+            return NotFound("Datos de la empresa no encontrados.");
 
         if (projectAppointment.Certificate.ExpirationDate is null)
         {
@@ -527,7 +528,7 @@ public class AppointmentController(
             "Templates/certificado_plantilla.svg"
         );
 
-        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(svgBytes, "svg");
+        var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(svgBytes, "svg");
 
         if (errorStr != "")
         {
@@ -539,7 +540,7 @@ public class AppointmentController(
         }
 
         // send
-        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+        return File(pdfBytes, "application/pdf", "certificate.pdf");
     }
 
     [EndpointSummary("Get all certificates")]
@@ -570,5 +571,39 @@ public class AppointmentController(
         });
 
         return Ok(result);
+    }
+
+    [EndpointSummary("Generate Rodents PDF")]
+    [EndpointDescription(
+        "Generates the Rodents Template in PDF format for an Appointment. The id parameter is the Appointment ID."
+    )]
+    [HttpPost("{id}/rodents/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateRodentsPdf(Guid id)
+    {
+        var placeholders = new Dictionary<string, string>
+        {
+            {"{template}", "value"}
+        };
+
+        var odsBytes = odsTemplate.GenerateOdsFromTemplate(
+            placeholders,
+            "Templates/roedores_plantilla.ods"
+        );
+
+        var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+
+        if (errorStr != "")
+        {
+            return BadRequest(errorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "roedores.pdf");
     }
 }
