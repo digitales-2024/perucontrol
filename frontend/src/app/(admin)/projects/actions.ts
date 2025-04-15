@@ -363,5 +363,5 @@ export async function GetCertificateOfAppointmentById(id: string): Promise<Resul
 
 export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/gen-certificate/word`, "POST", "");
+    return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
 }

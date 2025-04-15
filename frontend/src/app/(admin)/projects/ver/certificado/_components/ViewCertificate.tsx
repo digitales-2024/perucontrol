@@ -32,8 +32,7 @@ export default function CertificationList({ columns, data } : CertificateListPro
                 </Badge>),
             onClick: (row: CertificateProp) =>
             {
-                console.log("ID de certificado", row.id);
-                downloadWord(row.id!);
+                downloadWord(row.projectAppointmentId!);
             },
             disabled: (row: CertificateProp) => !row.isActive,
         },
@@ -45,7 +44,7 @@ export default function CertificationList({ columns, data } : CertificateListPro
                 </Badge>),
             onClick: (row: CertificateProp) =>
             {
-                downloadPdf(row.id!);
+                downloadPdf(row.projectAppointmentId!);
             },
             disabled: (row: CertificateProp) => !row.isActive,
         },

@@ -48,7 +48,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     const onSubmit = async(data: ClientDataSchema) =>
     {
-        console.log("Datos del formulario:", JSON.stringify(data, null, 2));
         try
         {
             setIsSubmitting(true);

@@ -147,7 +147,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     return (
         <Card>
             <CardHeader>
-                <div className="flex justify-between">
+                <div className="flex justify-between mt-5">
                     <CardTitle className="text-xl font-semibold">
                         Información general
                     </CardTitle>
