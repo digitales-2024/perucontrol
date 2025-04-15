@@ -189,8 +189,7 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'GeoSlab704', 'Swiss 721 Condensed', sans-serif;
-  /* font-family: var(--font-geist-sans); */
+  font-family: 'Swiss 721 Condensed', sans-serif;
 }
 
 /*---break---*/

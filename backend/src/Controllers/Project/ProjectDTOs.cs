@@ -272,6 +272,7 @@ public class ProjectAppointmentDTO : BaseModel
     public required DateTime DueDate { get; set; }
     public DateTime? ActualDate { get; set; }
     public required ICollection<Guid> ServicesIds { get; set; }
+    public required ProjectOperationSheet ProjectOperationSheet { get; set; }
 }
 
 public class ProjectStatusPatchDTO

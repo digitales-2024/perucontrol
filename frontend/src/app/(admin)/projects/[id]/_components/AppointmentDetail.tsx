@@ -106,13 +106,6 @@ export function AppointmentDetail({
                             <p className="text-xs text-zinc-700">
                                 Servicios a realizar
                             </p>
-                            {/* <p className="text-lg">
-                                {appointment.servicesIds.map((id) => (
-                                    <Badge key={id} variant="outline" className="text-xs bg-blue-50">
-                                        {servicesMap.get(id) ?? "-"}
-                                    </Badge>
-                                ))}
-                            </p> */}
                             <div className="text-lg flex flex-wrap">
                                 {appointment.servicesIds.map((id) => (
                                     <Badge key={id} variant="outline" className="text-xs bg-blue-50 mr-1 mb-1">
@@ -121,12 +114,7 @@ export function AppointmentDetail({
                                 ))}
                             </div>
                         </div>
-                        <div className="col-span-2 md:col-span-1 mt-2 md:mt-0 pl-8 md:pl-0">
-                            <Button variant="outline" onClick={() => setEditDueDateOpen(true)}>
-                                <Pencil />
-                                Editar
-                            </Button>
-                        </div>
+                        <div className="col-span-2 md:col-span-1 mt-2 md:mt-0 pl-8 md:pl-0" />
                     </div>
                     {/* <div className="my-2 grid grid-cols-[2rem_auto_7rem] items-center gap-4"> */}
                     <div className="my-2 grid grid-cols-[2rem_1fr] md:grid-cols-[2rem_1fr_7rem] items-start md:items-center gap-2 md:gap-4">

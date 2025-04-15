@@ -45,6 +45,11 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
 
+    if (process.env.NODE_ENV === "development")
+    {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
     try
     {
         const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
@@ -159,7 +164,7 @@ export async function DownloadFile(
 
             return err({
                 statusCode: response.status,
-                message: "Error generando documento",
+                message: body ?? "Error generando documento",
                 error: null,
             });
         }

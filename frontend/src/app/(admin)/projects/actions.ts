@@ -220,14 +220,15 @@ export async function EditAppointment(
         },
     }));
 
-    // Revalidar la página para obtener los datos actualizados
-    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
-
     if (error)
     {
         console.error("Error updating appointment project:", error);
+        console.error(projId, appId);
         return err(error);
     }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
 
     return ok(null);
 }
@@ -262,7 +263,7 @@ export async function DesactivateAppointment(
 }
 
 export async function SaveCertificateData(
-    id:  string,
+    id: string,
     body: components["schemas"]["Certificate"],
 ): Promise<Result<null, FetchError>>
 {
@@ -336,6 +337,8 @@ export async function GenerateCertificateExcel(id: string): Promise<Result<Blob,
 
 export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
 {
+    console.log("cert id:");
+    console.log(id);
     return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
 }
 

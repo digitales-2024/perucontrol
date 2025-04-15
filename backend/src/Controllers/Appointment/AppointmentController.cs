@@ -15,7 +15,8 @@ namespace PeruControl.Controllers;
 public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
-    PDFConverterService pDFConverterService
+    PDFConverterService pDFConverterService,
+    SvgTemplateService svgTemplateService
 ) : ControllerBase
 {
     /// <summary>
@@ -60,8 +61,8 @@ public class AppointmentController(
     [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AppointmentGetDTO2>>> GetAllAppointments()
     {
-        var appointments = await db.Appointments
-            .Include(a => a.Services)
+        var appointments = await db
+            .Appointments.Include(a => a.Services)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -323,11 +324,11 @@ public class AppointmentController(
         return Ok(appointment.Certificate);
     }
 
-    [EndpointSummary("Generate Certificate excel")]
-    [HttpPost("{id}/certificate/excel")]
+    [EndpointSummary("Generate Certificate word")]
+    [HttpPost("{id}/certificate/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificateExcel(Guid id)
+    public IActionResult GenerateCertificateWord(Guid id)
     {
         // FIXME: use a different template
         var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
@@ -336,34 +337,106 @@ public class AppointmentController(
             return BadRequest(err);
         }
 
-        return File(
-            fileBytes,
-            "application/vnd.oasis.opendocument.spreadsheet",
-            "ficha_operaciones.ods"
-        );
+        return File(fileBytes, "application/vnd.oasis.opendocument.text", "ficha_operaciones.odt");
     }
 
     [EndpointSummary("Generate Certificate PDF")]
+    [EndpointDescription(
+        "Generates the Certificate in PDF format for an Appointment. The id parameter is the Appointment ID."
+    )]
     [HttpPost("{id}/certificate/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificatePdf(Guid id)
+    public async Task<IActionResult> GenerateCertificatePdf(Guid id)
     {
-        using var ms = new MemoryStream();
+        var projectAppointment = await db
+            .ProjectAppointments.Include(pa => pa.Services)
+            .Include(pa => pa.Certificate)
+            .Include(pa => pa.ProjectOperationSheet)
+            .Include(pa => pa.Project)
+            .ThenInclude(proj => proj.Client)
+            .FirstOrDefaultAsync(pa => pa.Id == id);
 
-        using (
-            var fs = new FileStream(
-                "Templates/certificado_plantilla.svg",
-                FileMode.Open,
-                FileAccess.Read
-            )
-        )
+        if (projectAppointment is null)
         {
-            fs.CopyTo(ms);
+            return NotFound("No se encontró el certificado.");
         }
-        ms.Position = 0;
 
-        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(ms.ToArray(), "svg");
+        var business = db.Businesses.FirstOrDefault();
+        if (business == null)
+            return BadRequest("Datos de la empresa no encontrados.");
+
+        if (projectAppointment.Certificate.ExpirationDate is null)
+        {
+            return BadRequest("La fecha de vencimiento no está establecida.");
+        }
+        if (projectAppointment.ActualDate is null)
+        {
+            return BadRequest("Este servicio no ha sido terminado.");
+        }
+
+        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
+        if (sheetTreatedAreas is null || sheetTreatedAreas == "")
+        {
+            return BadRequest("Las áreas tratadas no se ingresaron en la ficha de operaciones.");
+        }
+
+        var (fum, inse, ratiz, infec, cis1, cis2) = ("", "", "", "", "", "");
+        foreach (var service in projectAppointment.Services)
+        {
+            switch (service.Name)
+            {
+                case "Fumigación":
+                    fum = "X";
+                    break;
+                case "Desinfección":
+                    inse = "X";
+                    break;
+                case "Desinsectación":
+                    ratiz = "X";
+                    break;
+                case "Desratización":
+                    infec = "X";
+                    break;
+                case "Limpieza de tanque":
+                    cis1 = "X";
+                    cis2 = "X";
+                    break;
+            }
+        }
+
+        var certificate = projectAppointment.Certificate;
+        var project = projectAppointment.Project;
+        var client = project.Client;
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{nombre_cliente}", client.RazonSocial ?? client.Name },
+            { "{direccion_cliente}", project.Address },
+            { "{giro_cliente}", client.BusinessType ?? "" },
+            { "{servicio_area}", sheetTreatedAreas ?? "" },
+            { "{fecha_servicio}", projectAppointment.ActualDate?.ToString("dd/MM/yyyy") ?? "" },
+            { "{fecha_vencimiento}", certificate.ExpirationDate?.ToString("dd/MM/yyyy") ?? "" },
+            { "{cert_n}", projectAppointment.CertificateNumber?.ToString() ?? "" },
+            { "{fum}", fum },
+            { "{inse}", inse },
+            { "{ratiz}", ratiz },
+            { "{infec}", infec },
+            { "{cis1}", cis1 },
+            { "{cis2}", cis2 },
+            { "{constancia_hab}", business.DigesaNumber },
+            { "{peruc_ruc}", business.RUC },
+            { "{perucontrol_telefonos}", business.Phones },
+            { "{perucontrol_correo}", business.Email },
+            { "{perucontrol_pagina}", "www.perucontrol.com" },
+        };
+
+        var svgBytes = svgTemplateService.GenerateSvgFromTemplate(
+            placeholders,
+            "Templates/certificado_plantilla.svg"
+        );
+
+        var (pdfBytes, errorStr) = pDFConverterService.convertToPdf(svgBytes, "svg");
 
         if (errorStr != "")
         {
@@ -383,13 +456,13 @@ public class AppointmentController(
     [ProducesResponseType<IEnumerable<CertificateGet>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CertificateGet>>> GetAllCertificates()
     {
-        var certificates = await db.Certificates
-        .Include(c => c.ProjectAppointment)
+        var certificates = await db
+            .Certificates.Include(c => c.ProjectAppointment)
             .ThenInclude(pa => pa.Services) // Incluye los servicios directamente del ProjectAppointment
-        .Include(c => c.ProjectAppointment)
+            .Include(c => c.ProjectAppointment)
             .ThenInclude(pa => pa.Project)
-                .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
-        .ToListAsync();
+            .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
+            .ToListAsync();
 
         var result = certificates.Select(a => new CertificateGet
         {
@@ -402,7 +475,7 @@ public class AppointmentController(
             ExpirationDate = a.ExpirationDate ?? DateTime.MinValue,
             Project = a.ProjectAppointment.Project,
             Client = a.ProjectAppointment.Project.Client,
-            Services = a.ProjectAppointment.Services
+            Services = a.ProjectAppointment.Services,
         });
 
         return Ok(result);

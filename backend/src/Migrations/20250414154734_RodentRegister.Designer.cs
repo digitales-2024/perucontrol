@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250414154734_RodentRegister")]
+    partial class RodentRegister
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -799,7 +802,7 @@ namespace PeruControl.Migrations
 
                     b.HasIndex("RodentRegisterId");
 
-                    b.ToTable("RodentAreas");
+                    b.ToTable("RodentArea");
                 });
 
             modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
@@ -842,7 +845,7 @@ namespace PeruControl.Migrations
                     b.HasIndex("ProjectAppointmentId")
                         .IsUnique();
 
-                    b.ToTable("RodentRegisters");
+                    b.ToTable("RodentRegister");
                 });
 
             modelBuilder.Entity("PeruControl.Model.Service", b =>

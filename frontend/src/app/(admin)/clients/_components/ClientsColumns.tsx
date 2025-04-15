@@ -5,39 +5,11 @@ import { Button } from "@/components/ui/button";
 import type { components } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Calendar1, CircleUser, CircleUserRound, FileText, Hash, Mail, Phone } from "lucide-react";
+import { CircleUser, CircleUserRound, FileText, Hash, Mail, Phone } from "lucide-react";
 
 export type Client = components["schemas"]["Client"]
 
 export const columns: Array<ColumnDef<Client>> = [
-    {
-        accessorKey: "createdAt",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
-            >
-                FECHA DE EMISIÓN
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-            const formattedDate = row.original.createdAt
-                ? format(new Date(row.original.createdAt), "yyyy-MM-dd")
-                : "N/A";
-            return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    <Calendar1 className="mr-1" />
-                    {formattedDate}
-                </span>
-            );
-        },
-    },
     {
         accessorKey: "clientNumber",
         header: ({ column }) => (
