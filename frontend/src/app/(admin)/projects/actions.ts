@@ -80,53 +80,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
 
 export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-    if (!jwt)
-    {
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
-    }
-
-    try
-    {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/gen-operations-sheet/excel`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt.value}`,
-            },
-        });
-
-        if (!response.ok)
-        {
-            // attempt to get data
-            const body = await response.text();
-            console.error("Error generando excel:");
-            console.error(body);
-
-            return err({
-                statusCode: response.status,
-                message: "Error generando excel",
-                error: null,
-            });
-        }
-
-        const blob = await response.blob();
-        return ok(blob);
-    }
-    catch (e)
-    {
-        console.error(e);
-        return err({
-            statusCode: 503,
-            message: "Error conectando al servidor",
-            error: null,
-        });
-    }
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
 }
 
 export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
@@ -286,60 +240,17 @@ export async function SaveCertificateData(
 
 export async function GenerateCertificateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-    if (!jwt)
-    {
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
-    }
-
-    try
-    {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/certificate/excel`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt.value}`,
-            },
-        });
-
-        if (!response.ok)
-        {
-            // attempt to get data
-            const body = await response.text();
-            console.error("Error generando excel:");
-            console.error(body);
-
-            return err({
-                statusCode: response.status,
-                message: "Error generando excel",
-                error: null,
-            });
-        }
-
-        const blob = await response.blob();
-        return ok(blob);
-    }
-    catch (e)
-    {
-        console.error(e);
-        return err({
-            statusCode: 503,
-            message: "Error conectando al servidor",
-            error: null,
-        });
-    }
+    return DownloadFile(`/api/Appointment/${id}/certificate/excel`, "POST", "");
 }
 
 export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
 {
-    console.log("cert id:");
-    console.log(id);
     return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
+}
+
+export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodents/pdf`, "POST", "");
 }
 
 export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
