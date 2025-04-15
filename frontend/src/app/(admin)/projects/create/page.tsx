@@ -4,8 +4,16 @@ import { ProjectForm } from "./_components/ProjectForm";
 
 export default async function ProjectsPage()
 {
-    // get all clients
-    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+    const [
+        [clients, clientsError],
+        [services, servicesError],
+        [quotations, quotationsError],
+
+    ] = await Promise.all([
+        wrapper((auth) => backend.GET("/api/Client", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Service", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", { ...auth })),
+    ]);
 
     if (clientsError)
     {
@@ -13,17 +21,11 @@ export default async function ProjectsPage()
         return null;
     }
 
-    // get all services
-    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
-
     if (servicesError)
     {
         console.error("Error getting all clients:", servicesError);
         return null;
     }
-
-    // get all quotation
-    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", { ...auth }));
 
     if (quotationsError)
     {
