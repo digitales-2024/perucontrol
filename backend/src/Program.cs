@@ -108,7 +108,7 @@ foreach (var module in modules)
 builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
-builder.Services.AddScoped<PDFConverterService>();
+builder.Services.AddScoped<LibreOfficeConverterService>();
 builder.Services.AddScoped<SvgTemplateService>();
 builder.Services.AddScoped<ServiceCacheProvider>();
 
