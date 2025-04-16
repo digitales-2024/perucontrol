@@ -297,16 +297,38 @@ public class ExcelTemplateService
                 { "{periodo}", "-" },
             };
 
-            // Generate placeholders for every day available on the list
-            for (var i = 1; i <= 31; i += 1)
+            // Fill Ambients, up to 8
+            var projectAmbients = project.Ambients;
+            var projectAmbientsCount = projectAmbients.Count();
+            for (var i = 1; i <= 8; i += 1)
             {
-                placeholders[$"{{a{i}}}"] = "";
+                if (i > projectAmbientsCount)
+                {
+                    placeholders[$"{{ambiente_{i}}}"] = "";
+                }
+                else
+                {
+                    var ambient = projectAmbients[i - 1];
+                    placeholders[$"{{ambiente_{i}}}"] = ambient;
+                }
+            }
+
+            // Generate placeholders for every day available on the list
+            for (var i = 1; i <= 8; i += 1)
+            {
+                for (var j = 1; j <= 31; j += 1)
+                {
+                    placeholders[$"{{{i}_{j}}}"] = "";
+                }
             }
 
             foreach (var appointment in entry.Value)
             {
                 var day = appointment.DateTime.Day.ToString();
-                placeholders[$"{{a{day}}}"] = "x";
+                for (var i = 1; i <= projectAmbientsCount; i += 1)
+                {
+                    placeholders[$"{{{i}_{day}}}"] = "x";
+                }
             }
 
             ReplaceSharedStringPlaceholders2(clonedWorksheetPart, sharedStringPart, placeholders);
