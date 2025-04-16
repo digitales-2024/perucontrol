@@ -124,7 +124,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     return (
         <>
-            <Button variant="outline" onClick={handleGoBack} className="flex-1 mt-5">
+            <Button variant="outline" onClick={handleGoBack} className="flex-1 w-[160px] mt-5">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver
             </Button>

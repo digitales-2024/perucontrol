@@ -11,63 +11,198 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, PlusCircle, Save, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
-import { rodentControlFormSchema, type RodentControlFormValues } from "../schemas";
 import { useRouter } from "next/navigation";
+import { toastWrapper } from "@/types/toasts";
+import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
+import { GenerateRodentsPDF, GetRodentOfAppointmentById, SaveRodentData } from "../actions";
+import { useEffect } from "react";
+
+const defaultValues: RodentControlFormValues = {
+    serviceDate: null,
+    enterTime: undefined,
+    leaveTime: undefined,
+    incidents: undefined,
+    correctiveMeasures: undefined,
+    rodentAreas: [
+        {
+            name: "",
+            cebaderoTrampa: 0,
+            frequency: "Fortnightly",
+            rodentConsumption: "Partial",
+            rodentResult: "Active",
+            rodentMaterials: "Fungicide",
+            productName: "",
+            productDose: "",
+        },
+    ],
+};
 
 export function RodentControlForm({
-    onOpenChange,
     project,
+    appointment,
 }: {
-  onOpenChange: (v: boolean) => void
-  project: components["schemas"]["ProjectSummarySingle"]
+  // onOpenChange: (v: boolean) => void
+  project: components["schemas"]["ProjectSummarySingle"];
+  appointment: components["schemas"]["ProjectAppointmentDTO"];
 })
 {
-    console.log("onOpenChange", onOpenChange);
-    console.log("Project", project);
     const router = useRouter();
 
     const form = useForm<RodentControlFormValues>({
-        resolver: zodResolver(rodentControlFormSchema),
-        defaultValues: {
-            rows: [
-                {
-                    rodentAreas: "",
-                    cebaderoTrampa: "",
-                    frequency: "",
-                    rodentConsumption: "",
-                    rodentResult: "",
-                    rodentMaterials: "",
-                    productName: "",
-                    productDose: "",
-                    incidencias: "",
-                },
-            ],
-            medidasCorrectivas: "",
-        },
+        resolver: zodResolver(RodentControlFormSchema),
+        defaultValues,
     });
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: "rows",
+        name: "rodentAreas",
     });
 
-    const onSubmit = (data: RodentControlFormValues) =>
+    const onSubmit = async(data: RodentControlFormValues) =>
     {
-        console.log("Datos del formulario:", JSON.stringify(data, null, 2));
+        await saveData(data);
+    };
+
+    const saveData = async(formData: RodentControlFormValues) =>
+    {
+        const transformedData = {
+            ...formData,
+            serviceDate: formData.serviceDate ? formData.serviceDate.toISOString() : null,
+        };
+
+        console.log(transformedData);
+
+        const [, saveError] = await toastWrapper(
+            SaveRodentData(appointment.id!, transformedData),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (saveError)
+        {
+            console.error("Error al guardar los datos:", saveError);
+            throw new Error("Error al guardar los datos");
+        }
+
+        router.refresh();
+    };
+
+    useEffect(() =>
+    {
+        const loadData = async() =>
+        {
+            const [response, error] = await GetRodentOfAppointmentById(appointment.id!);
+
+            if (error)
+            {
+                console.error("Error al cargar datos de roedores:", error);
+                return;
+            }
+
+            if (!response) return;
+
+            // Transform the response data to match the form structure
+            const formData = {
+                ...defaultValues,
+                ...response,
+                serviceDate: response.serviceDate ? new Date(response.serviceDate) : null,
+                rodentAreas: response.rodentAreas!.length > 0
+                    ? response.rodentAreas!.map((area) => ({
+                        id: area.id,
+                        name: area.name ?? "",
+                        cebaderoTrampa: area.cebaderoTrampa ?? 0,
+                        frequency: area.frequency ?? "Fortnightly",
+                        rodentConsumption: area.rodentConsumption ?? "Partial",
+                        rodentResult: area.rodentResult ?? "Active",
+                        rodentMaterials: area.rodentMaterials ?? "Fungicide",
+                        productName: area.productName ?? "",
+                        productDose: area.productDose ?? "",
+                    }))
+                    : defaultValues.rodentAreas,
+            };
+
+            // Reset the form with the transformed data
+            form.reset(formData);
+        };
+
+        loadData();
+    }, [appointment.id, form]);
+
+    const downloadPDF = async() =>
+    {
+        const [blob, err] = await toastWrapper(GenerateRodentsPDF(appointment.id!), {
+            loading: "Generando PDF...",
+            success: "PDF generado",
+            error: (e) => `Error al generar el PDF: ${e.message}`,
+        });
+
+        if (err) return;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `control-roedores-${project.projectNumber}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    /* const downloadExcel = async() =>
+    {
+        const [blob, err] = await toastWrapper(GenerateRodentExcel(project.id!), {
+            loading: "Generando Excel...",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err) return;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `control-roedores-${project.code}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }; */
+
+    const handleSubmit = async(input: RodentControlFormValues) =>
+    {
+        const preparedInput = {
+            ...input,
+            serviceDate: input.serviceDate ? input.serviceDate.toISOString() : null,
+        };
+
+        const [result, error] = await toastWrapper(
+            SaveRodentData(appointment.id!, preparedInput),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return;
+        }
+
+        console.log("Datos guardados exitosamente:", result);
     };
 
     const addRow = () =>
     {
         append({
-            rodentAreas: "",
-            cebaderoTrampa: "",
-            frequency: "",
-            rodentConsumption: "",
-            rodentResult: "",
-            rodentMaterials: "",
+            name: "",
+            cebaderoTrampa: 0,
+            frequency: "Fortnightly",
+            rodentConsumption: "Partial",
+            rodentResult: "Active",
+            rodentMaterials: "Fungicide",
             productName: "",
             productDose: "",
-            incidencias: "",
         });
     };
 
@@ -144,14 +279,17 @@ export function RodentControlForm({
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.rodentAreas`}
+                                                        name={`rodentAreas.${index}.name`}  // Cambiado para apuntar al campo name específico
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
                                                                     Área Controlada
                                                                 </FormLabel>
                                                                 <FormControl>
-                                                                    <Input {...field} placeholder="Ej: Almacén, Cocina" />
+                                                                    <Input
+                                                                        {...field}
+                                                                        placeholder="Ej: Almacén, Cocina"
+                                                                    />
                                                                 </FormControl>
                                                             </FormItem>
                                                         )}
@@ -159,7 +297,7 @@ export function RodentControlForm({
 
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.cebaderoTrampa`}
+                                                        name={`rodentAreas.${index}.cebaderoTrampa`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -176,7 +314,7 @@ export function RodentControlForm({
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.frequency`}
+                                                        name={`rodentAreas.${index}.frequency`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -189,16 +327,19 @@ export function RodentControlForm({
                                                                         </SelectTrigger>
                                                                     </FormControl>
                                                                     <SelectContent>
-                                                                        <SelectItem value="quincenal">
+                                                                        <SelectItem value="Fortnightly">
                                                                             Quincenal
                                                                         </SelectItem>
-                                                                        <SelectItem value="mensual">
+                                                                        <SelectItem value="Monthly">
                                                                             Mensual
                                                                         </SelectItem>
-                                                                        <SelectItem value="trimestral">
+                                                                        <SelectItem value="Bimonthly">
+                                                                            Bimensual
+                                                                        </SelectItem>
+                                                                        <SelectItem value="Quarterly">
                                                                             Trimestral
                                                                         </SelectItem>
-                                                                        <SelectItem value="semestral">
+                                                                        <SelectItem value="Semiannual">
                                                                             Semestral
                                                                         </SelectItem>
                                                                     </SelectContent>
@@ -209,7 +350,7 @@ export function RodentControlForm({
 
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.rodentConsumption`}
+                                                        name={`rodentAreas.${index}.rodentConsumption`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -222,16 +363,16 @@ export function RodentControlForm({
                                                                         </SelectTrigger>
                                                                     </FormControl>
                                                                     <SelectContent>
-                                                                        <SelectItem value="parcial">
+                                                                        <SelectItem value="Partial">
                                                                             Parcial
                                                                         </SelectItem>
-                                                                        <SelectItem value="consumoTotal">
+                                                                        <SelectItem value="Total">
                                                                             Consumo Total
                                                                         </SelectItem>
-                                                                        <SelectItem value="deteriorado">
+                                                                        <SelectItem value="Deteriorated">
                                                                             Deteriorado
                                                                         </SelectItem>
-                                                                        <SelectItem value="sinConsumo">
+                                                                        <SelectItem value="NoConsumption">
                                                                             Sin Consumo
                                                                         </SelectItem>
                                                                     </SelectContent>
@@ -243,7 +384,7 @@ export function RodentControlForm({
 
                                                 <FormField
                                                     control={form.control}
-                                                    name={`rows.${index}.incidencias`}
+                                                    name={"incidents"}
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="text-sm font-medium">
@@ -252,7 +393,8 @@ export function RodentControlForm({
                                                             <FormControl>
                                                                 <Textarea
                                                                     {...field}
-                                                                    placeholder="Describa las incidencias encontradas"
+                                                                    value={field.value ?? ""}
+                                                                    placeholder="Describa las incidencias encontradas ..."
                                                                     className="min-h-[60px] resize-y"
                                                                 />
                                                             </FormControl>
@@ -265,7 +407,7 @@ export function RodentControlForm({
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.rodentResult`}
+                                                        name={`rodentAreas.${index}.rodentResult`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -278,16 +420,16 @@ export function RodentControlForm({
                                                                         </SelectTrigger>
                                                                     </FormControl>
                                                                     <SelectContent>
-                                                                        <SelectItem value="activa">
+                                                                        <SelectItem value="Active">
                                                                             Activa
                                                                         </SelectItem>
-                                                                        <SelectItem value="inactiva">
+                                                                        <SelectItem value="Inactive">
                                                                             Inactiva
                                                                         </SelectItem>
-                                                                        <SelectItem value="roedMto">
+                                                                        <SelectItem value="RoedMto">
                                                                             ROED MTO
                                                                         </SelectItem>
-                                                                        <SelectItem value="otros">
+                                                                        <SelectItem value="Others">
                                                                             Otros
                                                                         </SelectItem>
                                                                     </SelectContent>
@@ -298,7 +440,7 @@ export function RodentControlForm({
 
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.rodentMaterials`}
+                                                        name={`rodentAreas.${index}.rodentMaterials`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -311,16 +453,16 @@ export function RodentControlForm({
                                                                         </SelectTrigger>
                                                                     </FormControl>
                                                                     <SelectContent>
-                                                                        <SelectItem value="fungicida">
+                                                                        <SelectItem value="Fungicide">
                                                                             Fungicida
                                                                         </SelectItem>
-                                                                        <SelectItem value="ceboRaticida">
+                                                                        <SelectItem value="RodenticideOrBait">
                                                                             Cebo Raticida
                                                                         </SelectItem>
-                                                                        <SelectItem value="trampaPegante">
+                                                                        <SelectItem value="StickyTrap">
                                                                             Trampa Pegante
                                                                         </SelectItem>
-                                                                        <SelectItem value="jaulaTomahowk">
+                                                                        <SelectItem value="Tomahawk">
                                                                             Jaula Tomahowk
                                                                         </SelectItem>
                                                                     </SelectContent>
@@ -333,7 +475,7 @@ export function RodentControlForm({
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.productName`}
+                                                        name={`rodentAreas.${index}.productName`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -348,7 +490,7 @@ export function RodentControlForm({
 
                                                     <FormField
                                                         control={form.control}
-                                                        name={`rows.${index}.productDose`}
+                                                        name={`rodentAreas.${index}.productDose`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel className="text-sm font-medium">
@@ -370,7 +512,7 @@ export function RodentControlForm({
                             <div className="mt-4">
                                 <FormField
                                     control={form.control}
-                                    name="medidasCorrectivas"
+                                    name="correctiveMeasures"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-base font-medium">
@@ -379,6 +521,7 @@ export function RodentControlForm({
                                             <FormControl>
                                                 <Textarea
                                                     {...field}
+                                                    value={field.value ?? ""}
                                                     placeholder="Describa las medidas correctivas aplicadas o recomendadas..."
                                                     className="min-h-[100px] resize-y"
                                                 />
@@ -389,15 +532,30 @@ export function RodentControlForm({
                             </div>
 
                             <div className="flex gap-2 justify-end">
-                                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 px-6 py-2">
+                                <Button
+                                    type="submit"
+                                    className="bg-blue-700 hover:bg-blue-800 flex items-center gap-2 px-6 py-2"
+                                >
                                     <Save className="h-4 w-4" />
                                     Guardar
                                 </Button>
-                                <Button type="submit" className="bg-blue-700 hover:bg-blue-800 flex items-center gap-2 px-6 py-2">
+                                <Button
+                                    type="button"
+                                    className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                                    onClick={async() =>
+                                    {
+                                        await form.handleSubmit(handleSubmit)();
+                                        downloadPDF();
+                                    }}
+                                    form="projectForm"
+                                >
                                     <Save className="h-4 w-4" />
-                                    Descargar Word
+                                    Descargar PDF
                                 </Button>
-                                <Button type="submit" className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2">
+                                <Button
+                                    type="submit"
+                                    className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                >
                                     <Save className="h-4 w-4" />
                                     Descargar Excel
                                 </Button>
