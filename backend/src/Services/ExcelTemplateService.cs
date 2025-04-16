@@ -158,14 +158,18 @@ public class ExcelTemplateService
         ms.Position = 0;
 
         // duplicate the stream as writeable
-        using var document = SpreadsheetDocument.Open(ms, true) ?? throw new Exception("Couldnt load spreadsheet");
+        using var document =
+            SpreadsheetDocument.Open(ms, true) ?? throw new Exception("Couldnt load spreadsheet");
 
         // Get the first worksheet
         var workbookPart = document.WorkbookPart ?? throw new Exception("Couldnt load workbook");
         var workbook = workbookPart.Workbook ?? throw new Exception("Couldnt load workbook");
         var sheets = workbook.Descendants<Sheet>().ToList();
-        var firstSheet = sheets.FirstOrDefault() ?? throw new Exception("No sheets found in template.");
-        var templateWorksheetPart = (WorksheetPart)workbookPart.GetPartById(firstSheet.Id) ?? throw new Exception("Couldnt load template worksheet part");
+        var firstSheet =
+            sheets.FirstOrDefault() ?? throw new Exception("No sheets found in template.");
+        var templateWorksheetPart =
+            (WorksheetPart)workbookPart.GetPartById(firstSheet.Id)
+            ?? throw new Exception("Couldnt load template worksheet part");
 
         // Create a new worksheet for each month in the dictionary
         foreach (var month in appointmentsByMonth.Keys)
