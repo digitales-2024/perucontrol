@@ -5,12 +5,13 @@ import { RoedoresForm } from "./_RoedoresForm";
 interface Props {
     params: Promise<{
         id: string;
+        app_id: string
     }>
 }
 
 export default async function ProjectsPage({ params }: Props)
 {
-    const { id } = await params;
+    const { id, app_id: appId } = await params;
 
     const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
         ...auth,
@@ -27,10 +28,17 @@ export default async function ProjectsPage({ params }: Props)
         return null;
     }
 
+    const appointment = project.appointments.find((app) => app.id === appId);
+    if (appointment === undefined)
+    {
+        console.error("Error getting project:", projectError);
+        return null;
+    }
+
     return (
         <>
             <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
-            <RoedoresForm project={project} />
+            <RoedoresForm project={project} appointment={appointment} />
         </>
     );
 }

@@ -352,7 +352,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update a certfificate */
+        /** Update a certtificate */
         patch: {
             parameters: {
                 query?: never;
@@ -598,6 +598,125 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentId}/rodent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a rodent register */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RodentRegisterUpdateDTO"];
+                    "text/json": components["schemas"]["RodentRegisterUpdateDTO"];
+                    "application/*+json": components["schemas"]["RodentRegisterUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RodentRegister"];
+                        "application/json": components["schemas"]["RodentRegister"];
+                        "text/json": components["schemas"]["RodentRegister"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/rodent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rodent of an appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RodentRegister"];
+                        "application/json": components["schemas"]["RodentRegister"];
+                        "text/json": components["schemas"]["RodentRegister"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1806,6 +1925,60 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Generate Schedule Excel
+         * @description Generates the Schedule spreadsheet for a project.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/Project/{id}/reactivate": {
@@ -4137,6 +4310,95 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        RodentArea: {
+            rodentRegister?: components["schemas"]["RodentRegister2"];
+            name: string;
+            /** Format: int32 */
+            cebaderoTrampa: number;
+            frequency: components["schemas"]["QuotationFrequency"];
+            rodentConsumption: components["schemas"]["RodentConsumption"];
+            rodentResult: components["schemas"]["RodentResult"];
+            rodentMaterials: components["schemas"]["RodentMaterials"];
+            productName: string;
+            productDose: string;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        RodentAreaUpdateDTO: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            /** Format: int32 */
+            cebaderoTrampa?: number;
+            frequency?: components["schemas"]["QuotationFrequency"];
+            rodentConsumption?: components["schemas"]["RodentConsumption"];
+            rodentResult?: components["schemas"]["RodentResult"];
+            rodentMaterials?: components["schemas"]["RodentMaterials"];
+            productName?: string;
+            productDose?: string;
+        };
+        /** @enum {unknown} */
+        RodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption";
+        /** @enum {unknown} */
+        RodentMaterials: "Fungicide" | "RodenticideOrBait" | "StickyTrap" | "Tomahawk";
+        RodentRegister: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            serviceDate: string;
+            /** Format: date */
+            enterTime?: string | null;
+            /** Format: date */
+            leaveTime?: string | null;
+            rodentAreas?: Array<components["schemas"]["RodentArea"]>;
+            incidents?: string | null;
+            correctiveMeasures?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        RodentRegister2: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            serviceDate: string;
+            /** Format: date */
+            enterTime?: string | null;
+            /** Format: date */
+            leaveTime?: string | null;
+            rodentAreas?: components["schemas"];
+            incidents?: string | null;
+            correctiveMeasures?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        RodentRegisterUpdateDTO: {
+            /** Format: date-time */
+            serviceDate?: string | null;
+            /** Format: date */
+            enterTime?: string | null;
+            /** Format: date */
+            leaveTime?: string | null;
+            incidents?: string | null;
+            correctiveMeasures?: string | null;
+            rodentAreas?: Array<components["schemas"]["RodentAreaUpdateDTO"]>;
+        };
+        /** @enum {unknown} */
+        RodentResult: "Active" | "Inactive" | "RoedMto" | "Others";
         Service: {
             name: string;
             /** Format: uuid */

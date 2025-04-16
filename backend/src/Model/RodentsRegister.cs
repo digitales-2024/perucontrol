@@ -57,3 +57,47 @@ public enum RodentMaterials
     StickyTrap,
     Tomahawk,
 }
+
+public class RodentAreaUpdateDTO
+{
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = null!;
+    public int CebaderoTrampa { get; set; }
+    public QuotationFrequency Frequency { get; set; }
+    public RodentConsumption RodentConsumption { get; set; }
+    public RodentResult RodentResult { get; set; }
+    public RodentMaterials RodentMaterials { get; set; }
+    public string ProductName { get; set; } = null!;
+    public string ProductDose { get; set; } = null!;
+}
+
+public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
+{
+    public DateTime? ServiceDate { get; set; }
+    public DateOnly? EnterTime { get; set; }
+    public DateOnly? LeaveTime { get; set; }
+
+    public string? Incidents { get; set; }
+    public string? CorrectiveMeasures { get; set; }
+
+    public List<RodentAreaUpdateDTO> RodentAreas { get; set; } = new();
+
+    public void ApplyPatch(RodentRegister entity)
+    {
+        if (ServiceDate.HasValue)
+            entity.ServiceDate = ServiceDate.Value;
+
+        if (EnterTime.HasValue)
+            entity.EnterTime = EnterTime;
+
+        if (LeaveTime.HasValue)
+            entity.LeaveTime = LeaveTime;
+
+        if (Incidents != null)
+            entity.Incidents = Incidents;
+
+        if (CorrectiveMeasures != null)
+            entity.CorrectiveMeasures = CorrectiveMeasures;
+    }
+}

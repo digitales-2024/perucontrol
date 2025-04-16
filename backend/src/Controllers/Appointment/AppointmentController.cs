@@ -280,7 +280,7 @@ public class AppointmentController(
         return Ok(operationSheet);
     }
 
-    [EndpointSummary("Update a certfificate")]
+    [EndpointSummary("Update a certtificate")]
     [HttpPatch("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -599,5 +599,101 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "roedores.pdf");
+    }
+
+    [EndpointSummary("Update a rodent register")]
+    [HttpPatch("{appointmentId}/rodent")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RodentRegister))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<RodentRegister>> UpdateRodentRegister(
+        [FromRoute] Guid appointmentId,
+        [FromBody] RodentRegisterUpdateDTO updateDTO)
+    {
+        if (updateDTO == null)
+            return BadRequest("El cuerpo de la solicitud no puede estar vacío");
+
+        var rodent = await db.Set<ProjectAppointment>()
+            .Include(r => r.RodentRegister)
+            .ThenInclude(r => r.RodentAreas)
+            .FirstOrDefaultAsync(r => r.Id == appointmentId);
+
+        if (rodent == null)
+            return NotFound("Registro no encontrado");
+
+        try
+        {
+            updateDTO.ApplyPatch(rodent.RodentRegister);
+
+        /* // Eliminar áreas que no están en el DTO
+        var areasToRemove = rodent.RodentRegister.RodentAreas
+            .Where(ra => !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id))
+            .ToList();
+
+        foreach (var area in areasToRemove)
+        {
+            rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Where(ra => ra.Id != area.Id).ToList();
+        }
+
+        // Actualizar áreas existentes y agregar nuevas
+        foreach (var dto in updateDTO.RodentAreas)
+        {
+            var existingArea = rodent.RodentRegister.RodentAreas.FirstOrDefault(ra => ra.Id == dto.Id);
+
+            if (existingArea != null)
+            {
+                // Actualizar área existente
+                existingArea.Name = dto.Name;
+                existingArea.CebaderoTrampa = dto.CebaderoTrampa;
+                existingArea.Frequency = dto.Frequency;
+                existingArea.RodentConsumption = dto.RodentConsumption;
+                existingArea.RodentResult = dto.RodentResult;
+                existingArea.RodentMaterials = dto.RodentMaterials;
+                existingArea.ProductName = dto.ProductName;
+                existingArea.ProductDose = dto.ProductDose;
+            }
+            else
+            {
+                // Agregar nueva área
+                var newArea = new RodentArea
+                {
+                    Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
+                    Name = dto.Name,
+                    CebaderoTrampa = dto.CebaderoTrampa,
+                    Frequency = dto.Frequency,
+                    RodentConsumption = dto.RodentConsumption,
+                    RodentResult = dto.RodentResult,
+                    RodentMaterials = dto.RodentMaterials,
+                    ProductName = dto.ProductName,
+                    ProductDose = dto.ProductDose,
+                    RodentRegister = rodent.RodentRegister
+                };
+                rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Append(newArea).ToList();
+            }
+        } */
+
+            await db.SaveChangesAsync();
+            return Ok(rodent);
+        }
+        catch (DbUpdateException ex)
+        {
+            return BadRequest($"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}");
+        }
+    }
+
+    [EndpointSummary("Get Rodent of an appointment")]
+    [HttpGet("{appointmentid}/rodent")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RodentRegister>> FindRodentByAppointmentId(Guid appointmentid)
+    {
+        var appointment = await db.Set<ProjectAppointment>()
+            .Include(p => p.RodentRegister)
+            .FirstOrDefaultAsync(a => a.Id == appointmentid);
+
+        if (appointment == null)
+            return NotFound("No se encontró la Cita para el Certificado");
+
+        return Ok(appointment.RodentRegister);
     }
 }
