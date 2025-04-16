@@ -1,6 +1,8 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PeruControl.Controllers;
+using PeruControl.Model;
 
 namespace PeruControl.Services;
 
@@ -112,6 +114,91 @@ public class ExcelTemplateService
         sharedStringPart.SharedStringTable.Save();
     }
 
+    private void ReplaceSharedStringPlaceholders2(
+        WorksheetPart worksheetPart,
+        SharedStringTablePart sharedStringPart,
+        Dictionary<string, string> placeholders
+    )
+    {
+        // Get all cells IN THIS SPECIFIC WORKSHEET that use shared strings
+        var cells = worksheetPart
+            .Worksheet.Descendants<Cell>()
+            .Where(c => c.DataType != null && c.DataType == CellValues.SharedString)
+            .ToList();
+
+        foreach (var cell in cells)
+        {
+            var stringId = int.Parse(cell.InnerText);
+            var sharedStringItem = sharedStringPart
+                .SharedStringTable.Elements<SharedStringItem>()
+                .ElementAt(stringId);
+
+            // Check if this cell has placeholders by examining all text parts
+            bool hasPlaceholder = false;
+            foreach (var textElement in sharedStringItem.Descendants<Text>())
+            {
+                if (placeholders.Keys.Any(key => textElement.Text.Contains(key)))
+                {
+                    hasPlaceholder = true;
+                    break;
+                }
+            }
+
+            if (hasPlaceholder)
+            {
+                // Create new inline string to replace the shared string
+                InlineString inlineString = new InlineString();
+
+                // Clone all elements from the shared string, preserving formatting
+                foreach (var element in sharedStringItem.ChildElements)
+                {
+                    if (element is Run run)
+                    {
+                        Run newRun = (Run)run.CloneNode(true);
+
+                        // Replace placeholders in this run
+                        foreach (var textElement in newRun.Descendants<Text>())
+                        {
+                            string newText = textElement.Text;
+                            foreach (var placeholder in placeholders)
+                            {
+                                if (newText.Contains(placeholder.Key))
+                                {
+                                    newText = newText.Replace(placeholder.Key, placeholder.Value);
+                                }
+                            }
+                            textElement.Text = newText;
+                        }
+
+                        inlineString.AppendChild(newRun);
+                    }
+                    else if (element is Text text)
+                    {
+                        // Handle direct text elements (rare in formatted content but possible)
+                        string newText = text.Text;
+                        foreach (var placeholder in placeholders)
+                        {
+                            if (newText.Contains(placeholder.Key))
+                            {
+                                newText = newText.Replace(placeholder.Key, placeholder.Value);
+                            }
+                        }
+
+                        Text newText2 = new Text(newText);
+                        inlineString.AppendChild(newText2);
+                    }
+                }
+
+                // Replace the cell's content with our new inline string
+                cell.DataType = CellValues.InlineString;
+                cell.RemoveAllChildren();
+                cell.AppendChild(inlineString);
+            }
+        }
+
+        worksheetPart.Worksheet.Save();
+    }
+
     private void ReplaceInRichText(
         SharedStringItem sharedString,
         Dictionary<string, string> placeholders
@@ -145,7 +232,8 @@ public class ExcelTemplateService
 
     public byte[] GenerateMultiMonthSchedule(
         string templatePath,
-        Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth
+        Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth,
+        Project project
     )
     {
         // Load the template excel
@@ -172,8 +260,10 @@ public class ExcelTemplateService
             ?? throw new Exception("Couldnt load template worksheet part");
 
         // Create a new worksheet for each month in the dictionary
-        foreach (var month in appointmentsByMonth.Keys)
+        foreach (var entry in appointmentsByMonth)
         {
+            var month = entry.Key;
+
             // Clone the worksheet
             var clonedWorksheetPart = CloneWorksheet(workbookPart, templateWorksheetPart);
 
@@ -199,10 +289,31 @@ public class ExcelTemplateService
 
             // TODO:
             // Fill each month template with data from the month appointments
-            ReplaceSharedStringPlaceholders(clonedWorksheetPart, sharedStringPart, new() { });
+
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "{empresa_contratante}", project.Client.RazonSocial ?? project.Client.Name },
+                { "{direccion}", project.Address },
+                { "{periodo}", "-" },
+            };
+
+            // Generate placeholders for every day available on the list
+            for (var i = 1; i <= 31; i += 1)
+            {
+                placeholders[$"{{a{i}}}"] = "";
+            }
+
+            foreach (var appointment in entry.Value)
+            {
+                var day = appointment.DateTime.Day.ToString();
+                placeholders[$"{{a{day}}}"] = "x";
+            }
+
+            ReplaceSharedStringPlaceholders2(clonedWorksheetPart, sharedStringPart, placeholders);
         }
 
         // Save the excel file
+        workbook.GetFirstChild<Sheets>()?.RemoveChild(firstSheet);
         document.Save();
 
         // Return the excel file as a byte array
@@ -229,10 +340,66 @@ public class ExcelTemplateService
         if (sourceWorksheetPart.DrawingsPart != null)
         {
             DrawingsPart newDrawingsPart = newWorksheetPart.AddNewPart<DrawingsPart>();
+
+            // This is critical for floating images
+            newWorksheetPart
+                .Worksheet.Descendants<DocumentFormat.OpenXml.Spreadsheet.Drawing>()
+                .First()
+                .Id = newWorksheetPart.GetIdOfPart(newDrawingsPart);
+
             using (Stream sourceStream = sourceWorksheetPart.DrawingsPart.GetStream())
             using (Stream targetStream = newDrawingsPart.GetStream(FileMode.Create))
             {
                 sourceStream.CopyTo(targetStream);
+            }
+
+            // Copy all image parts associated with the drawing
+            foreach (ImagePart imagePart in sourceWorksheetPart.DrawingsPart.ImageParts)
+            {
+                ImagePart newImagePart = newDrawingsPart.AddImagePart(imagePart.ContentType);
+                using (Stream sourceStream = imagePart.GetStream())
+                using (Stream targetStream = newImagePart.GetStream(FileMode.Create))
+                {
+                    sourceStream.CopyTo(targetStream);
+                }
+
+                // Fix the relationship ID between drawing and image
+                string oldImageId = sourceWorksheetPart.DrawingsPart.GetIdOfPart(imagePart);
+                string newImageId = newDrawingsPart.GetIdOfPart(newImagePart);
+
+                // Update all references in the drawing
+                foreach (var element in newDrawingsPart.RootElement.Descendants())
+                {
+                    List<OpenXmlAttribute> attributes = element.GetAttributes().ToList();
+                    for (int i = 0; i < attributes.Count; i++)
+                    {
+                        var attr = attributes[i];
+                        if (attr.Value == oldImageId)
+                        {
+                            // Remove old attribute and add new one with updated value
+                            element.RemoveAttribute(attr.LocalName, attr.NamespaceUri);
+                            element.SetAttribute(
+                                new OpenXmlAttribute(
+                                    attr.Prefix,
+                                    attr.LocalName,
+                                    attr.NamespaceUri,
+                                    newImageId
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+
+            // Copy any chart parts if they exist
+            foreach (ChartPart chartPart in sourceWorksheetPart.DrawingsPart.ChartParts)
+            {
+                ChartPart newChartPart = newDrawingsPart.AddNewPart<ChartPart>();
+                using (Stream sourceStream = chartPart.GetStream())
+                using (Stream targetStream = newChartPart.GetStream(FileMode.Create))
+                {
+                    sourceStream.CopyTo(targetStream);
+                }
             }
         }
 
