@@ -137,12 +137,16 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     public required IList<AppointmentCreateDTOThroughProject> AppointmentCreateDTOs { get; set; } =
         null!;
 
+    [MinLength(1, ErrorMessage = "Debe ingresar al menos 1 ambiente")]
+    public string[] Ambients { get; set; } = Array.Empty<string>();
+
     public Project MapToEntity()
     {
         return new Project
         {
             Address = Address,
             Area = Area,
+            Ambients = Ambients,
             Status = ProjectStatus.Pending,
             Price = Price,
             SpacesCount = SpacesCount,
