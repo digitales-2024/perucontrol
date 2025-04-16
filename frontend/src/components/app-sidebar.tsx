@@ -126,8 +126,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
                             <div className="text-center w-full">
                                 <Image
                                     className="inline-block"
-                                    src="/logo.png"
                                     alt="Logo"
+                                    src="/logo.png"
                                     width={160}
                                     height={160}
                                 />

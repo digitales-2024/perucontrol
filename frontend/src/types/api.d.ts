@@ -416,7 +416,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Certificate word */
+        /** Generate Certificate Word */
         post: {
             parameters: {
                 query?: never;

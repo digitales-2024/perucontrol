@@ -113,3 +113,23 @@ export const certificateSchema = z.object({
 });
 
 export type CertificateSchema = z.infer<typeof certificateSchema>
+
+export const rodentControlRowSchema = z.object({
+    rodentAreas: z.string().min(1, "El área controlada es requerida"),
+    cebaderoTrampa: z.string(),
+    frequency: z.string().optional(),
+    rodentConsumption: z.string().optional(),
+    rodentResult: z.string().optional(),
+    rodentMaterials: z.string().optional(),
+    productName: z.string(),
+    productDose: z.string(),
+    incidencias: z.string(),
+});
+
+// Esquema completo del formulario
+export const rodentControlFormSchema = z.object({
+    rows: z.array(rodentControlRowSchema).min(1, "Debe agregar al menos una fila"),
+    medidasCorrectivas: z.string(),
+});
+
+export type RodentControlFormValues = z.infer<typeof rodentControlFormSchema>

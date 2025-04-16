@@ -44,7 +44,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm text-left w-full"
             >
                 # SERVICIO
             </Button>
