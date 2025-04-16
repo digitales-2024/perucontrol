@@ -10,16 +10,16 @@ public class RodentRegister : BaseModel
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
 
     public required DateTime ServiceDate { get; set; }
-    public required DateOnly EnterTime { get; set; }
-    public required DateOnly LeaveTime { get; set; }
+    public DateOnly? EnterTime { get; set; }
+    public DateOnly? LeaveTime { get; set; }
 
     public IEnumerable<RodentArea> RodentAreas { get; set; } = new HashSet<RodentArea>();
 
     /// Incidencias Encontradas
-    public required string Incidents { get; set; }
+    public string? Incidents { get; set; }
 
     /// Medidas correctivas
-    public required string CorrectiveMeasures { get; set; }
+    public string? CorrectiveMeasures { get; set; }
 }
 
 public class RodentArea : BaseModel
