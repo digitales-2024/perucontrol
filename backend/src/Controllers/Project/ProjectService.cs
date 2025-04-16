@@ -72,6 +72,27 @@ public class AppointmentInfo
 {
     public required DateTime DateTime { get; set; }
     public required IEnumerable<string> ServiceNames { get; set; }
+
+    public string ServiceLetterList() =>
+        ServiceNames == null || !ServiceNames.Any()
+            ? string.Empty
+            : string.Join(",", ServiceNames.Select(name => ServiceToLetter(name)));
+
+    public static char ServiceToLetter(string service)
+    {
+        if (service == "Fumigación")
+            return 'F';
+        if (service == "Desinfección")
+            return 'I';
+        if (service == "Desinsectación")
+            return 'D';
+        if (service == "Desratización")
+            return 'R';
+        if (service == "Limpieza de tanque")
+            return 'T';
+
+        throw new ArgumentException($"No se encontró la letra para el servicio {service}");
+    }
 }
 
 public static class DateHelper

@@ -325,9 +325,10 @@ public class ExcelTemplateService
             foreach (var appointment in entry.Value)
             {
                 var day = appointment.DateTime.Day.ToString();
+                var services = appointment.ServiceLetterList();
                 for (var i = 1; i <= projectAmbientsCount; i += 1)
                 {
-                    placeholders[$"{{{i}_{day}}}"] = "x";
+                    placeholders[$"{{{i}_{day}}}"] = services;
                 }
             }
 
