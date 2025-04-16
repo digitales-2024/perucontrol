@@ -34,6 +34,8 @@ public class Project : BaseModel
 
     public required uint SpacesCount { get; set; }
 
+    public string[] Ambients { get; set; } = Array.Empty<string>();
+
     [Column(TypeName = "decimal(18,2)")]
     [Range(
         0,
