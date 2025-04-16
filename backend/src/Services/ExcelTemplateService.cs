@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using PeruControl.Controllers;
 
 namespace PeruControl.Services;
 
@@ -140,5 +141,101 @@ public class ExcelTemplateService
                 }
             }
         }
+    }
+
+    public byte[] GenerateMultiMonthSchedule(
+        string templatePath,
+        Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth
+    )
+    {
+        // Load the template excel
+        using var ms = new MemoryStream();
+
+        using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        // duplicate the stream as writeable
+        using var document =
+            SpreadsheetDocument.Open(ms, true) ?? throw new Exception("Couldnt load spreadsheet");
+
+        // Get the first worksheet
+        var workbookPart = document.WorkbookPart ?? throw new Exception("Couldnt load workbook");
+        var workbook = workbookPart.Workbook ?? throw new Exception("Couldnt load workbook");
+        var sheets = workbook.Descendants<Sheet>().ToList();
+        var firstSheet =
+            sheets.FirstOrDefault() ?? throw new Exception("No sheets found in template.");
+        var templateWorksheetPart =
+            (WorksheetPart)workbookPart.GetPartById(firstSheet.Id)
+            ?? throw new Exception("Couldnt load template worksheet part");
+
+        // Create a new worksheet for each month in the dictionary
+        foreach (var month in appointmentsByMonth.Keys)
+        {
+            // Clone the worksheet
+            var clonedWorksheetPart = CloneWorksheet(workbookPart, templateWorksheetPart);
+
+            // Set the worksheet name to the month name
+            string sheetName = month.GetSpanishMonthYear();
+            var sheetId = (uint)(sheets.Count + 1); // Generate ID
+            var relationshipId = workbookPart.GetIdOfPart(clonedWorksheetPart);
+
+            // Add the new sheet after the last sheet
+            var sheet = new Sheet()
+            {
+                Id = relationshipId,
+                SheetId = sheetId,
+                Name = sheetName,
+            };
+
+            workbook.GetFirstChild<Sheets>()?.AppendChild(sheet);
+
+            // Replace placeholders in the cloned worksheet
+            var sharedStringPart = workbookPart.SharedStringTablePart;
+            if (sharedStringPart == null)
+                throw new Exception("Couldn't load shared string part");
+
+            // TODO:
+            // Fill each month template with data from the month appointments
+            ReplaceSharedStringPlaceholders(clonedWorksheetPart, sharedStringPart, new() { });
+        }
+
+        // Save the excel file
+        document.Save();
+
+        // Return the excel file as a byte array
+        // Profit
+        return ms.ToArray();
+    }
+
+    private WorksheetPart CloneWorksheet(
+        WorkbookPart workbookPart,
+        WorksheetPart sourceWorksheetPart
+    )
+    {
+        // Create a new worksheet part
+        WorksheetPart newWorksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+
+        // Copy content from the source worksheet
+        using (Stream sourceStream = sourceWorksheetPart.GetStream())
+        using (Stream targetStream = newWorksheetPart.GetStream(FileMode.Create))
+        {
+            sourceStream.CopyTo(targetStream);
+        }
+
+        // Copy any drawing, etc.
+        if (sourceWorksheetPart.DrawingsPart != null)
+        {
+            DrawingsPart newDrawingsPart = newWorksheetPart.AddNewPart<DrawingsPart>();
+            using (Stream sourceStream = sourceWorksheetPart.DrawingsPart.GetStream())
+            using (Stream targetStream = newDrawingsPart.GetStream(FileMode.Create))
+            {
+                sourceStream.CopyTo(targetStream);
+            }
+        }
+
+        return newWorksheetPart;
     }
 }

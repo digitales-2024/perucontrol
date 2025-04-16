@@ -239,7 +239,6 @@ public class AppointmentController(
         [FromBody] ProjectOperationSheetPatchDTO updateDTO
     )
     {
-        Console.WriteLine("??");
         var operationSheet = await db.Set<ProjectOperationSheet>()
             .Include(x => x.ProjectAppointment)
             .FirstOrDefaultAsync(x => x.ProjectAppointment.Id == appointmentid);
@@ -333,8 +332,7 @@ public class AppointmentController(
     public IActionResult GenerateCertificateWord(Guid id)
     {
         var projectAppointment = db
-            .ProjectAppointments
-            .Include(pa => pa.Services)
+            .ProjectAppointments.Include(pa => pa.Services)
             .Include(pa => pa.Certificate)
             .Include(pa => pa.ProjectOperationSheet)
             .Include(pa => pa.Project)
@@ -430,7 +428,6 @@ public class AppointmentController(
             "certificado_servicio.docx"
         );
     }
-
 
     [EndpointSummary("Generate Certificate PDF")]
     [EndpointDescription(
@@ -582,10 +579,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateRodentsPdf(Guid id)
     {
-        var placeholders = new Dictionary<string, string>
-        {
-            {"{template}", "value"}
-        };
+        var placeholders = new Dictionary<string, string> { { "{template}", "value" } };
 
         var odsBytes = odsTemplate.GenerateOdsFromTemplate(
             placeholders,
