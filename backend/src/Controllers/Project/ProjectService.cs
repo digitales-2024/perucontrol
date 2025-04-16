@@ -13,8 +13,7 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
     public async Task<(byte[]?, string?)> GenerateAppointmentScheduleExcel(Guid projectId)
     {
         var project = await db
-            .Projects
-            .Include(p => p.Client)
+            .Projects.Include(p => p.Client)
             .Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
             .FirstOrDefaultAsync(p => p.Id == projectId);
