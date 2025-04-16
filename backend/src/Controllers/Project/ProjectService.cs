@@ -54,10 +54,13 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
                 .ToList();
         }
 
+        // Sort the months
+        var sortedMonths = appointmentsByMonth.OrderBy(m => m.Key).ToDictionary();
+
         // Send the data to the excel generation system
         var bytes = excelTemplateService.GenerateMultiMonthSchedule(
-            "Templates/cotizacion_plantilla.xlsx",
-            appointmentsByMonth
+            "Templates/cronograma_plantilla.xlsx",
+            sortedMonths
         );
         return (bytes, null);
     }

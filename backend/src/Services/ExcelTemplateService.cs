@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PeruControl.Controllers;
@@ -203,6 +204,7 @@ public class ExcelTemplateService
         }
 
         // Save the excel file
+        workbook.GetFirstChild<Sheets>()?.RemoveChild(firstSheet);
         document.Save();
 
         // Return the excel file as a byte array
@@ -229,10 +231,66 @@ public class ExcelTemplateService
         if (sourceWorksheetPart.DrawingsPart != null)
         {
             DrawingsPart newDrawingsPart = newWorksheetPart.AddNewPart<DrawingsPart>();
+
+            // This is critical for floating images
+            newWorksheetPart
+                .Worksheet.Descendants<DocumentFormat.OpenXml.Spreadsheet.Drawing>()
+                .First()
+                .Id = newWorksheetPart.GetIdOfPart(newDrawingsPart);
+
             using (Stream sourceStream = sourceWorksheetPart.DrawingsPart.GetStream())
             using (Stream targetStream = newDrawingsPart.GetStream(FileMode.Create))
             {
                 sourceStream.CopyTo(targetStream);
+            }
+
+            // Copy all image parts associated with the drawing
+            foreach (ImagePart imagePart in sourceWorksheetPart.DrawingsPart.ImageParts)
+            {
+                ImagePart newImagePart = newDrawingsPart.AddImagePart(imagePart.ContentType);
+                using (Stream sourceStream = imagePart.GetStream())
+                using (Stream targetStream = newImagePart.GetStream(FileMode.Create))
+                {
+                    sourceStream.CopyTo(targetStream);
+                }
+
+                // Fix the relationship ID between drawing and image
+                string oldImageId = sourceWorksheetPart.DrawingsPart.GetIdOfPart(imagePart);
+                string newImageId = newDrawingsPart.GetIdOfPart(newImagePart);
+
+                // Update all references in the drawing
+                foreach (var element in newDrawingsPart.RootElement.Descendants())
+                {
+                    List<OpenXmlAttribute> attributes = element.GetAttributes().ToList();
+                    for (int i = 0; i < attributes.Count; i++)
+                    {
+                        var attr = attributes[i];
+                        if (attr.Value == oldImageId)
+                        {
+                            // Remove old attribute and add new one with updated value
+                            element.RemoveAttribute(attr.LocalName, attr.NamespaceUri);
+                            element.SetAttribute(
+                                new OpenXmlAttribute(
+                                    attr.Prefix,
+                                    attr.LocalName,
+                                    attr.NamespaceUri,
+                                    newImageId
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+
+            // Copy any chart parts if they exist
+            foreach (ChartPart chartPart in sourceWorksheetPart.DrawingsPart.ChartParts)
+            {
+                ChartPart newChartPart = newDrawingsPart.AddNewPart<ChartPart>();
+                using (Stream sourceStream = chartPart.GetStream())
+                using (Stream targetStream = newChartPart.GetStream(FileMode.Create))
+                {
+                    sourceStream.CopyTo(targetStream);
+                }
             }
         }
 
