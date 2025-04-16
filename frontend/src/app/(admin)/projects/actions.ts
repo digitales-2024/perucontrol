@@ -251,6 +251,11 @@ export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, Fetch
     return DownloadFile(`/api/Appointment/${id}/rodents/pdf`, "POST", "");
 }
 
+export async function GenerateRodentExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodent/excel`, "POST", "");
+}
+
 export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
 {
     const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/certificate", {
@@ -273,4 +278,45 @@ export async function GetCertificateOfAppointmentById(id: string): Promise<Resul
 export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
+}
+
+export async function SaveRodentData(
+    id: string,
+    body: components["schemas"]["RodentRegisterUpdateDTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentId}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentId: id,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GetRodentOfAppointmentById(id: string): Promise<Result<components["schemas"]["RodentRegisterUpdateDTO"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
 }

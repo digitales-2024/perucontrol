@@ -114,22 +114,33 @@ export const certificateSchema = z.object({
 
 export type CertificateSchema = z.infer<typeof certificateSchema>
 
-export const rodentControlRowSchema = z.object({
-    rodentAreas: z.string().min(1, "El área controlada es requerida"),
-    cebaderoTrampa: z.string(),
-    frequency: z.string().optional(),
-    rodentConsumption: z.string().optional(),
-    rodentResult: z.string().optional(),
-    rodentMaterials: z.string().optional(),
-    productName: z.string(),
-    productDose: z.string(),
-    incidencias: z.string(),
+export const RodentAreaSchema = z.object({
+    id: z.string().uuid()
+        .optional(), // si es nuevo puede no venir
+    name: z.string().min(1, "Campo requerido"),
+    cebaderoTrampa: z.coerce.number().int(),
+    frequency: z.enum(["Fortnightly","Monthly", "Bimonthly", "Quarterly", "Semiannual"]),
+    rodentConsumption: z.enum(["Total", "Partial", "Deteriorated", "NoConsumption"]),
+    rodentResult: z.enum(["Active", "Inactive", "RoedMto", "Others"]),
+    rodentMaterials: z.enum(["Fungicide", "RodenticideOrBait", "StickyTrap", "Tomahawk"]),
+    productName: z.string().min(1),
+    productDose: z.string().min(1),
 });
 
-// Esquema completo del formulario
-export const rodentControlFormSchema = z.object({
-    rows: z.array(rodentControlRowSchema).min(1, "Debe agregar al menos una fila"),
-    medidasCorrectivas: z.string(),
+export const RodentControlFormSchema = z.object({
+    // projectAppointmentId: z.string().uuid(),
+    serviceDate: z.date().nullable()
+        .optional(),
+    enterTime: z.string().nullable()
+        .optional(),
+    leaveTime: z.string().nullable()
+        .optional(),
+    incidents: z.string().nullable()
+        .optional(),
+    correctiveMeasures: z.string().nullable()
+        .optional(),
+    rodentAreas: z.array(RodentAreaSchema),
 });
 
-export type RodentControlFormValues = z.infer<typeof rodentControlFormSchema>
+// Exporta el type de React Hook Form
+export type RodentControlFormValues = z.infer<typeof RodentControlFormSchema>;

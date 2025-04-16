@@ -51,19 +51,19 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
-    const operationSheet = appointment.projectOperationSheet;
+    // const operationSheet = appointment.projectOperationSheet;
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
-            projectAppointmentId: project.id,
+            projectAppointmentId: appointment.id!,
             operationDate: appointment.actualDate!,
             enterTime: "",
             leaveTime: "",
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
             businessType: client.businessType ?? "",
-            treatedAreas: operationSheet.treatedAreas,
+            treatedAreas: "",
             service: serviceNames,
             certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
             insects: "",
@@ -108,7 +108,7 @@ export function DownloadProjectForm({
     const saveData = async(body: DownloadProjectSchema) =>
     {
         const [, saveError] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id!, body),
+            SaveProjectOperationSheetData(appointment.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -174,7 +174,7 @@ export function DownloadProjectForm({
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
         const [result, error] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id!, input), // Cambia a `true` si es una actualización
+            SaveProjectOperationSheetData(appointment.id!, input),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -215,29 +215,32 @@ export function DownloadProjectForm({
                 return;
             }
 
-            // Obtener los valores actuales del formulario (que incluyen los datos del proyecto)
-            const currentValues = form.getValues();
-
-            // Fusionar datos: si el dato de la ficha operativa es null/undefined, mantener el del proyecto
-            const mergedData = {
-                ...currentValues, // Datos actuales (proyecto)
-                ...data, // Datos de la ficha operativa
-                rodentConsumption: data.rodentConsumption ?? undefined, // Convertir null a undefined
-                operationDate: appointment.actualDate
-                    ? new Date(appointment.actualDate).toISOString()
-                    : data.operationDate
-                        ? new Date(data.operationDate).toISOString()
-                        : currentValues.operationDate,
-                degreeInsectInfectivity: data.degreeInsectInfectivity ?? undefined, // Convertir null a undefined
-                degreeRodentInfectivity: data.degreeRodentInfectivity ?? undefined, // Convertir null a undefined
-            };
-
-            // Establecer los valores en el formulario sin perder los del proyecto
-            form.reset(mergedData);
+            // Update form with operation sheet data
+            form.reset({
+                ...form.getValues(),
+                ...data,
+                projectAppointmentId: appointment.id!,
+                operationDate: appointment.actualDate!,
+                razonSocial: client.razonSocial ?? client.name,
+                address: project.address,
+                businessType: client.businessType ?? "",
+                service: serviceNames,
+                certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
+                rodentConsumption: data.rodentConsumption ?? "Partial",
+                degreeInsectInfectivity: data.degreeInsectInfectivity ?? "Moderate",
+                degreeRodentInfectivity: data.degreeRodentInfectivity ?? "Moderate",
+            }, {
+                keepDefaultValues: true,
+                keepDirty: false,
+                keepErrors: false,
+                keepIsSubmitted: false,
+                keepTouched: false,
+                keepIsValid: false,
+            });
         };
 
         loadOperationSheet();
-    }, [project.id, form, appointment.actualDate]);
+    }, [project.id, appointment.id, form]);
 
     return (
         <div className="flex flex-col h-full">

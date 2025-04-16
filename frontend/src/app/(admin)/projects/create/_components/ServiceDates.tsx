@@ -50,7 +50,7 @@ export function ServiceDates({ services }:
 
     }, [appointments]);
 
-    const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
+    /* const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
     {
         if (selectedServiceIds.length === 0)
         {
@@ -88,6 +88,51 @@ export function ServiceDates({ services }:
             else if (frequency === "Semiannual")
             {
                 currentDate = addMonths(currentDate, 6);
+            }
+        }
+
+        return dates;
+    }; */
+
+    const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
+    {
+        if (selectedServiceIds.length === 0)
+        {
+            toast.error("Debe seleccionar al menos un servicio");
+            return [];
+        }
+
+        const dates: Array<AppointmentWithServices> = [];
+
+        const endDate = addMonths(startDate, 12); // Límite = 1 año desde el inicio
+        let currentDate = new Date(startDate); // hacemos una copia para no modificar el original
+
+        while (currentDate < endDate)
+        {
+            dates.push({
+                dueDate: currentDate.toISOString(),
+                services: [...selectedServiceIds],
+            });
+
+            // Calculamos la siguiente fecha, siempre creando una nueva instancia
+            switch (frequency)
+            {
+            case "Fortnightly":
+                currentDate = new Date(currentDate);
+                currentDate.setDate(currentDate.getDate() + 15);
+                break;
+            case "Monthly":
+                currentDate = addMonths(currentDate, 1);
+                break;
+            case "Bimonthly":
+                currentDate = addMonths(currentDate, 2);
+                break;
+            case "Quarterly":
+                currentDate = addMonths(currentDate, 3);
+                break;
+            case "Semiannual":
+                currentDate = addMonths(currentDate, 6);
+                break;
             }
         }
 
