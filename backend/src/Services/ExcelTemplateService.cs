@@ -2,6 +2,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PeruControl.Controllers;
+using PeruControl.Model;
 
 namespace PeruControl.Services;
 
@@ -231,7 +232,8 @@ public class ExcelTemplateService
 
     public byte[] GenerateMultiMonthSchedule(
         string templatePath,
-        Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth
+        Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth,
+        Project project
     )
     {
         // Load the template excel
@@ -258,8 +260,10 @@ public class ExcelTemplateService
             ?? throw new Exception("Couldnt load template worksheet part");
 
         // Create a new worksheet for each month in the dictionary
-        foreach (var month in appointmentsByMonth.Keys)
+        foreach (var entry in appointmentsByMonth)
         {
+            var month = entry.Key;
+
             // Clone the worksheet
             var clonedWorksheetPart = CloneWorksheet(workbookPart, templateWorksheetPart);
 
@@ -288,8 +292,22 @@ public class ExcelTemplateService
 
             var placeholders = new Dictionary<string, string>()
             {
-                { "{empresa_contratante}", $"hola mundo - {sheetName}" },
+                { "{empresa_contratante}", project.Client.RazonSocial ?? project.Client.Name },
+                { "{direccion}", project.Address },
+                { "{periodo}", "-" },
             };
+
+            // Generate placeholders for every day available on the list
+            for (var i = 1; i <= 31; i += 1)
+            {
+                placeholders[$"{{a{i}}}"] = "";
+            }
+
+            foreach (var appointment in entry.Value)
+            {
+                var day = appointment.DateTime.Day.ToString();
+                placeholders[$"{{a{day}}}"] = "x";
+            }
 
             ReplaceSharedStringPlaceholders2(clonedWorksheetPart, sharedStringPart, placeholders);
         }

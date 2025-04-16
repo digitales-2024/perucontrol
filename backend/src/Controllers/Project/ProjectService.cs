@@ -13,7 +13,9 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
     public async Task<(byte[]?, string?)> GenerateAppointmentScheduleExcel(Guid projectId)
     {
         var project = await db
-            .Projects.Include(p => p.Appointments)
+            .Projects
+            .Include(p => p.Client)
+            .Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
             .FirstOrDefaultAsync(p => p.Id == projectId);
         if (project is null)
@@ -60,7 +62,8 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
         // Send the data to the excel generation system
         var bytes = excelTemplateService.GenerateMultiMonthSchedule(
             "Templates/cronograma_plantilla.xlsx",
-            sortedMonths
+            sortedMonths,
+            project
         );
         return (bytes, null);
     }
