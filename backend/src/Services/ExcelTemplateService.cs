@@ -158,28 +158,14 @@ public class ExcelTemplateService
         ms.Position = 0;
 
         // duplicate the stream as writeable
-        using var document = SpreadsheetDocument.Open(ms, true);
-        if (document == null)
-            throw new Exception("Couldnt load spreadsheet");
+        using var document = SpreadsheetDocument.Open(ms, true) ?? throw new Exception("Couldnt load spreadsheet");
 
         // Get the first worksheet
-        var workbookPart = document.WorkbookPart;
-        if (workbookPart == null)
-            throw new Exception("Couldnt load workbook");
-
-        var workbook = workbookPart.Workbook;
-        if (workbook == null)
-            throw new Exception("Couldnt load workbook");
-
+        var workbookPart = document.WorkbookPart ?? throw new Exception("Couldnt load workbook");
+        var workbook = workbookPart.Workbook ?? throw new Exception("Couldnt load workbook");
         var sheets = workbook.Descendants<Sheet>().ToList();
-        var firstSheet = sheets.FirstOrDefault();
-
-        if (firstSheet == null)
-            throw new Exception("No sheets found in template.");
-
-        var templateWorksheetPart = (WorksheetPart)workbookPart.GetPartById(firstSheet.Id);
-        if (templateWorksheetPart == null)
-            throw new Exception("Couldnt load template worksheet part");
+        var firstSheet = sheets.FirstOrDefault() ?? throw new Exception("No sheets found in template.");
+        var templateWorksheetPart = (WorksheetPart)workbookPart.GetPartById(firstSheet.Id) ?? throw new Exception("Couldnt load template worksheet part");
 
         // Create a new worksheet for each month in the dictionary
         foreach (var month in appointmentsByMonth.Keys)
@@ -188,7 +174,7 @@ public class ExcelTemplateService
             var clonedWorksheetPart = CloneWorksheet(workbookPart, templateWorksheetPart);
 
             // Set the worksheet name to the month name
-            string sheetName = month.GetSpanishMonthName();
+            string sheetName = month.GetSpanishMonthYear();
             var sheetId = (uint)(sheets.Count + 1); // Generate ID
             var relationshipId = workbookPart.GetIdOfPart(clonedWorksheetPart);
 
