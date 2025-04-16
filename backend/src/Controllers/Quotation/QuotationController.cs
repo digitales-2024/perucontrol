@@ -10,7 +10,7 @@ namespace PeruControl.Controllers;
 public class QuotationController(
     DatabaseContext db,
     ExcelTemplateService excelTemplate,
-    PDFConverterService pDFConverterService
+    LibreOfficeConverterService pDFConverterService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]

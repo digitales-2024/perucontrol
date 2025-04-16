@@ -15,7 +15,7 @@ namespace PeruControl.Controllers;
 public class AppointmentController(
     DatabaseContext db,
     OdsTemplateService odsTemplate,
-    PDFConverterService pdfConverterService,
+    LibreOfficeConverterService pdfConverterService,
     SvgTemplateService svgTemplateService,
     WordTemplateService wordTemplateService
 ) : ControllerBase
