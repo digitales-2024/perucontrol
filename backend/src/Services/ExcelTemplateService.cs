@@ -113,6 +113,91 @@ public class ExcelTemplateService
         sharedStringPart.SharedStringTable.Save();
     }
 
+    private void ReplaceSharedStringPlaceholders2(
+        WorksheetPart worksheetPart,
+        SharedStringTablePart sharedStringPart,
+        Dictionary<string, string> placeholders
+    )
+    {
+        // Get all cells IN THIS SPECIFIC WORKSHEET that use shared strings
+        var cells = worksheetPart
+            .Worksheet.Descendants<Cell>()
+            .Where(c => c.DataType != null && c.DataType == CellValues.SharedString)
+            .ToList();
+
+        foreach (var cell in cells)
+        {
+            var stringId = int.Parse(cell.InnerText);
+            var sharedStringItem = sharedStringPart
+                .SharedStringTable.Elements<SharedStringItem>()
+                .ElementAt(stringId);
+
+            // Check if this cell has placeholders by examining all text parts
+            bool hasPlaceholder = false;
+            foreach (var textElement in sharedStringItem.Descendants<Text>())
+            {
+                if (placeholders.Keys.Any(key => textElement.Text.Contains(key)))
+                {
+                    hasPlaceholder = true;
+                    break;
+                }
+            }
+
+            if (hasPlaceholder)
+            {
+                // Create new inline string to replace the shared string
+                InlineString inlineString = new InlineString();
+
+                // Clone all elements from the shared string, preserving formatting
+                foreach (var element in sharedStringItem.ChildElements)
+                {
+                    if (element is Run run)
+                    {
+                        Run newRun = (Run)run.CloneNode(true);
+
+                        // Replace placeholders in this run
+                        foreach (var textElement in newRun.Descendants<Text>())
+                        {
+                            string newText = textElement.Text;
+                            foreach (var placeholder in placeholders)
+                            {
+                                if (newText.Contains(placeholder.Key))
+                                {
+                                    newText = newText.Replace(placeholder.Key, placeholder.Value);
+                                }
+                            }
+                            textElement.Text = newText;
+                        }
+
+                        inlineString.AppendChild(newRun);
+                    }
+                    else if (element is Text text)
+                    {
+                        // Handle direct text elements (rare in formatted content but possible)
+                        string newText = text.Text;
+                        foreach (var placeholder in placeholders)
+                        {
+                            if (newText.Contains(placeholder.Key))
+                            {
+                                newText = newText.Replace(placeholder.Key, placeholder.Value);
+                            }
+                        }
+
+                        Text newText2 = new Text(newText);
+                        inlineString.AppendChild(newText2);
+                    }
+                }
+
+                // Replace the cell's content with our new inline string
+                cell.DataType = CellValues.InlineString;
+                cell.RemoveAllChildren();
+                cell.AppendChild(inlineString);
+            }
+        }
+
+        worksheetPart.Worksheet.Save();
+    }
+
     private void ReplaceInRichText(
         SharedStringItem sharedString,
         Dictionary<string, string> placeholders
@@ -200,7 +285,13 @@ public class ExcelTemplateService
 
             // TODO:
             // Fill each month template with data from the month appointments
-            ReplaceSharedStringPlaceholders(clonedWorksheetPart, sharedStringPart, new() { });
+
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "{empresa_contratante}", $"hola mundo - {sheetName}" },
+            };
+
+            ReplaceSharedStringPlaceholders2(clonedWorksheetPart, sharedStringPart, placeholders);
         }
 
         // Save the excel file
