@@ -187,12 +187,22 @@ export function AppointmentDetail({
                     </div>
 
                     {/* <div className="flex justify-end gap-2"> */}
-                    <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
+                    <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 mt-4">
+                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/roedores`}>
+                            <Button
+                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
+                                disabled={deliveryDate === null}
+                                title={deliveryDate === null ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
+                            >
+                                <Download />
+                                Registro de roedores
+                            </Button>
+                        </Link>
                         <Link href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}>
                             <Button
                                 className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
                                 disabled={deliveryDate === null}
-                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                                title={deliveryDate === null ? "No se puede ver el certificado si no se ha completado la fecha real" : ""}
                             >
                                 <Download />
                                 Certificado
