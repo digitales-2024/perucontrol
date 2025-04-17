@@ -3,13 +3,14 @@
 import { Input } from "@/components/ui/input";
 import { AutoComplete, type Option } from "@/components/ui/autocomplete";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { components } from "@/types/api";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck, X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
+import { Separator } from "@/components/ui/separator";
 
 interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
@@ -25,12 +26,23 @@ const serviceIcons: Record<string, React.ReactNode> = {
     Desinfección: <Shield className="h-3 w-3" />,
 };
 
+// Máximo número de ambientes permitidos
+const MAX_ENVIRONMENTS = 8;
+
 export function ClientData({ clients, services, quotations }: ClientDataProps)
 {
     const { setValue, watch } = useFormContext();
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+
+    const { control } = useFormContext();
+
+    // Usar useFieldArray para manejar los ambientes
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "ambients",
+    });
 
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const activeQuotations = quotations.filter((quotation) => quotation?.isActive); // Filtrando las cotizaciones activas
@@ -143,6 +155,18 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
     {
         setShowQuotation(false);
     };
+
+    // Función para agregar un nuevo ambiente
+    const addEnvironment = () =>
+    {
+        if (fields.length < MAX_ENVIRONMENTS)
+        {
+            append("");
+        }
+    };
+
+    // Verificar si se ha alcanzado el límite de ambientes
+    const isMaxEnvironmentsReached = fields.length >= MAX_ENVIRONMENTS;
 
     return (
         <Card>
@@ -343,6 +367,95 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                         </FormItem>
                     )}
                 />
+
+                <div className="mt-6">
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <FormLabel className="text-base font-medium">
+                                Tipos de Ambientes
+                            </FormLabel>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Máximo
+                                {" "}
+                                {MAX_ENVIRONMENTS}
+                                {" "}
+                                ambientes (
+                                {fields.length}
+                                /
+                                {MAX_ENVIRONMENTS}
+                                )
+                            </p>
+                        </div>
+                        <Button
+                            type="button"
+                            onClick={addEnvironment}
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                                "flex items-center gap-1 border-blue-300",
+                                isMaxEnvironmentsReached
+                                    ? "text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed"
+                                    : "text-blue-600 hover:bg-blue-50",
+                            )}
+                            disabled={isMaxEnvironmentsReached}
+                        >
+                            <Plus className="h-4 w-4" />
+                            Agregar ambiente
+                        </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                        {fields.length === 0 && (
+                            <div className="text-sm text-gray-500 italic p-3 border border-dashed border-gray-300 rounded-md text-center">
+                                No hay ambientes especificados. Agregue un ambiente para comenzar.
+                            </div>
+                        )}
+
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="flex items-center gap-2">
+                                <FormField
+                                    control={control}
+                                    name={`ambients.${index}`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="Nombre del ambiente (ej. Oficina principal)"
+                                                    className="w-full"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => remove(index)}
+                                    className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                    <X className="h-4 w-4" />
+                                    <span className="sr-only">
+                                        Eliminar ambiente
+                                    </span>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {isMaxEnvironmentsReached && (
+                        <p className="text-amber-600 text-sm mt-2">
+                            Ha alcanzado el límite máximo de
+                            {" "}
+                            {MAX_ENVIRONMENTS}
+                            {" "}
+                            ambientes.
+                        </p>
+                    )}
+                </div>
 
             </CardContent>
         </Card>

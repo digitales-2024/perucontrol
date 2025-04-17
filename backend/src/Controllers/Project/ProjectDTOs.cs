@@ -188,6 +188,8 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
     )]
     public decimal? Price { get; set; }
 
+    public string[]? Ambients { get; set; } = Array.Empty<string>();
+
     public void ApplyPatch(Project entity)
     {
         if (Address != null)
@@ -198,6 +200,8 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
             entity.SpacesCount = SpacesCount.Value;
         if (Price != null)
             entity.Price = Price.Value;
+        if (Ambients != null)
+            entity.Ambients = Ambients;
     }
 }
 
@@ -220,6 +224,7 @@ public class ProjectSummary : BaseModel
     public required uint SpacesCount { get; set; }
 
     public required decimal Price { get; set; }
+    public required string[] Ambients { get; set; } = [];
 
     public required IList<DateTime> Appointments { get; set; } = null!;
 }
@@ -243,6 +248,8 @@ public class ProjectSummarySingle : BaseModel
     public required uint SpacesCount { get; set; }
 
     public required decimal Price { get; set; }
+    
+    public required string[] Ambients { get; set; } = [];
 
     public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }
 }

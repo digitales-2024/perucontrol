@@ -422,12 +422,34 @@ export function ProjectDetails({ project, projectId }: {
                                         </span>
                                     </div>
                                 </div>
+
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Ambientes
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {project.ambients && project.ambients.length > 0 ? (
+                                            project.ambients.map((ambient, index) => (
+                                                <div key={index} className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span className="text-xs md:text-base">
+                                                        {ambient}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-muted-foreground">
+                                                No hay ambientes registrados
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         {/* Información de la cotización */}
                         {project.quotation && (
-                            <div className="space-y-2">
+                            <div className="space-y-2 mt-5">
                                 <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
                                     <FileSpreadsheet className="h-5 w-5 text-blue-500" />
                                     Cotización Relacionada

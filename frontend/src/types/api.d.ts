@@ -3853,6 +3853,7 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            ambients?: Array<string>;
             /** Format: double */
             price: number;
             /** Format: uuid */
@@ -3912,6 +3913,7 @@ export interface components {
             /** Format: double */
             price: number;
             appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
+            ambients?: Array<string>;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
@@ -4055,6 +4057,7 @@ export interface components {
             spacesCount?: number | null;
             /** Format: double */
             price?: number | null;
+            ambients?: Array<string> | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Completed" | "Rejected";
@@ -4072,6 +4075,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<string>;
             /** Format: uuid */
             id?: string;
@@ -4095,6 +4099,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
             /** Format: uuid */
             id?: string;
