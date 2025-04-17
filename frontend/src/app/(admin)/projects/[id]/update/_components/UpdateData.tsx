@@ -427,12 +427,13 @@ import { UpdateProject } from "../../../actions";
 import { toastWrapper } from "@/types/toasts";
 import { redirect, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import { Project } from "../../../types";
 
 interface UpdateClientDataProps {
   clients: Array<components["schemas"]["Client"]>
   services: Array<components["schemas"]["Service"]>
   quotations: Array<components["schemas"]["Quotation3"]>
-  project: components["schemas"]["ProjectSummarySingle"]
+  project: Project
 }
 
 // Mapa de iconos para servicios
