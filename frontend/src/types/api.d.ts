@@ -617,7 +617,6 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update a rodent register */
         patch: {
             parameters: {
                 query?: never;
@@ -640,11 +639,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["RodentRegister"];
-                        "application/json": components["schemas"]["RodentRegister"];
-                        "text/json": components["schemas"]["RodentRegister"];
-                    };
+                    content?: never;
                 };
                 /** @description Bad Request */
                 400: {
@@ -4390,7 +4385,7 @@ export interface components {
         };
         RodentAreaUpdateDTO: {
             /** Format: uuid */
-            id?: string;
+            id?: string | null;
             name?: string;
             /** Format: int32 */
             cebaderoTrampa?: number;

@@ -506,10 +506,9 @@ public class ProjectController(
 
     [EndpointSummary("Generate Schedule Excel")]
     [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
-    [HttpGet("{id}/schedule/excel")]
+    [HttpPost("{id}/schedule/excel")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [AllowAnonymous]
     public async Task<IActionResult> GenerateScheduleExcel(Guid id)
     {
         var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
@@ -532,10 +531,9 @@ public class ProjectController(
 
     [EndpointSummary("Generate Schedule PDF")]
     [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
-    [HttpGet("{id}/schedule/pdf")]
+    [HttpPost("{id}/schedule/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [AllowAnonymous]
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
         var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
