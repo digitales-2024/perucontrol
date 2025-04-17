@@ -10,7 +10,8 @@ namespace PeruControl.Controllers;
 public class ProjectController(
     DatabaseContext db,
     ServiceCacheProvider services,
-    ProjectService projectService
+    ProjectService projectService,
+    LibreOfficeConverterService pdfConverterService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
@@ -527,5 +528,48 @@ public class ProjectController(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "schedule.xlsx"
         );
+    }
+
+    [EndpointSummary("Generate Schedule PDF")]
+    [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GenerateSchedulePDF(Guid id)
+    {
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (excelBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // TODO: convert to ods, then convert to pdf?
+        var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
+        if (odsErr != "")
+        {
+            return BadRequest(odsErr);
+        }
+        if (odsBytes == null)
+        {
+            return BadRequest("Error generando ODS");
+        }
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 }
