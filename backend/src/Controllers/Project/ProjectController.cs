@@ -129,6 +129,7 @@ public class ProjectController(
                 Quotation = p.Quotation,
                 IsActive = p.IsActive,
                 Price = p.Price,
+                Ambients = p.Ambients,
                 Appointments = p.Appointments.Select(a => a.DueDate).ToList(),
             })
             .ToList();
@@ -170,6 +171,7 @@ public class ProjectController(
             Quotation = project.Quotation,
             IsActive = project.IsActive,
             Price = project.Price,
+            Ambients = project.Ambients,
             Appointments = project
                 .Appointments.Select(a => new ProjectAppointmentDTO
                 {
@@ -222,6 +224,7 @@ public class ProjectController(
             Quotation = project.Quotation,
             IsActive = project.IsActive,
             Price = project.Price,
+            Ambients = project.Ambients,
             Appointments = project
                 .Appointments.Select(a => new ProjectAppointmentDTO
                 {

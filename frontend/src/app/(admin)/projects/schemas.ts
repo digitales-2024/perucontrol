@@ -5,6 +5,7 @@ export const clientDataSchema = z.object({
     quotationId: z.union([z.string().uuid(), z.null()]).optional(),
     services: z.array(z.string().min(1, "El servicio es requerido")),
     price: z.number({message: "El precio es requerido"}),
+    ambients: z.array(z.string().min(1, "El ambiente es requerido")),
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
     area: z.preprocess(
@@ -19,7 +20,6 @@ export const clientDataSchema = z.object({
             .min(1, "Debe ser mayor a 0")
             .max(4294967295, "Valor demasiado grande"),
     ),
-    // appointments: z.array(z.string().min(1, "Debe programar al menos una fecha")),
     appointments: z.array(z.object({
         dueDate: z.string().min(1, "La fecha es requerida"), // Fecha en formato ISO
         services: z.array(z.string().min(1, "Debe seleccionar al menos un servicio")), // IDs de los servicios
@@ -28,6 +28,44 @@ export const clientDataSchema = z.object({
 });
 
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;
+
+export const projectDataSchema = z.object({
+    clientId: z.string().uuid("Debe ser un UUID válido"),
+    quotationId: z.union([z.string().uuid(), z.null()]).optional(),
+    services: z.array(z.string().min(1, "El servicio es requerido")),
+    address: z.string().min(1, "La dirección es requerida")
+        .max(100, "Máximo 100 caracteres"),
+    area: z.preprocess(
+        (val) => Number(val),
+        z.number().int()
+            .min(1, "Debe ser mayor a 0")
+            .max(4294967295, "Valor demasiado grande"),
+    ),
+    spacesCount: z.preprocess(
+        (val) => Number(val),
+        z.number().int()
+            .min(1, "Debe ser mayor a 0")
+            .max(4294967295, "Valor demasiado grande"),
+    ),
+    ambients: z.array(z.string().min(1, "El ambiente es requerido")),
+    // Nuevo campo para el formulario
+    environments: z.array(z.object({
+        name: z.string().min(1, "El nombre del ambiente es requerido"),
+    })).optional(),
+});
+
+export type ProjectDataSchema = z.infer<typeof projectDataSchema>;
+
+// Add a type helper for the form fields
+export type ProjectFormFields = {
+  clientId: string;
+  quotationId?: string | null;
+  services: Array<string>;
+  address: string;
+  area: number;
+  spacesCount: number;
+  ambients: Array<string>;
+};
 
 export const downloadProjectSchema = z.object({
     projectAppointmentId: z.string(),

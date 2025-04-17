@@ -4106,6 +4106,7 @@ export interface components {
             spacesCount?: number | null;
             /** Format: double */
             price?: number | null;
+            ambients?: Array<string> | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Completed" | "Rejected";
@@ -4123,6 +4124,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<string>;
             /** Format: uuid */
             id?: string;
@@ -4146,6 +4148,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
             /** Format: uuid */
             id?: string;
