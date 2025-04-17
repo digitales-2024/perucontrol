@@ -529,7 +529,7 @@ public class ProjectController(
 
     [EndpointSummary("Generate Schedule PDF")]
     [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
-    [HttpGet("{id}/schedule/excel")]
+    [HttpGet("{id}/schedule/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [AllowAnonymous]

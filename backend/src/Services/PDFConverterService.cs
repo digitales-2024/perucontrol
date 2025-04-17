@@ -53,7 +53,11 @@ public class LibreOfficeConverterService
         }
     }
 
-    public (byte[]?, string) convertTo(byte[] inputBytes, string extension, string outputType = "pdf")
+    public (byte[]?, string) convertTo(
+        byte[] inputBytes,
+        string extension,
+        string outputType = "pdf"
+    )
     {
         var unixms = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var tempDir = Path.Combine(Path.GetTempPath(), "gen_files");
@@ -71,7 +75,8 @@ public class LibreOfficeConverterService
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "soffice",
-                    Arguments = $"--headless --convert-to {outputType} --outdir \"{tempDir}\" \"{tempFilePath}\"",
+                    Arguments =
+                        $"--headless --convert-to {outputType} --outdir \"{tempDir}\" \"{tempFilePath}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,

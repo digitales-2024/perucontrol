@@ -608,7 +608,8 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RodentRegister>> UpdateRodentRegister(
         [FromRoute] Guid appointmentId,
-        [FromBody] RodentRegisterUpdateDTO updateDTO)
+        [FromBody] RodentRegisterUpdateDTO updateDTO
+    )
     {
         if (updateDTO == null)
             return BadRequest("El cuerpo de la solicitud no puede estar vacío");
@@ -625,52 +626,52 @@ public class AppointmentController(
         {
             updateDTO.ApplyPatch(rodent.RodentRegister);
 
-        /* // Eliminar áreas que no están en el DTO
-        var areasToRemove = rodent.RodentRegister.RodentAreas
-            .Where(ra => !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id))
-            .ToList();
-
-        foreach (var area in areasToRemove)
-        {
-            rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Where(ra => ra.Id != area.Id).ToList();
-        }
-
-        // Actualizar áreas existentes y agregar nuevas
-        foreach (var dto in updateDTO.RodentAreas)
-        {
-            var existingArea = rodent.RodentRegister.RodentAreas.FirstOrDefault(ra => ra.Id == dto.Id);
-
-            if (existingArea != null)
+            /* // Eliminar áreas que no están en el DTO
+            var areasToRemove = rodent.RodentRegister.RodentAreas
+                .Where(ra => !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id))
+                .ToList();
+    
+            foreach (var area in areasToRemove)
             {
-                // Actualizar área existente
-                existingArea.Name = dto.Name;
-                existingArea.CebaderoTrampa = dto.CebaderoTrampa;
-                existingArea.Frequency = dto.Frequency;
-                existingArea.RodentConsumption = dto.RodentConsumption;
-                existingArea.RodentResult = dto.RodentResult;
-                existingArea.RodentMaterials = dto.RodentMaterials;
-                existingArea.ProductName = dto.ProductName;
-                existingArea.ProductDose = dto.ProductDose;
+                rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Where(ra => ra.Id != area.Id).ToList();
             }
-            else
+    
+            // Actualizar áreas existentes y agregar nuevas
+            foreach (var dto in updateDTO.RodentAreas)
             {
-                // Agregar nueva área
-                var newArea = new RodentArea
+                var existingArea = rodent.RodentRegister.RodentAreas.FirstOrDefault(ra => ra.Id == dto.Id);
+    
+                if (existingArea != null)
                 {
-                    Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-                    Name = dto.Name,
-                    CebaderoTrampa = dto.CebaderoTrampa,
-                    Frequency = dto.Frequency,
-                    RodentConsumption = dto.RodentConsumption,
-                    RodentResult = dto.RodentResult,
-                    RodentMaterials = dto.RodentMaterials,
-                    ProductName = dto.ProductName,
-                    ProductDose = dto.ProductDose,
-                    RodentRegister = rodent.RodentRegister
-                };
-                rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Append(newArea).ToList();
-            }
-        } */
+                    // Actualizar área existente
+                    existingArea.Name = dto.Name;
+                    existingArea.CebaderoTrampa = dto.CebaderoTrampa;
+                    existingArea.Frequency = dto.Frequency;
+                    existingArea.RodentConsumption = dto.RodentConsumption;
+                    existingArea.RodentResult = dto.RodentResult;
+                    existingArea.RodentMaterials = dto.RodentMaterials;
+                    existingArea.ProductName = dto.ProductName;
+                    existingArea.ProductDose = dto.ProductDose;
+                }
+                else
+                {
+                    // Agregar nueva área
+                    var newArea = new RodentArea
+                    {
+                        Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
+                        Name = dto.Name,
+                        CebaderoTrampa = dto.CebaderoTrampa,
+                        Frequency = dto.Frequency,
+                        RodentConsumption = dto.RodentConsumption,
+                        RodentResult = dto.RodentResult,
+                        RodentMaterials = dto.RodentMaterials,
+                        ProductName = dto.ProductName,
+                        ProductDose = dto.ProductDose,
+                        RodentRegister = rodent.RodentRegister
+                    };
+                    rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Append(newArea).ToList();
+                }
+            } */
 
             await db.SaveChangesAsync();
             return Ok(rodent);
