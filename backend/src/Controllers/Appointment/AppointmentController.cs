@@ -601,12 +601,11 @@ public class AppointmentController(
         return File(pdfBytes, "application/pdf", "roedores.pdf");
     }
 
-    [EndpointSummary("Update a rodent register")]
     [HttpPatch("{appointmentId}/rodent")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RodentRegister))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RodentRegister>> UpdateRodentRegister(
+    public async Task<ActionResult> UpdateRodentRegister(
         [FromRoute] Guid appointmentId,
         [FromBody] RodentRegisterUpdateDTO updateDTO
     )
@@ -614,67 +613,84 @@ public class AppointmentController(
         if (updateDTO == null)
             return BadRequest("El cuerpo de la solicitud no puede estar vacío");
 
-        var rodent = await db.Set<ProjectAppointment>()
+        // Get the appointment with its rodent register and areas
+        var appointment = await db.Set<ProjectAppointment>()
             .Include(r => r.RodentRegister)
             .ThenInclude(r => r.RodentAreas)
             .FirstOrDefaultAsync(r => r.Id == appointmentId);
 
-        if (rodent == null)
-            return NotFound("Registro no encontrado");
+        if (appointment == null)
+            return NotFound("Appointment not found");
+
+        if (appointment.RodentRegister == null)
+            return NotFound("Rodent register not found for this appointment");
 
         try
         {
-            updateDTO.ApplyPatch(rodent.RodentRegister);
+            // Update the rodent register properties
+            updateDTO.ApplyPatch(appointment.RodentRegister);
 
-            /* // Eliminar áreas que no están en el DTO
-            var areasToRemove = rodent.RodentRegister.RodentAreas
+            // Handle the rodent areas
+            var areasToRemove = appointment.RodentRegister.RodentAreas
                 .Where(ra => !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id))
                 .ToList();
-    
+
+            // Remove areas not present in the update DTO
             foreach (var area in areasToRemove)
             {
-                rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Where(ra => ra.Id != area.Id).ToList();
+                db.Remove(area);
             }
-    
-            // Actualizar áreas existentes y agregar nuevas
-            foreach (var dto in updateDTO.RodentAreas)
+
+            // Update existing areas and add new ones
+            foreach (var areaDto in updateDTO.RodentAreas)
             {
-                var existingArea = rodent.RodentRegister.RodentAreas.FirstOrDefault(ra => ra.Id == dto.Id);
-    
+                var existingArea = appointment.RodentRegister.RodentAreas
+                    .FirstOrDefault(ra => ra.Id == areaDto.Id);
+
                 if (existingArea != null)
                 {
-                    // Actualizar área existente
-                    existingArea.Name = dto.Name;
-                    existingArea.CebaderoTrampa = dto.CebaderoTrampa;
-                    existingArea.Frequency = dto.Frequency;
-                    existingArea.RodentConsumption = dto.RodentConsumption;
-                    existingArea.RodentResult = dto.RodentResult;
-                    existingArea.RodentMaterials = dto.RodentMaterials;
-                    existingArea.ProductName = dto.ProductName;
-                    existingArea.ProductDose = dto.ProductDose;
+                    // Update existing area
+                    existingArea.Name = areaDto.Name;
+                    existingArea.CebaderoTrampa = areaDto.CebaderoTrampa;
+                    existingArea.Frequency = areaDto.Frequency;
+                    existingArea.RodentConsumption = areaDto.RodentConsumption;
+                    existingArea.RodentResult = areaDto.RodentResult;
+                    existingArea.RodentMaterials = areaDto.RodentMaterials;
+                    existingArea.ProductName = areaDto.ProductName;
+                    existingArea.ProductDose = areaDto.ProductDose;
+
+                    // Mark as modified to ensure it gets updated
+                    db.Update(existingArea);
                 }
                 else
                 {
-                    // Agregar nueva área
+                    // Add new area
                     var newArea = new RodentArea
                     {
-                        Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-                        Name = dto.Name,
-                        CebaderoTrampa = dto.CebaderoTrampa,
-                        Frequency = dto.Frequency,
-                        RodentConsumption = dto.RodentConsumption,
-                        RodentResult = dto.RodentResult,
-                        RodentMaterials = dto.RodentMaterials,
-                        ProductName = dto.ProductName,
-                        ProductDose = dto.ProductDose,
-                        RodentRegister = rodent.RodentRegister
+                        Name = areaDto.Name,
+                        CebaderoTrampa = areaDto.CebaderoTrampa,
+                        Frequency = areaDto.Frequency,
+                        RodentConsumption = areaDto.RodentConsumption,
+                        RodentResult = areaDto.RodentResult,
+                        RodentMaterials = areaDto.RodentMaterials,
+                        ProductName = areaDto.ProductName,
+                        ProductDose = areaDto.ProductDose,
+                        RodentRegister = appointment.RodentRegister
                     };
-                    rodent.RodentRegister.RodentAreas = rodent.RodentRegister.RodentAreas.Append(newArea).ToList();
-                }
-            } */
 
+                    // Add to context and to collection
+                    db.Add(newArea);
+                }
+            }
+
+            // Make sure we mark the rodent register as modified
+            db.Update(appointment.RodentRegister);
+
+            // Save changes
             await db.SaveChangesAsync();
-            return Ok(rodent);
+
+            // Return updated entity
+            return Ok();
         }
         catch (DbUpdateException ex)
         {
