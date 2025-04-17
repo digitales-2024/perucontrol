@@ -1981,6 +1981,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Project/{id}/schedule/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Generate Schedule PDF
+         * @description Generates the Schedule spreadsheet for a project.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Project/{id}/reactivate": {
         parameters: {
             query?: never;
@@ -3853,6 +3907,7 @@ export interface components {
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            ambients?: Array<string>;
             /** Format: double */
             price: number;
             /** Format: uuid */
@@ -3912,6 +3967,7 @@ export interface components {
             /** Format: double */
             price: number;
             appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
+            ambients?: Array<string>;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
@@ -4055,6 +4111,7 @@ export interface components {
             spacesCount?: number | null;
             /** Format: double */
             price?: number | null;
+            ambients?: Array<string> | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Completed" | "Rejected";
@@ -4072,6 +4129,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<string>;
             /** Format: uuid */
             id?: string;
@@ -4095,6 +4153,7 @@ export interface components {
             spacesCount: number;
             /** Format: double */
             price: number;
+            ambients: Array<string>;
             appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
             /** Format: uuid */
             id?: string;

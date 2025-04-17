@@ -36,6 +36,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             area: 1,
             spacesCount: 1,
             price: 0,
+            ambients: [],
             services: [],
             appointments: [],
         },
@@ -89,8 +90,11 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 area: data.area,
                 spacesCount: data.spacesCount,
                 price: data.price,
+                ambients: data.ambients,
                 appointmentCreateDTOs: transformedAppointments,
             };
+
+            console.log(JSON.stringify(requestData, null, 2));
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",
