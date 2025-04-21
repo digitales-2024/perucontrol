@@ -14,6 +14,7 @@ import {
     Calendar,
     CheckCircle2,
     Clock,
+    Download,
     Edit,
     FileSpreadsheet,
     MapPin,
@@ -494,10 +495,30 @@ export function ProjectDetails({ project, projectId }: {
 
                         <div className="space-y-4">
 
-                            <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
-                                <Calendar className="h-5 w-5 text-blue-500" />
-                                Cronograma de Servicios
-                            </h3>
+                            <div className="flex flex-wrap gap-4 justify-between">
+                                <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
+                                    <Calendar className="h-5 w-5 text-blue-500" />
+                                    Cronograma de Servicios
+                                </h3>
+
+                                <div className="flex flex-wrap gap-4">
+                                    <Button
+                                        type="submit"
+                                        className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        Descargar Excel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        Descargar PDF
+                                    </Button>
+
+                                </div>
+                            </div>
                             <Separator />
 
                             {/* Agregar nueva fecha */}

@@ -24,17 +24,18 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
-import { GenerateCertificateExcel, GenerateCertificatePDF, GetCertificateOfAppointmentById, SaveCertificateData } from "../actions";
-import { useEffect } from "react";
+import { GenerateCertificateExcel, GenerateCertificatePDF, SaveCertificateData } from "../actions";
 
 export function DownloadCertificateForm({
     onOpenChange,
     project,
     appointment,
+    certificate,
 }: {
     onOpenChange: (v: boolean) => void
     project: components["schemas"]["ProjectSummarySingle"];
     appointment: components["schemas"]["ProjectAppointmentDTO"];
+    certificate: components["schemas"]["Certificate"]
 })
 {
     const router = useRouter();
@@ -45,7 +46,7 @@ export function DownloadCertificateForm({
     const form = useForm<CertificateSchema>({
         resolver: zodResolver(certificateSchema),
         defaultValues: {
-            expirationDate: "",
+            expirationDate: certificate.expirationDate ?? "",
             certificateNumber,
             clientName: project.client?.name ?? project.client?.razonSocial ?? "",
             location: project?.address ?? "",
@@ -64,27 +65,6 @@ export function DownloadCertificateForm({
             },
         },
     });
-
-    useEffect(() =>
-    {
-        const loadCertificate = async() =>
-        {
-            const [data, error] = await GetCertificateOfAppointmentById(appointment.id!);
-
-            if (error)
-            {
-                console.error("Error al cargar el certificado:", error);
-                return;
-            }
-
-            if (data?.expirationDate)
-            {
-                form.setValue("expirationDate", data.expirationDate);
-            }
-        };
-
-        loadCertificate();
-    }, [appointment.id, form]);
 
     const onSubmit = async() =>
     {

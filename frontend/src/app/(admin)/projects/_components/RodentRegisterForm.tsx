@@ -382,25 +382,6 @@ export function RodentControlForm({
                                                     />
                                                 </div>
 
-                                                <FormField
-                                                    control={form.control}
-                                                    name={"incidents"}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-sm font-medium">
-                                                                Incidencias Encontradas
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    {...field}
-                                                                    value={field.value ?? ""}
-                                                                    placeholder="Describa las incidencias encontradas ..."
-                                                                    className="min-h-[60px] resize-y"
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
                                             </TabsContent>
 
                                             <TabsContent value="details" className="space-y-4">
@@ -509,7 +490,27 @@ export function RodentControlForm({
                                 </Card>
                             ))}
 
-                            <div className="mt-4">
+                            <div className="mt-4 flex flex-col gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name={"incidents"}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-sm font-medium">
+                                                Incidencias Encontradas
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    {...field}
+                                                    value={field.value ?? ""}
+                                                    placeholder="Describa las incidencias encontradas ..."
+                                                    className="min-h-[60px] resize-y"
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="correctiveMeasures"
