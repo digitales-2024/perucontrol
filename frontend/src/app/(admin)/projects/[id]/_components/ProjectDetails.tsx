@@ -14,6 +14,7 @@ import {
     Calendar,
     CheckCircle2,
     Clock,
+    Download,
     Edit,
     FileSpreadsheet,
     MapPin,
@@ -27,11 +28,12 @@ import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClients
 import { Label } from "@/components/ui/label";
 import DatePicker from "@/components/ui/date-time-picker";
 import { toast } from "sonner";
-import { AddAppointment, DesactivateAppointment, EditAppointment } from "../../actions";
+import { AddAppointment, DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { AppointmentDetail } from "./AppointmentDetail";
 import { Accordion } from "@/components/ui/accordion";
+import { toastWrapper } from "@/types/toasts";
 
 export function ProjectDetails({ project, projectId }: {
     project: components["schemas"]["ProjectSummarySingle"],
@@ -250,6 +252,51 @@ export function ProjectDetails({ project, projectId }: {
         project.services.forEach((service) => map.set(service.id!, service.name));
         return map;
     }, [project]);
+
+    const downloadExcel = async() =>
+    {
+        // Genera el Excel
+        const [blob, err] = await toastWrapper(GenerateScheduleExcel(projectId), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "cronograma.ods";
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const downloadPDF = async() =>
+    {
+        const [blob, err] = await toastWrapper(GenerateSchedulePDF(projectId), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `cronograma_${projectId.substring(0, 4)}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="container mx-auto p-4 space-y-6">
@@ -494,10 +541,38 @@ export function ProjectDetails({ project, projectId }: {
 
                         <div className="space-y-4">
 
-                            <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
-                                <Calendar className="h-5 w-5 text-blue-500" />
-                                Cronograma de Servicios
-                            </h3>
+                            <div className="flex flex-wrap gap-4 justify-between">
+                                <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
+                                    <Calendar className="h-5 w-5 text-blue-500" />
+                                    Cronograma de Servicios
+                                </h3>
+
+                                <div className="flex flex-wrap gap-4">
+                                    <Button
+                                        type="button"
+                                        onClick={async() =>
+                                        {
+                                            downloadExcel();
+                                        }}
+                                        className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        Descargar Excel
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        onClick={async() =>
+                                        {
+                                            downloadPDF();
+                                        }}
+                                        className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        Descargar PDF
+                                    </Button>
+
+                                </div>
+                            </div>
                             <Separator />
 
                             {/* Agregar nueva fecha */}
