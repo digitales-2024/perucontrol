@@ -14,7 +14,7 @@ import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
-import { GenerateRodentsPDF, SaveRodentData } from "../actions";
+import { GenerateRodentExcel, GenerateRodentsPDF, SaveRodentData } from "../actions";
 
 const defaultValues: RodentControlFormValues = {
     serviceDate: null,
@@ -107,7 +107,7 @@ export function RodentControlForm({
         URL.revokeObjectURL(url);
     };
 
-    /* const downloadExcel = async() =>
+    const downloadExcel = async() =>
     {
         const [blob, err] = await toastWrapper(GenerateRodentExcel(project.id!), {
             loading: "Generando Excel...",
@@ -120,10 +120,10 @@ export function RodentControlForm({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `control-roedores-${project.code}.xlsx`;
+        a.download = `control-roedores-${project.id!.substring(0, 4)}.ods`;
         a.click();
         URL.revokeObjectURL(url);
-    }; */
+    };
 
     const handleSubmit = async(input: RodentControlFormValues) =>
     {
@@ -513,6 +513,11 @@ export function RodentControlForm({
                                 <Button
                                     type="submit"
                                     className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                    onClick={async() =>
+                                    {
+                                        await form.handleSubmit(handleSubmit)();
+                                        downloadExcel();
+                                    }}
                                 >
                                     <Save className="h-4 w-4" />
                                     Descargar Excel

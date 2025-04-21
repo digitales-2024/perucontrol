@@ -248,7 +248,7 @@ public class ProjectSummarySingle : BaseModel
     public required uint SpacesCount { get; set; }
 
     public required decimal Price { get; set; }
-    
+
     public required string[] Ambients { get; set; } = [];
 
     public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }

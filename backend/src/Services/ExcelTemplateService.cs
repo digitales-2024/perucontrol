@@ -283,9 +283,9 @@ public class ExcelTemplateService
             workbook.GetFirstChild<Sheets>()?.AppendChild(sheet);
 
             // Replace placeholders in the cloned worksheet
-            var sharedStringPart = workbookPart.SharedStringTablePart;
-            if (sharedStringPart == null)
-                throw new Exception("Couldn't load shared string part");
+            var sharedStringPart =
+                workbookPart.SharedStringTablePart
+                ?? throw new Exception("Couldn't load shared string part");
 
             // TODO:
             // Fill each month template with data from the month appointments

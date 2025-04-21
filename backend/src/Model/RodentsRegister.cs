@@ -49,6 +49,37 @@ public enum RodentResult
     Others,
 }
 
+public static class RodentResultExtensions
+{
+    public static (string active, string inactive, string roedMto, string others) GetResultMarkers(
+        this RodentResult self
+    )
+    {
+        string active = "",
+            inactive = "",
+            roedMto = "",
+            others = "";
+
+        switch (self)
+        {
+            case RodentResult.Active:
+                active = "x";
+                break;
+            case RodentResult.Inactive:
+                inactive = "x";
+                break;
+            case RodentResult.RoedMto:
+                roedMto = "x";
+                break;
+            case RodentResult.Others:
+                others = "x";
+                break;
+        }
+
+        return (active, inactive, roedMto, others);
+    }
+}
+
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum RodentMaterials
 {
@@ -56,6 +87,40 @@ public enum RodentMaterials
     RodenticideOrBait,
     StickyTrap,
     Tomahawk,
+}
+
+public static class RodentMaterialsExtensions
+{
+    public static (
+        string fungicide,
+        string rodenticideOrBait,
+        string stickyTrap,
+        string tomahawk
+    ) GetMaterialMarkers(this RodentMaterials self)
+    {
+        string fungicide = "",
+            rodenticideOrBait = "",
+            stickyTrap = "",
+            tomahawk = "";
+
+        switch (self)
+        {
+            case RodentMaterials.Fungicide:
+                fungicide = "x";
+                break;
+            case RodentMaterials.RodenticideOrBait:
+                rodenticideOrBait = "x";
+                break;
+            case RodentMaterials.StickyTrap:
+                stickyTrap = "x";
+                break;
+            case RodentMaterials.Tomahawk:
+                tomahawk = "x";
+                break;
+        }
+
+        return (fungicide, rodenticideOrBait, stickyTrap, tomahawk);
+    }
 }
 
 public class RodentAreaUpdateDTO

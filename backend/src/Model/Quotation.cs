@@ -36,6 +36,42 @@ public static class QuotationFrequencyExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
     }
+
+    public static (
+        string fortnightly,
+        string monthly,
+        string bimonthly,
+        string quarterly,
+        string semiannual
+    ) GetFrequencyMarkers(this QuotationFrequency frequency)
+    {
+        string fortnightly = "",
+            monthly = "",
+            bimonthly = "",
+            quarterly = "",
+            semiannual = "";
+
+        switch (frequency)
+        {
+            case QuotationFrequency.Fortnightly:
+                fortnightly = "x";
+                break;
+            case QuotationFrequency.Monthly:
+                monthly = "x";
+                break;
+            case QuotationFrequency.Bimonthly:
+                bimonthly = "x";
+                break;
+            case QuotationFrequency.Quarterly:
+                quarterly = "x";
+                break;
+            case QuotationFrequency.Semiannual:
+                semiannual = "x";
+                break;
+        }
+
+        return (fortnightly, monthly, bimonthly, quarterly, semiannual);
+    }
 }
 
 public class Quotation : BaseModel

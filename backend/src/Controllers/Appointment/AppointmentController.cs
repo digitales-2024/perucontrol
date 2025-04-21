@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
@@ -577,15 +578,9 @@ public class AppointmentController(
     [HttpPost("{id}/rodents/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateRodentsPdf(Guid id)
+    public async Task<ActionResult> GenerateRodentsPdf(Guid id)
     {
-        var placeholders = new Dictionary<string, string> { { "{template}", "value" } };
-
-        var odsBytes = odsTemplate.GenerateOdsFromTemplate(
-            placeholders,
-            "Templates/roedores_plantilla.ods"
-        );
-
+        var (odsBytes, _) = await FillRodentsExcel(id);
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
 
         if (errorStr != "")
@@ -601,6 +596,137 @@ public class AppointmentController(
         return File(pdfBytes, "application/pdf", "roedores.pdf");
     }
 
+    public async Task<(byte[], ActionResult?)> FillRodentsExcel(Guid id)
+    {
+        var business = await db.Businesses.FirstOrDefaultAsync();
+        if (business == null)
+        {
+            return ([], BadRequest("Datos de la empresa no encontrados."));
+        }
+
+        var appointment = await db.Set<ProjectAppointment>()
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Client)
+            .Include(a => a.RodentRegister)
+            .ThenInclude(r => r.RodentAreas)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (appointment == null)
+        {
+            return ([], BadRequest("No se encontró la fecha."));
+        }
+
+        var project = appointment.Project;
+        var client = project.Client;
+        var rodentRegister = appointment.RodentRegister;
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{empresa_contratante}", client.RazonSocial ?? client.Name },
+            { "{empresa_autorizada}", "PeruControl" },
+            { "{direccion_servicio}", project.Address },
+            { "{fecha_servicio}", rodentRegister.ServiceDate.ToString("dd/MM/yyy") },
+            { "{hora_ingreso}", rodentRegister.EnterTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_salida}", rodentRegister.LeaveTime?.ToString(@"hh\:mm") ?? "" },
+            { "{incidencias_encontradas}", rodentRegister.Incidents ?? "" },
+            { "{medidas_correctivas}", rodentRegister.CorrectiveMeasures ?? "" },
+            { "{fecha}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
+        };
+
+        List<string> areasplaceholders =
+        [
+            "area_",
+            "tr_",
+            "quinc",
+            "mensual",
+            "trimes",
+            "semes",
+            "parcial",
+            "total",
+            "deterio",
+            "sincons",
+            "activa",
+            "inactiva",
+            "roed",
+            "otros",
+            "fungi",
+            "cebo",
+            "trampa",
+            "jaula",
+            "principia",
+            "dosis",
+        ];
+
+        // Fill Areas, up to 12
+        for (var i = 1; i <= 12; i += 1)
+        {
+            foreach (var placeh in areasplaceholders)
+            {
+                placeholders[$"{{{placeh}{i}}}"] = "";
+            }
+        }
+
+        var idx = 0;
+        foreach (var area in rodentRegister.RodentAreas)
+        {
+            idx+=1;
+
+            placeholders[$"{{area_{idx}}}"] = area.CebaderoTrampa.ToString();
+            placeholders[$"{{principia{idx}}}"] = area.ProductName;
+            placeholders[$"{{dosis{idx}}}"] = area.ProductDose;
+            var (q1, q2, _, q3, q4) = area.Frequency.GetFrequencyMarkers();
+            var (r1, r2, r3, r4) = area.RodentConsumption.ToCheckbox();
+            var (rr1, rr2, rr3, rr4) = area.RodentResult.GetResultMarkers();
+            var (m1, m2, m3, m4) = area.RodentMaterials.GetMaterialMarkers();
+
+            placeholders[$"{{quinc{idx}}}"] = q1;
+            placeholders[$"{{mensual{idx}}}"] = q2;
+            placeholders[$"{{trimes{idx}}}"] = q3;
+            placeholders[$"{{semes{idx}}}"] = q4;
+
+            placeholders[$"{{parcial{idx}}}"] = r1;
+            placeholders[$"{{total{idx}}}"] = r2;
+            placeholders[$"{{deterio{idx}}}"] = r3;
+            placeholders[$"{{sincons{idx}}}"] = r4;
+
+            placeholders[$"{{activa{idx}}}"] = rr1;
+            placeholders[$"{{inactiva{idx}}}"] = rr2;
+            placeholders[$"{{roed{idx}}}"] = rr3;
+            placeholders[$"{{otros{idx}}}"] = rr4;
+
+            placeholders[$"{{fungi{idx}}}"] = m1;
+            placeholders[$"{{cebo{idx}}}"] = m2;
+            placeholders[$"{{trampa{idx}}}"] = m3;
+            placeholders[$"{{jaula{idx}}}"] = m4;
+        }
+
+        var odsBytes = odsTemplate.GenerateOdsFromTemplate(
+            placeholders,
+            "Templates/roedores_plantilla.ods"
+        );
+
+        return (odsBytes, null);
+    }
+
+    [EndpointSummary("Generate Rodents Excel")]
+    [EndpointDescription(
+        "Generates the Rodents Template in Ods format for an Appointment. The id parameter is the Appointment ID."
+    )]
+    [HttpPost("{id}/rodents/excel")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GenerateRodentsExcel(Guid id)
+    {
+        var (odsBytes, _) = await FillRodentsExcel(id);
+
+        // send
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "roedores.ods");
+    }
+
+    [EndpointSummary("Update Rodent Register")]
+    [EndpointDescription(
+        "Updates the Rodent Register for a specific appointment. The appointmentId parameter is the ID of the appointment."
+    )]
     [HttpPatch("{appointmentId}/rodent")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -631,8 +757,10 @@ public class AppointmentController(
             updateDTO.ApplyPatch(appointment.RodentRegister);
 
             // Handle the rodent areas
-            var areasToRemove = appointment.RodentRegister.RodentAreas
-                .Where(ra => !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id))
+            var areasToRemove = appointment
+                .RodentRegister.RodentAreas.Where(ra =>
+                    !updateDTO.RodentAreas.Any(dto => dto.Id == ra.Id)
+                )
                 .ToList();
 
             // Remove areas not present in the update DTO
@@ -644,8 +772,9 @@ public class AppointmentController(
             // Update existing areas and add new ones
             foreach (var areaDto in updateDTO.RodentAreas)
             {
-                var existingArea = appointment.RodentRegister.RodentAreas
-                    .FirstOrDefault(ra => ra.Id == areaDto.Id);
+                var existingArea = appointment.RodentRegister.RodentAreas.FirstOrDefault(ra =>
+                    ra.Id == areaDto.Id
+                );
 
                 if (existingArea != null)
                 {
@@ -675,7 +804,7 @@ public class AppointmentController(
                         RodentMaterials = areaDto.RodentMaterials,
                         ProductName = areaDto.ProductName,
                         ProductDose = areaDto.ProductDose,
-                        RodentRegister = appointment.RodentRegister
+                        RodentRegister = appointment.RodentRegister,
                     };
 
                     // Add to context and to collection
