@@ -14,8 +14,7 @@ import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
-import { GenerateRodentsPDF, GetRodentOfAppointmentById, SaveRodentData } from "../actions";
-import { useEffect } from "react";
+import { GenerateRodentsPDF, SaveRodentData } from "../actions";
 
 const defaultValues: RodentControlFormValues = {
     serviceDate: null,
@@ -41,9 +40,9 @@ export function RodentControlForm({
     project,
     appointment,
 }: {
-  // onOpenChange: (v: boolean) => void
-  project: components["schemas"]["ProjectSummarySingle"];
-  appointment: components["schemas"]["ProjectAppointmentDTO"];
+    // onOpenChange: (v: boolean) => void
+    project: components["schemas"]["ProjectSummarySingle"];
+    appointment: components["schemas"]["ProjectAppointmentDTO"];
 })
 {
     const router = useRouter();
@@ -89,47 +88,6 @@ export function RodentControlForm({
 
         router.refresh();
     };
-
-    useEffect(() =>
-    {
-        const loadData = async() =>
-        {
-            const [response, error] = await GetRodentOfAppointmentById(appointment.id!);
-
-            if (error)
-            {
-                console.error("Error al cargar datos de roedores:", error);
-                return;
-            }
-
-            if (!response) return;
-
-            // Transform the response data to match the form structure
-            const formData = {
-                ...defaultValues,
-                ...response,
-                serviceDate: response.serviceDate ? new Date(response.serviceDate) : null,
-                rodentAreas: response.rodentAreas!.length > 0
-                    ? response.rodentAreas!.map((area) => ({
-                        id: area.id,
-                        name: area.name ?? "",
-                        cebaderoTrampa: area.cebaderoTrampa ?? 0,
-                        frequency: area.frequency ?? "Fortnightly",
-                        rodentConsumption: area.rodentConsumption ?? "Partial",
-                        rodentResult: area.rodentResult ?? "Active",
-                        rodentMaterials: area.rodentMaterials ?? "Fungicide",
-                        productName: area.productName ?? "",
-                        productDose: area.productDose ?? "",
-                    }))
-                    : defaultValues.rodentAreas,
-            };
-
-            // Reset the form with the transformed data
-            form.reset(formData);
-        };
-
-        loadData();
-    }, [appointment.id, form]);
 
     const downloadPDF = async() =>
     {
