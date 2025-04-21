@@ -9,6 +9,7 @@ import {
     CalendarIcon,
     Download,
     FileDigit,
+    FileText,
     MapPin,
     Save,
     X,
@@ -24,7 +25,7 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
-import { GenerateCertificateExcel, GenerateCertificatePDF, SaveCertificateData } from "../actions";
+import { GenerateCertificateWord, GenerateCertificatePDF, SaveCertificateData } from "../actions";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -132,26 +133,25 @@ export function DownloadCertificateForm({
         onOpenChange(false);
     };
 
-    const downloadExcel = async() =>
+    const downloadWord = async() =>
     {
-        console.log(appointment);
-        // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateCertificateExcel(appointment.id!), {
+        // Genera el Word
+        const [blob, err] = await toastWrapper(GenerateCertificateWord(appointment.id!), {
             loading: "Generando archivo",
-            success: "Excel generado",
-            error: (e) => `Error al generar el Excel: ${e.message}`,
+            success: "Word generado",
+            error: (e) => `Error al generar el Word: ${e.message}`,
         });
 
         if (err)
         {
-            console.error("Error al generar el Excel:", err);
+            console.error("Error al generar el Word:", err);
             return;
         }
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "servicio.ods";
+        a.download = `certificado_${appointment.id!.substring(0, 4)}.docx`;
         a.click();
         URL.revokeObjectURL(url);
         onOpenChange(false);
@@ -535,13 +535,13 @@ export function DownloadCertificateForm({
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();
-                            downloadExcel();
+                            downloadWord();
                         }}
                         form="projectForm"
-                        className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
                     >
-                        <Download className="h-4 w-4" />
-                        Generar Excel
+                        <FileText className="h-4 w-4" />
+                        Generar Word
                     </Button>
 
                     <Button
