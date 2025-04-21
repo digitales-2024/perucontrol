@@ -14,6 +14,7 @@ namespace PeruControl.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 public class AppointmentController(
+    AppointmentService appointmentService,
     DatabaseContext db,
     OdsTemplateService odsTemplate,
     LibreOfficeConverterService pdfConverterService,
@@ -571,6 +572,21 @@ public class AppointmentController(
         return Ok(result);
     }
 
+    [EndpointSummary("Generate Rodents Excel")]
+    [EndpointDescription(
+        "Generates the Rodents Template in Ods format for an Appointment. The id parameter is the Appointment ID."
+    )]
+    [HttpPost("{id}/rodents/excel")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GenerateRodentsExcel(Guid id)
+    {
+        var (odsBytes, _) = await appointmentService.FillRodentsExcel(id);
+
+        // send
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "roedores.ods");
+    }
+
     [EndpointSummary("Generate Rodents PDF")]
     [EndpointDescription(
         "Generates the Rodents Template in PDF format for an Appointment. The id parameter is the Appointment ID."
@@ -580,7 +596,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GenerateRodentsPdf(Guid id)
     {
-        var (odsBytes, _) = await FillRodentsExcel(id);
+        var (odsBytes, _) = await appointmentService.FillRodentsExcel(id);
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
 
         if (errorStr != "")
@@ -594,133 +610,6 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "roedores.pdf");
-    }
-
-    public async Task<(byte[], ActionResult?)> FillRodentsExcel(Guid id)
-    {
-        var business = await db.Businesses.FirstOrDefaultAsync();
-        if (business == null)
-        {
-            return ([], BadRequest("Datos de la empresa no encontrados."));
-        }
-
-        var appointment = await db.Set<ProjectAppointment>()
-            .Include(a => a.Project)
-            .ThenInclude(p => p.Client)
-            .Include(a => a.RodentRegister)
-            .ThenInclude(r => r.RodentAreas)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
-        if (appointment == null)
-        {
-            return ([], BadRequest("No se encontró la fecha."));
-        }
-
-        var project = appointment.Project;
-        var client = project.Client;
-        var rodentRegister = appointment.RodentRegister;
-
-        var placeholders = new Dictionary<string, string>
-        {
-            { "{empresa_contratante}", client.RazonSocial ?? client.Name },
-            { "{empresa_autorizada}", "PeruControl" },
-            { "{direccion_servicio}", project.Address },
-            { "{fecha_servicio}", rodentRegister.ServiceDate.ToString("dd/MM/yyy") },
-            { "{hora_ingreso}", rodentRegister.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", rodentRegister.LeaveTime?.ToString(@"hh\:mm") ?? "" },
-            { "{incidencias_encontradas}", rodentRegister.Incidents ?? "" },
-            { "{medidas_correctivas}", rodentRegister.CorrectiveMeasures ?? "" },
-            { "{fecha}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
-        };
-
-        List<string> areasplaceholders =
-        [
-            "area_",
-            "tr_",
-            "quinc",
-            "mensual",
-            "trimes",
-            "semes",
-            "parcial",
-            "total",
-            "deterio",
-            "sincons",
-            "activa",
-            "inactiva",
-            "roed",
-            "otros",
-            "fungi",
-            "cebo",
-            "trampa",
-            "jaula",
-            "principia",
-            "dosis",
-        ];
-
-        // Fill Areas, up to 12
-        for (var i = 1; i <= 12; i += 1)
-        {
-            foreach (var placeh in areasplaceholders)
-            {
-                placeholders[$"{{{placeh}{i}}}"] = "";
-            }
-        }
-
-        var idx = 0;
-        foreach (var area in rodentRegister.RodentAreas)
-        {
-            idx+=1;
-
-            placeholders[$"{{area_{idx}}}"] = area.CebaderoTrampa.ToString();
-            placeholders[$"{{principia{idx}}}"] = area.ProductName;
-            placeholders[$"{{dosis{idx}}}"] = area.ProductDose;
-            var (q1, q2, _, q3, q4) = area.Frequency.GetFrequencyMarkers();
-            var (r1, r2, r3, r4) = area.RodentConsumption.ToCheckbox();
-            var (rr1, rr2, rr3, rr4) = area.RodentResult.GetResultMarkers();
-            var (m1, m2, m3, m4) = area.RodentMaterials.GetMaterialMarkers();
-
-            placeholders[$"{{quinc{idx}}}"] = q1;
-            placeholders[$"{{mensual{idx}}}"] = q2;
-            placeholders[$"{{trimes{idx}}}"] = q3;
-            placeholders[$"{{semes{idx}}}"] = q4;
-
-            placeholders[$"{{parcial{idx}}}"] = r1;
-            placeholders[$"{{total{idx}}}"] = r2;
-            placeholders[$"{{deterio{idx}}}"] = r3;
-            placeholders[$"{{sincons{idx}}}"] = r4;
-
-            placeholders[$"{{activa{idx}}}"] = rr1;
-            placeholders[$"{{inactiva{idx}}}"] = rr2;
-            placeholders[$"{{roed{idx}}}"] = rr3;
-            placeholders[$"{{otros{idx}}}"] = rr4;
-
-            placeholders[$"{{fungi{idx}}}"] = m1;
-            placeholders[$"{{cebo{idx}}}"] = m2;
-            placeholders[$"{{trampa{idx}}}"] = m3;
-            placeholders[$"{{jaula{idx}}}"] = m4;
-        }
-
-        var odsBytes = odsTemplate.GenerateOdsFromTemplate(
-            placeholders,
-            "Templates/roedores_plantilla.ods"
-        );
-
-        return (odsBytes, null);
-    }
-
-    [EndpointSummary("Generate Rodents Excel")]
-    [EndpointDescription(
-        "Generates the Rodents Template in Ods format for an Appointment. The id parameter is the Appointment ID."
-    )]
-    [HttpPost("{id}/rodents/excel")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GenerateRodentsExcel(Guid id)
-    {
-        var (odsBytes, _) = await FillRodentsExcel(id);
-
-        // send
-        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "roedores.ods");
     }
 
     [EndpointSummary("Update Rodent Register")]

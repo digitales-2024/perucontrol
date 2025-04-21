@@ -16,26 +16,6 @@ import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
 import { GenerateRodentExcel, GenerateRodentsPDF, SaveRodentData } from "../actions";
 
-const defaultValues: RodentControlFormValues = {
-    serviceDate: null,
-    enterTime: undefined,
-    leaveTime: undefined,
-    incidents: undefined,
-    correctiveMeasures: undefined,
-    rodentAreas: [
-        {
-            name: "",
-            cebaderoTrampa: 0,
-            frequency: "Fortnightly",
-            rodentConsumption: "Partial",
-            rodentResult: "Active",
-            rodentMaterials: "Fungicide",
-            productName: "",
-            productDose: "",
-        },
-    ],
-};
-
 export function RodentControlForm({
     project,
     appointment,
@@ -49,7 +29,25 @@ export function RodentControlForm({
 
     const form = useForm<RodentControlFormValues>({
         resolver: zodResolver(RodentControlFormSchema),
-        defaultValues,
+        defaultValues: {
+            serviceDate: null,
+            enterTime: undefined,
+            leaveTime: undefined,
+            incidents: undefined,
+            correctiveMeasures: undefined,
+            rodentAreas: [
+                {
+                    name: "",
+                    cebaderoTrampa: 0,
+                    frequency: "Fortnightly",
+                    rodentConsumption: "Partial",
+                    rodentResult: "Active",
+                    rodentMaterials: "Fungicide",
+                    productName: "",
+                    productDose: "",
+                },
+            ],
+        },
     });
 
     const { fields, append, remove } = useFieldArray({
