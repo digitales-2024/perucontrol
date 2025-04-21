@@ -1929,11 +1929,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Generate Schedule Excel
          * @description Generates the Schedule spreadsheet for a project.
          */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -1968,8 +1970,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1983,11 +1983,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Generate Schedule PDF
          * @description Generates the Schedule spreadsheet for a project.
          */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -2022,8 +2024,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
