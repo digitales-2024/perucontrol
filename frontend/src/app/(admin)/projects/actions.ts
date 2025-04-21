@@ -320,3 +320,13 @@ export async function GetRodentOfAppointmentById(id: string): Promise<Result<com
     }
     return ok(data);
 }
+
+export async function GenerateSchedulePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/pdf`, "POST", "");
+}
+
+export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
+}

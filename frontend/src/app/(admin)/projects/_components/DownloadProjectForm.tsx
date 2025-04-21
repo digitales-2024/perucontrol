@@ -125,7 +125,6 @@ export function DownloadProjectForm({
 
     const downloadExcel = async() =>
     {
-        console.log(appointment);
         // Genera el Excel
         const [blob, err] = await toastWrapper(GenerateExcel(appointment.id!), {
             loading: "Generando archivo",

@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { CertificateForm } from "./_CertificateForm";
+import { GetCertificateOfAppointmentById } from "@/app/(admin)/projects/actions";
 
 interface Props {
     params: Promise<{
@@ -35,10 +36,18 @@ export default async function ProjectsPage({ params }: Props)
         return null;
     }
 
+    const [data, error] = await GetCertificateOfAppointmentById(appointment.id!);
+
+    if (error)
+    {
+        console.error("Error al cargar el certificado:", error);
+        return;
+    }
+
     return (
         <>
             <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
-            <CertificateForm /* projectOperationSheet={projectOperationSheet} */ project={project} appointment={appointment} />
+            <CertificateForm project={project} appointment={appointment} certificate={data} />
         </>
     );
 }
