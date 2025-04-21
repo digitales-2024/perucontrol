@@ -30,29 +30,28 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
             var month = appointment.DueDate.GetSpanishMonthName();
             var yearMonth = appointment.DueDate.YearMonthOnly();
 
-            if (!appointmentsByMonth.ContainsKey(yearMonth))
+            if (!appointmentsByMonth.TryGetValue(yearMonth, out List<AppointmentInfo>? value))
             {
-                appointmentsByMonth[yearMonth] = new List<AppointmentInfo>();
+                value = [];
+                appointmentsByMonth[yearMonth] = value;
             }
-            appointmentsByMonth[yearMonth]
-                .Add(
-                    new()
-                    {
-                        DateTime = appointment.DueDate,
-                        ServiceNames = appointment
-                            .Services.Select(s => s.Name)
-                            .Distinct()
-                            .OrderBy(s => s),
-                    }
-                );
+
+            value.Add(
+                new()
+                {
+                    DateTime = appointment.DueDate,
+                    ServiceNames = appointment
+                        .Services.Select(s => s.Name)
+                        .Distinct()
+                        .OrderBy(s => s),
+                }
+            );
         }
 
         // Sort all appointments inside all months
         foreach (var month in appointmentsByMonth.Keys)
         {
-            appointmentsByMonth[month] = appointmentsByMonth[month]
-                .OrderBy(a => a.DateTime)
-                .ToList();
+            appointmentsByMonth[month] = [.. appointmentsByMonth[month].OrderBy(a => a.DateTime)];
         }
 
         // Sort the months
