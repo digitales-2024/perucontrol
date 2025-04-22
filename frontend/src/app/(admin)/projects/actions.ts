@@ -236,11 +236,6 @@ export async function SaveCertificateData(
     return ok(null);
 }
 
-export async function GenerateCertificateExcel(id: string): Promise<Result<Blob, FetchError>>
-{
-    return DownloadFile(`/api/Appointment/${id}/certificate/excel`, "POST", "");
-}
-
 export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
@@ -253,7 +248,7 @@ export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, Fetch
 
 export async function GenerateRodentExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/rodent/excel`, "POST", "");
+    return DownloadFile(`/api/Appointment/${id}/rodents/excel`, "POST", "");
 }
 
 export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
