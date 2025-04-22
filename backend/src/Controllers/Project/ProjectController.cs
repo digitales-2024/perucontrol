@@ -12,7 +12,8 @@ public class ProjectController(
     ServiceCacheProvider services,
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
-    S3Service s3Service
+    S3Service s3Service,
+    ImageService _imageService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
@@ -588,23 +589,47 @@ public class ProjectController(
     [HttpPost("{id}/upload-murino-map")]
     public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
     {
+        Console.WriteLine($"Uploading murino map for project {id}");
         if (file == null || file.Length == 0)
+        {
+        Console.WriteLine($"expected");
             return BadRequest("No file uploaded.");
+        }
 
-        // Aquí podrías validar el tipo de archivo si lo deseas
-        // if (!file.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) ...
-
-        // Por ahora solo recibimos el archivo y devolvemos Ok()
-        return Ok();
+        var fileName = $"mapa-murino-{id}.png";
+        try
+        {
+        Console.WriteLine($"wtf?");
+            await _imageService.SaveImageAsync(file.OpenReadStream(), fileName);
+            return Ok();
+        }
+        catch (ArgumentException ex)
+        {
+        Console.WriteLine($"expected??");
+            return BadRequest(ex.Message);
+        }
+        catch
+        {
+            return StatusCode(500, "Error guardando la imagen.");
+        }
     }
 
     [EndpointSummary("Get murino map file")]
     [HttpGet("{id}/murino-map")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMurinoMap([FromRoute] Guid id)
+    public IActionResult GetMurinoMap([FromRoute] Guid id)
     {
-        // TODO: Implementar la lógica para obtener el archivo de mapa murino
-        return NotFound("No implementado");
+        var fileName = $"mapa-murino-{id}.png";
+        var imageStream = _imageService.GetImage(fileName);
+
+        if (imageStream == null)
+            return NotFound("Imagen no encontrada");
+
+        // Lee el stream a un array de bytes para devolverlo como FileResult
+        using var ms = new MemoryStream();
+        imageStream.CopyTo(ms);
+        var imageBytes = ms.ToArray();
+        return File(imageBytes, "image/png", fileName);
     }
 }
