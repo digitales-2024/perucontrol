@@ -236,11 +236,6 @@ export async function SaveCertificateData(
     return ok(null);
 }
 
-export async function GenerateCertificateExcel(id: string): Promise<Result<Blob, FetchError>>
-{
-    return DownloadFile(`/api/Appointment/${id}/certificate/excel`, "POST", "");
-}
-
 export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
