@@ -8,6 +8,12 @@ public class S3Service
 {
     private readonly IAmazonS3 _s3Client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="S3Service"/> class configured to use Cloudflare R2.
+    /// </summary>
+    /// <param name="r2Config">Configuration containing R2 account details and credentials.</param>
+    /// <exception cref="ArgumentNullException">Thrown when r2Config is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when required configuration values are missing.</exception>
     public S3Service(IOptions<R2Config> r2Config)
     {
         if (r2Config == null || r2Config.Value == null)
@@ -34,6 +40,17 @@ public class S3Service
         _s3Client = new AmazonS3Client(config.AccessKey, config.SecretKey, s3Config);
     }
 
+    /// <summary>
+    /// Ensures that a bucket with the specified name exists, creating it if necessary.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket to check or create.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a boolean
+    /// indicating whether the bucket exists or was successfully created.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown when bucketName is null or empty.</exception>
+    /// <exception cref="AmazonS3Exception">Thrown when an S3-specific error occurs.</exception>
+    /// <exception cref="Exception">Thrown when an unexpected error occurs.</exception>
     public async Task<bool> EnsureBucketExistsAsync(string bucketName)
     {
         if (string.IsNullOrEmpty(bucketName))
@@ -69,6 +86,14 @@ public class S3Service
         }
     }
 
+    /// <summary>
+    /// Checks if a bucket with the specified name exists.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket to check.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a boolean
+    /// indicating whether the bucket exists.
+    /// </returns>
     private async Task<bool> DoesBucketExistAsync(string bucketName)
     {
         try
@@ -85,6 +110,21 @@ public class S3Service
         }
     }
 
+    /// <summary>
+    /// Uploads an image to the specified bucket with the given key.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket where the image will be stored.</param>
+    /// <param name="key">The key (file path/name) for the uploaded image.</param>
+    /// <param name="imageStream">The stream containing the image data to upload.</param>
+    /// <param name="contentType">The MIME type of the image, defaults to "image/jpeg".</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains an
+    /// <see cref="S3UploadResult"/> with details about the uploaded file.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown when bucketName or key is null or empty.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when imageStream is null.</exception>
+    /// <exception cref="AmazonS3Exception">Thrown when an S3-specific error occurs.</exception>
+    /// <exception cref="Exception">Thrown when an unexpected error occurs.</exception>
     public async Task<S3UploadResult> UploadImageAsync(
         string bucketName,
         string key,
@@ -147,6 +187,16 @@ public class S3Service
         }
     }
 
+    /// <summary>
+    /// Deletes an object from the specified bucket.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket containing the object to delete.</param>
+    /// <param name="key">The key (file path/name) of the object to delete.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a boolean
+    /// indicating whether the object was successfully deleted.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown when bucketName or key is null or empty.</exception>
     public async Task<bool> DeleteObjectAsync(string bucketName, string key)
     {
         if (string.IsNullOrEmpty(bucketName))
@@ -183,17 +233,32 @@ public class S3Service
     }
 }
 
-// Config class for R2 settings
+/// <summary>
+/// Configuration class for Cloudflare R2 storage.
+/// </summary>
 public class R2Config
 {
+    /// <summary>Gets or sets the Cloudflare account ID.</summary>
     public required string AccountId { get; set; }
+
+    /// <summary>Gets or sets the access key for authentication.</summary>
     public required string AccessKey { get; set; }
+
+    /// <summary>Gets or sets the secret key for authentication.</summary>
     public required string SecretKey { get; set; }
 }
 
+/// <summary>
+/// Represents the result of an S3 upload operation.
+/// </summary>
 public class S3UploadResult
 {
+    /// <summary>Gets or sets the key (path/name) of the uploaded file.</summary>
     public required string Key { get; set; }
+
+    /// <summary>Gets or sets the pre-signed URL for accessing the uploaded file.</summary>
     public required string Url { get; set; }
+
+    /// <summary>Gets or sets the name of the bucket where the file was uploaded.</summary>
     public required string BucketName { get; set; }
 }

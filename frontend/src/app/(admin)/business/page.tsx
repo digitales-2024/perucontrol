@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { CompanyInfoForm } from "./_components/CompanyInfo";
 import { backend, wrapper } from "@/types/backend";
+import { SignaturesForm } from "./_components/Signatures";
 
 export default async function ClientsPage()
 {
@@ -23,6 +24,7 @@ export default async function ClientsPage()
         <>
             <HeaderPage title="Información de PeruControl" />
             <CompanyInfoForm businessInfo={Array.isArray(businessInfo) ? businessInfo[0] : businessInfo} />
+            <SignaturesForm />
         </>
     );
 }

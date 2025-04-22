@@ -117,6 +117,9 @@ builder.Services.AddScoped<WordTemplateService>();
 builder.Services.AddScoped<LibreOfficeConverterService>();
 builder.Services.AddScoped<SvgTemplateService>();
 builder.Services.AddScoped<ServiceCacheProvider>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<S3Service>();
+builder.Services.AddScoped<WhatsappService>();
 
 var app = builder.Build();
 
