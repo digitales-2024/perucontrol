@@ -26,10 +26,16 @@ async function fetchImageBase64(name: string): Promise<string|undefined>
 
 export default async function ClientsPage()
 {
-    const img1 = await fetchImageBase64("signature1");
-    const img2 = await fetchImageBase64("signature2");
-    const img3 = await fetchImageBase64("signature3");
-    const [businessInfo, error] = await wrapper((auth) => backend.GET("/api/Business", { ...auth }));
+
+    const [
+        img1,
+        img2,
+        [businessInfo, error],
+    ] = await Promise.all([
+        fetchImageBase64("signature1"),
+        fetchImageBase64("signature2"),
+        wrapper((auth) => backend.GET("/api/Business", { ...auth })),
+    ]);
 
     if (error)
     {
@@ -48,7 +54,7 @@ export default async function ClientsPage()
         <>
             <HeaderPage title="Información de PeruControl" />
             <CompanyInfoForm businessInfo={Array.isArray(businessInfo) ? businessInfo[0] : businessInfo} />
-            <SignaturesForm initialImages={[img1,img2,img3]} />
+            <SignaturesForm initialImages={[img1,img2]} />
         </>
     );
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,8 @@ public class AppointmentController(
     OdsTemplateService odsTemplate,
     LibreOfficeConverterService pdfConverterService,
     SvgTemplateService svgTemplateService,
-    WordTemplateService wordTemplateService
+    WordTemplateService wordTemplateService,
+    ImageService imageService
 ) : ControllerBase
 {
     /// <summary>
@@ -186,6 +188,110 @@ public class AppointmentController(
         return (fileBytes, "");
     }
 
+    private (
+        ProjectAppointment? appointment,
+        Business? business,
+        string? error,
+        string fum,
+        string inse,
+        string ratiz,
+        string infec,
+        string cis1,
+        string cis2
+    ) GetCertificateData(Guid id)
+    {
+        var projectAppointment = db
+            .ProjectAppointments.Include(pa => pa.Services)
+            .Include(pa => pa.Certificate)
+            .Include(pa => pa.ProjectOperationSheet)
+            .Include(pa => pa.Project)
+            .ThenInclude(p => p.Client)
+            .FirstOrDefault(pa => pa.Id == id);
+
+        if (projectAppointment is null)
+            return (null, null, "No se encontró el certificado.", "", "", "", "", "", "");
+
+        var business = db.Businesses.FirstOrDefault();
+        if (business == null)
+            return (
+                projectAppointment,
+                null,
+                "Datos de la empresa no encontrados.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            );
+
+        if (projectAppointment.Certificate.ExpirationDate is null)
+            return (
+                projectAppointment,
+                business,
+                "La fecha de vencimiento no está establecida.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            );
+
+        if (projectAppointment.ActualDate is null)
+            return (
+                projectAppointment,
+                business,
+                "Este servicio no ha sido terminado.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            );
+
+        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
+        if (string.IsNullOrEmpty(sheetTreatedAreas))
+            return (
+                projectAppointment,
+                business,
+                "Las áreas tratadas no se ingresaron en la ficha de operaciones.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            );
+
+        var (fum, inse, ratiz, infec, cis1, cis2) = ("", "", "", "", "", "");
+        foreach (var service in projectAppointment.Services)
+        {
+            switch (service.Name)
+            {
+                case "Fumigación":
+                    fum = "X";
+                    break;
+                case "Desinfección":
+                    inse = "X";
+                    break;
+                case "Desinsectación":
+                    ratiz = "X";
+                    break;
+                case "Desratización":
+                    infec = "X";
+                    break;
+                case "Limpieza de tanque":
+                    cis1 = "X";
+                    cis2 = "X";
+                    break;
+            }
+        }
+
+        return (projectAppointment, business, null, fum, inse, ratiz, infec, cis1, cis2);
+    }
+
     [EndpointSummary("Generate Operations Sheet excel")]
     [HttpPost("{id}/gen-operations-sheet/excel")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
@@ -333,38 +439,10 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateCertificateWord(Guid id)
     {
-        var projectAppointment = db
-            .ProjectAppointments.Include(pa => pa.Services)
-            .Include(pa => pa.Certificate)
-            .Include(pa => pa.ProjectOperationSheet)
-            .Include(pa => pa.Project)
-            .ThenInclude(p => p.Client)
-            .FirstOrDefault(pa => pa.Id == id);
-
-        if (projectAppointment is null)
-        {
-            return NotFound("No se encontró el certificado.");
-        }
-
-        var business = db.Businesses.FirstOrDefault();
-        if (business == null)
-            return NotFound("Datos de la empresa no encontrados.");
-
-        if (projectAppointment.Certificate.ExpirationDate is null)
-        {
-            return BadRequest("La fecha de vencimiento no está establecida.");
-        }
-
-        if (projectAppointment.ActualDate is null)
-        {
-            return BadRequest("Este servicio no ha sido terminado.");
-        }
-
-        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
-        if (sheetTreatedAreas is null || sheetTreatedAreas == "")
-        {
-            return BadRequest("Las áreas tratadas no se ingresaron en la ficha de operaciones.");
-        }
+        var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
+            GetCertificateData(id);
+        if (error != null)
+            return BadRequest(error);
 
         var project = projectAppointment.Project;
         var sheet = projectAppointment.ProjectOperationSheet;
@@ -373,32 +451,6 @@ public class AppointmentController(
 
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
-
-        /* var (c_f, c_dt, c_dr, c_df, c_te, c_tc) = projectAppointment.Services?.ToCheckbox() ?? ("", "", "", "", "", ""); */
-
-        var (fum, inse, ratiz, infec, cis1, cis2) = ("", "", "", "", "", "");
-        foreach (var service in projectAppointment.Services)
-        {
-            switch (service.Name)
-            {
-                case "Fumigación":
-                    fum = "X";
-                    break;
-                case "Desinfección":
-                    inse = "X";
-                    break;
-                case "Desinsectación":
-                    ratiz = "X";
-                    break;
-                case "Desratización":
-                    infec = "X";
-                    break;
-                case "Limpieza de tanque":
-                    cis1 = "X";
-                    cis2 = "X";
-                    break;
-            }
-        }
 
         var placeholders = new Dictionary<string, string>
         {
@@ -440,65 +492,23 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateCertificatePdf(Guid id)
     {
-        var projectAppointment = await db
-            .ProjectAppointments.Include(pa => pa.Services)
-            .Include(pa => pa.Certificate)
-            .Include(pa => pa.ProjectOperationSheet)
-            .Include(pa => pa.Project)
-            .ThenInclude(proj => proj.Client)
-            .FirstOrDefaultAsync(pa => pa.Id == id);
-
-        if (projectAppointment is null)
-        {
-            return NotFound("No se encontró el certificado.");
-        }
-
-        var business = db.Businesses.FirstOrDefault();
-        if (business == null)
-            return BadRequest("Datos de la empresa no encontrados.");
-
-        if (projectAppointment.Certificate.ExpirationDate is null)
-        {
-            return BadRequest("La fecha de vencimiento no está establecida.");
-        }
-        if (projectAppointment.ActualDate is null)
-        {
-            return BadRequest("Este servicio no ha sido terminado.");
-        }
-
-        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
-        if (sheetTreatedAreas is null || sheetTreatedAreas == "")
-        {
-            return BadRequest("Las áreas tratadas no se ingresaron en la ficha de operaciones.");
-        }
-
-        var (fum, inse, ratiz, infec, cis1, cis2) = ("", "", "", "", "", "");
-        foreach (var service in projectAppointment.Services)
-        {
-            switch (service.Name)
-            {
-                case "Fumigación":
-                    fum = "X";
-                    break;
-                case "Desinfección":
-                    inse = "X";
-                    break;
-                case "Desinsectación":
-                    ratiz = "X";
-                    break;
-                case "Desratización":
-                    infec = "X";
-                    break;
-                case "Limpieza de tanque":
-                    cis1 = "X";
-                    cis2 = "X";
-                    break;
-            }
-        }
+        var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
+            GetCertificateData(id);
+        if (error != null)
+            return BadRequest(error);
 
         var certificate = projectAppointment.Certificate;
         var project = projectAppointment.Project;
         var client = project.Client;
+        var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
+
+        // load signatures as base64 strings
+        var signature1 = imageService.GetImageAsBase64("signature1.png");
+        var signature2 = imageService.GetImageAsBase64("signature2.png");
+        if (signature1 is null || signature2 is null)
+        {
+            return BadRequest("No se configuraron las firmas de certificado.");
+        }
 
         var placeholders = new Dictionary<string, string>
         {
@@ -520,6 +530,8 @@ public class AppointmentController(
             { "{perucontrol_telefonos}", business.Phones },
             { "{perucontrol_correo}", business.Email },
             { "{perucontrol_pagina}", "www.perucontrol.com" },
+            { "{imagen_firma_1}", $"data:image/png;base64,{signature1}" },
+            { "{imagen_firma_2}", $"data:image/png;base64,{signature2}" },
         };
 
         var svgBytes = svgTemplateService.GenerateSvgFromTemplate(
