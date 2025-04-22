@@ -330,3 +330,24 @@ export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, Fe
 {
     return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
 }
+
+export async function Generate(
+    id: string,
+    endpoint: string,
+    day: string,
+    month: string,
+    year: string,
+): Promise<Result<Blob, FetchError>>
+{
+    const requestBody = {
+        day,
+        month,
+        year,
+    };
+
+    return DownloadFile(
+        `/api/Project/${id}/${endpoint}`,
+        "POST",
+        JSON.stringify(requestBody),
+    );
+}

@@ -50,50 +50,6 @@ export function ServiceDates({ services }:
 
     }, [appointments]);
 
-    /* const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
-    {
-        if (selectedServiceIds.length === 0)
-        {
-            toast.error("Debe seleccionar al menos un servicio");
-            return [];
-        }
-
-        const dates: Array<AppointmentWithServices> = [];
-        let currentDate = new Date(startDate);
-        const currentYear = new Date().getFullYear();
-
-        while (currentDate.getFullYear() <= currentYear)
-        {
-            dates.push({
-                dueDate: currentDate.toISOString(),
-                services: [...selectedServiceIds], // Asociar los servicios seleccionados
-            });
-
-            if (frequency === "Fortnightly")
-            {
-                currentDate.setDate(currentDate.getDate() + 15);
-            }
-            else if (frequency === "Monthly")
-            {
-                currentDate = addMonths(currentDate, 1);
-            }
-            else if (frequency === "Bimonthly")
-            {
-                currentDate = addMonths(currentDate, 2);
-            }
-            else if (frequency === "Quarterly")
-            {
-                currentDate = addMonths(currentDate, 3);
-            }
-            else if (frequency === "Semiannual")
-            {
-                currentDate = addMonths(currentDate, 6);
-            }
-        }
-
-        return dates;
-    }; */
-
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
     {
         if (selectedServiceIds.length === 0)

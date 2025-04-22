@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,42 +14,54 @@ import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
-import { GenerateRodentsPDF, SaveRodentData } from "../actions";
-
-const defaultValues: RodentControlFormValues = {
-    serviceDate: null,
-    enterTime: undefined,
-    leaveTime: undefined,
-    incidents: undefined,
-    correctiveMeasures: undefined,
-    rodentAreas: [
-        {
-            name: "",
-            cebaderoTrampa: 0,
-            frequency: "Fortnightly",
-            rodentConsumption: "Partial",
-            rodentResult: "Active",
-            rodentMaterials: "Fungicide",
-            productName: "",
-            productDose: "",
-        },
-    ],
-};
+import { GenerateRodentExcel, GenerateRodentsPDF, SaveRodentData } from "../actions";
+import DatePicker from "@/components/ui/date-time-picker";
+import { format, parseISO } from "date-fns";
 
 export function RodentControlForm({
     project,
     appointment,
+    rodent,
 }: {
-    // onOpenChange: (v: boolean) => void
     project: components["schemas"]["ProjectSummarySingle"];
     appointment: components["schemas"]["ProjectAppointmentDTO"];
+    rodent: components["schemas"]["RodentRegister"];
 })
 {
     const router = useRouter();
 
     const form = useForm<RodentControlFormValues>({
         resolver: zodResolver(RodentControlFormSchema),
-        defaultValues,
+        defaultValues: {
+            serviceDate: rodent.serviceDate ?? null,
+            enterTime: rodent.enterTime ?? null,
+            leaveTime: rodent.leaveTime ?? null,
+            incidents: rodent.incidents ?? null,
+            correctiveMeasures: rodent.correctiveMeasures ?? null,
+            rodentAreas: rodent.rodentAreas!.length > 0
+                ? rodent.rodentAreas?.map((area) => ({
+                    name: area.name ?? "",
+                    cebaderoTrampa: area.cebaderoTrampa ?? 0,
+                    frequency: area.frequency ?? "Fortnightly",
+                    rodentConsumption: area.rodentConsumption ?? "Partial",
+                    rodentResult: area.rodentResult ?? "Active",
+                    rodentMaterials: area.rodentMaterials ?? "Fungicide",
+                    productName: area.productName ?? "",
+                    productDose: area.productDose ?? "",
+                }))
+                : [
+                    {
+                        name: "",
+                        cebaderoTrampa: 0,
+                        frequency: "Fortnightly",
+                        rodentConsumption: "Partial",
+                        rodentResult: "Active",
+                        rodentMaterials: "Fungicide",
+                        productName: "",
+                        productDose: "",
+                    },
+                ],
+        },
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -66,7 +78,7 @@ export function RodentControlForm({
     {
         const transformedData = {
             ...formData,
-            serviceDate: formData.serviceDate ? formData.serviceDate.toISOString() : null,
+            serviceDate: formData.serviceDate ? formData.serviceDate.toString() : null,
         };
 
         console.log(transformedData);
@@ -107,7 +119,7 @@ export function RodentControlForm({
         URL.revokeObjectURL(url);
     };
 
-    /* const downloadExcel = async() =>
+    const downloadExcel = async() =>
     {
         const [blob, err] = await toastWrapper(GenerateRodentExcel(project.id!), {
             loading: "Generando Excel...",
@@ -120,17 +132,19 @@ export function RodentControlForm({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `control-roedores-${project.code}.xlsx`;
+        a.download = `control-roedores-${project.projectNumber}.xlsx`;
         a.click();
         URL.revokeObjectURL(url);
-    }; */
+    };
 
     const handleSubmit = async(input: RodentControlFormValues) =>
     {
         const preparedInput = {
             ...input,
-            serviceDate: input.serviceDate ? input.serviceDate.toISOString() : null,
+            serviceDate: input.serviceDate ? input.serviceDate.toString() : null,
         };
+
+        console.log(JSON.stringify(preparedInput, null, 2));
 
         const [result, error] = await toastWrapper(
             SaveRodentData(appointment.id!, preparedInput),
@@ -188,6 +202,68 @@ export function RodentControlForm({
                                 <h3 className="text-lg font-medium">
                                     Áreas de Control
                                 </h3>
+                            </div>
+
+                            <div className="flex flex-wrap gap-8">
+                                <FormField
+                                    control={form.control}
+                                    name="enterTime"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                Fecha de entrada
+                                            </FormLabel>
+                                            <FormControl>
+                                                <DatePicker
+                                                    value={field.value ? parseISO(field.value) : undefined}
+                                                    onChange={(date) =>
+                                                    {
+                                                        if (date)
+                                                        {
+                                                            const formattedDate = format(date, "yyyy-MM-dd");
+                                                            field.onChange(formattedDate);
+                                                        }
+                                                        else
+                                                        {
+                                                            field.onChange(null);
+                                                        }
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="leaveTime"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                Fecha de Salida
+                                            </FormLabel>
+                                            <FormControl>
+                                                <DatePicker
+                                                    value={field.value ? parseISO(field.value) : undefined}
+                                                    onChange={(date) =>
+                                                    {
+                                                        if (date)
+                                                        {
+                                                            const formattedDate = format(date, "yyyy-MM-dd");
+                                                            field.onChange(formattedDate);
+                                                        }
+                                                        else
+                                                        {
+                                                            field.onChange(null);
+                                                        }
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
 
                             {fields.map((field, index) => (
@@ -421,7 +497,7 @@ export function RodentControlForm({
                                                                     Principio Activo
                                                                 </FormLabel>
                                                                 <FormControl>
-                                                                    <Input {...field} />
+                                                                    <Input placeholder="Ingresar Principio Activo" {...field} />
                                                                 </FormControl>
                                                             </FormItem>
                                                         )}
@@ -436,7 +512,7 @@ export function RodentControlForm({
                                                                     Dosis Utilizada
                                                                 </FormLabel>
                                                                 <FormControl>
-                                                                    <Input {...field} />
+                                                                    <Input placeholder="Ingresar Dosis Utilizada" {...field} />
                                                                 </FormControl>
                                                             </FormItem>
                                                         )}
@@ -489,38 +565,47 @@ export function RodentControlForm({
                                     )}
                                 />
                             </div>
-
-                            <div className="flex gap-2 justify-end">
-                                <Button
-                                    type="submit"
-                                    className="bg-blue-700 hover:bg-blue-800 flex items-center gap-2 px-6 py-2"
-                                >
-                                    <Save className="h-4 w-4" />
-                                    Guardar
-                                </Button>
-                                <Button
-                                    type="button"
-                                    className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
-                                    onClick={async() =>
-                                    {
-                                        await form.handleSubmit(handleSubmit)();
-                                        downloadPDF();
-                                    }}
-                                    form="projectForm"
-                                >
-                                    <Save className="h-4 w-4" />
-                                    Descargar PDF
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
-                                >
-                                    <Save className="h-4 w-4" />
-                                    Descargar Excel
-                                </Button>
-                            </div>
                         </form>
                     </Form>
+
+                    <div className="flex gap-2 mt-5 justify-end">
+                        <Button
+                            type="button"
+                            className="bg-blue-700 hover:bg-blue-800 flex items-center gap-2 px-6 py-2"
+                            onClick={async() =>
+                            {
+                                await form.handleSubmit(handleSubmit)();
+                            }}
+                        >
+                            <Save className="h-4 w-4" />
+                            Guardar
+                        </Button>
+                        <Button
+                            type="button"
+                            className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                            onClick={async() =>
+                            {
+                                await form.handleSubmit(handleSubmit)();
+                                downloadPDF();
+                            }}
+                            form="projectForm"
+                        >
+                            <Save className="h-4 w-4" />
+                            Descargar PDF
+                        </Button>
+                        <Button
+                            type="button"
+                            className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                            onClick={async() =>
+                            {
+                                await form.handleSubmit(handleSubmit)();
+                                downloadExcel();
+                            }}
+                        >
+                            <Save className="h-4 w-4" />
+                            Descargar Excel
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>

@@ -154,30 +154,31 @@ export type CertificateSchema = z.infer<typeof certificateSchema>
 
 export const RodentAreaSchema = z.object({
     id: z.string().uuid()
-        .optional(), // si es nuevo puede no venir
-    name: z.string().min(1, "Campo requerido"),
-    cebaderoTrampa: z.coerce.number().int(),
-    frequency: z.enum(["Fortnightly","Monthly", "Bimonthly", "Quarterly", "Semiannual"]),
-    rodentConsumption: z.enum(["Total", "Partial", "Deteriorated", "NoConsumption"]),
+        .nullable()
+        .optional(),
+    name: z.string().optional(),
+    cebaderoTrampa: z.coerce.number().int()
+        .optional(),
+    frequency: z.enum(["Fortnightly", "Monthly", "Bimonthly", "Quarterly", "Semiannual"]),
+    rodentConsumption: z.enum(["Partial", "Total", "Deteriorated", "NoConsumption"]),
     rodentResult: z.enum(["Active", "Inactive", "RoedMto", "Others"]),
     rodentMaterials: z.enum(["Fungicide", "RodenticideOrBait", "StickyTrap", "Tomahawk"]),
-    productName: z.string().min(1),
-    productDose: z.string().min(1),
+    productName: z.string().optional(),
+    productDose: z.string().optional(),
 });
 
 export const RodentControlFormSchema = z.object({
-    // projectAppointmentId: z.string().uuid(),
-    serviceDate: z.date().nullable()
+    serviceDate: z.string().nullable()
         .optional(),
-    enterTime: z.string().nullable()
-        .optional(),
-    leaveTime: z.string().nullable()
-        .optional(),
+    enterTime: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+        .nullable(),
+    leaveTime: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+        .nullable(),
     incidents: z.string().nullable()
         .optional(),
     correctiveMeasures: z.string().nullable()
         .optional(),
-    rodentAreas: z.array(RodentAreaSchema),
+    rodentAreas: z.array(RodentAreaSchema).min(1, "Debe agregar al menos un área"),
 });
 
 // Exporta el type de React Hook Form

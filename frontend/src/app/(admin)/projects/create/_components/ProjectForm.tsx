@@ -94,8 +94,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 appointmentCreateDTOs: transformedAppointments,
             };
 
-            console.log(JSON.stringify(requestData, null, 2));
-
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",
                 success: "Proyecto registrado exitosamente!",

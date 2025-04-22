@@ -601,6 +601,7 @@ public class AppointmentController(
         return File(pdfBytes, "application/pdf", "roedores.pdf");
     }
 
+    [EndpointSummary("Update an rodent")]
     [HttpPatch("{appointmentId}/rodent")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -706,10 +707,11 @@ public class AppointmentController(
     {
         var appointment = await db.Set<ProjectAppointment>()
             .Include(p => p.RodentRegister)
-            .FirstOrDefaultAsync(a => a.Id == appointmentid);
+            .ThenInclude(r => r.RodentAreas)
+            .FirstOrDefaultAsync(p => p.Id == appointmentid);
 
         if (appointment == null)
-            return NotFound("No se encontró la Cita para el Certificado");
+            return NotFound("No se encontró la Cita para el registro de roedores");
 
         return Ok(appointment.RodentRegister);
     }

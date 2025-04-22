@@ -154,7 +154,7 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
 
     return (
         <>
-            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2 mt-5">
+            <Button variant="outline" onClick={handleGoBack} className="flex w-[160px] gap-2 mt-5">
                 <ArrowLeft className="h-4 w-4" />
                 Volver
             </Button>

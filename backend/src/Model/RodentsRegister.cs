@@ -24,6 +24,7 @@ public class RodentRegister : BaseModel
 
 public class RodentArea : BaseModel
 {
+    [JsonIgnore]
     public RodentRegister RodentRegister { get; set; } = null!;
 
     public required string Name { get; set; }
