@@ -43,4 +43,26 @@ public class BusinessController(DatabaseContext db, ImageService imageService)
             return StatusCode(500, ex.Message);
         }
     }
+
+    [EndpointSummary("Get system image by name")]
+    [HttpGet("image/{name}")]
+    [AllowAnonymous]
+    public IActionResult GetImage(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest("Name is required.");
+
+        try
+        {
+            var stream = _imageService.GetImage(name);
+            if (stream == null)
+                return NotFound("Image not found.");
+
+            return File(stream, "image/png");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }

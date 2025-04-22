@@ -97,6 +97,9 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
                                                         className="mb-2 rounded border h-24 object-contain w-full"
                                                     />
                                                 )}
+                                                <p className="text-xs text-muted-foreground mb-2">
+                                                    Cargar una nueva imágen:
+                                                </p>
                                                 <FormControl>
                                                     <Input
                                                         type="file"
