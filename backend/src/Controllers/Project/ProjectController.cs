@@ -11,7 +11,8 @@ public class ProjectController(
     DatabaseContext db,
     ServiceCacheProvider services,
     ProjectService projectService,
-    LibreOfficeConverterService pdfConverterService
+    LibreOfficeConverterService pdfConverterService,
+    S3Service s3Service
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
@@ -569,5 +570,41 @@ public class ProjectController(
 
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("S3-R2")]
+    [HttpGet("s3-r2/ping")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PingS3R2(Guid id)
+    {
+        var exists = await s3Service.EnsureBucketExistsAsync("perucontrol");
+
+        // send
+        return Ok(exists);
+    }
+
+    [EndpointSummary("Upload murino map")]
+    [HttpPost("{id}/upload-murino-map")]
+    public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        // Aquí podrías validar el tipo de archivo si lo deseas
+        // if (!file.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) ...
+
+        // Por ahora solo recibimos el archivo y devolvemos Ok()
+        return Ok();
+    }
+
+    [EndpointSummary("Get murino map file")]
+    [HttpGet("{id}/murino-map")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMurinoMap([FromRoute] Guid id)
+    {
+        // TODO: Implementar la lógica para obtener el archivo de mapa murino
+        return NotFound("No implementado");
     }
 }

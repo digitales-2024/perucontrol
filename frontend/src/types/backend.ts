@@ -47,7 +47,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
     if (process.env.NODE_ENV === "development")
     {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
     try
