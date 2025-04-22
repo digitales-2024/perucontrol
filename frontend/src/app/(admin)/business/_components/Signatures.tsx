@@ -34,7 +34,7 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
         if (data.signature2?.[0]) formData.append("signature2", data.signature2[0]);
         if (data.signature3?.[0]) formData.append("signature3", data.signature3[0]);
 
-        const [,error] = await toastWrapper(UpdateSignatures(formData), {
+        await toastWrapper(UpdateSignatures(formData), {
             loading: "Actualizando imágenes...",
             success: "Imágenes actualizadas",
         });
