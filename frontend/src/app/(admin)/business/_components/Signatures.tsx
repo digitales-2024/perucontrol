@@ -13,16 +13,19 @@ import { UpdateSignatures } from "../actions";
 type SignaturesFormValues = {
     signature1: FileList;
     signature2: FileList;
-    signature3: FileList;
 };
 
-export function SignaturesForm({ initialImages }: { initialImages?: [string?, string?, string?] })
+const signatureArray = [
+    ["signature1", "Director Técnico"],
+    ["signature2", "Responsable"],
+];
+
+export function SignaturesForm({ initialImages }: { initialImages?: [string?, string?] })
 {
     const form = useForm<SignaturesFormValues>();
     const [previews, setPreviews] = useState<[string?, string?, string?]>([
         initialImages?.[0],
         initialImages?.[1],
-        initialImages?.[2],
     ]);
     const [loading, setLoading] = useState(false);
 
@@ -32,7 +35,6 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
         const formData = new FormData();
         if (data.signature1?.[0]) formData.append("signature1", data.signature1[0]);
         if (data.signature2?.[0]) formData.append("signature2", data.signature2[0]);
-        if (data.signature3?.[0]) formData.append("signature3", data.signature3[0]);
 
         await toastWrapper(UpdateSignatures(formData), {
             loading: "Actualizando imágenes...",
@@ -67,17 +69,17 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
                 <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">
                         <ImageIcon className="h-6 w-6 text-primary" />
-                        Firmas digitales
+                        Firmas de Certificado
                     </CardTitle>
                     <CardDescription>
-                        Configure las firmas que aparecen en los documentos generados por el sistema.
+                        Configure las firmas de los certificados generados.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
                         <form id="signatures-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {["signature1", "signature2", "signature3"].map((field, idx) => (
+                                {signatureArray.map(([field, name], idx) => (
                                     <FormField
                                         key={field}
                                         control={form.control}
@@ -86,9 +88,7 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
                                             <FormItem>
                                                 <FormLabel className="flex items-center gap-2">
                                                     <ImageIcon className="h-4 w-4 text-primary" />
-                                                    Firma
-                                                    {" "}
-                                                    {idx + 1}
+                                                    {name}
                                                 </FormLabel>
                                                 {previews[idx] && (
                                                     <img

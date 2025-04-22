@@ -98,6 +98,17 @@ public class ImageService
         }
     }
 
+    public string? GetImageAsBase64(string fileName)
+    {
+        using var imageStream = GetImage(fileName);
+        if (imageStream == null)
+            return null;
+
+        using var ms = new MemoryStream();
+        imageStream.CopyTo(ms);
+        return Convert.ToBase64String(ms.ToArray());
+    }
+
     /// <summary>
     /// Lists all image names in the directory
     /// </summary>
