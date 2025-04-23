@@ -49,7 +49,7 @@ public class ProjectOperationSheet : BaseModel
     // Método utilizado
     //
 
-     /// Aspercion
+    /// Aspercion
     [Required]
     public bool AspersionManual { get; set; } = false;
 
@@ -188,13 +188,15 @@ public enum RodentConsumption
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Aspersion{
+public enum Aspersion
+{
     Manual,
     Motor,
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Nebulizacion{
+public enum Nebulizacion
+{
     Frio,
     Caliente,
 }
@@ -243,38 +245,26 @@ public static class InfestationDegreeExtension
 
 public static class AspersionExtension
 {
-    public static (string, string) ToCheckbox(
-        this Aspersion Aspersion
-    )
+    public static (string, string) ToCheckbox(this Aspersion Aspersion)
     {
         return Aspersion switch
         {
-          Aspersion.Manual => ("x", ""),
-          Aspersion.Motor => ("", "x"),
-          _ => throw new ArgumentOutOfRangeException(
-              nameof(Aspersion),
-              Aspersion,
-              null
-          ),
+            Aspersion.Manual => ("x", ""),
+            Aspersion.Motor => ("", "x"),
+            _ => throw new ArgumentOutOfRangeException(nameof(Aspersion), Aspersion, null),
         };
     }
 }
 
 public static class NebulizacionExtension
 {
-    public static (string, string) ToCheckbox(
-        this Nebulizacion Nebulizacion
-    )
+    public static (string, string) ToCheckbox(this Nebulizacion Nebulizacion)
     {
         return Nebulizacion switch
         {
-          Nebulizacion.Frio => ("x", ""),
-          Nebulizacion.Caliente => ("", "x"),
-          _ => throw new ArgumentOutOfRangeException(
-              nameof(Nebulizacion),
-              Nebulizacion,
-              null
-          ),
+            Nebulizacion.Frio => ("x", ""),
+            Nebulizacion.Caliente => ("", "x"),
+            _ => throw new ArgumentOutOfRangeException(nameof(Nebulizacion), Nebulizacion, null),
         };
     }
 }

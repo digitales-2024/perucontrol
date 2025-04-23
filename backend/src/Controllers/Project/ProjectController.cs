@@ -663,10 +663,11 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateDisinfectionReport(
         Guid id,
-        [FromBody] ReportGenerationRequest request)
+        [FromBody] ReportGenerationRequest request
+    )
     {
-        var project = db.Projects
-            .Include(p => p.Services)
+        var project = db
+            .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
             .FirstOrDefault(p => p.Id == id);
@@ -704,11 +705,12 @@ public class ProjectController(
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateDisinsectionReport(
-      Guid id,
-      [FromBody] ReportGenerationRequest request)
+        Guid id,
+        [FromBody] ReportGenerationRequest request
+    )
     {
-        var project = db.Projects
-            .Include(p => p.Services)
+        var project = db
+            .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
             .FirstOrDefault(p => p.Id == id);
@@ -721,13 +723,13 @@ public class ProjectController(
         var client = project.Client;
 
         var placeholders = new Dictionary<string, string>
-      {
-          { "{project_day}", request.Day },
-          { "{project_month}", request.Month },
-          { "{project_year}", request.Year },
-          { "{client_name}", client.ContactName ?? client.Name },
-          { "{client_address}", client.FiscalAddress },
-      };
+        {
+            { "{project_day}", request.Day },
+            { "{project_month}", request.Month },
+            { "{project_year}", request.Year },
+            { "{client_name}", client.ContactName ?? client.Name },
+            { "{client_address}", client.FiscalAddress },
+        };
 
         var fileBytes = wordTemplateService.GenerateWordFromTemplate(
             placeholders,
@@ -745,7 +747,10 @@ public class ProjectController(
     [HttpPost("{id}/ratextermination/report/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateRatExterminationReport(Guid id, [FromBody] ReportGenerationRequest request)
+    public IActionResult GenerateRatExterminationReport(
+        Guid id,
+        [FromBody] ReportGenerationRequest request
+    )
     {
         var project = db
             .Projects.Include(p => p.Services)
@@ -763,21 +768,21 @@ public class ProjectController(
         var placeholders = new Dictionary<string, string>
         {
             { "{project_day}", request.Day },
-          { "{project_month}", request.Month },
-          { "{project_year}", request.Year },
+            { "{project_month}", request.Month },
+            { "{project_year}", request.Year },
             { "{client_name}", client.ContactName ?? client.Name },
             { "{client_address}", client.FiscalAddress },
         };
 
         var fileBytes = wordTemplateService.GenerateWordFromTemplate(
-          placeholders,
-          "Templates/Informe_Desratización.docx"
+            placeholders,
+            "Templates/Informe_Desratización.docx"
         );
 
         return File(
-          fileBytes,
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Informe_Desratización.docx"
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "Informe_Desratización.docx"
         );
     }
 
@@ -785,7 +790,10 @@ public class ProjectController(
     [HttpPost("{id}/disinfestation/sustainment/report/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateDisinfestationSustainmentReport(Guid id, [FromBody] ReportGenerationRequest request)
+    public IActionResult GenerateDisinfestationSustainmentReport(
+        Guid id,
+        [FromBody] ReportGenerationRequest request
+    )
     {
         var project = db
             .Projects.Include(p => p.Services)
@@ -810,14 +818,14 @@ public class ProjectController(
         };
 
         var fileBytes = wordTemplateService.GenerateWordFromTemplate(
-          placeholders,
-          "Templates/Informe_Sostenimiento_Desinsectación.docx"
+            placeholders,
+            "Templates/Informe_Sostenimiento_Desinsectación.docx"
         );
 
         return File(
-          fileBytes,
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Informe_Sostenimiento_Desinsectación.docx"
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "Informe_Sostenimiento_Desinsectación.docx"
         );
     }
 
@@ -825,7 +833,10 @@ public class ProjectController(
     [HttpPost("{id}/desinsecticides/desratization/sustainment/report/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateDesinsecticidesDesratizationSustainmentReport(Guid id, [FromBody] ReportGenerationRequest request)
+    public IActionResult GenerateDesinsecticidesDesratizationSustainmentReport(
+        Guid id,
+        [FromBody] ReportGenerationRequest request
+    )
     {
         var project = db
             .Projects.Include(p => p.Services)
@@ -850,14 +861,14 @@ public class ProjectController(
         };
 
         var fileBytes = wordTemplateService.GenerateWordFromTemplate(
-          placeholders,
-          "Templates/Informe_Sostenimiento_Desinsectación_Desratización.docx"
+            placeholders,
+            "Templates/Informe_Sostenimiento_Desinsectación_Desratización.docx"
         );
 
         return File(
-          fileBytes,
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Informe_Sostenimiento_Desinsectación_Desratización.docx"
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "Informe_Sostenimiento_Desinsectación_Desratización.docx"
         );
     }
 
@@ -865,7 +876,10 @@ public class ProjectController(
     [HttpPost("{id}/sustainability/desratization/report/word")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateSustainmentDesratizationReport(Guid id, [FromBody] ReportGenerationRequest request)
+    public IActionResult GenerateSustainmentDesratizationReport(
+        Guid id,
+        [FromBody] ReportGenerationRequest request
+    )
     {
         var project = db
             .Projects.Include(p => p.Services)
@@ -890,14 +904,14 @@ public class ProjectController(
         };
 
         var fileBytes = wordTemplateService.GenerateWordFromTemplate(
-          placeholders,
-          "Templates/Informe_Sostenimiento_Desratización.docx"
+            placeholders,
+            "Templates/Informe_Sostenimiento_Desratización.docx"
         );
 
         return File(
-          fileBytes,
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Informe_Sostenimiento_Desratización.docx"
+            fileBytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "Informe_Sostenimiento_Desratización.docx"
         );
     }
 }
