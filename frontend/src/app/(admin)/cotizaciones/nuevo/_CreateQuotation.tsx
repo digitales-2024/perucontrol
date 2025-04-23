@@ -92,12 +92,6 @@ export function CreateQuotation({ terms, clients, services }: {
         },
     });
 
-    useEffect(() =>
-    {
-        console.log("errors:");
-        console.log(form.formState.errors);
-    });
-
     const { setValue, watch } = form;
 
     // Observa los cambios en el campo 'serviceIds'

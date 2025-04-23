@@ -3,8 +3,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import type { components } from "@/types/api";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { CircleUser, CircleUserRound, FileText, Hash, Mail, Phone } from "lucide-react";
 
 export type Client = components["schemas"]["Client"]
@@ -188,32 +186,6 @@ export const columns: Array<ColumnDef<Client>> = [
                     <Phone className="mr-1" />
                     {row.original.phoneNumber}
                 </span>
-            );
-        },
-    },
-    {
-        accessorKey: "state",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
-            >
-                ESTADO
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-            return (
-                <Badge
-                    className={cn(
-                        "px-2 py-1 text-xs font-medium rounded-full",
-                        isActive ? "bg-green-400 text-white" : "bg-red-300 text-red-800",
-                    )}
-                >
-                    {isActive ? "Activo" : "Inactivo"}
-                </Badge>
             );
         },
     },

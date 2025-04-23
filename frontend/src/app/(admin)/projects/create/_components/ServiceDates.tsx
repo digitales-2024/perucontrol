@@ -48,6 +48,7 @@ export function ServiceDates({ services }:
     {
         updateAvailableServices();
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appointments]);
 
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>

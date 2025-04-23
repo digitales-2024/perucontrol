@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ClientTable } from "@/components/data-table/ClientDataTable";
-import { Eye, Pencil, Trash2, UserPlus } from "lucide-react";
+import { Pencil, Trash2, UserPlus } from "lucide-react";
 import { UpdateClientSheet } from "./UpdateClients";
 import { DeleteClient } from "./DeleteClient";
 import { ViewClientDetails } from "./ViewClientsDetail";
@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
-  columns: Array<ColumnDef<TData, TValue>>
-  data: Array<TData>
+    columns: Array<ColumnDef<TData, TValue>>
+    data: Array<TData>
 }
 
 export function ClientsDataTable<TData extends Client>({ columns, data }: DataTableProps<TData, unknown>)
@@ -52,15 +52,6 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
     // Botones de acción para cada fila
     const actionButtons = [
         {
-            label: "Ver detalles",
-            icon: <Eye className="h-4 w-4" />,
-            onClick: (row: TData) =>
-            {
-                setSelectedClient(row);
-                setShowDetailClient(true);
-            },
-        },
-        {
             label: "Editar",
             icon: <Pencil className="h-4 w-4" />,
             onClick: (row: TData) =>
@@ -81,40 +72,6 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
             disabled: (row: TData) => !row.isActive,
         },
     ];
-
-    // Acciones del menú desplegable
-    /* const dropdownActions = [
-        {
-            label: "Ver detalles",
-            icon: <Eye className="h-4 w-4" />,
-            onClick: (row: TData) =>
-            {
-                setSelectedClient(row);
-                setShowDetailClient(true);
-            },
-        },
-        {
-            label: "Editar cliente",
-            icon: <Pencil className="h-4 w-4" />,
-            onClick: (row: TData) =>
-            {
-                setSelectedClient(row);
-                setShowUpdateClient(true);
-            },
-            disabled: (row: TData) => !row.isActive,
-        },
-        {
-            label: "Eliminar cliente",
-            icon: <Trash2 className="h-4 w-4" />,
-            onClick: (row: TData) =>
-            {
-                setSelectedClient(row);
-                setShowDeleteClient(true);
-            },
-            disabled: (row: TData) => !row.isActive,
-            className: "text-red-500 hover:text-red-600",
-        },
-    ]; */
 
     // Acciones de la barra de herramientas
     const toolbarActions = (
@@ -175,7 +132,7 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
                 statusField="isActive"
                 statusFilter={filterByStatus}
                 typeDocumentFilter={filterByDocumentType}
-                searchFields={["razonSocial", "name", "contactName", "email", "typeDocument","typeDocumentValue"]}
+                searchFields={["razonSocial", "name", "contactName", "email", "typeDocument", "typeDocumentValue"]}
                 dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
                 onRowClick={(row) =>

@@ -4,14 +4,14 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, Download, ListChecks } from "lucide-react";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, ListChecks } from "lucide-react";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { DesactivateAppointment, EditAppointment } from "../../actions";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { DocumentButton } from "./DocumentButton";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -41,6 +41,7 @@ export function AppointmentDetail({
     });
 
     const deliveryDate: Date | null = (!!appointment.actualDate) ? parseISO(appointment.actualDate) : null;
+    const actionsDisabled = deliveryDate === null;
 
     async function UpdateDueDate(newDate: Date)
     {
@@ -188,36 +189,31 @@ export function AppointmentDetail({
 
                     {/* <div className="flex justify-end gap-2"> */}
                     <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 mt-4">
-                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/roedores`}>
-                            <Button
-                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
-                                disabled={deliveryDate === null}
-                                title={deliveryDate === null ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
-                            >
-                                <Download />
-                                Registro de roedores
-                            </Button>
-                        </Link>
-                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}>
-                            <Button
-                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
-                                disabled={deliveryDate === null}
-                                title={deliveryDate === null ? "No se puede ver el certificado si no se ha completado la fecha real" : ""}
-                            >
-                                <Download />
-                                Certificado
-                            </Button>
-                        </Link>
-                        <Link href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}>
-                            <Button
-                                className="disabled:cursor-not-allowed disabled:opacity-50 text-xs md:text-sm"
-                                disabled={deliveryDate === null}
-                                title={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
-                            >
-                                <Download />
-                                Ficha de Operaciones
-                            </Button>
-                        </Link>
+
+                        <DocumentButton
+                            href={`/projects/${projectId}/evento/${appointment.id!}/roedores`}
+                            disabled={actionsDisabled}
+                            disabledTitle={deliveryDate === null ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
+                        >
+                            Registro de roedores
+                        </DocumentButton>
+
+                        <DocumentButton
+                            href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}
+                            disabled={actionsDisabled}
+                            disabledTitle={deliveryDate === null ? "No se puede ver el certificado si no se ha completado la fecha real" : ""}
+                        >
+                            Certificado
+                        </DocumentButton>
+
+                        <DocumentButton
+                            href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}
+                            disabled={actionsDisabled}
+                            disabledTitle={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                        >
+                            Ficha de Operaciones
+                        </DocumentButton>
+
                         <Button
                             onClick={() => setDeactivateOpen(true)}
                             variant="destructive"
@@ -232,11 +228,13 @@ export function AppointmentDetail({
             <EditAppointmentDialog
                 isOpen={editDueDateOpen} onClose={() => setEditDueDateOpen(false)}
                 onSave={(newDate) => UpdateDueDate(newDate)}
+                text="Editar Fecha Programada"
                 initialDate={dueDate}
             />
             <EditAppointmentDialog
                 isOpen={editActualDateOpen} onClose={() => setActualDueDateOpen(false)}
                 onSave={(newDate) => UpdateActualDate(newDate)}
+                text="Editar Fecha Real"
                 initialDate={deliveryDate ?? undefined}
             />
             <DesactiveAppointmentDialog
