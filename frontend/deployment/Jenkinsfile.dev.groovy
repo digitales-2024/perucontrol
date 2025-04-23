@@ -81,7 +81,7 @@ EOL
 
                             // Execute the script to generate env content and send it to remote
                             sh """
-                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env.backend'
+                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env.frontend'
                             """
 
                             // populate & restart
