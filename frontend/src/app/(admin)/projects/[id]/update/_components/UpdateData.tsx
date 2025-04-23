@@ -21,7 +21,6 @@ import { Project } from "../../../types";
 interface UpdateClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
-    quotations: Array<components["schemas"]["Quotation3"]>
     project: Project
 }
 
