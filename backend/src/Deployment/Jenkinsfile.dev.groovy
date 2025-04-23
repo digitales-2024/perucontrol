@@ -26,7 +26,6 @@ pipeline {
         REGISTRY_URL = "docker.io"
         REGISTRY_USER = "digitalesacide"
         REGISTRY_REPO = "${PROJECT_TRIPLET}"
-        // docker.io/digitalesacide/trazo-backend-prod
         FULL_REGISTRY_URL = "${REGISTRY_URL}/${REGISTRY_USER}/${REGISTRY_REPO}"
         ESCAPED_REGISTRY_URL = "${REGISTRY_URL}\\/${REGISTRY_USER}\\/${REGISTRY_REPO}"
 
