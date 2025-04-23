@@ -585,12 +585,19 @@ public class ProjectController(
             return NotFound("Proyecto no encontrado");
 
         var key = $"mapa-murino-{id}.png";
+        var bucketName = "perucontrol";
 
         try
         {
             // Opcional: Validar que sea PNG
             if (!file.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                 return BadRequest("Solo se permiten archivos PNG");
+
+            // Delete previous image if exists
+            if (!string.IsNullOrEmpty(project.MurinoMapKey))
+            {
+                await s3Service.DeleteObjectAsync(bucketName, project.MurinoMapKey);
+            }
 
             var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), "image/png");
 
