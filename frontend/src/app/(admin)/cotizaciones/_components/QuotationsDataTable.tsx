@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Eye, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { QuotationTable } from "@/components/data-table/QuotationDataTable";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
@@ -58,25 +58,17 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
     // Opciones de estado para las pestañas
     const statusOptions = [
         { value: "todos", label: "Todos", count: getQuotationByStatus("todos") },
-        { value: "activo", label: "Activo", count: getQuotationByStatus("activo") },
-        { value: "inactivo", label: "Inactivo", count: getQuotationByStatus("inactivo") },
         { value: "con", label: "Con IGV", count: getQuotationByIgv("con") },
         { value: "sin", label: "Sin IGV", count: getQuotationByIgv("sin") },
         { value: "pendiente", label: "Pendiente", count: getQuotationByState("pendiente") },
         { value: "aprovado", label: "Aprobado", count: getQuotationByState("aprovado") },
         { value: "rechazado", label: "Rechazado", count: getQuotationByState("rechazado") },
+        { value: "activo", label: "Activo", count: getQuotationByStatus("activo") },
+        { value: "inactivo", label: "Inactivo", count: getQuotationByStatus("inactivo") },
     ];
 
     // Botones de acción para cada fila
     const actionButtons = [
-        {
-            label: "Ver detalles",
-            icon: <Eye className="h-4 w-4" />,
-            onClick: (row: Quotation) =>
-            {
-                router.push(`/cotizaciones/${row.id}`);
-            },
-        },
         {
             label: "Editar",
             icon: <Pencil className="h-4 w-4" />,
@@ -214,7 +206,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                 statusFilter={filterByStatus}
                 igvFilter={filterByIgv}
                 stateFilter={filterByState}
-                searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status","hasTaxes"]}
+                searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status", "hasTaxes"]}
                 dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
                 onRowClick={(row) =>

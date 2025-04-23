@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { ProjectTable } from "@/components/data-table/ProjectDataTable";
 import { DeleteProject } from "./DeleteProject";
-import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -54,14 +54,6 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
 
     // Botones de acción para cada fila
     const actionButtons = [
-        {
-            label: "Ver detalles",
-            icon: <Eye className="h-4 w-4" />,
-            onClick: (row: ProjectSummary) =>
-            {
-                router.push(`/projects/${row.id}`);
-            },
-        },
         {
             label: "Editar",
             icon: <Pencil className="h-4 w-4" />,
@@ -132,7 +124,7 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
                 statusField="isActive"
                 statusFilter={filterByStatus}
                 stateFilter={filterByState}
-                searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status","hasTaxes"]}
+                searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status", "hasTaxes"]}
                 dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
                 onRowClick={(row) =>

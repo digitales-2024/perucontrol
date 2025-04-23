@@ -19,10 +19,10 @@ import { Separator } from "@/components/ui/separator";
 import { Project } from "../../../types";
 
 interface UpdateClientDataProps {
-  clients: Array<components["schemas"]["Client"]>
-  services: Array<components["schemas"]["Service"]>
-  quotations: Array<components["schemas"]["Quotation3"]>
-  project: Project
+    clients: Array<components["schemas"]["Client"]>
+    services: Array<components["schemas"]["Service"]>
+    quotations: Array<components["schemas"]["Quotation3"]>
+    project: Project
 }
 
 // Mapa de iconos para servicios
@@ -36,9 +36,8 @@ const serviceIcons: Record<string, React.ReactNode> = {
 // Máximo número de ambientes permitidos
 const MAX_ENVIRONMENTS = 8;
 
-export function UpdateClientData({ clients, services, quotations, project }: UpdateClientDataProps)
+export function UpdateClientData({ clients, services, project }: UpdateClientDataProps)
 {
-    const [quotation, setQuotation] = useState(project.quotation?.id ?? "");
     const router = useRouter();
 
     // Estado local para manejar los ambientes
@@ -66,44 +65,16 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
     }, [environments, setValue]);
 
     const activeClients = clients.filter((client) => client.isActive);
-    const activeQuotations = quotations.filter((quotation) => quotation?.isActive);
 
     const clientsOptions: Array<Option> =
-    activeClients?.map((client) => ({
-        value: client.id ?? "",
-        label: client.razonSocial !== "" ? (client.razonSocial ?? "") : (client.name ?? ""),
-    })) ?? [];
-
-    const quotationsOptions: Array<Option> =
-    activeQuotations?.map((quotation) => ({
-        value: quotation?.id ?? "",
-        label: quotation?.id ?? "",
-    })) ?? [];
-
-    const handleQuotationChange = (option: Option | null) =>
-    {
-        const selectedQuotation = quotations.find((q) => q?.id === option?.value);
-        if (selectedQuotation)
-        {
-            setValue("clientId", selectedQuotation.client?.id ?? "");
-            setValue("quotationId", selectedQuotation.id ?? null);
-            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
-            setValue("area", selectedQuotation.area ?? 0);
-            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
-            setValue(
-                "services",
-                selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? [],
-            );
-
-            // Limpiar los ambientes
-            setEnvironments([]);
-            setValue("ambients", []);
-        }
-    };
+        activeClients?.map((client) => ({
+            value: client.id ?? "",
+            label: client.razonSocial !== "" ? (client.razonSocial ?? "") : (client.name ?? ""),
+        })) ?? [];
 
     const onSubmit = async(data: ProjectDataSchema) =>
     {
-    // Asegurarse de que ambients esté actualizado con los valores más recientes
+        // Asegurarse de que ambients esté actualizado con los valores más recientes
         const formattedData = {
             ...data,
             ambients: environments,
@@ -165,17 +136,6 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                         <CardTitle className="text-xl font-semibold">
                             Datos del proyecto
                         </CardTitle>
-                        <AutoComplete
-                            options={quotationsOptions}
-                            placeholder="Buscar cotización..."
-                            emptyMessage="No se encontraron clientes"
-                            value={quotationsOptions.find((option) => option.value === quotation) ?? undefined}
-                            onValueChange={(option) =>
-                            {
-                                setQuotation(option?.value || "");
-                                handleQuotationChange(option);
-                            }}
-                        />
                     </div>
                 </CardHeader>
                 <CardContent>
