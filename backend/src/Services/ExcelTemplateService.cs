@@ -389,9 +389,11 @@ public class ExcelTemplateService
                 // Fix the relationship ID between drawing and image
                 string oldImageId = sourceWorksheetPart.DrawingsPart.GetIdOfPart(imagePart);
                 string newImageId = newDrawingsPart.GetIdOfPart(newImagePart);
+                var rootEl =
+                    newDrawingsPart.RootElement ?? throw new Exception("Root element is null");
 
                 // Update all references in the drawing
-                foreach (var element in newDrawingsPart.RootElement.Descendants())
+                foreach (var element in rootEl.Descendants())
                 {
                     List<OpenXmlAttribute> attributes = element.GetAttributes().ToList();
                     for (int i = 0; i < attributes.Count; i++)

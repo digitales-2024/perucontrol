@@ -1,16 +1,11 @@
 // using Twilio;
 // using Twilio.Rest.Api.V2010.Account;
 // using Twilio.Types;
-using Microsoft.Extensions.Configuration;
 
 namespace PeruControl.Services;
 
-public class WhatsappService(IConfiguration configuration, S3Service s3Service)
+public class WhatsappService(S3Service s3Service)
 {
-    private readonly string _accountSid = configuration["Twilio:AccountSid"];
-    private readonly string _authToken = configuration["Twilio:AuthToken"];
-    private readonly string _fromNumber = configuration["Twilio:WhatsappFrom"];
-    private readonly string _bucketName = configuration["Whatsapp:MediaBucket"];
     private readonly S3Service _s3Service = s3Service;
 
     // public async Task SendWhatsappMessageAsync(byte[] fileBytes, string fileName, string phoneNumber, string message)

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250423143927_ProjectS3")]
+    partial class ProjectS3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -824,8 +827,8 @@ namespace PeruControl.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("EnterTime")
-                        .HasColumnType("interval");
+                    b.Property<DateOnly?>("EnterTime")
+                        .HasColumnType("date");
 
                     b.Property<string>("Incidents")
                         .HasColumnType("text");
@@ -833,8 +836,8 @@ namespace PeruControl.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<TimeSpan>("LeaveTime")
-                        .HasColumnType("interval");
+                    b.Property<DateOnly?>("LeaveTime")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");

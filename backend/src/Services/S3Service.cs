@@ -1,5 +1,7 @@
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using Microsoft.Extensions.Options;
 
 namespace PeruControl.Services;
@@ -35,79 +37,13 @@ public class S3Service
         {
             ServiceURL = $"https://{config.AccountId}.r2.cloudflarestorage.com",
             ForcePathStyle = true, // R2 requires path-style URLs
+            SignatureVersion = "4",
+            SignatureMethod = SigningAlgorithm.HmacSHA256,
+            RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
+            ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED,
         };
 
         _s3Client = new AmazonS3Client(config.AccessKey, config.SecretKey, s3Config);
-    }
-
-    /// <summary>
-    /// Ensures that a bucket with the specified name exists, creating it if necessary.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket to check or create.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains a boolean
-    /// indicating whether the bucket exists or was successfully created.
-    /// </returns>
-    /// <exception cref="ArgumentException">Thrown when bucketName is null or empty.</exception>
-    /// <exception cref="AmazonS3Exception">Thrown when an S3-specific error occurs.</exception>
-    /// <exception cref="Exception">Thrown when an unexpected error occurs.</exception>
-    public async Task<bool> EnsureBucketExistsAsync(string bucketName)
-    {
-        if (string.IsNullOrEmpty(bucketName))
-            throw new ArgumentException("Bucket name cannot be null or empty", nameof(bucketName));
-
-        try
-        {
-            // Check if the bucket already exists
-            var bucketExists = await DoesBucketExistAsync(bucketName);
-
-            if (!bucketExists)
-            {
-                // Create the bucket
-                var putBucketRequest = new PutBucketRequest { BucketName = bucketName };
-
-                var response = await _s3Client.PutBucketAsync(putBucketRequest);
-                return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
-            }
-
-            return true; // Bucket already exists
-        }
-        catch (AmazonS3Exception ex)
-        {
-            // Handle Amazon-specific exceptions
-            Console.WriteLine($"Error creating bucket: {ex.Message}");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            // Handle other exceptions
-            Console.WriteLine($"Unexpected error: {ex.Message}");
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Checks if a bucket with the specified name exists.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket to check.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains a boolean
-    /// indicating whether the bucket exists.
-    /// </returns>
-    private async Task<bool> DoesBucketExistAsync(string bucketName)
-    {
-        try
-        {
-            // Try to get bucket location as a check
-            await _s3Client.GetBucketLocationAsync(
-                new GetBucketLocationRequest { BucketName = bucketName }
-            );
-            return true;
-        }
-        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-        {
-            return false;
-        }
     }
 
     /// <summary>
@@ -126,12 +62,14 @@ public class S3Service
     /// <exception cref="AmazonS3Exception">Thrown when an S3-specific error occurs.</exception>
     /// <exception cref="Exception">Thrown when an unexpected error occurs.</exception>
     public async Task<S3UploadResult> UploadImageAsync(
-        string bucketName,
         string key,
         Stream imageStream,
-        string contentType = "image/jpeg"
+        string contentType
     )
     {
+        var bucketName = "perucontrol";
+
+        // Input validation
         if (string.IsNullOrEmpty(bucketName))
             throw new ArgumentException("Bucket name cannot be null or empty", nameof(bucketName));
 
@@ -143,26 +81,30 @@ public class S3Service
 
         try
         {
-            // Ensure bucket exists first
-            await EnsureBucketExistsAsync(bucketName);
+            // Use TransferUtility instead of directly using PutObjectRequest
+            // This handles many edge cases better, especially for R2 compatibility
+            var transferUtility = new TransferUtility(_s3Client);
 
-            // Create put request
-            var putRequest = new PutObjectRequest
+            // Create the transfer utility options
+            var transferUtilityUploadRequest = new TransferUtilityUploadRequest
             {
                 BucketName = bucketName,
                 Key = key,
                 InputStream = imageStream,
                 ContentType = contentType,
+                // This is crucial for R2 compatibility
+                DisablePayloadSigning = true,
             };
 
-            // Upload the file
-            await _s3Client.PutObjectAsync(putRequest);
+            // Execute the upload
+            await transferUtility.UploadAsync(transferUtilityUploadRequest);
 
-            // After successful upload
+            // Get the URL
             var urlRequest = new GetPreSignedUrlRequest
             {
                 BucketName = bucketName,
                 Key = key,
+                // 10 years is excessive, but whatever
                 Expires = DateTime.UtcNow.AddYears(10),
             };
 
@@ -177,12 +119,53 @@ public class S3Service
         }
         catch (AmazonS3Exception ex)
         {
+            // Please use proper logging instead of Console.WriteLine in production
             Console.WriteLine($"S3 error uploading image: {ex.Message}");
             throw;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Unexpected error uploading image: {ex.Message}");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Downloads an image (object) from the specified bucket and key.
+    /// </summary>
+    /// <param name="key">The key (file path/name) of the object to download.</param>
+    /// <param name="bucketName">The name of the bucket containing the object.</param>
+    /// <returns>
+    /// A stream containing the object's data, or null if not found.
+    /// </returns>
+    public async Task<Stream?> DownloadImageAsync(string key, string bucketName)
+    {
+        if (string.IsNullOrEmpty(bucketName))
+            throw new ArgumentException("Bucket name cannot be null or empty", nameof(bucketName));
+
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("Object key cannot be null or empty", nameof(key));
+
+        try
+        {
+            var request = new GetObjectRequest { BucketName = bucketName, Key = key };
+
+            var response = await _s3Client.GetObjectAsync(request);
+
+            // Copy the response stream to a MemoryStream to ensure it's seekable and can be disposed by the caller
+            var memoryStream = new MemoryStream();
+            await response.ResponseStream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+            return memoryStream;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            // Object not found
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading image from S3: {ex.Message}");
             throw;
         }
     }
