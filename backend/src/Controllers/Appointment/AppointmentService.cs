@@ -1,17 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
-public class AppointmentService(
-    DatabaseContext db,
-    OdsTemplateService odsTemplate,
-    LibreOfficeConverterService pdfConverterService,
-    SvgTemplateService svgTemplateService,
-    WordTemplateService wordTemplateService
-)
+public class AppointmentService(DatabaseContext db, OdsTemplateService odsTemplate)
 {
     public async Task<(byte[], string?)> FillRodentsExcel(Guid id)
     {

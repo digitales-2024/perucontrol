@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
@@ -443,6 +441,10 @@ public class AppointmentController(
             GetCertificateData(id);
         if (error != null)
             return BadRequest(error);
+        if (projectAppointment == null)
+            return NotFound(error);
+        if (business == null)
+            return NotFound(error);
 
         var project = projectAppointment.Project;
         var sheet = projectAppointment.ProjectOperationSheet;
@@ -490,12 +492,16 @@ public class AppointmentController(
     [HttpPost("{id}/certificate/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GenerateCertificatePdf(Guid id)
+    public IActionResult GenerateCertificatePdf(Guid id)
     {
         var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
             GetCertificateData(id);
         if (error != null)
             return BadRequest(error);
+        if (projectAppointment == null)
+            return NotFound(error);
+        if (business == null)
+            return NotFound(error);
 
         var certificate = projectAppointment.Certificate;
         var project = projectAppointment.Project;

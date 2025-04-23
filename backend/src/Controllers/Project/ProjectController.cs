@@ -8,9 +8,9 @@ namespace PeruControl.Controllers;
 
 public class ReportGenerationRequest
 {
-    public string Day { get; set; }
-    public string Month { get; set; }
-    public string Year { get; set; }
+    public required string Day { get; set; }
+    public required string Month { get; set; }
+    public required string Year { get; set; }
 }
 
 [Authorize]
@@ -20,7 +20,6 @@ public class ProjectController(
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
     S3Service s3Service,
-    ImageService _imageService,
     WordTemplateService wordTemplateService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
@@ -666,7 +665,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
@@ -709,7 +708,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
@@ -752,7 +751,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
@@ -795,7 +794,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
@@ -838,7 +837,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
@@ -881,7 +880,7 @@ public class ProjectController(
         [FromBody] ReportGenerationRequest request
     )
     {
-        var project = db
+        var project = _context
             .Projects.Include(p => p.Services)
             .Include(p => p.Appointments)
             .Include(p => p.Client)
