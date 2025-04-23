@@ -36,7 +36,6 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
-    const selectedServices = watch("services") ?? [];
 
     const { control } = useFormContext();
 
@@ -173,8 +172,9 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
     // Efecto para notificar cambios en los servicios seleccionados
     useEffect(() =>
     {
-        onServicesChange(selectedServices);
-    }, [selectedServices, onServicesChange]);
+        const currentServices = watch("services") ?? [];
+        onServicesChange(currentServices);
+    }, [watch, onServicesChange]);
 
     return (
         <Card>

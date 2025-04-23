@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -46,11 +46,27 @@ export function ServiceDates({ services, enabledServices }:
     const [availableServices, setAvailableServices] = useState(services.filter((service) => enabledServices.includes(service.id!)));
 
     // Efecto para actualizar los servicios disponibles cada vez que cambien las citas
-    useEffect(() =>
+    /* useEffect(() =>
     {
         updateAvailableServices();
 
-    }, [appointments]);
+    }, [appointments]); */
+
+    // 1. Memoizar la función con useCallback
+    const updateAvailableServices = useCallback(() =>
+    {
+        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
+        const updatedServices = services
+            .filter((service) => enabledServices.includes(service.id!) &&
+        !assignedServiceIds.includes(service.id!));
+        setAvailableServices(updatedServices);
+    }, [appointments, services, enabledServices]); // Dependencias de la función
+
+    // 2. Usarla en el efecto
+    useEffect(() =>
+    {
+        updateAvailableServices();
+    }, [updateAvailableServices]); // Solo depende de la función memoizada
 
     // Actualizar cuando cambien los servicios habilitados
     useEffect(() =>
@@ -109,14 +125,14 @@ export function ServiceDates({ services, enabledServices }:
         const updatedServices = services.filter((service) => !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
     }; */
-    const updateAvailableServices = () =>
+    /* const updateAvailableServices = () =>
     {
         const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
         const updatedServices = services
             .filter((service) => enabledServices.includes(service.id!) &&
               !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
-    };
+    }; */
 
     const handleProgramService = () =>
     {
