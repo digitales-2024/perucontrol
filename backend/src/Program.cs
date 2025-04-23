@@ -120,6 +120,7 @@ builder.Services.AddScoped<ServiceCacheProvider>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<S3Service>();
 builder.Services.AddScoped<WhatsappService>();
+builder.Services.Configure<R2Config>(builder.Configuration.GetSection("R2Config"));
 
 var app = builder.Build();
 

@@ -44,6 +44,10 @@ public class Project : BaseModel
     )]
     public required decimal Price { get; set; }
 
+    // Identificador de mapa murino en R2
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
+
     // Schedule: a list of Appointments
     [JsonIgnore]
     public ICollection<ProjectAppointment> Appointments { get; set; } =

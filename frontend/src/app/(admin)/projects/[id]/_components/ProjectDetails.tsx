@@ -35,6 +35,7 @@ import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { AppointmentDetail } from "./AppointmentDetail";
 import { Accordion } from "@/components/ui/accordion";
 import { toastWrapper } from "@/types/toasts";
+import { MurinoMapSection } from "./MurinoMapSection";
 import { cn } from "@/lib/utils";
 
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
@@ -52,9 +53,14 @@ function getServiceIcon(name: string): string
     return name in icons ? icons[name as ServiceName] : "🔹";
 }
 
-export function ProjectDetails({ project, projectId }: {
+export function ProjectDetails({
+    project,
+    projectId,
+    murinoMapBase64, // <-- nuevo prop
+}: {
     project: components["schemas"]["ProjectSummarySingle"],
-    projectId: string
+    projectId: string,
+    murinoMapBase64?: string | null, // <-- nuevo prop opcional
 })
 {
     const router = useRouter();
@@ -529,6 +535,37 @@ export function ProjectDetails({ project, projectId }: {
                                         )}
                                     </div>
                                 </div>
+
+                                {/* Botones de descarga Excel/PDF */}
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg flex flex-col gap-2 md:col-span-2">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Exportar cronograma
+                                    </h4>
+                                    <div className="flex flex-wrap gap-4">
+                                        <Button
+                                            type="button"
+                                            onClick={async() =>
+                                            {
+                                                downloadExcel();
+                                            }}
+                                            className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            Descargar Excel
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={async() =>
+                                            {
+                                                downloadPDF();
+                                            }}
+                                            className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            Descargar PDF
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -575,6 +612,12 @@ export function ProjectDetails({ project, projectId }: {
                             </div>
                         )}
 
+                        {/* Nueva sección: Mapa Murino */}
+                        <MurinoMapSection
+                            murinoMapBase64={murinoMapBase64}
+                            projectId={projectId}
+                        />
+
                         <div className="h-8" />
 
                         <div className="space-y-4">
@@ -584,32 +627,6 @@ export function ProjectDetails({ project, projectId }: {
                                     <Calendar className="h-5 w-5 text-blue-500" />
                                     Cronograma de Servicios
                                 </h3>
-
-                                <div className="flex flex-wrap gap-4">
-                                    <Button
-                                        type="button"
-                                        onClick={async() =>
-                                        {
-                                            downloadExcel();
-                                        }}
-                                        className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
-                                    >
-                                        <Download className="h-4 w-4" />
-                                        Descargar Excel
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        onClick={async() =>
-                                        {
-                                            downloadPDF();
-                                        }}
-                                        className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
-                                    >
-                                        <Download className="h-4 w-4" />
-                                        Descargar PDF
-                                    </Button>
-
-                                </div>
                             </div>
                             <Separator />
 
@@ -694,6 +711,7 @@ export function ProjectDetails({ project, projectId }: {
                                     ))}
                                 </Accordion>
                             </div>
+
                         </div>
                     </CardContent>
                 </Card>

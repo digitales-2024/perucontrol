@@ -22,7 +22,7 @@ public class ImageService
     /// <param name="imageStream">The image data stream</param>
     /// <param name="fileName">The name to save the file as</param>
     /// <returns>The path to the saved image or null if save failed</returns>
-    public async Task<string> SaveImageAsync(Stream imageStream, string fileName)
+    public async Task<string?> SaveImageAsync(Stream imageStream, string fileName)
     {
         if (imageStream == null)
             throw new ArgumentNullException(nameof(imageStream));
@@ -72,7 +72,7 @@ public class ImageService
     /// </summary>
     /// <param name="fileName">The name of the file to retrieve</param>
     /// <returns>Image stream or null if not found</returns>
-    public Stream GetImage(string fileName)
+    public Stream? GetImage(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException("File name cannot be empty", nameof(fileName));
