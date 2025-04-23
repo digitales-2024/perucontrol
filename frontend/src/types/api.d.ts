@@ -4218,6 +4218,7 @@ export interface components {
         AppointmentCreateDTO: {
             /** Format: date-time */
             dueDate?: string;
+            serviceIds?: Array<string>;
         };
         AppointmentCreateDTOThroughProject: {
             /** Format: date-time */
@@ -4963,9 +4964,9 @@ export interface components {
             refreshToken: string;
         };
         ReportGenerationRequest: {
-            day?: string;
-            month?: string;
-            year?: string;
+            day: string;
+            month: string;
+            year: string;
         };
         RodentArea: {
             name: string;

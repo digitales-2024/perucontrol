@@ -144,6 +144,7 @@ public class ProjectController(
                 IsActive = p.IsActive,
                 Price = p.Price,
                 Ambients = p.Ambients,
+                CreatedAt = p.CreatedAt,
                 Appointments = p.Appointments.Select(a => a.DueDate).ToList(),
             })
             .ToList();
@@ -416,9 +417,20 @@ public class ProjectController(
     )
     {
         // verify project exists
-        var project = await _context.Projects.FindAsync(id);
+        // var project = await _context.Projects.FindAsync(id);
+        var project = await _context.Projects
+        .Include(p => p.Services)
+        .FirstOrDefaultAsync(p => p.Id == id);
+
         if (project == null)
             return NotFound("Proyecto no encontrado");
+
+        // Verify services exist
+        var invalidServices = dto.ServiceIds.Except(project.Services.Select(s => s.Id)).ToList();
+        if (invalidServices.Any())
+        {
+            return BadRequest($"Los siguientes servicios no existen: {string.Join(", ", invalidServices)}");
+        }
 
         // create appointment
         var newAppointment = new ProjectAppointment
@@ -431,6 +443,9 @@ public class ProjectController(
                 EnterTime = new TimeSpan(9, 0, 0),
                 LeaveTime = new TimeSpan(13, 0, 0),
             },
+            Services = await _context.Services
+              .Where(s => dto.ServiceIds.Contains(s.Id))
+              .ToListAsync()
         };
 
         // append appointment to projects

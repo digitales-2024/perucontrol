@@ -17,6 +17,7 @@ import {
     Download,
     Edit,
     FileSpreadsheet,
+    Loader2,
     MapPin,
     Pencil,
     Plus,
@@ -35,6 +36,22 @@ import { AppointmentDetail } from "./AppointmentDetail";
 import { Accordion } from "@/components/ui/accordion";
 import { toastWrapper } from "@/types/toasts";
 import { MurinoMapSection } from "./MurinoMapSection";
+import { cn } from "@/lib/utils";
+
+type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
+
+function getServiceIcon(name: string): string
+{
+    const icons: Record<ServiceName, string> = {
+        "Fumigación": "🐜",
+        "Desinsectación": "🦟",
+        "Desratización": "🐀",
+        "Desinfección": "🧼",
+        "Limpieza de tanque": "💧",
+    };
+
+    return name in icons ? icons[name as ServiceName] : "🔹";
+}
 
 export function ProjectDetails({
     project,
@@ -48,7 +65,6 @@ export function ProjectDetails({
 {
     const router = useRouter();
     const [showClientDetails, setShowClientDetails] = useState(false);
-    // const [showDeleteProject, setShowDeleteProject] = useState(false);
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [isDesactiveDialogOpen, setIsDesactiveDialogOpen] = useState(false);
     const [deletingAppointmentId, setDeletingAppointmentId] = useState<string | null>(null);
@@ -58,6 +74,8 @@ export function ProjectDetails({
         dueDate: string;
         field?: string; // Explicitly type as string
     } | null>(null);
+    const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
+    const [isAddingDate, setIsAddingDate] = useState(false);
 
     // Ordenar las citas por fecha
     const sortedAppointments = project.appointments
@@ -137,6 +155,12 @@ export function ProjectDetails({
             return;
         }
 
+        if (selectedServices.length === 0)
+        {
+            toast.error("Por favor seleccione al menos un servicio");
+            return;
+        }
+
         const newDateISO = newDate.toISOString();
 
         // Verificar si la fecha ya existe
@@ -148,10 +172,12 @@ export function ProjectDetails({
             return;
         }
 
+        setIsAddingDate(true);
+
         try
         {
             // Llamar a la función AddAppointment con el ID del proyecto y la nueva fecha
-            const [newAppointment, error] = await AddAppointment(project.id!, newDateISO);
+            const [newAppointment, error] = await AddAppointment(project.id!, newDateISO, selectedServices);
 
             if (error)
             {
@@ -170,12 +196,17 @@ export function ProjectDetails({
 
             // Actualizar el estado local
             setNewDate(undefined);
+            setSelectedServices([]);
             toast.success("Fecha agregada correctamente");
         }
         catch (error)
         {
             console.error("Error inesperado al agregar la cita:", error);
             toast.error("Ocurrió un error inesperado");
+        }
+        finally
+        {
+            setIsAddingDate(false);
         }
     };
 
@@ -616,12 +647,57 @@ export function ProjectDetails({
                                     onClick={handleAddDate}
                                     size="icon"
                                     className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                                    disabled={!newDate}
+                                    disabled={!newDate || isAddingDate}
                                     type="button"
                                 >
-                                    <Plus className="h-4 w-4" />
+                                    {isAddingDate ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Plus className="h-4 w-4" />
+                                    )}
                                 </Button>
                             </div>
+
+                            {/* Selector de servicios */}
+                            {newDate && (
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
+                                    <Label className="block mb-3 text-sm font-medium">
+                                        Servicios
+                                    </Label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {project.services.map((service) =>
+                                        {
+                                            const isSelected = selectedServices.includes(service.id!);
+                                            return (
+                                                <div
+                                                    key={service.id}
+                                                    className={cn(
+                                                        "relative flex items-center p-2 rounded-lg border-2 cursor-pointer transition-all",
+                                                        "hover:border-blue-400 hover:bg-blue-50",
+                                                        isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200",
+                                                    )}
+                                                    onClick={() =>
+                                                    {
+                                                        setSelectedServices((prev) => (isSelected
+                                                            ? prev.filter((id) => id !== service.id)
+                                                            : [...prev, service.id!]));
+                                                    }}
+                                                >
+                                                    <div className="mr-3 text-lg">
+                                                        {getServiceIcon(service.name)}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-medium">
+                                                            {service.name}
+                                                        </h3>
+                                                    </div>
+                                                    {isSelected && <div className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full" />}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="space-y-3">
 

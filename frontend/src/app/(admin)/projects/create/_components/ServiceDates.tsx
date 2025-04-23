@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -27,9 +27,10 @@ type AppointmentWithServices = {
 
 type FrequencyType = "Bimonthly" | "Quarterly" | "Semiannual" | "Monthly" | "Fortnightly"
 
-export function ServiceDates({ services }:
+export function ServiceDates({ services, enabledServices }:
     {
         services: Array<components["schemas"]["Service"]>
+        enabledServices: Array<string>;
     })
 {
     const { setValue, watch } = useFormContext();
@@ -41,15 +42,37 @@ export function ServiceDates({ services }:
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
     const [selectedServiceIds, setSelectedServiceIds] = useState<Array<string>>([]);
-    const [availableServices, setAvailableServices] = useState(services);
+    /* const [availableServices, setAvailableServices] = useState(services); */
+    const [availableServices, setAvailableServices] = useState(services.filter((service) => enabledServices.includes(service.id!)));
 
     // Efecto para actualizar los servicios disponibles cada vez que cambien las citas
-    useEffect(() =>
+    /* useEffect(() =>
     {
         updateAvailableServices();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appointments]);
+    }, [appointments]); */
+
+    // 1. Memoizar la función con useCallback
+    const updateAvailableServices = useCallback(() =>
+    {
+        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
+        const updatedServices = services
+            .filter((service) => enabledServices.includes(service.id!) &&
+        !assignedServiceIds.includes(service.id!));
+        setAvailableServices(updatedServices);
+    }, [appointments, services, enabledServices]); // Dependencias de la función
+
+    // 2. Usarla en el efecto
+    useEffect(() =>
+    {
+        updateAvailableServices();
+    }, [updateAvailableServices]); // Solo depende de la función memoizada
+
+    // Actualizar cuando cambien los servicios habilitados
+    useEffect(() =>
+    {
+        setAvailableServices(services.filter((service) => enabledServices.includes(service.id!)));
+    }, [enabledServices, services]);
 
     const generateDates = (startDate: Date, frequency: FrequencyType): Array<AppointmentWithServices> =>
     {
@@ -96,12 +119,20 @@ export function ServiceDates({ services }:
         return dates;
     };
 
-    const updateAvailableServices = () =>
+    /* const updateAvailableServices = () =>
     {
         const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
         const updatedServices = services.filter((service) => !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
-    };
+    }; */
+    /* const updateAvailableServices = () =>
+    {
+        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
+        const updatedServices = services
+            .filter((service) => enabledServices.includes(service.id!) &&
+              !assignedServiceIds.includes(service.id!));
+        setAvailableServices(updatedServices);
+    }; */
 
     const handleProgramService = () =>
     {
@@ -183,6 +214,14 @@ export function ServiceDates({ services }:
             return;
         }
 
+        // Validar que los servicios seleccionados estén habilitados
+        const invalidServices = selectedServiceIds.filter((id) => !enabledServices.includes(id));
+        if (invalidServices.length > 0)
+        {
+            toast.error("Algunos servicios seleccionados no están habilitados");
+            return;
+        }
+
         const updatedDateISO = updatedDate.toISOString();
 
         // Verificar si la fecha ya existe (excepto la que estamos editando)
@@ -247,7 +286,7 @@ export function ServiceDates({ services }:
                         Servicios a realizar
                     </Label>
                     <div className="space-y-2 max-h-60 overflow-y-auto p-3 border rounded-md bg-gray-50">
-                        {services.map((service) => (
+                        {availableServices.map((service) => (
                             <div key={service.id} className="flex items-center space-x-2 p-1.5 hover:bg-gray-100 rounded-md">
                                 <Checkbox
                                     id={`edit-service-${service.id}`}

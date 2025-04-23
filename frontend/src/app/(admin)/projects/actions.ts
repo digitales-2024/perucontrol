@@ -127,11 +127,14 @@ export async function GetProjectOperationSheet(projectId: string)
     return ok(data);
 }
 
-export async function AddAppointment(id: string, dueDate: string): Promise<Result<null, FetchError>>
+export async function AddAppointment(id: string, dueDate: string, serviceIds?: Array<string>): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/appointment", {
         ...auth,
-        body: { dueDate },
+        body: {
+            dueDate,
+            serviceIds: serviceIds ?? [],
+        },
         params: {
             path: {
                 id,
