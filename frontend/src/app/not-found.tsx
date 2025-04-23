@@ -1,21 +1,27 @@
-import { Construction } from "lucide-react";
+import { Ban } from "lucide-react";
+import Link from "next/link";
 import AdminLayout from "./(admin)/layout";
 
 export default function NotFoundRoot()
 {
-    // FIXME: remove when finishing all pages
     return (
         <div>
             <AdminLayout>
-                <div className="grid items-center justify-center">
-                    <h1 className="font-bold text-2xl">
-                        En construccion (404)
-                    </h1>
-                    <p>
-                        Esta página aun no está disponible
-                    </p>
-                    <div className="text-center py-16">
-                        <Construction className="inline-block opacity-75" size={128} />
+                <div className="grid items-center justify-center text-center">
+                    <div className="py-12">
+                        <Ban className="inline-block opacity-75 mb-6" size={96} />
+                        <h1 className="font-bold text-3xl mb-2">
+                            Página no encontrada
+                        </h1>
+                        <p className="mb-6 text-lg text-muted-foreground">
+                            Lo sentimos, la página que buscas no existe o fue movida.
+                        </p>
+                        <Link
+                            href="/"
+                            className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        >
+                            Volver al inicio
+                        </Link>
                     </div>
                 </div>
             </AdminLayout>

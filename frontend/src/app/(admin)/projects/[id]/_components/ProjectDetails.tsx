@@ -740,6 +740,7 @@ export function ProjectDetails({
                 onClose={() => setIsEditDialogOpen(false)}
                 onSave={handleSaveEditedDate}
                 initialDate={editingAppointment ? new Date(editingAppointment.dueDate) : undefined}
+                text={"Editar fecha"}
             />
 
             <DesactiveAppointmentDialog

@@ -15,12 +15,10 @@ export default async function ProjectsPage({ params }: Props)
     const [
         [clients, clientsError],
         [services, servicesError],
-        [quotations, quotationsError],
         [project, projectError],
     ] = await Promise.all([
         wrapper((auth) => backend.GET("/api/Client", { ...auth })),
         wrapper((auth) => backend.GET("/api/Service", { ...auth })),
-        wrapper((auth) => backend.GET("/api/Quotation", { ...auth })),
         wrapper((auth) => backend.GET("/api/Project/{id}", {
             ...auth,
             params: {
@@ -44,12 +42,6 @@ export default async function ProjectsPage({ params }: Props)
         return null;
     }
 
-    if (quotationsError)
-    {
-        console.error("Error getting all quotations:", quotationsError);
-        return null;
-    }
-
     if (projectError)
     {
         console.error("Error getting project:", projectError);
@@ -59,7 +51,7 @@ export default async function ProjectsPage({ params }: Props)
     return (
         <>
             <HeaderPage title="Editar Servicio" description="Editar información general del servicio" />
-            <UpdateClientData clients={clients} services={services} quotations={quotations} project={project} />
+            <UpdateClientData clients={clients} services={services} project={project} />
         </>
     );
 }
