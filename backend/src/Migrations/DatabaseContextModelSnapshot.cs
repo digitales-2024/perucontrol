@@ -818,8 +818,8 @@ namespace PeruControl.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly?>("EnterTime")
-                        .HasColumnType("date");
+                    b.Property<TimeSpan>("EnterTime")
+                        .HasColumnType("interval");
 
                     b.Property<string>("Incidents")
                         .HasColumnType("text");
@@ -827,8 +827,8 @@ namespace PeruControl.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<DateOnly?>("LeaveTime")
-                        .HasColumnType("date");
+                    b.Property<TimeSpan>("LeaveTime")
+                        .HasColumnType("interval");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");

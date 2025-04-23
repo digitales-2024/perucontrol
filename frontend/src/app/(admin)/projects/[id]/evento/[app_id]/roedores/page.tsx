@@ -35,10 +35,25 @@ export default async function ProjectsPage({ params }: Props)
         return null;
     }
 
+    const [rodent, rodentError] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: appointment.id!,
+            },
+        },
+    }));
+
+    if (rodentError)
+    {
+        console.error("Error getting rodent:", projectError);
+        return null;
+    }
+
     return (
         <>
             <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
-            <RoedoresForm project={project} appointment={appointment} />
+            <RoedoresForm project={project} appointment={appointment} rodent={rodent} />
         </>
     );
 }

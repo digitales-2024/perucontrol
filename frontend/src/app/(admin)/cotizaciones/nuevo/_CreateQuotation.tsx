@@ -176,7 +176,7 @@ export function CreateQuotation({ terms, clients, services }: {
     };
 
     return (
-        <div className="mt-5">
+        <div className="mt-5 ml-3">
             <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver

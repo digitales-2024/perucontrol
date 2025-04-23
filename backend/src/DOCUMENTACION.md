@@ -85,8 +85,3 @@ aplicarlas en la base de datos:
 ```sh
 dotnet ef database update
 ```
-
-
-
-
-

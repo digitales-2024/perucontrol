@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -10,8 +11,12 @@ public class RodentRegister : BaseModel
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
 
     public required DateTime ServiceDate { get; set; }
-    public DateOnly? EnterTime { get; set; }
-    public DateOnly? LeaveTime { get; set; }
+    
+    [Required]
+    public required TimeSpan EnterTime { get; set; }
+    
+    [Required]
+    public required TimeSpan LeaveTime { get; set; }
 
     public IEnumerable<RodentArea> RodentAreas { get; set; } = new HashSet<RodentArea>();
 
@@ -24,6 +29,7 @@ public class RodentRegister : BaseModel
 
 public class RodentArea : BaseModel
 {
+    [JsonIgnore]
     public RodentRegister RodentRegister { get; set; } = null!;
 
     public required string Name { get; set; }
@@ -140,9 +146,8 @@ public class RodentAreaUpdateDTO
 public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 {
     public DateTime? ServiceDate { get; set; }
-    public DateOnly? EnterTime { get; set; }
-    public DateOnly? LeaveTime { get; set; }
-
+    public TimeSpan? EnterTime { get; set; }
+    public TimeSpan? LeaveTime { get; set; }
     public string? Incidents { get; set; }
     public string? CorrectiveMeasures { get; set; }
 
@@ -153,11 +158,11 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
         if (ServiceDate.HasValue)
             entity.ServiceDate = ServiceDate.Value;
 
-        if (EnterTime.HasValue)
-            entity.EnterTime = EnterTime;
+        if (EnterTime != null)
+            entity.EnterTime = (TimeSpan)EnterTime;
 
-        if (LeaveTime.HasValue)
-            entity.LeaveTime = LeaveTime;
+        if (LeaveTime != null)
+            entity.LeaveTime = (TimeSpan)LeaveTime;
 
         if (Incidents != null)
             entity.Incidents = Incidents;

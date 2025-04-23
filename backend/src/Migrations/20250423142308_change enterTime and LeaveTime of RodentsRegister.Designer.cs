@@ -12,8 +12,8 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250404192441_update ProjectOperationSheetPatchDto")]
-    partial class updateProjectOperationSheetPatchDto
+    [Migration("20250423142308_change enterTime and LeaveTime of RodentsRegister")]
+    partial class changeenterTimeandLeaveTimeofRodentsRegister
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -230,10 +230,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -246,16 +243,6 @@ namespace PeruControl.Migrations
 
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("ProjectNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectNumber"));
-
-                    b.Property<string>("TreatedArea")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -383,6 +370,10 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.PrimitiveCollection<string[]>("Ambients")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<long>("Area")
                         .HasColumnType("bigint");
 
@@ -438,6 +429,15 @@ namespace PeruControl.Migrations
                     b.Property<DateTime?>("ActualDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("AppointmentNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentNumber"));
+
+                    b.Property<int?>("CertificateNumber")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -453,9 +453,6 @@ namespace PeruControl.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
-
-                    b.Property<int?>("OrderNumber")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -760,6 +757,99 @@ namespace PeruControl.Migrations
                     b.ToTable("Quotations");
                 });
 
+            modelBuilder.Entity("PeruControl.Model.RodentArea", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CebaderoTrampa")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductDose")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RodentConsumption")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RodentMaterials")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("RodentRegisterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RodentResult")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RodentRegisterId");
+
+                    b.ToTable("RodentAreas");
+                });
+
+            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CorrectiveMeasures")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("EnterTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("Incidents")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<TimeSpan>("LeaveTime")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectAppointmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ServiceDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectAppointmentId")
+                        .IsUnique();
+
+                    b.ToTable("RodentRegisters");
+                });
+
             modelBuilder.Entity("PeruControl.Model.Service", b =>
                 {
                     b.Property<Guid>("Id")
@@ -922,6 +1012,21 @@ namespace PeruControl.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectAppointmentService", b =>
+                {
+                    b.Property<Guid>("AppointmentsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ServicesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AppointmentsId", "ServicesId");
+
+                    b.HasIndex("ServicesId");
+
+                    b.ToTable("ProjectAppointmentService");
+                });
+
             modelBuilder.Entity("ProjectService", b =>
                 {
                     b.Property<Guid>("ProjectsId")
@@ -939,13 +1044,13 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("QuotationService", b =>
                 {
-                    b.Property<Guid>("ServiceToQuotationId")
+                    b.Property<Guid>("QuotationId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ServicesId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ServiceToQuotationId", "ServicesId");
+                    b.HasKey("QuotationId", "ServicesId");
 
                     b.HasIndex("ServicesId");
 
@@ -1075,6 +1180,43 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("PeruControl.Model.RodentArea", b =>
+                {
+                    b.HasOne("PeruControl.Model.RodentRegister", "RodentRegister")
+                        .WithMany("RodentAreas")
+                        .HasForeignKey("RodentRegisterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RodentRegister");
+                });
+
+            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+                {
+                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
+                        .WithOne("RodentRegister")
+                        .HasForeignKey("PeruControl.Model.RodentRegister", "ProjectAppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectAppointment");
+                });
+
+            modelBuilder.Entity("ProjectAppointmentService", b =>
+                {
+                    b.HasOne("PeruControl.Model.ProjectAppointment", null)
+                        .WithMany()
+                        .HasForeignKey("AppointmentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeruControl.Model.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServicesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ProjectService", b =>
                 {
                     b.HasOne("PeruControl.Model.Project", null)
@@ -1094,7 +1236,7 @@ namespace PeruControl.Migrations
                 {
                     b.HasOne("PeruControl.Model.Quotation", null)
                         .WithMany()
-                        .HasForeignKey("ServiceToQuotationId")
+                        .HasForeignKey("QuotationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1119,10 +1261,19 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
                 {
-                    b.Navigation("Certificate");
+                    b.Navigation("Certificate")
+                        .IsRequired();
 
                     b.Navigation("ProjectOperationSheet")
                         .IsRequired();
+
+                    b.Navigation("RodentRegister")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+                {
+                    b.Navigation("RodentAreas");
                 });
 #pragma warning restore 612, 618
         }
