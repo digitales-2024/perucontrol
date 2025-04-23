@@ -355,6 +355,13 @@ export function ProjectDetails({
                                     </Button>
                                 )}
                             </div>
+                            <Button
+                                type="button"
+                                onClick={() => router.push(`/projects/${projectId}/evento/documentos`)}
+                            >
+                                <Download className="h-4 w-4" />
+                                Documentos
+                            </Button>
                         </div>
                     </CardHeader>
 

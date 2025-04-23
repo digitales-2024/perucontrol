@@ -13,8 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel, GeneratePDF, GetProjectOperationSheet, SaveProjectOperationSheetData } from "../actions";
-import { useEffect } from "react";
+import { GenerateExcel, GeneratePDF, SaveProjectOperationSheetData } from "../actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
@@ -51,52 +50,52 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
-    // const operationSheet = appointment.projectOperationSheet;
+    const operationSheet = appointment.projectOperationSheet;
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
             projectAppointmentId: appointment.id!,
             operationDate: appointment.actualDate!,
-            enterTime: "",
-            leaveTime: "",
+            enterTime: operationSheet.enterTime ?? "",
+            leaveTime: operationSheet.leaveTime ?? "",
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
             businessType: client.businessType ?? "",
-            treatedAreas: "",
+            treatedAreas: operationSheet.treatedAreas ?? "",
             service: serviceNames,
             certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
-            insects: "",
-            rodents: "",
-            rodentConsumption: "Partial",
-            otherPlagues: "",
-            insecticide: "",
-            insecticide2: "",
-            rodenticide: "",
-            desinfectant: "",
-            otherProducts: "",
-            insecticideAmount: "",
-            insecticideAmount2: "",
-            rodenticideAmount: "",
-            desinfectantAmount: "",
-            otherProductsAmount: "",
-            staff1: "",
-            staff2: "",
-            staff3: "",
-            staff4: "",
-            aspersionManual: false,
-            aspersionMotor: false,
-            nebulizacionFrio: false,
-            nebulizacionCaliente: false,
-            colocacionCebosCebaderos: "",
-            numeroCeboTotal: "",
-            numeroCeboRepuestos: "",
-            nroPlanchasPegantes: "",
-            nroJaulasTomahawk: "",
-            degreeInsectInfectivity: "Moderate",
-            degreeRodentInfectivity: "Moderate",
-            observations: "",
-            recommendations: "",
+            insects: operationSheet.insects ?? "",
+            rodents: operationSheet.rodents ?? "",
+            rodentConsumption: operationSheet.rodentConsumption ?? "Partial",
+            otherPlagues: operationSheet.otherPlagues ?? "",
+            insecticide: operationSheet.insecticide ?? "",
+            insecticide2: operationSheet.insecticide2 ?? "",
+            rodenticide: operationSheet.rodenticide ?? "",
+            desinfectant: operationSheet.desinfectant ?? "",
+            otherProducts: operationSheet.otherProducts ?? "",
+            insecticideAmount: operationSheet.insecticideAmount ?? "0",
+            insecticideAmount2: operationSheet.insecticideAmount2 ?? "0",
+            rodenticideAmount: operationSheet.rodenticideAmount ?? "0",
+            desinfectantAmount: operationSheet.desinfectantAmount ?? "0",
+            otherProductsAmount: operationSheet.otherProductsAmount ?? "0",
+            staff1: operationSheet.staff1 ?? "",
+            staff2: operationSheet.staff2 ?? "",
+            staff3: operationSheet.staff3 ?? "",
+            staff4: operationSheet.staff4 ?? "",
+            aspersionManual: operationSheet.aspersionManual ?? false,
+            aspersionMotor: operationSheet.aspercionMotor ?? false,
+            nebulizacionFrio: operationSheet.nebulizacionFrio ?? false,
+            nebulizacionCaliente: operationSheet.nebulizacionCaliente ?? false,
+            colocacionCebosCebaderos: operationSheet.colocacionCebosCebaderos ?? "",
+            numeroCeboTotal: operationSheet.numeroCeboTotal ?? "0",
+            numeroCeboRepuestos: operationSheet.numeroCeboRepuestos ?? "0",
+            nroPlanchasPegantes: operationSheet.nroPlanchasPegantes ?? "0",
+            nroJaulasTomahawk: operationSheet.nroJaulasTomahawk ?? "0",
+            degreeInsectInfectivity: operationSheet.degreeInsectInfectivity ?? "Moderate",
+            degreeRodentInfectivity: operationSheet.degreeRodentInfectivity ?? "Moderate",
+            observations: operationSheet.observations ?? "",
+            recommendations: operationSheet.recommendations ?? "",
         },
     });
 
@@ -195,51 +194,6 @@ export function DownloadProjectForm({
         onOpenChange(false);
         router.back();
     };
-
-    useEffect(() =>
-    {
-        const loadOperationSheet = async() =>
-        {
-            const [data, error] = await GetProjectOperationSheet(project.id!);
-
-            if (error)
-            {
-                console.error("Error cargando la ficha operativa:", error);
-                return;
-            }
-
-            if (!data)
-            {
-                console.warn("No se encontró una ficha operativa");
-                return;
-            }
-
-            // Update form with operation sheet data
-            form.reset({
-                ...form.getValues(),
-                ...data,
-                projectAppointmentId: appointment.id!,
-                operationDate: appointment.actualDate!,
-                razonSocial: client.razonSocial ?? client.name,
-                address: project.address,
-                businessType: client.businessType ?? "",
-                service: serviceNames,
-                certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
-                rodentConsumption: data.rodentConsumption ?? "Partial",
-                degreeInsectInfectivity: data.degreeInsectInfectivity ?? "Moderate",
-                degreeRodentInfectivity: data.degreeRodentInfectivity ?? "Moderate",
-            }, {
-                keepDefaultValues: true,
-                keepDirty: false,
-                keepErrors: false,
-                keepIsSubmitted: false,
-                keepTouched: false,
-                keepIsValid: false,
-            });
-        };
-
-        loadOperationSheet();
-    }, [project.id, appointment.id, form]);
 
     return (
         <div className="flex flex-col h-full">
@@ -972,12 +926,12 @@ export function DownloadProjectForm({
 
                                                 <FormField
                                                     control={form.control}
-                                                    name="insecticideAmount2"
+                                                    name="rodenticideAmount"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="flex items-center gap-2 font-medium">
                                                                 <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Insecticida 2
+                                                                Cantidad de Rodenticida
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input

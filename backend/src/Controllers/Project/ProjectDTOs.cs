@@ -137,7 +137,6 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     public required IList<AppointmentCreateDTOThroughProject> AppointmentCreateDTOs { get; set; } =
         null!;
 
-    [MinLength(1, ErrorMessage = "Debe ingresar al menos 1 ambiente")]
     public string[] Ambients { get; set; } = Array.Empty<string>();
 
     public string? MurinoMapKey { get; set; }

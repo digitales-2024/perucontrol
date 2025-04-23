@@ -2174,57 +2174,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Project/s3-r2/ping": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** S3-R2 */
-        get: {
-            parameters: {
-                query?: {
-                    id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileResult"];
-                        "application/json": components["schemas"]["FileResult"];
-                        "text/json": components["schemas"]["FileResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Project/{id}/upload-murino-map": {
         parameters: {
             query?: never;
@@ -2234,7 +2183,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Upload murino map */
         post: {
             parameters: {
                 query?: never;
@@ -2320,6 +2268,348 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinfection/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinfection Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinsection/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinsection Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/ratextermination/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Rat Extermination Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinfestation/sustainment/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinfestation Sustainment Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/desinsecticides/desratization/sustainment/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Desinsecticides Desratization Sustainment Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/sustainability/desratization/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Sustainability Desratization Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -4201,6 +4491,8 @@ export interface components {
             ambients?: Array<string>;
             /** Format: double */
             price: number;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4259,6 +4551,8 @@ export interface components {
             price: number;
             appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
             ambients?: Array<string>;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
         };
         ProjectOperationSheet: {
             /** Format: uuid */
@@ -4403,6 +4697,8 @@ export interface components {
             /** Format: double */
             price?: number | null;
             ambients?: Array<string> | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
         };
         /** @enum {unknown} */
         ProjectStatus: "Pending" | "Completed" | "Rejected";
@@ -4422,6 +4718,8 @@ export interface components {
             price: number;
             ambients: Array<string>;
             appointments: Array<string>;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4446,6 +4744,8 @@ export interface components {
             price: number;
             ambients: Array<string>;
             appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4469,6 +4769,8 @@ export interface components {
             /** Format: double */
             price: number;
             appointments: Array<string>;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4660,8 +4962,12 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        ReportGenerationRequest: {
+            day?: string;
+            month?: string;
+            year?: string;
+        };
         RodentArea: {
-            rodentRegister?: components["schemas"]["RodentRegister2"];
             name: string;
             /** Format: int32 */
             cebaderoTrampa: number;
@@ -4701,31 +5007,9 @@ export interface components {
             projectAppointmentId?: string;
             /** Format: date-time */
             serviceDate: string;
-            /** Format: date */
-            enterTime?: string | null;
-            /** Format: date */
-            leaveTime?: string | null;
+            enterTime: string;
+            leaveTime: string;
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
-            incidents?: string | null;
-            correctiveMeasures?: string | null;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        RodentRegister2: {
-            /** Format: uuid */
-            projectAppointmentId?: string;
-            /** Format: date-time */
-            serviceDate: string;
-            /** Format: date */
-            enterTime?: string | null;
-            /** Format: date */
-            leaveTime?: string | null;
-            rodentAreas?: components["schemas"];
             incidents?: string | null;
             correctiveMeasures?: string | null;
             /** Format: uuid */
@@ -4739,9 +5023,7 @@ export interface components {
         RodentRegisterUpdateDTO: {
             /** Format: date-time */
             serviceDate?: string | null;
-            /** Format: date */
             enterTime?: string | null;
-            /** Format: date */
             leaveTime?: string | null;
             incidents?: string | null;
             correctiveMeasures?: string | null;

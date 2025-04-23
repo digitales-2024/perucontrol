@@ -9,9 +9,11 @@ type ProjectAppointment = ProjectSummarySingle["appointments"][number]
 export function RoedoresForm({
     project,
     appointment,
+    rodent,
 }: {
     project: components["schemas"]["ProjectSummarySingle"];
     appointment: ProjectAppointment,
+    rodent: components["schemas"]["RodentRegister"],
 })
 {
     return (
@@ -19,6 +21,7 @@ export function RoedoresForm({
             <RodentControlForm
                 project={project}
                 appointment={appointment}
+                rodent={rodent}
             />
         </div>
     );
