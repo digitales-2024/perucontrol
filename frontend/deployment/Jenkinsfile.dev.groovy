@@ -38,7 +38,7 @@ pipeline {
                 dir("frontend") {
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deployment/Dockerfile.alpine .")
+                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deployment/Dockerfile .")
                             image.push()
                             image.push("latest")
                         }
