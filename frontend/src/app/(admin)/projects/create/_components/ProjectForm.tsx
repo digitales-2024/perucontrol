@@ -23,6 +23,7 @@ interface ProjectFormProps {
 export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
     const r = useRouter();
 
     // Configuración del formulario con validación estricta
@@ -132,8 +133,8 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             </Button>
             <FormProvider {...formMethods}>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
-                    <ClientData clients={clients} services={services} quotations={quotations} />
-                    <ServiceDates services={services} />
+                    <ClientData clients={clients} services={services} quotations={quotations} onServicesChange={setSelectedServices} />
+                    <ServiceDates services={services} enabledServices={selectedServices} />
 
                     {/* Mostrar errores generales del formulario */}
                     {Object.keys(errors).length > 0 && (

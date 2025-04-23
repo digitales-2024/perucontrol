@@ -5,6 +5,9 @@ namespace PeruControl.Controllers;
 public class AppointmentCreateDTO
 {
     public DateTime DueDate { get; set; }
+
+    // public virtual ICollection<Service> ServiceIds { get; set; } = new HashSet<Service>();
+    public List<Guid> ServiceIds { get; set; } = new List<Guid>();
 }
 
 public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>

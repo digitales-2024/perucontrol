@@ -16,6 +16,7 @@ interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
     quotations: Array<components["schemas"]["Quotation3"]>
+    onServicesChange: (services: Array<string>) => void;
 }
 
 // Mapa de iconos para servicios
@@ -29,12 +30,13 @@ const serviceIcons: Record<string, React.ReactNode> = {
 // Máximo número de ambientes permitidos
 const MAX_ENVIRONMENTS = 8;
 
-export function ClientData({ clients, services, quotations }: ClientDataProps)
+export function ClientData({ clients, services, quotations, onServicesChange }: ClientDataProps)
 {
     const { setValue, watch } = useFormContext();
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+    const selectedServices = watch("services") ?? [];
 
     const { control } = useFormContext();
 
@@ -167,6 +169,12 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
 
     // Verificar si se ha alcanzado el límite de ambientes
     const isMaxEnvironmentsReached = fields.length >= MAX_ENVIRONMENTS;
+
+    // Efecto para notificar cambios en los servicios seleccionados
+    useEffect(() =>
+    {
+        onServicesChange(selectedServices);
+    }, [selectedServices, onServicesChange]);
 
     return (
         <Card>
@@ -302,6 +310,7 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                 <div className="space-y-4">
                     {/* Servicios */}
                     <FormField
+                        control={control}
                         name="services"
                         render={({ field }) => (
                             <FormItem>
@@ -320,11 +329,18 @@ export function ClientData({ clients, services, quotations }: ClientDataProps)
                                                     "hover:border-blue-400 hover:bg-blue-50",
                                                     isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200",
                                                 )}
-                                                onClick={() =>
+                                                /* onClick={() =>
                                                 {
                                                     const newValue = isSelected
                                                         ? field.value?.filter((id: string) => id !== service.id)
                                                         : [...(field.value ?? []), service.id!];
+                                                    field.onChange(newValue);
+                                                }} */
+                                                onClick={() =>
+                                                {
+                                                    const newValue = field.value?.includes(service.id)
+                                                        ? field.value.filter((id: string) => id !== service.id)
+                                                        : [...(field.value ?? []), service.id];
                                                     field.onChange(newValue);
                                                 }}
                                             >
