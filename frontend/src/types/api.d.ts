@@ -2186,18 +2186,20 @@ export interface paths {
         /** Generate Disinfection Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2241,18 +2243,20 @@ export interface paths {
         /** Generate Disinsection Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2296,18 +2300,20 @@ export interface paths {
         /** Generate Rat Extermination Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2351,18 +2357,20 @@ export interface paths {
         /** Generate Disinfestation Sustainment Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2406,18 +2414,20 @@ export interface paths {
         /** Generate Desinsecticides Desratization Sustainment Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2461,18 +2471,20 @@ export interface paths {
         /** Generate Sustainability Desratization Report Word */
         post: {
             parameters: {
-                query?: {
-                    day?: string;
-                    month?: string;
-                    year?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -4838,8 +4850,12 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        ReportGenerationRequest: {
+            day?: string;
+            month?: string;
+            year?: string;
+        };
         RodentArea: {
-            rodentRegister?: components["schemas"]["RodentRegister2"];
             name: string;
             /** Format: int32 */
             cebaderoTrampa: number;
@@ -4879,31 +4895,9 @@ export interface components {
             projectAppointmentId?: string;
             /** Format: date-time */
             serviceDate: string;
-            /** Format: date */
-            enterTime?: string | null;
-            /** Format: date */
-            leaveTime?: string | null;
+            enterTime: string;
+            leaveTime: string;
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
-            incidents?: string | null;
-            correctiveMeasures?: string | null;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        RodentRegister2: {
-            /** Format: uuid */
-            projectAppointmentId?: string;
-            /** Format: date-time */
-            serviceDate: string;
-            /** Format: date */
-            enterTime?: string | null;
-            /** Format: date */
-            leaveTime?: string | null;
-            rodentAreas?: components["schemas"];
             incidents?: string | null;
             correctiveMeasures?: string | null;
             /** Format: uuid */
@@ -4917,9 +4911,7 @@ export interface components {
         RodentRegisterUpdateDTO: {
             /** Format: date-time */
             serviceDate?: string | null;
-            /** Format: date */
             enterTime?: string | null;
-            /** Format: date */
             leaveTime?: string | null;
             incidents?: string | null;
             correctiveMeasures?: string | null;

@@ -170,10 +170,8 @@ export const RodentAreaSchema = z.object({
 export const RodentControlFormSchema = z.object({
     serviceDate: z.string().nullable()
         .optional(),
-    enterTime: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
-        .nullable(),
-    leaveTime: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
-        .nullable(),
+    enterTime: z.string(),
+    leaveTime: z.string(),
     incidents: z.string().nullable()
         .optional(),
     correctiveMeasures: z.string().nullable()

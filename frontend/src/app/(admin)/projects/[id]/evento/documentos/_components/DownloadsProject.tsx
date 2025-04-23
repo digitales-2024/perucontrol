@@ -131,7 +131,7 @@ export function DocumentDownloader({ projectId }: { projectId: string })
                         <Button
                             key={report.endpoint}
                             variant="outline"
-                            className="w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)] h-auto py-3 px-4 flex items-start gap-3 text-left"
+                            className="w-full sm:w-[calc(100%-0.375rem)] lg:w-[calc(100%-0.3rem)] h-auto py-3 px-4 flex items-start gap-3 text-left"
                             onClick={() => handleDownload(report.endpoint, report.filename)}
                         >
                             <span className="text-xl hidden sm:inline">

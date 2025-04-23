@@ -91,7 +91,12 @@ public class ProjectController(
                 DueDate = app.DueDate,
                 Services = services.GetServicesForEntityFramework(app.Services, _context),
                 Certificate = new(),
-                RodentRegister = new() { ServiceDate = app.DueDate },
+                RodentRegister = new()
+                { 
+                  ServiceDate = app.DueDate,
+                  EnterTime = new TimeSpan(9, 0, 0),
+                  LeaveTime = new TimeSpan(13, 0, 0),
+                },
                 ProjectOperationSheet = new()
                 {
                     OperationDate = app.DueDate,

@@ -8,15 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, PlusCircle, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarClock, PlusCircle, Save, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
 import { GenerateRodentExcel, GenerateRodentsPDF, SaveRodentData } from "../actions";
-import DatePicker from "@/components/ui/date-time-picker";
-import { format, parseISO } from "date-fns";
 
 export function RodentControlForm({
     project,
@@ -34,8 +32,8 @@ export function RodentControlForm({
         resolver: zodResolver(RodentControlFormSchema),
         defaultValues: {
             serviceDate: rodent.serviceDate ?? null,
-            enterTime: rodent.enterTime ?? null,
-            leaveTime: rodent.leaveTime ?? null,
+            enterTime: rodent.enterTime ?? "",
+            leaveTime: rodent.leaveTime ?? "",
             incidents: rodent.incidents ?? null,
             correctiveMeasures: rodent.correctiveMeasures ?? null,
             rodentAreas: rodent.rodentAreas!.length > 0
@@ -190,7 +188,7 @@ export function RodentControlForm({
                 Volver
             </Button>
             <Card className="border shadow-sm mt-5">
-                <CardHeader className="bg-blue-50 py-4">
+                <CardHeader className="bg-blue-50 py-3">
                     <CardTitle className="text-xl font-semibold text-blue-800">
                         Registro de Control de Roedores
                     </CardTitle>
@@ -211,24 +209,11 @@ export function RodentControlForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="flex items-center gap-2 font-medium">
-                                                Fecha de entrada
+                                                <CalendarClock className="h-4 w-4 text-blue-500" />
+                                                Hora de Ingreso
                                             </FormLabel>
                                             <FormControl>
-                                                <DatePicker
-                                                    value={field.value ? parseISO(field.value) : undefined}
-                                                    onChange={(date) =>
-                                                    {
-                                                        if (date)
-                                                        {
-                                                            const formattedDate = format(date, "yyyy-MM-dd");
-                                                            field.onChange(formattedDate);
-                                                        }
-                                                        else
-                                                        {
-                                                            field.onChange(null);
-                                                        }
-                                                    }}
-                                                />
+                                                <Input placeholder="09:30" {...field} className="border-gray-300" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -241,24 +226,11 @@ export function RodentControlForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="flex items-center gap-2 font-medium">
-                                                Fecha de Salida
+                                                <CalendarClock className="h-4 w-4 text-blue-500" />
+                                                Hora de Salida
                                             </FormLabel>
                                             <FormControl>
-                                                <DatePicker
-                                                    value={field.value ? parseISO(field.value) : undefined}
-                                                    onChange={(date) =>
-                                                    {
-                                                        if (date)
-                                                        {
-                                                            const formattedDate = format(date, "yyyy-MM-dd");
-                                                            field.onChange(formattedDate);
-                                                        }
-                                                        else
-                                                        {
-                                                            field.onChange(null);
-                                                        }
-                                                    }}
-                                                />
+                                                <Input placeholder="15:30" {...field} className="border-gray-300" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
