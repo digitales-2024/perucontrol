@@ -573,44 +573,37 @@ public class ProjectController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
-    [EndpointSummary("S3-R2")]
-    [HttpGet("s3-r2/ping")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> PingS3R2(Guid id)
-    {
-        var exists = await s3Service.EnsureBucketExistsAsync("perucontrol");
-
-        // send
-        return Ok(exists);
-    }
-
     [EndpointSummary("Upload murino map")]
     [HttpPost("{id}/upload-murino-map")]
     public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
     {
-        Console.WriteLine($"Uploading murino map for project {id}");
         if (file == null || file.Length == 0)
-        {
-        Console.WriteLine($"expected");
             return BadRequest("No file uploaded.");
-        }
 
-        var fileName = $"mapa-murino-{id}.png";
+        var project = await _context.Projects.FindAsync(id);
+        if (project == null)
+            return NotFound("Proyecto no encontrado");
+
+        var key = $"mapa-murino-{id}.png";
+
         try
         {
-        Console.WriteLine($"wtf?");
-            await _imageService.SaveImageAsync(file.OpenReadStream(), fileName);
-            return Ok();
+            // Opcional: Validar que sea PNG
+            if (!file.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Solo se permiten archivos PNG");
+
+            var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), "image/png");
+
+            // Guarda los datos en el modelo
+            project.MurinoMapKey = result.Key;
+            project.MurinoMapUrl = result.Url;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { url = result.Url });
         }
-        catch (ArgumentException ex)
+        catch (Exception ex)
         {
-        Console.WriteLine($"expected??");
-            return BadRequest(ex.Message);
-        }
-        catch
-        {
-            return StatusCode(500, "Error guardando la imagen.");
+            return StatusCode(500, $"Error guardando la imagen: {ex.Message}");
         }
     }
 
@@ -618,18 +611,30 @@ public class ProjectController(
     [HttpGet("{id}/murino-map")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetMurinoMap([FromRoute] Guid id)
+    public async Task<IActionResult> GetMurinoMap([FromRoute] Guid id)
     {
-        var fileName = $"mapa-murino-{id}.png";
-        var imageStream = _imageService.GetImage(fileName);
+        var project = await _context.Projects.FindAsync(id);
+        if (project == null)
+            return NotFound("Proyecto no encontrado");
 
-        if (imageStream == null)
-            return NotFound("Imagen no encontrada");
+        if (
+            string.IsNullOrEmpty(project.MurinoMapKey) || string.IsNullOrEmpty(project.MurinoMapUrl)
+        )
+            return NotFound("Mapa murino no cargado");
 
-        // Lee el stream a un array de bytes para devolverlo como FileResult
-        using var ms = new MemoryStream();
-        imageStream.CopyTo(ms);
-        var imageBytes = ms.ToArray();
-        return File(imageBytes, "image/png", fileName);
+        try
+        {
+            // El bucket es estático según S3Service
+            var bucketName = "perucontrol";
+            var stream = await s3Service.DownloadImageAsync(project.MurinoMapKey, bucketName);
+            if (stream == null)
+                return NotFound("Imagen no encontrada en R2");
+
+            return File(stream, "image/png", $"mapa-murino-{id}.png");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error descargando la imagen: {ex.Message}");
+        }
     }
 }

@@ -140,6 +140,9 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [MinLength(1, ErrorMessage = "Debe ingresar al menos 1 ambiente")]
     public string[] Ambients { get; set; } = Array.Empty<string>();
 
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
+
     public Project MapToEntity()
     {
         return new Project
@@ -150,6 +153,8 @@ public class ProjectCreateDTO : IMapToEntity<Project>
             Status = ProjectStatus.Pending,
             Price = Price,
             SpacesCount = SpacesCount,
+            MurinoMapKey = MurinoMapKey,
+            MurinoMapUrl = MurinoMapUrl,
         };
     }
 }
@@ -190,6 +195,9 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
 
     public string[]? Ambients { get; set; } = Array.Empty<string>();
 
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
+
     public void ApplyPatch(Project entity)
     {
         if (Address != null)
@@ -202,6 +210,10 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
             entity.Price = Price.Value;
         if (Ambients != null)
             entity.Ambients = Ambients;
+        if (MurinoMapKey != null)
+            entity.MurinoMapKey = MurinoMapKey;
+        if (MurinoMapUrl != null)
+            entity.MurinoMapUrl = MurinoMapUrl;
     }
 }
 
@@ -227,6 +239,9 @@ public class ProjectSummary : BaseModel
     public required string[] Ambients { get; set; } = [];
 
     public required IList<DateTime> Appointments { get; set; } = null!;
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
 
 public class ProjectSummarySingle : BaseModel
@@ -252,6 +267,9 @@ public class ProjectSummarySingle : BaseModel
     public required string[] Ambients { get; set; } = [];
 
     public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
 
 public class ProjectSummarySingle2 : BaseModel
@@ -275,6 +293,9 @@ public class ProjectSummarySingle2 : BaseModel
     public required decimal Price { get; set; }
 
     public required IList<DateTime> Appointments { get; set; } = null!;
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
 
 public class ProjectAppointmentDTO : BaseModel

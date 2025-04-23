@@ -102,7 +102,7 @@ export function MurinoMapSection({ murinoMapBase64, projectId }: MurinoMapSectio
                     <input
                         id="murino-map-upload"
                         type="file"
-                        accept="image/*"
+                        accept="image/png"
                         className="block w-full text-sm text-gray-500
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded file:border-0
