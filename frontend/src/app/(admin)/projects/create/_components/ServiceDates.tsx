@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect,useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { components } from "@/types/api";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -34,7 +34,7 @@ export function ServiceDates({ services, enabledServices }:
     })
 {
     const { setValue, watch } = useFormContext();
-    const appointments: Array<AppointmentWithServices> = useMemo(() => watch("appointments") ?? [], [watch]);
+    const appointments: Array<AppointmentWithServices> = useWatch({ name: "appointments" }) ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
@@ -56,7 +56,7 @@ export function ServiceDates({ services, enabledServices }:
     useEffect(() =>
     {
         updateAvailableServices();
-    }, [updateAvailableServices]); // Solo depende de la función memoizada
+    }, [updateAvailableServices]); // Solo depende de la función memorizada
 
     // Actualizar cuando cambien los servicios habilitados
     useEffect(() =>
