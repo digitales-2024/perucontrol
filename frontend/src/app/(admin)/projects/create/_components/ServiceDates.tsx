@@ -34,7 +34,7 @@ export function ServiceDates({ services, enabledServices }:
     })
 {
     const { setValue, watch } = useFormContext();
-    const appointments: Array<AppointmentWithServices> = watch("appointments") ?? []; // Ahora será un array de objetos AppointmentWithServices
+    const appointments: Array<AppointmentWithServices> = watch("appointments") ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
@@ -42,17 +42,8 @@ export function ServiceDates({ services, enabledServices }:
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
     const [selectedServiceIds, setSelectedServiceIds] = useState<Array<string>>([]);
-    /* const [availableServices, setAvailableServices] = useState(services); */
     const [availableServices, setAvailableServices] = useState(services.filter((service) => enabledServices.includes(service.id!)));
 
-    // Efecto para actualizar los servicios disponibles cada vez que cambien las citas
-    /* useEffect(() =>
-    {
-        updateAvailableServices();
-
-    }, [appointments]); */
-
-    // 1. Memoizar la función con useCallback
     const updateAvailableServices = useCallback(() =>
     {
         const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
@@ -60,9 +51,8 @@ export function ServiceDates({ services, enabledServices }:
             .filter((service) => enabledServices.includes(service.id!) &&
         !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
-    }, [appointments, services, enabledServices]); // Dependencias de la función
+    }, [appointments, services, enabledServices]);
 
-    // 2. Usarla en el efecto
     useEffect(() =>
     {
         updateAvailableServices();
@@ -118,21 +108,6 @@ export function ServiceDates({ services, enabledServices }:
 
         return dates;
     };
-
-    /* const updateAvailableServices = () =>
-    {
-        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
-        const updatedServices = services.filter((service) => !assignedServiceIds.includes(service.id!));
-        setAvailableServices(updatedServices);
-    }; */
-    /* const updateAvailableServices = () =>
-    {
-        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
-        const updatedServices = services
-            .filter((service) => enabledServices.includes(service.id!) &&
-              !assignedServiceIds.includes(service.id!));
-        setAvailableServices(updatedServices);
-    }; */
 
     const handleProgramService = () =>
     {

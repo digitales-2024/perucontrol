@@ -17,6 +17,7 @@ import { toastWrapper } from "@/types/toasts";
 import { redirect, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Project } from "../../../types";
+import { toast } from "sonner";
 
 interface UpdateClientDataProps {
     clients: Array<components["schemas"]["Client"]>
@@ -41,6 +42,7 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
 
     // Estado local para manejar los ambientes
     const [environments, setEnvironments] = useState<Array<string>>(Array.isArray(project.ambients) ? project.ambients : []);
+    const [addressOptions, setAddressOptions] = useState<Array<Option>>([]);
 
     const form = useForm<ProjectDataSchema>({
         resolver: zodResolver(projectDataSchema),
@@ -63,6 +65,46 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
         setValue("ambients", environments);
     }, [environments, setValue]);
 
+    // Efecto para actualizar las opciones de dirección cuando cambia el cliente seleccionado
+
+    useEffect(() =>
+    {
+
+        const selectedClient = clients.find((client) => client.id === form.getValues("clientId"));
+
+        if (selectedClient)
+        {
+            const options: Array<Option> = [];
+
+            // Agregar la dirección fiscal
+            if (selectedClient.fiscalAddress)
+            {
+                options.push({
+                    value: selectedClient.fiscalAddress,
+                    label: selectedClient.fiscalAddress,
+                });
+            }
+
+            // Agregar las direcciones de las ubicaciones del cliente
+            selectedClient.clientLocations.forEach((location) =>
+            {
+                if (location.address)
+                { // Asegúrate de que la dirección no sea nula
+                    options.push({
+                        value: location.address,
+                        label: location.address,
+                    });
+                }
+            });
+            setAddressOptions(options);
+        }
+        else
+        {
+            setAddressOptions([]); // Si no hay cliente seleccionado, limpiar las opciones
+        }
+
+    }, [clients, form]);
+
     const activeClients = clients.filter((client) => client.isActive);
 
     const clientsOptions: Array<Option> =
@@ -73,13 +115,22 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
 
     const onSubmit = async(data: ProjectDataSchema) =>
     {
+        // Verificar si la dirección está en las opciones
+        const isAddressValid = addressOptions.some((option) => option.value === data.address);
+
+        if (!isAddressValid)
+        {
+            // Mostrar un mensaje de error o manejar la validación
+            toast.warning("La dirección seleccionada no es válida. Por favor, elige una dirección de la lista.");
+            return;
+        }
+
         // Asegurarse de que ambients esté actualizado con los valores más recientes
         const formattedData = {
             ...data,
             ambients: environments,
         };
 
-        console.log(JSON.stringify(formattedData, null, 2));
         const [, err] = await toastWrapper(UpdateProject(project.id!, formattedData), {
             loading: "Cargando...",
             success: "Proyecto actualizado exitosamente",
@@ -176,7 +227,19 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                             Dirección
                                         </FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
+                                            <AutoComplete
+                                                options={addressOptions}
+                                                placeholder="Selecciona una dirección"
+                                                emptyMessage="No se encontraron direcciones"
+                                                value={
+                                                    addressOptions.find((option) => option.value ===
+                                                        field.value) ?? undefined
+                                                }
+                                                onValueChange={(option) =>
+                                                {
+                                                    field.onChange(option?.value ?? "");
+                                                }}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

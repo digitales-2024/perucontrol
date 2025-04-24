@@ -1430,6 +1430,70 @@ export interface paths {
         };
         trace?: never;
     };
+    "/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualizar cliente por Id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClientPatchDTO"];
+                    "text/json": components["schemas"]["ClientPatchDTO"];
+                    "application/*+json": components["schemas"]["ClientPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Client/search-by-ruc/{ruc}": {
         parameters: {
             query?: never;
@@ -4429,6 +4493,7 @@ export interface components {
             email?: string | null;
             phoneNumber?: string | null;
             contactName?: string | null;
+            clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
