@@ -1,8 +1,10 @@
 "use client";
 
+import React, { useState } from "react";
 import {
     ChevronsUpDown,
     LogOut,
+    User,
 } from "lucide-react";
 
 import {
@@ -23,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { LogoutAction } from "@/app/(auth)/login/actions";
 import { components } from "@/types/api";
+import { UserEditDialog } from "./UserEditDialog";
 
 type User = components["schemas"]["UserReturn"]
 
@@ -33,6 +36,7 @@ export function NavUser({
 })
 {
     const { isMobile } = useSidebar();
+    const [openDialog, setOpenDialog] = useState(false);
 
     return (
         <SidebarMenu>
@@ -44,13 +48,13 @@ export function NavUser({
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarFallback className="rounded-lg">
+                                <AvatarFallback className="rounded-lg text-black">
                                     PC
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-semibold">
-                                    {user.username}
+                                    {user.name}
                                 </span>
                                 <span className="truncate text-xs">
                                     {user.email}
@@ -65,6 +69,10 @@ export function NavUser({
                         align="end"
                         sideOffset={4}
                     >
+                        <DropdownMenuItem onClick={() => setOpenDialog(true)}>
+                            <User />
+                            Editar perfil
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={LogoutAction}>
                             <LogOut />
                             Cerrar sesión
@@ -72,6 +80,7 @@ export function NavUser({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>
+            <UserEditDialog open={openDialog} onOpenChange={setOpenDialog} user={user} />
         </SidebarMenu>
     );
 }

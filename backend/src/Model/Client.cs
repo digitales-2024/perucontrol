@@ -109,12 +109,13 @@ public class ClientCreateDTO : IMapToEntity<Client>
             Email = Email,
             PhoneNumber = PhoneNumber,
             ContactName = ContactName,
-            ClientLocations = ClientLocations != null && ClientLocations.Any()
-                ? ClientLocations
-                    .Where(c => !string.IsNullOrWhiteSpace(c.Address))
-                    .Select(c => c.MapToEntity())
-                    .ToList()
-                : new List<ClientLocation>(),
+            ClientLocations =
+                ClientLocations != null && ClientLocations.Any()
+                    ? ClientLocations
+                        .Where(c => !string.IsNullOrWhiteSpace(c.Address))
+                        .Select(c => c.MapToEntity())
+                        .ToList()
+                    : new List<ClientLocation>(),
         };
     }
 }
