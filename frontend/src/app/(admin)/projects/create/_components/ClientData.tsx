@@ -172,8 +172,17 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
     // Efecto para notificar cambios en los servicios seleccionados
     useEffect(() =>
     {
-        const currentServices = watch("services") ?? [];
-        onServicesChange(currentServices);
+        const subscription = watch((value, { name }) =>
+        {
+            // Si cambian los servicios o cualquier otro campo
+            if (name === "services" || !name)
+            {
+                const currentServices = value.services ?? [];
+                onServicesChange(currentServices);
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, [watch, onServicesChange]);
 
     return (
@@ -329,18 +338,13 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                                                     "hover:border-blue-400 hover:bg-blue-50",
                                                     isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200",
                                                 )}
-                                                /* onClick={() =>
-                                                {
-                                                    const newValue = isSelected
-                                                        ? field.value?.filter((id: string) => id !== service.id)
-                                                        : [...(field.value ?? []), service.id!];
-                                                    field.onChange(newValue);
-                                                }} */
                                                 onClick={() =>
                                                 {
-                                                    const newValue = field.value?.includes(service.id)
-                                                        ? field.value.filter((id: string) => id !== service.id)
-                                                        : [...(field.value ?? []), service.id];
+                                                    const currentServices = field.value ?? [];
+                                                    const newValue = currentServices.includes(service.id!)
+                                                        ? currentServices.filter((id: string) => id !== service.id)
+                                                        : [...currentServices, service.id!];
+
                                                     field.onChange(newValue);
                                                 }}
                                             >

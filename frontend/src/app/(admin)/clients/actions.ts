@@ -46,7 +46,7 @@ export async function SearchClientByRuc(ruc: string): Promise<Result<SunatRespon
 
 export async function UpdateClient(id: string, newClient: CreateClientSchema): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Client/{id}", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/update/{id}", {
         ...auth,
         body: newClient,
         params: {

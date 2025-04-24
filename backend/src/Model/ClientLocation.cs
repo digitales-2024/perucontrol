@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -12,10 +13,10 @@ public class ClientLocation : BaseModel
 
 public class ClientLocationDTO : IMapToEntity<ClientLocation>
 {
-    public required string Address { get; set; }
+    public string? Address { get; set; }
 
     public ClientLocation MapToEntity()
     {
-        return new ClientLocation { Address = Address };
+        return new ClientLocation { Address = Address ?? string.Empty };
     }
 }
