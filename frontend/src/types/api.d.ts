@@ -1443,7 +1443,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Actualizar cliente por Id */
+        /** Actualizar cliente por ID */
         patch: {
             parameters: {
                 query?: never;
@@ -1489,6 +1489,13 @@ export interface paths {
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -4263,7 +4270,52 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserUpdateDTO"];
+                    "text/json": components["schemas"]["UserUpdateDTO"];
+                    "application/*+json": components["schemas"]["UserUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -4468,7 +4520,7 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
+            clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
             phoneNumber: string;
             contactName?: string | null;
         };
@@ -4483,7 +4535,7 @@ export interface components {
             modifiedAt?: string;
         };
         ClientLocationDTO: {
-            address: string;
+            address?: string | null;
         };
         ClientPatchDTO: {
             razonSocial?: string | null;
@@ -5167,8 +5219,14 @@ export interface components {
             content?: string | null;
         };
         UserReturn: {
+            name: string;
             username: string;
             email: string;
+        };
+        UserUpdateDTO: {
+            name: string;
+            email: string;
+            password?: string | null;
         };
         ValidationProblemDetails: {
             type?: string | null;

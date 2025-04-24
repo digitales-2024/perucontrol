@@ -214,7 +214,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                     router.push(`/cotizaciones/${row.id}`);
                 }}
                 toolbarActions={toolbarActions}
-                emptyMessage="No hay cotizaciones registrados"
+                emptyMessage="No hay cotizaciones registradas"
             />
         </>
     );

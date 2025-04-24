@@ -132,7 +132,7 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
                     router.push(`/projects/${row.id}`);
                 }}
                 toolbarActions={toolbarActions}
-                emptyMessage="No hay cotizaciones registrados"
+                emptyMessage="No hay cotizaciones registradas"
             />
 
         </>

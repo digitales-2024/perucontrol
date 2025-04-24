@@ -30,6 +30,7 @@ public static class DatabaseSeeder
         {
             adminUser = new User
             {
+                Name = "Administrador",
                 UserName = "Admin",
                 Email = adminEmail,
                 EmailConfirmed = true,
