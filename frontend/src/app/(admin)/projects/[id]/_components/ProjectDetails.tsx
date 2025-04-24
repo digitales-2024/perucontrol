@@ -369,10 +369,12 @@ export function ProjectDetails({
                                         {" "}
                                         {project.projectNumber}
                                     </CardTitle>
+                                    {/*
                                     <div className="flex items-center gap-4">
                                         {getStatusIcon(project.status)}
                                         {getStatusBadge(project.status)}
                                     </div>
+                                    */}
                                 </div>
                                 <CardDescription>
                                     Creado el&nbsp;
@@ -391,7 +393,7 @@ export function ProjectDetails({
                                 onClick={() => router.push(`/projects/${projectId}/evento/documentos`)}
                             >
                                 <Download className="h-4 w-4" />
-                                Documentos
+                                Informes
                             </Button>
                         </div>
                     </CardHeader>
@@ -618,19 +620,24 @@ export function ProjectDetails({
                             projectId={projectId}
                         />
 
-                        <div className="h-8" />
+                    </CardContent>
+                </Card>
 
+                <Card>
+                    <CardHeader className="pb-2">
+                        <div className="flex flex-wrap gap-4 justify-between">
+                            <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
+                                <Calendar className="h-5 w-5 text-blue-500" />
+                                Cronograma de Servicios
+                            </h3>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent>
                         <div className="space-y-4">
 
-                            <div className="flex flex-wrap gap-4 justify-between">
-                                <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
-                                    <Calendar className="h-5 w-5 text-blue-500" />
-                                    Cronograma de Servicios
-                                </h3>
-                            </div>
-                            <Separator />
-
                             {/* Agregar nueva fecha */}
+                            {/*
                             <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                                 <div className="flex-1">
                                     <Label htmlFor="add-date" className="block mb-2">
@@ -657,6 +664,7 @@ export function ProjectDetails({
                                     )}
                                 </Button>
                             </div>
+                                */}
 
                             {/* Selector de servicios */}
                             {newDate && (

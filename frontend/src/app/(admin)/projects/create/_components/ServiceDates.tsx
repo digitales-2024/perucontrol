@@ -49,7 +49,7 @@ export function ServiceDates({ services, enabledServices }:
         const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
         const updatedServices = services
             .filter((service) => enabledServices.includes(service.id!) &&
-        !assignedServiceIds.includes(service.id!));
+                !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
     }, [appointments, services, enabledServices]);
 
@@ -473,6 +473,7 @@ export function ServiceDates({ services, enabledServices }:
                 </div>
 
                 <div className="space-y-4">
+                    {/*
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="add-date" className="block mb-2 font-medium">
@@ -496,6 +497,7 @@ export function ServiceDates({ services, enabledServices }:
                             <Plus className="h-4 w-4" />
                         </Button>
                     </div>
+                    */}
 
                     <div>
                         <Label className="block mb-2 font-medium">

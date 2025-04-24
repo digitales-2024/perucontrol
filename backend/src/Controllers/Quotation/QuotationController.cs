@@ -54,6 +54,7 @@ public class QuotationController(
         return await _context
             .Quotations.Include(c => c.Client)
             .Include(s => s.Services)
+            .OrderByDescending(q => q.QuotationNumber)
             .ToListAsync();
     }
 
