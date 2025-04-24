@@ -308,7 +308,7 @@ export function ProjectDetails({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "cronograma.ods";
+        a.download = `cronograma-${projectId.substring(0, 4)}.xlsx`;
         a.click();
         URL.revokeObjectURL(url);
     };

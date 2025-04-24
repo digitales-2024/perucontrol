@@ -10,7 +10,7 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
     /// Collects all appointments, organizes them, and generates an excel file
     /// with a worksheet for each month, in order.
     /// </summary>
-    public async Task<(byte[]?, string?)> GenerateAppointmentScheduleExcel(Guid projectId)
+    public async Task<(byte[]?, string?)> GenerateAppointmentScheduleExcel(Guid projectId, bool isPdf = false)
     {
         var project = await db
             .Projects.Include(p => p.Client)
@@ -56,10 +56,11 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
 
         // Sort the months
         var sortedMonths = appointmentsByMonth.OrderBy(m => m.Key).ToDictionary();
+        var templateFile = isPdf ? "Templates/cronograma_plantilla_pdf.xlsx" : "Templates/cronograma_plantilla.xlsx";
 
         // Send the data to the excel generation system
         var bytes = excelTemplateService.GenerateMultiMonthSchedule(
-            "Templates/cronograma_plantilla.xlsx",
+                templateFile,
             sortedMonths,
             project
         );

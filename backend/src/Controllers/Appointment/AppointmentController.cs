@@ -599,7 +599,11 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GenerateRodentsExcel(Guid id)
     {
-        var (odsBytes, _) = await appointmentService.FillRodentsExcel(id);
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
 
         // send
         return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "roedores.ods");
@@ -614,7 +618,12 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GenerateRodentsPdf(Guid id)
     {
-        var (odsBytes, _) = await appointmentService.FillRodentsExcel(id);
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
+
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
 
         if (errorStr != "")
