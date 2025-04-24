@@ -4,7 +4,7 @@ import { AccordionContent, AccordionItem, AccordionTriggerAsChild } from "@/comp
 import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { parseISO } from "date-fns";
-import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, ListChecks } from "lucide-react";
+import { CheckIcon, ChevronDown, ClockArrowDown, Flag, Ellipsis, Pencil, ListChecks, FileIcon, Rat } from "lucide-react";
 import { useState } from "react";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
@@ -194,6 +194,7 @@ export function AppointmentDetail({
                             href={`/projects/${projectId}/evento/${appointment.id!}/roedores`}
                             disabled={actionsDisabled}
                             disabledTitle={deliveryDate === null ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
+                            icon={<Rat />}
                         >
                             Registro de roedores
                         </DocumentButton>
@@ -202,6 +203,7 @@ export function AppointmentDetail({
                             href={`/projects/${projectId}/evento/${appointment.id!}/certificado`}
                             disabled={actionsDisabled}
                             disabledTitle={deliveryDate === null ? "No se puede ver el certificado si no se ha completado la fecha real" : ""}
+                            icon={<FileIcon />}
                         >
                             Certificado
                         </DocumentButton>
@@ -210,6 +212,7 @@ export function AppointmentDetail({
                             href={`/projects/${projectId}/evento/${appointment.id!}/ficha`}
                             disabled={actionsDisabled}
                             disabledTitle={deliveryDate === null ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
+                            icon={<ListChecks />}
                         >
                             Ficha de Operaciones
                         </DocumentButton>

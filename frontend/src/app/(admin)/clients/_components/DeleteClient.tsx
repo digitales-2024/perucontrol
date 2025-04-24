@@ -8,10 +8,10 @@ import { toastWrapper } from "@/types/toasts";
 import { RemoveClient } from "../actions";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  client: components["schemas"]["Client"];
-  showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    client: components["schemas"]["Client"];
+    showTrigger?: boolean;
 }
 
 export function DeleteClient({ open, onOpenChange, client, showTrigger = true }: DeleteClientProps)
@@ -47,7 +47,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                             ¿Esta absolutamente seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
+                            Se eliminará el cliente y no se podrá utilizar en otros procesos.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -79,7 +79,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                         ¿Esta absolutamente seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
+                        Se eliminará el cliente y no se podrá utilizar en otros procesos.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

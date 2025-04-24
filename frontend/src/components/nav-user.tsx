@@ -38,6 +38,11 @@ export function NavUser({
     const { isMobile } = useSidebar();
     const [openDialog, setOpenDialog] = useState(false);
 
+    const userInitials = user.name.split(" ")
+        .map((x) => x[0])
+        .slice(0, 2)
+        .join("");
+
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -49,7 +54,7 @@ export function NavUser({
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
                                 <AvatarFallback className="rounded-lg text-black">
-                                    PC
+                                    {userInitials}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">

@@ -81,7 +81,8 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         {
             idx += 1;
 
-            placeholders[$"{{area_{idx}}}"] = area.CebaderoTrampa.ToString();
+            placeholders[$"{{area_{idx}}}"] = area.Name;
+            placeholders[$"{{tr_{idx}}}"] = area.CebaderoTrampa.ToString();
             placeholders[$"{{principia{idx}}}"] = area.ProductName;
             placeholders[$"{{dosis{idx}}}"] = area.ProductDose;
             var (q1, q2, _, q3, q4) = area.Frequency.GetFrequencyMarkers();

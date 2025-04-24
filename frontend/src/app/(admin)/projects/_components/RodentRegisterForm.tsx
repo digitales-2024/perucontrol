@@ -119,7 +119,7 @@ export function RodentControlForm({
 
     const downloadExcel = async() =>
     {
-        const [blob, err] = await toastWrapper(GenerateRodentExcel(project.id!), {
+        const [blob, err] = await toastWrapper(GenerateRodentExcel(appointment.id!), {
             loading: "Generando Excel...",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -130,7 +130,7 @@ export function RodentControlForm({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `control-roedores-${project.projectNumber}.xlsx`;
+        a.download = `control-roedores-${project.projectNumber}.ods`;
         a.click();
         URL.revokeObjectURL(url);
     };
