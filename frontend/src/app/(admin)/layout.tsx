@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 <AppSidebar
                     user={{
                         username: "-",
+                        name: "-",
                         email: "-",
                     }}
                 />
