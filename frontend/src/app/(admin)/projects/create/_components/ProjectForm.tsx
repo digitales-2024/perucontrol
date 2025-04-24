@@ -50,6 +50,13 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     const onSubmit = async(data: ClientDataSchema) =>
     {
+        // Validar que haya al menos un ambiente
+        if (data.ambients.length === 0)
+        {
+            toast.error("Debe agregar al menos un ambiente.");
+            return; // Detener el envío del formulario
+        }
+
         try
         {
             setIsSubmitting(true);
@@ -94,6 +101,8 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 ambients: data.ambients,
                 appointmentCreateDTOs: transformedAppointments,
             };
+
+            console.log(JSON.stringify(requestData, null, 2));
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",

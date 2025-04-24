@@ -38,6 +38,7 @@ public class ProjectController(
         var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
         if (client == null)
             return NotFound("Cliente no encontrado");
+
         entity.Client = client;
 
         // if a quotation is provided, validate it exists
