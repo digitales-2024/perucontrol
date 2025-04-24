@@ -159,7 +159,16 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
     // Función para eliminar un ambiente
     const removeEnvironment = (index: number) =>
     {
-        setEnvironments(environments.filter((_, i) => i !== index));
+        // Verificar si hay más de un ambiente antes de eliminar
+        if (environments.length > 1)
+        {
+            setEnvironments(environments.filter((_, i) => i !== index));
+        }
+        else
+        {
+            // Mostrar un mensaje de advertencia si se intenta eliminar el último ambiente
+            toast.warning("Debe haber al menos un ambiente.");
+        }
     };
 
     // Función para actualizar un ambiente

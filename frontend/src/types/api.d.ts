@@ -1443,7 +1443,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Actualizar cliente por Id */
+        /** Actualizar cliente por ID */
         patch: {
             parameters: {
                 query?: never;
@@ -1489,6 +1489,13 @@ export interface paths {
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -4468,7 +4475,7 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
+            clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
             phoneNumber: string;
             contactName?: string | null;
         };
@@ -4483,7 +4490,7 @@ export interface components {
             modifiedAt?: string;
         };
         ClientLocationDTO: {
-            address: string;
+            address?: string | null;
         };
         ClientPatchDTO: {
             razonSocial?: string | null;

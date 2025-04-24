@@ -464,6 +464,13 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                                 </Button>
                             </div>
                         ))}
+
+                        {/* Mensaje de error si no hay ambientes */}
+                        {fields.length === 0 && (
+                            <FormMessage>
+                                Debe agregar al menos un ambiente.
+                            </FormMessage>
+                        )}
                     </div>
 
                     {isMaxEnvironmentsReached && (
