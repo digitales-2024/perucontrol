@@ -17,19 +17,16 @@ import {
     Download,
     Edit,
     FileSpreadsheet,
-    Loader2,
     MapPin,
     Pencil,
-    Plus,
     Shield,
     User,
     XCircle,
 } from "lucide-react";
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
 import { Label } from "@/components/ui/label";
-import DatePicker from "@/components/ui/date-time-picker";
 import { toast } from "sonner";
-import { AddAppointment, DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF } from "../../actions";
+import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { AppointmentDetail } from "./AppointmentDetail";
@@ -75,7 +72,8 @@ export function ProjectDetails({
         field?: string; // Explicitly type as string
     } | null>(null);
     const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
-    const [isAddingDate, setIsAddingDate] = useState(false);
+    // const [isAddingDate, setIsAddingDate] = useState(false);
+    void setNewDate;
 
     // Ordenar las citas por fecha
     const sortedAppointments = project.appointments
@@ -147,68 +145,68 @@ export function ProjectDetails({
         router.back();
     };
 
-    const handleAddDate = async() =>
-    {
-        if (!newDate)
-        {
-            toast.error("Por favor seleccione una fecha para agregar");
-            return;
-        }
-
-        if (selectedServices.length === 0)
-        {
-            toast.error("Por favor seleccione al menos un servicio");
-            return;
-        }
-
-        const newDateISO = newDate.toISOString();
-
-        // Verificar si la fecha ya existe
-        const dateExists = sortedAppointments.some((appointment) => format(new Date(appointment.dueDate ?? ""), "yyyy-MM-dd") === format(newDate, "yyyy-MM-dd"));
-
-        if (dateExists)
-        {
-            toast.error("Esta fecha ya está programada");
-            return;
-        }
-
-        setIsAddingDate(true);
-
-        try
-        {
-            // Llamar a la función AddAppointment con el ID del proyecto y la nueva fecha
-            const [newAppointment, error] = await AddAppointment(project.id!, newDateISO, selectedServices);
-
-            if (error)
-            {
-                console.error("Error al agregar la cita:", error);
-                toast.error("Ocurrió un error al agregar la cita");
-                return;
-            }
-
-            // Actualizar la lista de citas con la nueva cita
-            [...sortedAppointments, newAppointment].sort((a, b) =>
-            {
-                const dateA = a?.dueDate ? new Date(a.dueDate).getTime() : 0;
-                const dateB = b?.dueDate ? new Date(b.dueDate).getTime() : 0;
-                return dateA - dateB;
-            });
-
-            // Actualizar el estado local
-            setNewDate(undefined);
-            setSelectedServices([]);
-            toast.success("Fecha agregada correctamente");
-        }
-        catch (error)
-        {
-            console.error("Error inesperado al agregar la cita:", error);
-            toast.error("Ocurrió un error inesperado");
-        }
-        finally
-        {
-            setIsAddingDate(false);
-        }
-    };
+    // const handleAddDate = async() =>
+    // {
+    //     if (!newDate)
+    //     {
+    //         toast.error("Por favor seleccione una fecha para agregar");
+    //         return;
+    //     }
+    //
+    //     if (selectedServices.length === 0)
+    //     {
+    //         toast.error("Por favor seleccione al menos un servicio");
+    //         return;
+    //     }
+    //
+    //     const newDateISO = newDate.toISOString();
+    //
+    //     // Verificar si la fecha ya existe
+    //     const dateExists = sortedAppointments.some((appointment) => format(new Date(appointment.dueDate ?? ""), "yyyy-MM-dd") === format(newDate, "yyyy-MM-dd"));
+    //
+    //     if (dateExists)
+    //     {
+    //         toast.error("Esta fecha ya está programada");
+    //         return;
+    //     }
+    //
+    //     setIsAddingDate(true);
+    //
+    //     try
+    //     {
+    //         // Llamar a la función AddAppointment con el ID del proyecto y la nueva fecha
+    //         const [newAppointment, error] = await AddAppointment(project.id!, newDateISO, selectedServices);
+    //
+    //         if (error)
+    //         {
+    //             console.error("Error al agregar la cita:", error);
+    //             toast.error("Ocurrió un error al agregar la cita");
+    //             return;
+    //         }
+    //
+    //         // Actualizar la lista de citas con la nueva cita
+    //         [...sortedAppointments, newAppointment].sort((a, b) =>
+    //         {
+    //             const dateA = a?.dueDate ? new Date(a.dueDate).getTime() : 0;
+    //             const dateB = b?.dueDate ? new Date(b.dueDate).getTime() : 0;
+    //             return dateA - dateB;
+    //         });
+    //
+    //         // Actualizar el estado local
+    //         setNewDate(undefined);
+    //         setSelectedServices([]);
+    //         toast.success("Fecha agregada correctamente");
+    //     }
+    //     catch (error)
+    //     {
+    //         console.error("Error inesperado al agregar la cita:", error);
+    //         toast.error("Ocurrió un error inesperado");
+    //     }
+    //     finally
+    //     {
+    //         setIsAddingDate(false);
+    //     }
+    // };
 
     const handleSaveEditedDate = async(newDate: Date) =>
     {

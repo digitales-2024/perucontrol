@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format, addMonths } from "date-fns";
 import DatePicker from "@/components/ui/date-time-picker";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -34,7 +34,7 @@ export function ServiceDates({
     const appointments: Array<AppointmentWithServices> = useWatch({ name: "appointments" }) ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
-    const [newDate, setNewDate] = useState<Date | undefined>(undefined);
+    // const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
@@ -135,30 +135,30 @@ export function ServiceDates({
         toast.success("Fechas generadas correctamente");
     }, [serviceDate, frequency, generateDates, setValue, appointments]);
 
-    const handleAddDate = useCallback(() =>
-    {
-        if (!newDate)
-        {
-            toast.error("Por favor seleccione una fecha para agregar");
-            return;
-        }
-
-        if (selectedServiceIds.length === 0)
-        {
-            toast.error("Debe seleccionar al menos un servicio");
-            return;
-        }
-
-        const newAppointment = {
-            dueDate: newDate.toISOString(), // Convertir a formato ISO
-            services: [...selectedServiceIds],
-        };
-
-        setValue("appointments", [...appointments, newAppointment]);
-        setNewDate(undefined); // Limpiar la fecha nueva después de agregar
-        setSelectedServiceIds([]);
-        toast.success("Fecha agregada correctamente");
-    }, [newDate, selectedServiceIds, setValue, appointments]);
+    // const handleAddDate = useCallback(() =>
+    // {
+    //     if (!newDate)
+    //     {
+    //         toast.error("Por favor seleccione una fecha para agregar");
+    //         return;
+    //     }
+    //
+    //     if (selectedServiceIds.length === 0)
+    //     {
+    //         toast.error("Debe seleccionar al menos un servicio");
+    //         return;
+    //     }
+    //
+    //     const newAppointment = {
+    //         dueDate: newDate.toISOString(), // Convertir a formato ISO
+    //         services: [...selectedServiceIds],
+    //     };
+    //
+    //     setValue("appointments", [...appointments, newAppointment]);
+    //     setNewDate(undefined); // Limpiar la fecha nueva después de agregar
+    //     setSelectedServiceIds([]);
+    //     toast.success("Fecha agregada correctamente");
+    // }, [newDate, selectedServiceIds, setValue, appointments]);
 
     const handleDeleteDate = useCallback((index: number) =>
     {
