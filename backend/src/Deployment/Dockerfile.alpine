@@ -36,7 +36,6 @@ COPY Utils ./Utils
 COPY Program.cs .
 COPY PeruControl.csproj .
 COPY appsettings.json .
-:
 
 # Build binary
 RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out
