@@ -9,13 +9,12 @@ import { GenerateCertificatePDF, GenerateCertificateWord } from "../../../action
 
 export type CertificateProp = components["schemas"]["CertificateGet"]
 
-export interface CertificateListProps
-{
-  columns: Array<ColumnDef<CertificateProp, unknown>>;
-  data: Array<CertificateProp>
+export interface CertificateListProps {
+    columns: Array<ColumnDef<CertificateProp, unknown>>;
+    data: Array<CertificateProp>
 }
 
-export default function CertificationList({ columns, data } : CertificateListProps)
+export default function CertificationList({ columns, data }: CertificateListProps)
 {
     // Status options for filtering
     const statusOptions = [
@@ -64,7 +63,7 @@ export default function CertificationList({ columns, data } : CertificateListPro
                     field: "operationDate",
                     format: "yyyy-MM-dd",
                 }}
-                emptyMessage="No se encontraron fichas de operación"
+                emptyMessage="No se encontraron certificados"
             />
         </div>
     );

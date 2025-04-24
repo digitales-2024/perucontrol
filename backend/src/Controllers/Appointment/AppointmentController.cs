@@ -571,6 +571,7 @@ public class AppointmentController(
             .Include(c => c.ProjectAppointment)
             .ThenInclude(pa => pa.Project)
             .ThenInclude(p => p.Client) // Incluye el cliente del proyecto
+            .Where(c => c.ProjectAppointment.CertificateNumber != null)
             .ToListAsync();
 
         var result = certificates.Select(a => new CertificateGet
