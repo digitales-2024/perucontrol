@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -34,7 +34,7 @@ export function ServiceDates({ services, enabledServices }:
     })
 {
     const { setValue, watch } = useFormContext();
-    const appointments: Array<AppointmentWithServices> = watch("appointments") ?? [];
+    const appointments: Array<AppointmentWithServices> = useMemo(() => watch("appointments") ?? [], [watch]);
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
     const [newDate, setNewDate] = useState<Date | undefined>(undefined);
