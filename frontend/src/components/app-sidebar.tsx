@@ -93,20 +93,12 @@ const data = {
         },
         {
             title: "Ajustes",
-            url: "#",
+            url: "/business",
             icon: Settings2,
             items: [
                 {
                     title: "Datos de la empresa",
                     url: "/business",
-                },
-                {
-                    title: "Cuenta",
-                    url: "#",
-                },
-                {
-                    title: "Exportar datos",
-                    url: "#",
                 },
             ],
         },

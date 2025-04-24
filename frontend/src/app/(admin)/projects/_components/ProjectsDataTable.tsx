@@ -17,14 +17,16 @@ interface DataTableProps {
     data: Array<ProjectSummary>;
 }
 
-export function ProjectsDataTable({ columns, data }: DataTableProps) {
+export function ProjectsDataTable({ columns, data }: DataTableProps)
+{
     const [showDeleteProject, setShowDeleteProject] = useState(false);
     const [selectedProject, setSelectedProject] = useState<ProjectSummary | null>(null);
 
     const router = useRouter();
 
     // Contar proyecto por estado
-    const getProjectByStatus = (status: string) => {
+    const getProjectByStatus = (status: string) =>
+    {
         if (status === "todos") return data.length;
         if (status === "activo") return data.filter((project) => project.isActive).length;
         if (status === "inactivo") return data.filter((project) => !project.isActive).length;
@@ -32,7 +34,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
     };
 
     // contar proyectos por estado
-    const getQuotationByState = (state: string) => {
+    const getQuotationByState = (state: string) =>
+    {
         if (state === "pendiente") return data.filter((project) => project.status === "Pending").length;
         if (state === "completado") return data.filter((project) => project.status === "Completed").length;
         if (state === "rechazado") return data.filter((project) => project.status === "Rejected").length;
@@ -54,7 +57,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
         {
             label: "Editar",
             icon: <Pencil className="h-4 w-4" />,
-            onClick: (row: ProjectSummary) => {
+            onClick: (row: ProjectSummary) =>
+            {
                 router.push(`/projects/${row.id}/update/`);
             },
             disabled: (row: ProjectSummary) => !row.isActive,
@@ -62,7 +66,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
         {
             label: "Eliminar",
             icon: <Trash2 className="h-4 w-4" />,
-            onClick: (row: ProjectSummary) => {
+            onClick: (row: ProjectSummary) =>
+            {
                 setSelectedProject(row);
                 setShowDeleteProject(true);
             },
@@ -71,7 +76,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
     ];
 
     // Función para filtrar por estado
-    const filterByStatus = (data: Array<ProjectSummary>, status: string) => {
+    const filterByStatus = (data: Array<ProjectSummary>, status: string) =>
+    {
         if (status === "todos") return data;
         if (status === "activo") return data.filter((quotation) => quotation.isActive);
         if (status === "inactivo") return data.filter((quotation) => !quotation.isActive);
@@ -79,7 +85,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
     };
 
     // Funcion para filtrar por estado
-    const filterByState = (data: Array<ProjectSummary>, state: string) => {
+    const filterByState = (data: Array<ProjectSummary>, state: string) =>
+    {
         if (state === "pendiente") return data.filter((project) => project.status === "Pending");
         if (state === "completado") return data.filter((project) => project.status === "Completed");
         if (state === "rechazado") return data.filter((project) => project.status === "Rejected");
@@ -120,7 +127,8 @@ export function ProjectsDataTable({ columns, data }: DataTableProps) {
                 searchFields={["clientName", "price", "paymentMethod", "expirationDate", "status", "hasTaxes"]}
                 dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
-                onRowClick={(row) => {
+                onRowClick={(row) =>
+                {
                     router.push(`/projects/${row.id}`);
                 }}
                 toolbarActions={toolbarActions}
