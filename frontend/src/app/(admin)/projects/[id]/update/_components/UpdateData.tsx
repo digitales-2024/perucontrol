@@ -315,10 +315,14 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                                             )}
                                                             onClick={() =>
                                                             {
-                                                                const newValue = isSelected
-                                                                    ? field.value?.filter((id) => id !== service.id)
-                                                                    : [...(field.value || []), service.id!];
-                                                                field.onChange(newValue);
+                                                                // Solo permitir agregar servicios (no quitar)
+                                                                if (!isSelected)
+                                                                {
+                                                                    const newValue = isSelected
+                                                                        ? field.value?.filter((id) => id !== service.id)
+                                                                        : [...(field.value || []), service.id!];
+                                                                    field.onChange(newValue);
+                                                                }
                                                             }}
                                                         >
                                                             <div className="mr-4">
