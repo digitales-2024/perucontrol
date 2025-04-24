@@ -56,6 +56,88 @@ public class ClientController(
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
     }
 
+    [HttpPatch("/update/{id}")]
+    [EndpointSummary("Actualizar cliente por ID")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateClient(Guid id, [FromBody] ClientPatchDTO patchDTO)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        
+        try
+        {
+            // Validación básica
+            if (patchDTO == null)
+                return BadRequest("El cuerpo de la solicitud no puede estar vacío");
+
+            // Cargar cliente con ubicaciones
+            var client = await _context.Clients
+                .Include(c => c.ClientLocations)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (client == null)
+                return NotFound("Cliente no encontrado");
+
+            // Validar direcciones si existen
+            if (patchDTO.ClientLocations != null && patchDTO.ClientLocations.Any(l => string.IsNullOrWhiteSpace(l.Address)))
+                return BadRequest("Todas las ubicaciones deben tener una dirección válida");
+
+            // Aplicar cambios con manejo transaccional
+            await ApplyClientChanges(client, patchDTO);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return NoContent();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error de concurrencia al actualizar cliente {Id}", id);
+            return Conflict("Los datos fueron modificados por otro usuario. Por favor refresque e intente nuevamente.");
+        }
+        catch (DbUpdateException ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error de base de datos al actualizar cliente {Id}", id);
+            return StatusCode(500, "Error al guardar los cambios");
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error inesperado al actualizar cliente {Id}", id);
+            return StatusCode(500, "Error interno del servidor");
+        }
+    }
+
+    private async Task ApplyClientChanges(Client client, ClientPatchDTO patchDTO)
+    {
+        // Aplicar cambios a propiedades simples
+        patchDTO.ApplyPatch(client);
+
+        // Manejar ubicaciones si vienen en el DTO
+        if (patchDTO.ClientLocations != null)
+        {
+            // 1. Eliminar ubicaciones existentes (con consulta directa para evitar problemas de tracking)
+            await _context.ClientLocations
+                .Where(cl => cl.Client.Id == client.Id)
+                .ExecuteDeleteAsync();
+
+            // 2. Limpiar colección en memoria
+            client.ClientLocations.Clear();
+
+            // 3. Agregar nuevas ubicaciones con validación
+            foreach (var locationDto in patchDTO.ClientLocations.Where(dto => dto != null))
+            {
+                var newLocation = locationDto.MapToEntity();
+                newLocation.Client.Id = client.Id; // Establecer relación
+                _context.ClientLocations.Add(newLocation);
+            }
+        }
+    }
+
     [HttpGet("search-by-ruc/{ruc}")]
     [EndpointSummary("Get business data by RUC")]
     [ProducesResponseType(StatusCodes.Status200OK)]
