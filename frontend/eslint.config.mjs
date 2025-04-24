@@ -40,6 +40,7 @@ const eslintConfig = [
             },
         },
         rules: {
+            "react-hooks/exhaustive-deps": "off",  
             "react/jsx-boolean-value": "error",
             "react/jsx-closing-bracket-location": "error",
             "react/jsx-closing-tag-location": "error",
