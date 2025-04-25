@@ -1,28 +1,38 @@
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerTrigger, DrawerDescription, DrawerClose } from "@/components/ui/drawer";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
-import { RemoveClient } from "../actions";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ReactivatedQuotation } from "../actions";
 
-interface DeleteClientProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    client: components["schemas"]["Client"];
-    showTrigger?: boolean;
+interface ReactivateQuotationProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  quotation: components["schemas"]["Quotation3"],
+  showTrigger?: boolean;
 }
 
-export function DeleteClient({ open, onOpenChange, client, showTrigger = true }: DeleteClientProps)
+export function ReactivateQuotation({ open, onOpenChange, quotation, showTrigger = true }: ReactivateQuotationProps)
 {
     const isMobile = useIsMobile();
 
-    const onDeleteClientsHandler = async() =>
+    const onDeleteQuotationHandler = async() =>
     {
-        const [, err] = await toastWrapper(RemoveClient(client.id!), {
-            loading: "Eliminando cliente...",
-            success: "Cliente eliminado exitosamente!",
+        const [, err] = await toastWrapper(ReactivatedQuotation(quotation.id!), {
+            loading: "Reactivando cotización...",
+            success: "Cotización reactivada exitosamente!",
         });
         if (err !== null)
         {
@@ -36,7 +46,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
             {showTrigger ? (
                 <DrawerTrigger asChild>
                     <Button variant="outline">
-                        Eliminar
+                        Reactivar
                     </Button>
                 </DrawerTrigger>
             ) : null}
@@ -44,10 +54,10 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                 <DrawerContent>
                     <DrawerHeader>
                         <DrawerTitle>
-                            ¿Esta absolutamente seguro?
+                            ¿Esta seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                            Se deshabilitara el cliente y no se podrá utilizar en otros procesos.
+                            Se habilitara la cotización y podrá ser utilizado en otros procesos.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -56,7 +66,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                         </DrawerClose>
                         <Button
                             aria-label="Delete selected rows"
-                            onClick={onDeleteClientsHandler}
+                            onClick={onDeleteQuotationHandler}
                         >
                             Continuar
                         </Button>
@@ -69,17 +79,17 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
             {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                        Eliminar
+                        Reactivar
                     </Button>
                 </AlertDialogTrigger>
             ) : null}
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        ¿Esta absolutamente seguro?
+                        ¿Esta seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Se deshabilitara el cliente y no se podrá utilizar en otros procesos.
+                        Se habilitara la cotización y podrá ser utilizado en otros procesos.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -88,7 +98,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                     </AlertDialogCancel>
                     <AlertDialogAction
                         aria-label="Delete selected rows"
-                        onClick={onDeleteClientsHandler}
+                        onClick={onDeleteQuotationHandler}
                     >
                         Continuar
                     </AlertDialogAction>

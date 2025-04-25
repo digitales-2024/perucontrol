@@ -367,6 +367,23 @@ public class QuotationController(
         return NoContent();
     }
 
+    [EndpointSummary("Reactive quotation by Id")]
+    [HttpPatch("{id}/reactivate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<IActionResult> Reactivate(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        entity.IsActive = true;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
     [EndpointSummary("Get approved and not associated project")]
     [HttpGet("approved/not-associated")]
     [ProducesResponseType(typeof(IEnumerable<Quotation>), StatusCodes.Status200OK)]

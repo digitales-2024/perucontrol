@@ -57,7 +57,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
                             ¿Esta absolutamente seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente los datos de la cotización.
+                            Esta acción eliminará los datos de la cotización.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -86,10 +86,10 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        ¿Esta absolutamente seguro?
+                        ¿Esta seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos de la cotización.
+                        Esta acción eliminará los datos de la cotización.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -118,6 +118,31 @@ export async function RemoveQuotation(id: string): Promise<Result<null, FetchErr
     return ok(null);
 }
 
+export async function ReactivatedQuotation(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Quotation/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/cotizaciones", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
+
 type StatesQuotation = "Pending" | "Approved" | "Rejected";
 
 export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>

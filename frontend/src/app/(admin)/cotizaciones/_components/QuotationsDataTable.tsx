@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, CheckCheck, Pencil, Plus, Trash2, X } from "lucide-react";
 import { DeleteQuotation } from "./DeleteQuotation";
 import { QuotationTable } from "@/components/data-table/QuotationDataTable";
 import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
@@ -14,6 +14,7 @@ import type { Quotation } from "./QuotationColumns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { ReactivateQuotation } from "./ReactivateQuotation";
 
 interface DataTableProps {
     columns: Array<ColumnDef<Quotation, unknown>>
@@ -23,6 +24,7 @@ interface DataTableProps {
 export function QuotationDataTable({ columns, data }: DataTableProps)
 {
     const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
+    const [showReactivateQuotation, setShowReactivateQuotation] = useState(false);
     const [showAcceptQuotation, setShowAcceptQuotation] = useState(false);
     const [showRejectQuotation, setShowRejectQuotation] = useState(false);
     const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
@@ -87,6 +89,15 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                 setShowDeleteQuotation(true);
             },
             disabled: (row: Quotation) => !row.isActive,
+        },
+        {
+            label: "Reactivar",
+            icon: <CheckCheck className="h-4 w-4" />,
+            onClick: (row: Quotation) =>
+            {
+                setSelectedQuotation(row);
+                setShowReactivateQuotation(true);
+            },
         },
         {
             label: "Aceptar",
@@ -178,6 +189,12 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                     <DeleteQuotation
                         open={showDeleteQuotation}
                         onOpenChange={setShowDeleteQuotation}
+                        quotation={selectedQuotation}
+                        showTrigger={false}
+                    />
+                    <ReactivateQuotation
+                        open={showReactivateQuotation}
+                        onOpenChange={setShowReactivateQuotation}
                         quotation={selectedQuotation}
                         showTrigger={false}
                     />

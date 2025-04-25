@@ -208,6 +208,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Cliente
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <AutoComplete
@@ -234,6 +237,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                     <FormItem>
                                         <FormLabel>
                                             Dirección
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <AutoComplete
@@ -264,6 +270,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                         <FormItem>
                                             <FormLabel>
                                                 Área m2
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -285,6 +294,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                         <FormItem>
                                             <FormLabel>
                                                 Nro. de ambientes
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -309,6 +321,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                         <FormItem>
                                             <FormLabel className="text-base font-medium">
                                                 Servicios
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <div className="grid grid-cols-2 gap-4 mt-2">
                                                 {services.map((service) =>
@@ -362,6 +377,9 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                                     <div>
                                         <FormLabel className="text-base font-medium">
                                             Tipos de Ambientes
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <p className="text-xs text-gray-500 mt-1">
                                             Máximo

@@ -45,7 +45,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     const {
         handleSubmit,
-        formState: { errors },
+        formState: { /* errors */ },
     } = formMethods;
 
     const onSubmit = async(data: ClientDataSchema) =>
@@ -144,22 +144,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
                     <ClientData clients={clients} services={services} quotations={quotations} onServicesChange={setSelectedServices} />
                     <ServiceDates services={services} enabledServices={selectedServices} />
-
-                    {/* Mostrar errores generales del formulario */}
-                    {Object.keys(errors).length > 0 && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-                            <p className="font-medium">
-                                Por favor corrija los siguientes errores:
-                            </p>
-                            <ul className="mt-2 list-disc list-inside text-sm">
-                                {Object.entries(errors).map(([key, error]) => (
-                                    <li key={key}>
-                                        {error.message as string}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
 
                     <Button
                         type="submit"

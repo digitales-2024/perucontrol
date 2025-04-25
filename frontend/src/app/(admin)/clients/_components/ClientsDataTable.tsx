@@ -3,13 +3,14 @@
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ClientTable } from "@/components/data-table/ClientDataTable";
-import { Pencil, Trash2, UserPlus } from "lucide-react";
+import { CheckCheck, Pencil, Trash2, UserPlus } from "lucide-react";
 import { UpdateClientSheet } from "./UpdateClients";
 import { DeleteClient } from "./DeleteClient";
 import { ViewClientDetails } from "./ViewClientsDetail";
 import type { Client } from "./ClientsColumns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ReactiveClient } from "./ReactiveClient";
 
 interface DataTableProps<TData, TValue> {
     columns: Array<ColumnDef<TData, TValue>>
@@ -20,6 +21,7 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
 {
     const [showUpdateClient, setShowUpdateClient] = useState(false);
     const [showDeleteClient, setShowDeleteClient] = useState(false);
+    const [showReactiveClient, setShowReactiveClient] = useState(false);
     const [showDetailClient, setShowDetailClient] = useState(false);
     const [selectedClient, setSelectedClient] = useState<TData | null>(null);
 
@@ -71,6 +73,15 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
             },
             disabled: (row: TData) => !row.isActive,
         },
+        {
+            label: "Reactivar",
+            icon: <CheckCheck className="h-4 w-4" />,
+            onClick: (row: TData) =>
+            {
+                setSelectedClient(row);
+                setShowReactiveClient(true);
+            },
+        },
     ];
 
     // Acciones de la barra de herramientas
@@ -113,6 +124,12 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
                     <DeleteClient
                         open={showDeleteClient}
                         onOpenChange={setShowDeleteClient}
+                        client={selectedClient}
+                        showTrigger={false}
+                    />
+                    <ReactiveClient
+                        open={showReactiveClient}
+                        onOpenChange={setShowReactiveClient}
                         client={selectedClient}
                         showTrigger={false}
                     />

@@ -256,22 +256,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                     )}
                                 />
 
-                                {/* Giro del negocio */}
-                                <FormField
-                                    control={form.control}
-                                    name="businessType"
-                                    render={({ field }) => (
-                                        <FormItem className="truncate">
-                                            <FormLabel>
-                                                Giro del Negocio
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Giro del Negocio" {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
                                 {/* Campo de Teléfono */}
                                 <FormField
                                     control={form.control}

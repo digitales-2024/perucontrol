@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { ProjectTable } from "@/components/data-table/ProjectDataTable";
 import { DeleteProject } from "./DeleteProject";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { CheckCheck, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ReactivateProject } from "./ReactivateProject";
 
 export type ProjectSummary = components["schemas"]["ProjectSummary"]
 
@@ -20,6 +21,7 @@ interface DataTableProps {
 export function ProjectsDataTable({ columns, data }: DataTableProps)
 {
     const [showDeleteProject, setShowDeleteProject] = useState(false);
+    const [showReactivateProject, setShowReactivateProject] = useState(false);
     const [selectedProject, setSelectedProject] = useState<ProjectSummary | null>(null);
 
     const router = useRouter();
@@ -73,6 +75,15 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
             },
             disabled: (row: ProjectSummary) => !row.isActive,
         },
+        {
+            label: "Reactivar",
+            icon: <CheckCheck className="h-4 w-4" />,
+            onClick: (row: ProjectSummary) =>
+            {
+                setSelectedProject(row);
+                setShowReactivateProject(true);
+            },
+        },
     ];
 
     // Función para filtrar por estado
@@ -112,6 +123,12 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
                     <DeleteProject
                         open={showDeleteProject}
                         onOpenChange={setShowDeleteProject}
+                        project={selectedProject}
+                        showTrigger={false}
+                    />
+                    <ReactivateProject
+                        open={showReactivateProject}
+                        onOpenChange={setShowReactivateProject}
                         project={selectedProject}
                         showTrigger={false}
                     />
