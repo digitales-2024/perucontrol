@@ -117,7 +117,7 @@ export function CreateQuotation({ terms, clients, services }: {
             // Agregar la dirección fiscal como una opción adicional
             const addressOptions = [
                 ...(selectedClient.fiscalAddress
-                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    ? [{ value: selectedClient.fiscalAddress, label: `${selectedClient.fiscalAddress}` }]
                     : []),
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias

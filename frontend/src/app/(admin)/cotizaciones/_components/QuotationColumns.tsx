@@ -5,46 +5,19 @@ import { Button } from "@/components/ui/button";
 import { components } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Calendar1, CalendarX, CircleUserRound, CreditCard, Hash } from "lucide-react";
+import { Calendar1, CalendarX, CircleUserRound, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type Quotation = components["schemas"]["Quotation3"]
 
 export const columns: Array<ColumnDef<Quotation>> = [
     {
-        accessorKey: "createdAt",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
-            >
-                FECHA DE EMISIÓN
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-            const formattedDate = row.original.createdAt
-                ? format(new Date(row.original.createdAt), "yyyy-MM-dd")
-                : "N/A";
-            return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    <Calendar1 className="mr-1" />
-                    {formattedDate}
-                </span>
-            );
-        },
-    },
-    {
         accessorKey: "quotationNumber",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 SERIE/CORRELATIVO
             </Button>
@@ -68,24 +41,55 @@ export const columns: Array<ColumnDef<Quotation>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 CLIENTE
             </Button>
         ),
         cell: ({ row }) =>
         {
-            const isActive = row.original!.isActive;
-            const clientName =
-                row.original?.client?.name === "-"
-                    ? row.original.client.razonSocial
-                    : row.original?.client?.name;
+            const client = row.original.client;
+
+            const isActive = row.original.isActive;
+            const inactiveClass = !isActive ? "line-through text-red-500" : "";
+            const name = client.typeDocument === "ruc" ? client.razonSocial : client.name;
+
+            return (
+                <div className={`grid grid-cols-[1rem_auto] gap-2 items-center ${inactiveClass}`}>
+                    <CircleUserRound className="mr-1" />
+                    <div>
+                        <div
+                            className={`items-center flex justify-center text-center text-xs md:text-sm ${inactiveClass}`}
+                        >
+                            {name}
+                        </div>
+                    </div>
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "createdAt",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                FECHA DE EMISIÓN
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            const formattedDate = format(new Date(row.original.createdAt!), "dd/mm/yyyy");
+
             return (
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
-                    <CircleUserRound className="mr-1" />
-                    {clientName}
+                    <Calendar1 className="mr-1" />
+                    {formattedDate}
                 </span>
             );
         },
@@ -96,7 +100,7 @@ export const columns: Array<ColumnDef<Quotation>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 PRECIO
             </Button>
@@ -117,36 +121,12 @@ export const columns: Array<ColumnDef<Quotation>> = [
         },
     },
     {
-        accessorKey: "paymentMethod",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
-            >
-                MÉTODO DE PAGO
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original?.isActive;
-            return (
-                <span
-                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    <CreditCard className="mr-1" />
-                    {row.original?.paymentMethod}
-                </span>
-            );
-        },
-    },
-    {
         accessorKey: "expirationDate",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 FECHA DE EXPIRACIÓN
             </Button>
@@ -174,12 +154,37 @@ export const columns: Array<ColumnDef<Quotation>> = [
         },
     },
     {
+        accessorKey: "hasTaxes",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                IGV
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span
+                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    {row.original?.hasTaxes
+                        ? "SI"
+                        : "NO"}
+                </span>
+            );
+        },
+    },
+    {
         accessorKey: "status",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 ESTADO
             </Button>
@@ -220,31 +225,6 @@ export const columns: Array<ColumnDef<Quotation>> = [
                         Rechazado
                     </Badge>
                 )
-            );
-        },
-    },
-    {
-        accessorKey: "hasTaxes",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
-            >
-                IGV
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original?.isActive;
-            return (
-                <span
-                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
-                >
-                    {row.original?.hasTaxes
-                        ? "SI"
-                        : "NO"}
-                </span>
             );
         },
     },

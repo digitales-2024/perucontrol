@@ -17,7 +17,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 FECHA DE EMISIÓN
             </Button>
@@ -44,7 +44,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm text-center w-full"
             >
                 # SERVICIO
             </Button>
@@ -68,7 +68,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 CLIENTE
             </Button>
@@ -92,7 +92,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 ÁREA m2
             </Button>
@@ -116,7 +116,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 NRO. DE AMBIENTES
             </Button>
@@ -140,7 +140,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 PRECIO
             </Button>
@@ -166,7 +166,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-left w-full"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 ESTADO
             </Button>
