@@ -67,6 +67,7 @@ export const CreateClient = () =>
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
+        console.log(JSON.stringify(input, null, 2));
         const [, error] = await toastWrapper(RegisterClient(input), {
             loading: "Cargando...",
             success: "Cliente registrado exitosamente!",
@@ -97,6 +98,9 @@ export const CreateClient = () =>
                                 <FormItem className="truncate">
                                     <FormLabel className="text-base">
                                         Tipo de documento
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <Select
                                         onValueChange={(value) =>
@@ -135,6 +139,9 @@ export const CreateClient = () =>
                                         <FormItem>
                                             <FormLabel className="text-base">
                                                 RUC
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex gap-2">
@@ -160,6 +167,9 @@ export const CreateClient = () =>
                                         <FormItem>
                                             <FormLabel className="text-base">
                                                 Razón Social
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Ingrese la razón social" {...field} />
@@ -191,6 +201,9 @@ export const CreateClient = () =>
                                         <FormItem>
                                             <FormLabel className="text-base">
                                                 Nombre Comercial
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Ingrese el nombre comercial" {...field} />
@@ -227,6 +240,9 @@ export const CreateClient = () =>
                                         <FormItem>
                                             <FormLabel className="text-base">
                                                 DNI
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Ingrese el DNI" {...field} />
@@ -244,6 +260,9 @@ export const CreateClient = () =>
                                         <FormItem>
                                             <FormLabel className="text-base">
                                                 Nombres y Apellidos
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Ingrese los nombres y apellidos" {...field} />
@@ -269,6 +288,9 @@ export const CreateClient = () =>
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Dirección Principal
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormDescription>
                                         Dirección fiscal o principal del cliente
@@ -290,6 +312,9 @@ export const CreateClient = () =>
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Teléfono
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="Ingrese el número de teléfono" {...field} />
@@ -307,6 +332,9 @@ export const CreateClient = () =>
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Correo Electrónico
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="Ingrese el correo electrónico" {...field} />

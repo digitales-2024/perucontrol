@@ -1,22 +1,29 @@
 import * as z from "zod";
 
 export const clientDataSchema = z.object({
-    clientId: z.string().uuid("Debe ser un UUID válido"),
+    clientId: z.string().uuid("Debe ser un cliente válido"),
     quotationId: z.union([z.string().uuid(), z.null()]).optional(),
-    services: z.array(z.string().min(1, "El servicio es requerido")),
-    price: z.number({message: "El precio es requerido"}),
+    services: z.array(z.string().min(1, "El servicio es requerido"))
+        .nonempty("Los servicios son obligatorios y no pueden estar vacío"),
+    price: z.number({message: "El precio es requerido"})
+        .int("La cantidad debe ser un número entero")
+        .min(1, "Debe ser mayor a 0"),
     ambients: z.array(z.string().min(1, "El ambiente es requerido")),
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
     area: z.preprocess(
         (val) => Number(val),
-        z.number().int()
+        z
+            .number()
+            .int("La cantidad debe ser un número entero")
             .min(1, "Debe ser mayor a 0")
             .max(4294967295, "Valor demasiado grande"),
     ),
     spacesCount: z.preprocess(
         (val) => Number(val),
-        z.number().int()
+        z
+            .number()
+            .int("La cantidad debe ser un número entero")
             .min(1, "Debe ser mayor a 0")
             .max(4294967295, "Valor demasiado grande"),
     ),
@@ -30,7 +37,7 @@ export const clientDataSchema = z.object({
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;
 
 export const projectDataSchema = z.object({
-    clientId: z.string().uuid("Debe ser un UUID válido"),
+    clientId: z.string().uuid("Debe ser un cliente válido"),
     quotationId: z.union([z.string().uuid(), z.null()]).optional(),
     services: z.array(z.string().min(1, "El servicio es requerido")),
     address: z.string().min(1, "La dirección es requerida")

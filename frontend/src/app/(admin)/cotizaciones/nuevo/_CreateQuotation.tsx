@@ -180,6 +180,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Cliente
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
                                         <AutoComplete
@@ -209,6 +212,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Dirección del Servicio
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormDescription>
                                         Dirección donde se realizará el servicio. Puede ser diferente a la dirección fiscal del cliente.
@@ -248,6 +254,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                     <FormItem>
                                         <FormLabel className="flex items-center gap-2 font-medium">
                                             Fecha de creación
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormDescription>
                                             Fecha en la que se entrega la cotización al cliente
@@ -281,6 +290,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                     <FormItem>
                                         <FormLabel className="flex items-center gap-2 font-medium">
                                             Fecha de expiración
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormDescription>
                                             Fecha en la que expira la cotización
@@ -312,6 +324,9 @@ export function CreateQuotation({ terms, clients, services }: {
 
                         <h3 className="text-lg font-bold mt-4">
                             Servicios
+                            <span className="text-red-500">
+                                *
+                            </span>
                         </h3>
 
                         {/* Servicio */}
@@ -376,6 +391,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Frecuencia de trabajos (cronograma)
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormDescription>
                                         Cada cuanto se realizará el servicio.
@@ -418,6 +436,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Área m2
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="m2" className="border rounded-md" {...field} />
@@ -435,6 +456,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Nro. de Ambientes
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input placeholder="#" {...field} />
@@ -452,6 +476,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Descripción del Servicio
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder="Descripción del Servicio" {...field} />
@@ -468,6 +495,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Detalle del Servicio
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder="Detalle del Servicio" {...field} />
@@ -484,6 +514,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Lista de Servicios
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder="Lista de Servicios" {...field} />
@@ -500,6 +533,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Ambientes a tratar
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormDescription>
                                         Áreas específicas que se tratarán. Se mostrará en el punto 7. de los términos y condiciones.
@@ -548,6 +584,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                     <FormItem>
                                         <FormLabel className="text-base">
                                             Método de Pago
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormDescription>
                                             Método de Pagos para la cotización. Ejm: Transferencia, Efectivo, YAPE, etc.
@@ -587,6 +626,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Precio
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormDescription>
                                         Este precio se mostrará en la cotización, y también se usará para calcular los ingresos.
@@ -612,6 +654,9 @@ export function CreateQuotation({ terms, clients, services }: {
                         <div className="space-y-2">
                             <FormLabel htmlFor="requiredAvailability">
                                 Disponibilidad Requerida
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormDescription>
                                 Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
@@ -657,6 +702,9 @@ export function CreateQuotation({ terms, clients, services }: {
                         <div className="space-y-2">
                             <FormLabel htmlFor="serviceTime">
                                 Hora del servicio
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormDescription>
                                 A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
@@ -702,6 +750,9 @@ export function CreateQuotation({ terms, clients, services }: {
                         <div className="space-y-2">
                             <FormLabel htmlFor="customField6">
                                 Campo Personalizado 6
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormDescription>
                                 A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
@@ -747,6 +798,9 @@ export function CreateQuotation({ terms, clients, services }: {
                         <div className="space-y-2">
                             <FormLabel htmlFor="deliverables">
                                 Entregables
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormDescription>
                                 Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.

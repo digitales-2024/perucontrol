@@ -64,6 +64,27 @@ export async function RemoveProject(id: string): Promise<Result<null, FetchError
     return ok(null);
 }
 
+export async function ReactivatedProject(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
 type StatesQuotation = "Pending" | "Approved" | "Rejected";
 
 export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>

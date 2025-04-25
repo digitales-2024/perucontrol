@@ -214,7 +214,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                     )}
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
                 {/* Cliente */}
                 <FormField
                     name="clientId"
@@ -222,6 +222,9 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                         <FormItem>
                             <FormLabel className="text-base">
                                 Cliente
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormControl>
                                 <AutoComplete
@@ -249,8 +252,11 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                     name="address"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>
+                            <FormLabel className="text-base">
                                 Dirección
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormControl>
                                 <AutoComplete
@@ -278,8 +284,11 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                         name="area"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>
+                                <FormLabel className="text-base">
                                     Área m2
+                                    <span className="text-red-500">
+                                        *
+                                    </span>
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -300,6 +309,9 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                             <FormItem>
                                 <FormLabel>
                                     Nro. de ambientes
+                                    <span className="text-red-500">
+                                        *
+                                    </span>
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -325,6 +337,9 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                             <FormItem>
                                 <FormLabel className="text-base font-medium">
                                     Servicios
+                                    <span className="text-red-500">
+                                        *
+                                    </span>
                                 </FormLabel>
                                 <div className="grid grid-cols-2 gap-4 mt-2">
                                     {services.map((service) =>
@@ -374,6 +389,9 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                         <FormItem>
                             <FormLabel>
                                 Costo del servicio
+                                <span className="text-red-500">
+                                    *
+                                </span>
                             </FormLabel>
                             <FormControl>
                                 <Input

@@ -53,8 +53,11 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
         throw servicesError;
     }
 
+    const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
+
     return (
         <>
+            <HeaderPage title="Editar cotización" description="Modifica los detalles de la cotización" />
             <HeaderPage
                 title="Editar cotización"
                 breadcrumbs={(
@@ -82,7 +85,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
                     </Breadcrumb>
                 )}
             />
-            <EditQuotation quotation={quotation} termsAndConditions={terms} clients={clients} services={services} />
+            <EditQuotation quotation={quotation} terms={activeTerms} clients={clients} services={services} />
         </>
     );
 }

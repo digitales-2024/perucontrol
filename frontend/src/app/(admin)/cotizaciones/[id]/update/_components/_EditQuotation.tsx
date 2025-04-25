@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuotationSchema, quotationSchema } from "../../../schemas";
 import { GetTermsAndConditionsById, UpdateQuotation } from "../../../actions";
@@ -20,25 +20,37 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { formatISO, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bug, Check, Rat, Shield, ShieldCheck, SprayCanIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Mapa de iconos para servicios
+const serviceIcons: Record<string, React.ReactNode> = {
+    Desratización: <Rat className="h-3 w-3" />,
+    Desinsectación: <Bug className="h-3 w-3" />,
+    Fumigación: <SprayCanIcon className="h-3 w-3" />,
+    Desinfección: <Shield className="h-3 w-3" />,
+    LimpiezaDeTanque: <ShieldCheck className="h-3 w-3" />,
+};
 
 type Quotation = components["schemas"]["Quotation3"];
-type TermsAndConditions = components["schemas"]["TermsAndConditions"];
+type Terms = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]
 
 export default function EditQuotation({
     quotation,
-    termsAndConditions,
+    terms,
     clients,
     services,
 }: {
     quotation: Quotation,
-    termsAndConditions: Array<TermsAndConditions>,
+    terms: Array<Terms>,
     clients: Array<Clients>,
     services: Array<Services>
 })
 {
     const [termsOpen, setTermsOpen] = useState(false);
+    const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
     const router = useRouter();
 
     const activeClients = clients.filter((client) => client.isActive);
@@ -80,7 +92,22 @@ export default function EditQuotation({
         },
     });
 
-    //const { setValue } = form;
+    const { setValue, watch } = form;
+
+    const watchedClientId = watch("clientId");
+
+    // Observa los cambios en el campo 'serviceIds'
+    const selectedServiceIds = watch("serviceIds");
+
+    // Actualiza automáticamente el campo `serviceListText` cuando cambien los servicios seleccionados
+    useEffect(() =>
+    {
+        const selectedServices = services
+            .filter((service) => selectedServiceIds?.includes(service.id!))
+            .map((service) => service.name)
+            .join(", ");
+        setValue("serviceListText", selectedServices);
+    }, [selectedServiceIds, services, setValue]);
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
@@ -95,13 +122,65 @@ export default function EditQuotation({
         router.push("/cotizaciones");
     };
 
-    const handleTermsChange = async(id: string) =>
+    useEffect(() =>
+    {
+        const selectedClient = clients.find((client) => client.id === watchedClientId);
+        if (selectedClient)
+        {
+            const addressOptions = [
+                ...(selectedClient.fiscalAddress
+                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    : []),
+                ...(selectedClient.clientLocations
+                    ?.filter((location) => location.address?.trim() !== "")
+                    .map((location) => ({
+                        value: location.address,
+                        label: location.address,
+                    })) ?? []),
+            ];
+            setClientAddressOptions(addressOptions);
+        }
+        else
+        {
+            setClientAddressOptions([]);
+        }
+    }, [watchedClientId, clients]);
+
+    const handleClientChange = (option: Option | null) =>
+    {
+        const selectedClient = clients.find((client) => client.id === option?.value);
+        if (selectedClient)
+        {
+            setValue("clientId", selectedClient.id ?? "");
+
+            // Agregar la dirección fiscal como una opción adicional
+            const addressOptions = [
+                ...(selectedClient.fiscalAddress
+                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    : []),
+                ...(selectedClient.clientLocations
+                    ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
+                    .map((location) => ({
+                        value: location.address,
+                        label: location.address,
+                    })) ?? []),
+            ];
+            setClientAddressOptions(addressOptions);
+        }
+        else
+        {
+            setValue("clientId", "");
+            setClientAddressOptions([]);
+        }
+    };
+
+    const handleTermsChange = async(id: string, fieldName: keyof CreateQuotationSchema) =>
     {
         const result = await GetTermsAndConditionsById(id);
         if (result)
         {
-            //const content = result[0].content;
-            //setValue("termsAndConditions", content);
+            const content = result[0].content; // Obtiene el contenido de la plantilla
+            setValue(fieldName, content); // Actualiza solo el campo correspondiente
         }
         else
         {
@@ -131,6 +210,9 @@ export default function EditQuotation({
                                             <FormItem>
                                                 <FormLabel className="text-base font-medium">
                                                     Cliente
+                                                    <span className="text-red-500">
+                                                        *
+                                                    </span>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <AutoComplete
@@ -144,6 +226,7 @@ export default function EditQuotation({
                                                         onValueChange={(option) =>
                                                         {
                                                             field.onChange(option?.value ?? "");
+                                                            handleClientChange(option);
                                                         }}
                                                     />
                                                 </FormControl>
@@ -152,42 +235,95 @@ export default function EditQuotation({
                                         )}
                                     />
 
+                                    <FormField
+                                        control={form.control}
+                                        name="serviceAddress"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-base">
+                                                    Dirección del Servicio
+                                                    <span className="text-red-500">
+                                                        *
+                                                    </span>
+                                                </FormLabel>
+                                                <FormDescription>
+                                                    Dirección donde se realizará el servicio. Puede ser diferente a la dirección fiscal del cliente.
+                                                </FormDescription>
+                                                <FormControl>
+                                                    <AutoComplete
+                                                        options={clientAddressOptions}
+                                                        placeholder="Av. / Jr. / Calle Nro. Lt."
+                                                        emptyMessage="No se encontraron dirreciones"
+                                                        value={
+                                                            clientAddressOptions.find((option) => option.value ===
+                                                                                        field.value) ?? undefined
+                                                        }
+                                                        onValueChange={(option) =>
+                                                        {
+                                                            field.onChange(option?.value || "");
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <h3 className="text-lg font-bold mt-4">
+                                        Servicios
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
+                                    </h3>
+
                                     {/* Servicios */}
                                     <FormField
                                         control={form.control}
                                         name="serviceIds"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Servicios
-                                                </FormLabel>
-                                                <div className="space-y-2 border p-3 rounded-md">
-                                                    {services.map((service) => (
-                                                        <FormItem
-                                                            key={service.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0"
-                                                        >
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(service.id!)}
-                                                                    onCheckedChange={(checked) =>
-                                                                    {
-                                                                        if (checked)
-                                                                        {
-                                                                            field.onChange([...field.value, service.id]);
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            field.onChange(field.value?.filter((value) => value !== service.id));
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="text-sm font-normal">
-                                                                {service.name}
-                                                            </FormLabel>
-                                                        </FormItem>
-                                                    ))}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                                    {services.map((service) =>
+                                                    {
+                                                        const isSelected = field.value?.includes(service.id!);
+                                                        return (
+                                                            <div
+                                                                key={service.id}
+                                                                className={cn(
+                                                                    "group relative flex items-center p-1 rounded-lg border-2 cursor-pointer transition-all",
+                                                                    "hover:border-blue-400 hover:bg-blue-50/50",
+                                                                    isSelected ? "border-blue-500 bg-blue-50/70" : "border-gray-200",
+                                                                )}
+                                                                onClick={() =>
+                                                                {
+                                                                    const newValue = isSelected
+                                                                        ? field.value?.filter((id) => id !== service.id)
+                                                                        : [...(field.value ?? []), service.id!];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    className={cn(
+                                                                        "mr-4 transition-colors",
+                                                                        isSelected ? "text-blue-500" : "text-gray-500",
+                                                                        "group-hover:text-blue-500",
+                                                                    )}
+                                                                >
+                                                                    {serviceIcons[service.name] ?? <Bug className="h-3 w-3" />}
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className="text-xs font-medium">
+                                                                        {service.name}
+                                                                    </h3>
+                                                                </div>
+                                                                {isSelected && (
+                                                                    <div className="absolute top-2 right-2 h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                                                        <Check className="h-3 w-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                                 <FormMessage />
                                             </FormItem>
@@ -210,6 +346,12 @@ export default function EditQuotation({
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
+                                                        <SelectItem value="Fortnightly">
+                                                            Quincenal
+                                                        </SelectItem>
+                                                        <SelectItem value="Monthly">
+                                                            Mensual
+                                                        </SelectItem>
                                                         <SelectItem value="Bimonthly">
                                                             Bimestral
                                                         </SelectItem>
@@ -323,22 +465,6 @@ export default function EditQuotation({
                                             )}
                                         />
                                     </div>
-
-                                    <FormField
-                                        control={form.control}
-                                        name="serviceAddress"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Dirección del servicio
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Dirección donde se realizará el servicio" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
 
                                     <FormField
                                         control={form.control}
@@ -456,38 +582,6 @@ export default function EditQuotation({
 
                                     <FormField
                                         control={form.control}
-                                        name="requiredAvailability"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Disponibilidad requerida
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Disponibilidad necesaria" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="serviceTime"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Tiempo de servicio
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Duración del servicio" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
                                         name="treatedAreas"
                                         render={({ field }) => (
                                             <FormItem>
@@ -506,59 +600,33 @@ export default function EditQuotation({
                                         )}
                                     />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="deliverables"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Entregables
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Documentos o reportes a entregar"
-                                                        className="min-h-[100px]"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <h3 className="text-lg font-bold mt-4">
+                                        Otra información
+                                    </h3>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="others"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-base font-medium">
-                                                    Otros
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Información adicional"
-                                                        className="min-h-[100px]"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <Button type="button" className="w-[165px] justify-start cursor-pointer" variant="outline" onClick={() => setTermsOpen(true)}>
+                                        Crear Plantilla
+                                    </Button>
 
                                     <div className="space-y-2">
-                                        <FormLabel htmlFor="terms" className="text-base font-medium">
-                                            Términos y Condiciones
+                                        <FormLabel htmlFor="requiredAvailability">
+                                            Disponibilidad Requerida
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
+                                        <FormDescription>
+                                            Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
+                                        </FormDescription>
                                         <div className="flex flex-col gap-2">
-                                            <Select onValueChange={handleTermsChange}>
+                                            <Select onValueChange={(id) => handleTermsChange(id, "requiredAvailability")}>
                                                 <SelectTrigger className="border rounded-md">
                                                     <SelectValue placeholder="Seleccione una plantilla" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {
-                                                            termsAndConditions.map((terms) => (
+                                                            terms.map((terms) => (
                                                                 <SelectItem key={terms.id} value={terms.id ?? ""}>
                                                                     {terms.name}
                                                                 </SelectItem>
@@ -568,11 +636,215 @@ export default function EditQuotation({
                                                 </SelectContent>
                                             </Select>
 
-                                            <Button type="button" variant="outline" onClick={() => setTermsOpen(true)} className="w-full justify-start">
-                                                Ver plantillas de T&C
-                                            </Button>
+                                            <FormField
+                                                control={form.control}
+                                                name="requiredAvailability"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Plantillas de la disponibilidad requerida"
+                                                                className="resize-none"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
                                         </div>
                                     </div>
+
+                                    <div className="space-y-2">
+                                        <FormLabel htmlFor="serviceTime">
+                                            Hora del servicio
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
+                                        </FormLabel>
+                                        <FormDescription>
+                                            A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
+                                        </FormDescription>
+                                        <div className="flex flex-col gap-2">
+                                            <Select onValueChange={(id) => handleTermsChange(id, "serviceTime")}>
+                                                <SelectTrigger className="border rounded-md">
+                                                    <SelectValue placeholder="Seleccione una plantilla" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {
+                                                            terms.map((terms) => (
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                                    {terms.name}
+                                                                </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormField
+                                                control={form.control}
+                                                name="serviceTime"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Plantillas de hora del servicio"
+                                                                className="resize-none"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormLabel htmlFor="customField6">
+                                            Campo Personalizado 6
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
+                                        </FormLabel>
+                                        <FormDescription>
+                                            A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
+                                        </FormDescription>
+                                        <div className="flex flex-col gap-2">
+                                            <Select onValueChange={(id) => handleTermsChange(id, "customField6")}>
+                                                <SelectTrigger className="border rounded-md">
+                                                    <SelectValue placeholder="Seleccione una plantilla" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {
+                                                            terms.map((terms) => (
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                                    {terms.name}
+                                                                </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormField
+                                                control={form.control}
+                                                name="customField6"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Plantilla Campo Personalizado 6"
+                                                                className="resize-none"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormLabel htmlFor="deliverables">
+                                            Entregables
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.
+                                        </FormDescription>
+                                        <div className="flex flex-col gap-2">
+                                            <Select onValueChange={(id) => handleTermsChange(id, "deliverables")}>
+                                                <SelectTrigger className="border rounded-md">
+                                                    <SelectValue placeholder="Seleccione una plantilla" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {
+                                                            terms.map((terms) => (
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                                    {terms.name}
+                                                                </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormField
+                                                control={form.control}
+                                                name="deliverables"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Plantilla de Entregables"
+                                                                className="resize-none"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormLabel htmlFor="customField10">
+                                            Campo Personalizado 10
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Punto 10 de los términos y condiciones.
+                                        </FormDescription>
+                                        <div className="flex flex-col gap-2">
+                                            <Select onValueChange={(id) => handleTermsChange(id, "customField10")}>
+                                                <SelectTrigger className="border rounded-md">
+                                                    <SelectValue placeholder="Seleccione una plantilla" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {
+                                                            terms.map((terms) => (
+                                                                <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                                    {terms.name}
+                                                                </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormField
+                                                control={form.control}
+                                                name="customField10"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Plantilla del Campo Personalizado 10"
+                                                                className="resize-none"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 justify-end space-x-2">
@@ -597,7 +869,7 @@ export default function EditQuotation({
                 <TermsAndConditions
                     open={termsOpen}
                     setOpen={setTermsOpen}
-                    termsAndConditions={termsAndConditions}
+                    termsAndConditions={terms}
                 />
             )}
         </>
