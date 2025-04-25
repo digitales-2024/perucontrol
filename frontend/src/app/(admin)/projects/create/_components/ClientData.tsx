@@ -87,7 +87,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
             {
                 const addressOptions = [
                     ...(selectedClient.fiscalAddress
-                        ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                        ? [{ value: selectedClient.fiscalAddress, label: `${selectedClient.fiscalAddress}` }]
                         : []),
                     ...(selectedClient.clientLocations
                         ?.filter((location) => location.address?.trim() !== "") // Filtrar direcciones vacías
@@ -115,7 +115,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
             // Agregar la dirección fiscal como una opción adicional
             const addressOptions = [
                 ...(selectedClient.fiscalAddress
-                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    ? [{ value: selectedClient.fiscalAddress, label: selectedClient.fiscalAddress }]
                     : []),
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
@@ -140,7 +140,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
         {
             const addressOptions = [
                 ...(selectedClient.fiscalAddress
-                    ? [{ value: selectedClient.fiscalAddress, label: `Fiscal: ${selectedClient.fiscalAddress}` }]
+                    ? [{ value: selectedClient.fiscalAddress, label: selectedClient.fiscalAddress }]
                     : []),
                 ...(selectedClient.clientLocations?.map((location) => ({
                     value: location.address,

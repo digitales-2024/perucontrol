@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { RoedoresForm } from "./_RoedoresForm";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -52,7 +53,33 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <>
-            <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
+            <HeaderPage
+                title="Registro de Roedores"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Registro de Roedores
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <RoedoresForm project={project} appointment={appointment} rodent={rodent} />
         </>
     );

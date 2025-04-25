@@ -5,14 +5,16 @@ interface HeaderPageProps {
     title: string;
     description?: string;
     badgeContent?: string;
+    breadcrumbs?: React.ReactNode;
 }
 
 export const HeaderPage = ({
     title,
     badgeContent,
+    breadcrumbs,
 }: HeaderPageProps) => (
     <>
-        <h1 className="text-2xl md:text-2xl font-bold ml-2 mt-3">
+        <h1 className="text-2xl md:text-2xl font-bold mt-3">
             <SidebarTrigger />
             {title}
         </h1>
@@ -26,5 +28,8 @@ export const HeaderPage = ({
                 </Badge>
             </div>
         )}
+        <div className="pl-8">
+            {breadcrumbs}
+        </div>
     </>
 );

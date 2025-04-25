@@ -162,7 +162,7 @@ async function refresh(refreshToken: string): Promise<Result<Array<string>, stri
 
 function devlog(message: string)
 {
-    if (process.env.NODE_ENV === "development")
+    if (false || process.env.NODE_ENV === "development")
     {
         console.log(`\tDEBUG: ${message}`);
     }

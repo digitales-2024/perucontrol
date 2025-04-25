@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CalendarClock, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CalendarClock, PlusCircle, Save, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -176,17 +176,8 @@ export function RodentControlForm({
         });
     };
 
-    const handleGoBack = () =>
-    {
-        router.back();
-    };
-
     return (
         <div className="container mx-auto py-6">
-            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-            </Button>
             <Card className="border shadow-sm mt-5">
                 <CardHeader className="bg-blue-50 py-3">
                     <CardTitle className="text-xl font-semibold text-blue-800">

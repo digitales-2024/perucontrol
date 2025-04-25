@@ -3,6 +3,13 @@ import { ClientsDataTable } from "./_components/ClientsDataTable";
 import { columns } from "./_components/ClientsColumns";
 import { backend, wrapper } from "@/types/backend";
 
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+} from "@/components/ui/breadcrumb";
+
 export default async function ClientsPage()
 {
     const [clients, error] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
@@ -32,7 +39,20 @@ export default async function ClientsPage()
 
     return (
         <>
-            <HeaderPage title="Gestión de clientes" description="Gestiona los clientes de tu empresa" />
+            <HeaderPage
+                title="Gestión de clientes" description="Gestiona los clientes de tu empresa"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/clients">
+                                    Todos los clientes
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ClientsDataTable columns={columns} data={formattedClients} />
         </>
     );

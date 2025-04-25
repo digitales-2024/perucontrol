@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import EditQuotation from "./_components/_EditQuotation";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 export default async function EditarCotizacionPage({ params }: { params: Promise<{ id: string }> })
 {
     const quotationId = (await params).id;
@@ -57,6 +58,33 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
     return (
         <>
             <HeaderPage title="Editar cotización" description="Modifica los detalles de la cotización" />
+            <HeaderPage
+                title="Editar cotización"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/cotizaciones">
+                                    Todas las cotizaciones
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/cotizaciones/${quotationId}`}>
+                                    Cotización #
+                                    {quotation.quotationNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Editar
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <EditQuotation quotation={quotation} terms={activeTerms} clients={clients} services={services} />
         </>
     );

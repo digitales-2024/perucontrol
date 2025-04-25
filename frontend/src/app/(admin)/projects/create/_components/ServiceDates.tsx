@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format, addMonths } from "date-fns";
 import DatePicker from "@/components/ui/date-time-picker";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -34,7 +34,7 @@ export function ServiceDates({
     const appointments: Array<AppointmentWithServices> = useWatch({ name: "appointments" }) ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
-    const [newDate, setNewDate] = useState<Date | undefined>(undefined);
+    // const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
@@ -52,7 +52,7 @@ export function ServiceDates({
     {
         const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
         const updatedServices = services.filter((service) => enabledServices.includes(service.id!) &&
-                !assignedServiceIds.includes(service.id!));
+            !assignedServiceIds.includes(service.id!));
         setAvailableServices(updatedServices);
     }, [appointments, services, enabledServices]);
 
@@ -135,30 +135,30 @@ export function ServiceDates({
         toast.success("Fechas generadas correctamente");
     }, [serviceDate, frequency, generateDates, setValue, appointments]);
 
-    const handleAddDate = useCallback(() =>
-    {
-        if (!newDate)
-        {
-            toast.error("Por favor seleccione una fecha para agregar");
-            return;
-        }
-
-        if (selectedServiceIds.length === 0)
-        {
-            toast.error("Debe seleccionar al menos un servicio");
-            return;
-        }
-
-        const newAppointment = {
-            dueDate: newDate.toISOString(), // Convertir a formato ISO
-            services: [...selectedServiceIds],
-        };
-
-        setValue("appointments", [...appointments, newAppointment]);
-        setNewDate(undefined); // Limpiar la fecha nueva después de agregar
-        setSelectedServiceIds([]);
-        toast.success("Fecha agregada correctamente");
-    }, [newDate, selectedServiceIds, setValue, appointments]);
+    // const handleAddDate = useCallback(() =>
+    // {
+    //     if (!newDate)
+    //     {
+    //         toast.error("Por favor seleccione una fecha para agregar");
+    //         return;
+    //     }
+    //
+    //     if (selectedServiceIds.length === 0)
+    //     {
+    //         toast.error("Debe seleccionar al menos un servicio");
+    //         return;
+    //     }
+    //
+    //     const newAppointment = {
+    //         dueDate: newDate.toISOString(), // Convertir a formato ISO
+    //         services: [...selectedServiceIds],
+    //     };
+    //
+    //     setValue("appointments", [...appointments, newAppointment]);
+    //     setNewDate(undefined); // Limpiar la fecha nueva después de agregar
+    //     setSelectedServiceIds([]);
+    //     toast.success("Fecha agregada correctamente");
+    // }, [newDate, selectedServiceIds, setValue, appointments]);
 
     const handleDeleteDate = useCallback((index: number) =>
     {
@@ -215,7 +215,7 @@ export function ServiceDates({
 
         // Verificar si la fecha ya existe (excepto la que estamos editando)
         const dateExists = appointments.some((appointment, index) => index !== editingIndex &&
-                format(new Date(appointment.dueDate), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
+            format(new Date(appointment.dueDate), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
 
         if (dateExists)
         {
@@ -330,6 +330,7 @@ export function ServiceDates({
                 </div>
 
                 <div className="space-y-4">
+                    {/*
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
                             <Label htmlFor="add-date" className="block mb-2 font-medium">
@@ -353,6 +354,7 @@ export function ServiceDates({
                             <Plus className="h-4 w-4" />
                         </Button>
                     </div>
+                    */}
 
                     <AppointmentList
                         appointments={appointments}

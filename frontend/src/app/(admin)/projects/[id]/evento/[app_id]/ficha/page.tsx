@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { OperationsSheetForm } from "./_OperationsSheetForm";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -37,7 +38,33 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <>
-            <HeaderPage title="Ficha de Operaciones" description="Llenar, guardar y generar la ficha de operaciones." />
+            <HeaderPage
+                title="Ficha de Operaciones"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Ficha de Operaciones
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <OperationsSheetForm project={project} client={project.client} appointment={appointment} />
         </>
     );

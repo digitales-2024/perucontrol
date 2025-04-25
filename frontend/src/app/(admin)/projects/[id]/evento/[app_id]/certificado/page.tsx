@@ -2,6 +2,7 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { CertificateForm } from "./_CertificateForm";
 import { GetCertificateOfAppointmentById } from "@/app/(admin)/projects/actions";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -46,7 +47,33 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <>
-            <HeaderPage title="Certificado" description="Llenar, guardar y generar el certificado." />
+            <HeaderPage
+                title="Certificado"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Certificado
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <CertificateForm project={project} appointment={appointment} certificate={data} />
         </>
     );
