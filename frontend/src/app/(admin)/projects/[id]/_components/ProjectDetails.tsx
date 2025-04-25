@@ -333,7 +333,7 @@ export function ProjectDetails({
     };
 
     return (
-        <div className="container mx-auto p-4 space-y-6">
+        <div className="container mx-auto md:p-4 p-1 space-y-6">
             <div className="flex flex-col space-y-6">
                 {/* Cabecera con botón de regreso */}
 
