@@ -10,7 +10,7 @@ import { type ClientDataSchema, clientDataSchema } from "../../schemas";
 import { toastWrapper } from "@/types/toasts";
 import { CreateProject } from "../../actions";
 import { useState } from "react";
-import { ArrowLeft, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -129,54 +129,43 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
         }
     };
 
-    const handleGoBack = () =>
-    {
-        r.back();
-    };
-
     return (
-        <>
-            <Button variant="outline" onClick={handleGoBack} className="flex-1 w-[160px] mt-5">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-            </Button>
-            <FormProvider {...formMethods}>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
-                    <ClientData clients={clients} services={services} quotations={quotations} onServicesChange={setSelectedServices} />
-                    <ServiceDates services={services} enabledServices={selectedServices} />
+        <FormProvider {...formMethods}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
+                <ClientData clients={clients} services={services} quotations={quotations} onServicesChange={setSelectedServices} />
+                <ServiceDates services={services} enabledServices={selectedServices} />
 
-                    {/* Mostrar errores generales del formulario */}
-                    {Object.keys(errors).length > 0 && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-                            <p className="font-medium">
-                                Por favor corrija los siguientes errores:
-                            </p>
-                            <ul className="mt-2 list-disc list-inside text-sm">
-                                {Object.entries(errors).map(([key, error]) => (
-                                    <li key={key}>
-                                        {error.message as string}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                {/* Mostrar errores generales del formulario */}
+                {Object.keys(errors).length > 0 && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                        <p className="font-medium">
+                            Por favor corrija los siguientes errores:
+                        </p>
+                        <ul className="mt-2 list-disc list-inside text-sm">
+                            {Object.entries(errors).map(([key, error]) => (
+                                <li key={key}>
+                                    {error.message as string}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <Button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader className="h-4 w-4 animate-spin" />
+                            Registrando...
+                        </>
+                    ) : (
+                        "Registrar Servicio"
                     )}
-
-                    <Button
-                        type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <Loader className="h-4 w-4 animate-spin" />
-                                Registrando...
-                            </>
-                        ) : (
-                            "Registrar Servicio"
-                        )}
-                    </Button>
-                </form>
-            </FormProvider>
-        </>
+                </Button>
+            </form>
+        </FormProvider>
     );
 }

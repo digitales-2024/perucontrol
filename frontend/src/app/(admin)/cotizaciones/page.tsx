@@ -3,6 +3,7 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { QuotationDataTable } from "./_components/QuotationsDataTable";
 import { columns } from "./_components/QuotationColumns";
 import { QuotationProvider } from "./context/QuotationContext";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 
 export default async function CotizacionPage()
 {
@@ -46,7 +47,20 @@ export default async function CotizacionPage()
 
     return (
         <QuotationProvider value={{ quotations: quotationsData, terms: activeTerms, clients, services }}>
-            <HeaderPage title="Cotizaciones" description="Gestiona las cotizaciones de la empresa" />
+            <HeaderPage
+                title="Cotizaciones" description="Gestiona las cotizaciones de la empresa"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/cotizaciones">
+                                    Todas las cotizaciones
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <QuotationDataTable columns={columns} data={quotationsData} />
         </QuotationProvider>
     );

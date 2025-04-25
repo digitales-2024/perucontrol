@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { CreateQuotation } from "./_CreateQuotation";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default async function CotizacionPage()
 {
@@ -36,7 +37,26 @@ export default async function CotizacionPage()
 
     return (
         <>
-            <HeaderPage title="Crear cotización" description="Crea una nueva cotización" />
+            <HeaderPage
+                title="Crear cotización" description="Crea una nueva cotización"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/cotizaciones">
+                                    Todas las cotizaciones
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Crear cotización
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <CreateQuotation terms={activeTerms} clients={clients} services={services} />
         </>
     );

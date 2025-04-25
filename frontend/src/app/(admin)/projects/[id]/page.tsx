@@ -3,6 +3,7 @@ import { backend, wrapper } from "@/types/backend";
 import { ProjectDetails } from "./_components/ProjectDetails";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -61,7 +62,27 @@ export default async function ProjectDetail({ params }: Props)
 
     return (
         <>
-            <HeaderPage title={`Servicio # ${project.projectNumber}`} />
+            <HeaderPage
+                title="Detalles del servicio"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ProjectDetails project={project} projectId={id} murinoMapBase64={murinoMapBase64} />
         </>
     );

@@ -1104,7 +1104,7 @@ export function DownloadProjectForm({
                         className="flex items-center gap-2"
                     >
                         <X className="h-4 w-4" />
-                        Cancelar
+                        Volver
                     </Button>
                     <Button
                         type="button"

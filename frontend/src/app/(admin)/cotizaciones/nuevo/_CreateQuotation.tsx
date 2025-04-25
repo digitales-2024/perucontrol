@@ -21,12 +21,12 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { addDays, format, parse } from "date-fns";
 import { components, paths } from "@/types/api";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -52,8 +52,6 @@ export function CreateQuotation({ terms, clients, services }: {
     const [openTerms, setOpenTerms] = useState(false);
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
-
-    const router = useRouter();
 
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
@@ -164,17 +162,8 @@ export function CreateQuotation({ terms, clients, services }: {
         }
     };
 
-    const handleGoBack = () =>
-    {
-        router.back();
-    };
-
     return (
         <div className="mt-5 ml-3">
-            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-            </Button>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <div className="mx-4 grid gap-3">
