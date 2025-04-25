@@ -80,10 +80,12 @@ export function AppointmentDetail({
         <>
             <AccordionItem value={appointment.id!}>
                 <AccordionTriggerAsChild asChild>
-                    <button className="grid w-full grid-cols-[1.5rem_auto_2.5rem] items-center cursor-pointer">
+                    <button className="grid w-full md:grid-cols-[1.5rem_auto_2.5rem] grid-cols-[1.5rem_auto_0.25rem] items-center cursor-pointer">
                         {AppointmentIcon(appointment.dueDate, appointment.actualDate ?? undefined)}
                         <div className="flex items-center py-3 pl-1">
-                            Fecha #
+                            <span className="whitespace-nowrap">
+                                Fecha #
+                            </span>
                             <b>
                                 {idx + 1}
                             </b>

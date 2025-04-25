@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader, Plus, Search, Trash2 } from "lucide-react";
+import { Loader, Plus, Search, Trash2 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -80,18 +80,8 @@ export const CreateClient = () =>
         router.push("/clients");
     };
 
-    const handleGoBack = () =>
-    {
-        router.back();
-    };
-
     return (
         <div className="mt-5">
-            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-            </Button>
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <div className="mx-4 grid gap-3">

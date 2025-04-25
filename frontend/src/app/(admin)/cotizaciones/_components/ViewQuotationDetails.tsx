@@ -94,23 +94,6 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
     return (
         <div className="container mx-auto p-4 space-y-6">
-            {/* Cabecera con botón de regreso */}
-            <div className="flex items-center justify-between">
-                <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
-                    <ArrowLeft className="h-4 w-4" />
-                    Volver
-                </Button>
-                {quotation.isActive && (
-                    <Button
-                        variant="outline"
-                        className="hidden sm:flex items-center gap-2"
-                        onClick={() => router.push(`/cotizaciones/${quotationId}/update`)}
-                    >
-                        <Edit className="h-4 w-4" />
-                        Editar
-                    </Button>
-                )}
-            </div>
 
             {/* Tarjeta principal de información */}
             <Card>
@@ -140,6 +123,19 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     onClick={() => router.push(`/quotations/${quotationId}/edit`)}
                                 >
                                     <Pencil className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            {quotation.isActive && (
+                                <Button
+                                    variant="outline"
+                                    className="hidden sm:flex items-center gap-2"
+                                    onClick={() => router.push(`/cotizaciones/${quotationId}/update`)}
+                                >
+                                    <Edit className="h-4 w-4" />
+                                    Editar
                                 </Button>
                             )}
                         </div>

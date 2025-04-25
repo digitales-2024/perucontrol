@@ -26,47 +26,47 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "../ui/badge";
 
 export type StatusOption = {
-  value: string
-  label: string
-  count: number
+    value: string
+    label: string
+    count: number
 }
 
 type ActionButton<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    label: string
+    icon?: React.ReactNode
+    onClick: (row: T) => void
+    disabled?: (row: T) => boolean
+    className?: string
 }
 
 type DropdownAction<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    label: string
+    icon?: React.ReactNode
+    onClick: (row: T) => void
+    disabled?: (row: T) => boolean
+    className?: string
 }
 
 type DateRangeField = {
-  field: string
-  format: string
+    field: string
+    format: string
 }
 
 interface ClientTableProps<T> {
-  columns: Array<ColumnDef<T>>
-  data: Array<T>
-  statusOptions?: Array<StatusOption>
-  statusField?: keyof T | string
-  statusFilter?: (data: Array<T>, status: string) => Array<T>
-  typeDocumentFilter?: (data: Array<T>, typeDocument: string) => Array<T>,
-  searchFields?: Array<keyof T | string>
-  dateRangeField?: DateRangeField | null
-  actionButtons?: Array<ActionButton<T>>
-  dropdownActions?: Array<DropdownAction<T>>
-  onRowClick?: (row: T) => void
-  toolbarActions?: React.ReactNode
-  emptyMessage?: string
-  className?: string
+    columns: Array<ColumnDef<T>>
+    data: Array<T>
+    statusOptions?: Array<StatusOption>
+    statusField?: keyof T | string
+    statusFilter?: (data: Array<T>, status: string) => Array<T>
+    typeDocumentFilter?: (data: Array<T>, typeDocument: string) => Array<T>,
+    searchFields?: Array<keyof T | string>
+    dateRangeField?: DateRangeField | null
+    actionButtons?: Array<ActionButton<T>>
+    dropdownActions?: Array<DropdownAction<T>>
+    onRowClick?: (row: T) => void
+    toolbarActions?: React.ReactNode
+    emptyMessage?: string
+    className?: string
 }
 
 export function ClientTable<T extends object>({
@@ -312,11 +312,13 @@ export function ClientTable<T extends object>({
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
+                                {/*
                                 {((actionButtons?.length ?? 0) > 0 || (dropdownActions?.length ?? 0) > 0) && (
                                     <TableHead className="px-4 py-3 text-black text-center hover:bg-transparent font-bold text-sm md:text-base">
                                         Acciones
                                     </TableHead>
                                 )}
+                    */}
                             </TableRow>
                         ))}
                     </TableHeader>

@@ -26,48 +26,48 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "../ui/badge";
 
 export type StatusOption = {
-  value: string
-  label: string
-  count: number
+    value: string
+    label: string
+    count: number
 }
 
 type ActionButton<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    label: string
+    icon?: React.ReactNode
+    onClick: (row: T) => void
+    disabled?: (row: T) => boolean
+    className?: string
 }
 
 type DropdownAction<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    label: string
+    icon?: React.ReactNode
+    onClick: (row: T) => void
+    disabled?: (row: T) => boolean
+    className?: string
 }
 
 type DateRangeField = {
-  field: string
-  format: string
+    field: string
+    format: string
 }
 
 interface QuotationTableProps<T> {
-  columns: Array<ColumnDef<T>>
-  data: Array<T>
-  statusOptions?: Array<StatusOption>
-  statusField?: keyof T | string
-  statusFilter?: (data: Array<T>, status: string) => Array<T>
-  igvFilter?: (data: Array<T>, igv: string) => Array<T>,
-  stateFilter?: (data: Array<T>, state: string) => Array<T>,
-  searchFields?: Array<keyof T | string>
-  dateRangeField?: DateRangeField | null
-  actionButtons?: Array<ActionButton<T>>
-  dropdownActions?: Array<DropdownAction<T>>
-  onRowClick?: (row: T) => void
-  toolbarActions?: React.ReactNode
-  emptyMessage?: string
-  className?: string
+    columns: Array<ColumnDef<T>>
+    data: Array<T>
+    statusOptions?: Array<StatusOption>
+    statusField?: keyof T | string
+    statusFilter?: (data: Array<T>, status: string) => Array<T>
+    igvFilter?: (data: Array<T>, igv: string) => Array<T>,
+    stateFilter?: (data: Array<T>, state: string) => Array<T>,
+    searchFields?: Array<keyof T | string>
+    dateRangeField?: DateRangeField | null
+    actionButtons?: Array<ActionButton<T>>
+    dropdownActions?: Array<DropdownAction<T>>
+    onRowClick?: (row: T) => void
+    toolbarActions?: React.ReactNode
+    emptyMessage?: string
+    className?: string
 }
 
 export function QuotationTable<T extends object>({
@@ -328,7 +328,7 @@ export function QuotationTable<T extends object>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="px-4 py-3 text-left font-semibold">
+                                    <TableHead key={header.id} className="px-4 py-3 text-center font-semibold">
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}

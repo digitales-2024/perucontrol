@@ -18,7 +18,6 @@ import {
     Edit,
     FileSpreadsheet,
     MapPin,
-    Pencil,
     Shield,
     User,
     XCircle,
@@ -334,32 +333,14 @@ export function ProjectDetails({
     };
 
     return (
-        <div className="container mx-auto p-4 space-y-6">
+        <div className="container mx-auto md:p-4 p-1 space-y-6">
             <div className="flex flex-col space-y-6">
                 {/* Cabecera con botón de regreso */}
-                <div className="flex items-center justify-between">
-                    <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
-                        <ArrowLeft className="h-4 w-4" />
-                        Volver
-                    </Button>
-                    <div className="flex items-center gap-2">
-                        {project.isActive && (
-                            <Button
-                                variant="outline"
-                                className="hidden sm:flex items-center gap-2"
-                                onClick={() => router.push(`/projects/${projectId}/update`)}
-                            >
-                                <Edit className="h-4 w-4" />
-                                Editar
-                            </Button>
-                        )}
-                    </div>
-                </div>
 
                 {/* Tarjeta principal de información */}
                 <Card>
                     <CardHeader className="pb-2">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="grid grid-cols-[auto_5rem_5rem] sm:items-center gap-4">
                             <div>
                                 <div className="flex flex-wrap items-center gap-4">
                                     <CardTitle className="text-xl md:text-2xl">
@@ -367,25 +348,23 @@ export function ProjectDetails({
                                         {" "}
                                         {project.projectNumber}
                                     </CardTitle>
-                                    {/*
-                                    <div className="flex items-center gap-4">
-                                        {getStatusIcon(project.status)}
-                                        {getStatusBadge(project.status)}
-                                    </div>
-                                    */}
                                 </div>
                                 <CardDescription>
                                     Creado el&nbsp;
                                     {formatDate(project.createdAt ?? "")}
                                 </CardDescription>
                             </div>
-                            <div className="flex sm:hidden space-x-2">
-                                {project.isActive && (
-                                    <Button variant="outline" size="icon" onClick={() => router.push(`/projects/${projectId}/update`)}>
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                )}
-                            </div>
+
+                            {project.isActive && (
+                                <Button
+                                    variant="outline"
+                                    className="hidden sm:flex items-center gap-2"
+                                    onClick={() => router.push(`/projects/${projectId}/update`)}
+                                >
+                                    <Edit className="h-4 w-4" />
+                                    Editar
+                                </Button>
+                            )}
                             <Button
                                 type="button"
                                 onClick={() => router.push(`/projects/${projectId}/evento/documentos`)}
