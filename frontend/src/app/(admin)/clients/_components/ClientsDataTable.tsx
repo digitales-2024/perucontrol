@@ -147,7 +147,6 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
                 statusFilter={filterByStatus}
                 typeDocumentFilter={filterByDocumentType}
                 searchFields={["razonSocial", "name", "contactName", "email", "typeDocument", "typeDocumentValue"]}
-                dateRangeField={{ field: "createdAt", format: "dd/MM/yyyy" }}
                 actionButtons={actionButtons}
                 onRowClick={(row) =>
                 {
