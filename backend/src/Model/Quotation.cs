@@ -23,57 +23,6 @@ public enum QuotationFrequency
     Semiannual,
 }
 
-public static class QuotationFrequencyExtensions
-{
-    public static string ToSpanishString(this QuotationFrequency status)
-    {
-        return status switch
-        {
-            QuotationFrequency.Bimonthly => "BIMENSUALES",
-            QuotationFrequency.Quarterly => "TRIMESTRALES",
-            QuotationFrequency.Semiannual => "SEMESTRALES",
-            QuotationFrequency.Monthly => "MENSUALES",
-            QuotationFrequency.Fortnightly => "QUINCENALES",
-            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
-        };
-    }
-
-    public static (
-        string fortnightly,
-        string monthly,
-        string bimonthly,
-        string quarterly,
-        string semiannual
-    ) GetFrequencyMarkers(this QuotationFrequency frequency)
-    {
-        string fortnightly = "",
-            monthly = "",
-            bimonthly = "",
-            quarterly = "",
-            semiannual = "";
-
-        switch (frequency)
-        {
-            case QuotationFrequency.Fortnightly:
-                fortnightly = "x";
-                break;
-            case QuotationFrequency.Monthly:
-                monthly = "x";
-                break;
-            case QuotationFrequency.Bimonthly:
-                bimonthly = "x";
-                break;
-            case QuotationFrequency.Quarterly:
-                quarterly = "x";
-                break;
-            case QuotationFrequency.Semiannual:
-                semiannual = "x";
-                break;
-        }
-
-        return (fortnightly, monthly, bimonthly, quarterly, semiannual);
-    }
-}
 
 public class Quotation : BaseModel
 {
@@ -162,5 +111,57 @@ public class Quotation : BaseModel
         }
 
         return ValidationResult.Success;
+    }
+}
+
+public static class QuotationFrequencyExtensions
+{
+    public static string ToSpanishString(this QuotationFrequency status)
+    {
+        return status switch
+        {
+            QuotationFrequency.Bimonthly => "BIMENSUALES",
+            QuotationFrequency.Quarterly => "TRIMESTRALES",
+            QuotationFrequency.Semiannual => "SEMESTRALES",
+            QuotationFrequency.Monthly => "MENSUALES",
+            QuotationFrequency.Fortnightly => "QUINCENALES",
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
+        };
+    }
+
+    public static (
+        string fortnightly,
+        string monthly,
+        string bimonthly,
+        string quarterly,
+        string semiannual
+    ) GetFrequencyMarkers(this QuotationFrequency frequency)
+    {
+        string fortnightly = "",
+            monthly = "",
+            bimonthly = "",
+            quarterly = "",
+            semiannual = "";
+
+        switch (frequency)
+        {
+            case QuotationFrequency.Fortnightly:
+                fortnightly = "x";
+                break;
+            case QuotationFrequency.Monthly:
+                monthly = "x";
+                break;
+            case QuotationFrequency.Bimonthly:
+                bimonthly = "x";
+                break;
+            case QuotationFrequency.Quarterly:
+                quarterly = "x";
+                break;
+            case QuotationFrequency.Semiannual:
+                semiannual = "x";
+                break;
+        }
+
+        return (fortnightly, monthly, bimonthly, quarterly, semiannual);
     }
 }

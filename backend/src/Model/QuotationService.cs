@@ -1,9 +1,11 @@
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
 public class QuotationService : BaseModel
 {
+    [JsonIgnore]
     public Quotation Quotation { get; set; } = null!;
 
     [Description("Amount of items")]

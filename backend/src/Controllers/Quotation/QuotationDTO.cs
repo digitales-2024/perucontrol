@@ -29,6 +29,13 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public required string CustomField6 { get; set; }
     public required string TreatedAreas { get; set; }
     public required string Deliverables { get; set; }
+    public required IList<QuotationService> QuotationServices { get; set; }
+
+    public string? Desinsectant { get; set; }
+    public string? Derodent { get; set; }
+    public string? Disinfectant { get; set; }
+
+    public required IList<string> TermsAndConditions { get; set; }
 
     // public required string Terms { get; set; }
     public string? CustomField10 { get; set; }

@@ -64,6 +64,7 @@ public class QuotationController(
     {
         return await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
             .OrderByDescending(q => q.QuotationNumber)
             .ToListAsync();
@@ -76,6 +77,7 @@ public class QuotationController(
     public override async Task<ActionResult<Quotation>> GetById(Guid id)
     {
         var entity = await _dbSet
+            .Include(q => q.QuotationServices)
             .Include(c => c.Client)
             .Include(s => s.Services)
             .FirstOrDefaultAsync(q => q.Id == id);
@@ -373,6 +375,7 @@ public class QuotationController(
     {
         var approvedQuotations = await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
             .Where(q => q.Status == QuotationStatus.Approved)
             .Where(q => !_context.Projects.Any(p => p.Quotation!.Id == q.Id))
