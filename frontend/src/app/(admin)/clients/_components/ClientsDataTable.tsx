@@ -79,6 +79,7 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
                 setSelectedClient(row);
                 setShowReactiveClient(true);
             },
+            disabled: (row: TData) => !row.isActive,
         },
     ];
 

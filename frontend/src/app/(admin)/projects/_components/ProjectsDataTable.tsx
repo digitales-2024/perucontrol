@@ -81,6 +81,7 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
                 setSelectedProject(row);
                 setShowReactivateProject(true);
             },
+            disabled: (row: ProjectSummary) => !row.isActive,
         },
     ];
 

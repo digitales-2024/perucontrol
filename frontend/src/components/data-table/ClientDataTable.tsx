@@ -237,30 +237,38 @@ export function ClientTable<T extends object>({
                                                 {actionButtons?.map((action, index) =>
                                                 {
                                                     const isDisabled = action.disabled ? action.disabled(row.original) : false;
+
+                                                    // Determinar si el botón debe ser mostrado
+                                                    const showButton = (action.label === "Eliminar" && !isDisabled) ||
+                                                    (action.label === "Reactivar" && isDisabled) ||
+                                                    (action.label === "Editar" && !isDisabled);
+
                                                     return (
-                                                        <TooltipProvider key={index}>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className={cn("h-8 w-8 p-0", action.className)}
-                                                                        onClick={() => !isDisabled && action.onClick(row.original)}
-                                                                        disabled={isDisabled}
-                                                                    >
-                                                                        <span className="sr-only">
+                                                        showButton && ( // Solo renderiza el botón si debe ser mostrado
+                                                            <TooltipProvider key={index}>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className={cn("h-8 w-8 p-0", action.className)}
+                                                                            onClick={() => action.onClick(row.original)}
+                                                                            disabled={(action.label === "Reactivar") && !isDisabled}
+                                                                        >
+                                                                            <span className="sr-only">
+                                                                                {action.label}
+                                                                            </span>
+                                                                            {action.icon}
+                                                                        </Button>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>
                                                                             {action.label}
-                                                                        </span>
-                                                                        {action.icon}
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p>
-                                                                        {action.label}
-                                                                    </p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                                                        </p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        )
                                                     );
                                                 })}
 

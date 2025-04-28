@@ -96,6 +96,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                 setSelectedQuotation(row);
                 setShowReactivateQuotation(true);
             },
+            disabled: (row: Quotation) => !row.isActive,
         },
         {
             label: "Aceptar",
