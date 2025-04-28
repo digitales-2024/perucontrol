@@ -427,6 +427,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                         </div>
                         <Button
                             type="button"
+                            disabled={isMaxEnvironmentsReached}
                             onClick={addEnvironment}
                             variant="outline"
                             size="sm"
@@ -436,7 +437,6 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                                     ? "text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed"
                                     : "text-blue-600 hover:bg-blue-50",
                             )}
-                            disabled={isMaxEnvironmentsReached}
                         >
                             <Plus className="h-4 w-4" />
                             Agregar ambiente

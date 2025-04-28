@@ -191,7 +191,7 @@ export default function EditQuotation({
     return (
         <>
             <Card className="w-full mt-5">
-                <CardHeader>
+                <CardHeader className="p-0">
                     <CardTitle className="text-xl">
                         Editar cotización
                     </CardTitle>

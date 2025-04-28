@@ -88,7 +88,7 @@ export function ProjectTable<T extends object>({
     className,
 }: ProjectTableProps<T>)
 {
-    const [activeTab, setActiveTab] = useState("todos");
+    const [activeTab, setActiveTab] = useState("activo");
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
         from: undefined,
@@ -96,7 +96,26 @@ export function ProjectTable<T extends object>({
     });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    // const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    const [filteredData, setFilteredData] = useState<Array<T>>(() =>
+    {
+        const initialData = [...data];
+
+        // Aplicar filtro de activos por defecto
+        if (statusFilter)
+        {
+            return statusFilter(initialData, "activo");
+        }
+        if (statusField)
+        {
+            return initialData.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                return Boolean(fieldValue);
+            });
+        }
+        return initialData;
+    });
 
     // Filtrar datos cuando cambian los filtros
     useEffect(() =>
@@ -360,30 +379,38 @@ export function ProjectTable<T extends object>({
                                                 {actionButtons?.map((action, index) =>
                                                 {
                                                     const isDisabled = action.disabled ? action.disabled(row.original) : false;
+
+                                                    // Determinar si el botón debe ser mostrado
+                                                    const showButton = (action.label === "Eliminar" && !isDisabled) ||
+                                                    (action.label === "Reactivar" && isDisabled) ||
+                                                    (action.label === "Editar" && !isDisabled);
+
                                                     return (
-                                                        <TooltipProvider key={index}>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className={cn("h-8 w-8 p-0", action.className)}
-                                                                        onClick={() => !isDisabled && action.onClick(row.original)}
-                                                                        disabled={isDisabled}
-                                                                    >
-                                                                        <span className="sr-only">
+                                                        showButton && (
+                                                            <TooltipProvider key={index}>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className={cn("h-8 w-8 p-0", action.className)}
+                                                                            onClick={() => action.onClick(row.original)}
+                                                                            disabled={(action.label === "Reactivar") && !isDisabled}
+                                                                        >
+                                                                            <span className="sr-only">
+                                                                                {action.label}
+                                                                            </span>
+                                                                            {action.icon}
+                                                                        </Button>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>
                                                                             {action.label}
-                                                                        </span>
-                                                                        {action.icon}
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p>
-                                                                        {action.label}
-                                                                    </p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                                                        </p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        )
                                                     );
                                                 })}
 

@@ -34,7 +34,6 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
     // Contar cotizaciones por estado
     const getQuotationByStatus = (status: string) =>
     {
-        if (status === "todos") return data.length;
         if (status === "activo") return data.filter((quotation) => quotation.isActive).length;
         if (status === "inactivo") return data.filter((quotation) => !quotation.isActive).length;
         return 0;
@@ -43,30 +42,29 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
     // contar cotizaciones por igv
     const getQuotationByIgv = (igv: string) =>
     {
-        if (igv === "con") return data.filter((quotation) => quotation.hasTaxes).length;
-        if (igv === "sin") return data.filter((quotation) => !quotation.hasTaxes).length;
+        if (igv === "con") return data.filter((quotation) => quotation.hasTaxes && quotation.isActive).length;
+        if (igv === "sin") return data.filter((quotation) => !quotation.hasTaxes && quotation.isActive).length;
         return 0;
     };
 
     // contar cotizaciones por estado
     const getQuotationByState = (state: string) =>
     {
-        if (state === "pendiente") return data.filter((quotation) => quotation.status === "Pending").length;
-        if (state === "aprovado") return data.filter((quotation) => quotation.status === "Approved").length;
-        if (state === "rechazado") return data.filter((quotation) => quotation.status === "Rejected").length;
+        if (state === "pendiente") return data.filter((quotation) => quotation.status === "Pending" && quotation.isActive).length;
+        if (state === "aprovado") return data.filter((quotation) => quotation.status === "Approved" && quotation.isActive).length;
+        if (state === "rechazado") return data.filter((quotation) => quotation.status === "Rejected" && quotation.isActive).length;
         return 0;
     };
 
     // Opciones de estado para las pestañas
     const statusOptions = [
-        { value: "todos", label: "Todos", count: getQuotationByStatus("todos") },
+        { value: "activo", label: "Activos", count: getQuotationByStatus("activo") },
+        { value: "inactivo", label: "Eliminados", count: getQuotationByStatus("inactivo") },
         { value: "con", label: "Con IGV", count: getQuotationByIgv("con") },
         { value: "sin", label: "Sin IGV", count: getQuotationByIgv("sin") },
         { value: "pendiente", label: "Pendiente", count: getQuotationByState("pendiente") },
         { value: "aprovado", label: "Aprobado", count: getQuotationByState("aprovado") },
         { value: "rechazado", label: "Rechazado", count: getQuotationByState("rechazado") },
-        { value: "activo", label: "Activo", count: getQuotationByStatus("activo") },
-        { value: "inactivo", label: "Inactivo", count: getQuotationByStatus("inactivo") },
     ];
 
     // Botones de acción para cada fila
@@ -98,6 +96,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
                 setSelectedQuotation(row);
                 setShowReactivateQuotation(true);
             },
+            disabled: (row: Quotation) => !row.isActive,
         },
         {
             label: "Aceptar",
@@ -148,7 +147,6 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
     // Función para filtrar por estado
     const filterByStatus = (data: Array<Quotation>, status: string) =>
     {
-        if (status === "todos") return data;
         if (status === "activo") return data.filter((quotation) => quotation.isActive);
         if (status === "inactivo") return data.filter((quotation) => !quotation.isActive);
         return data;
@@ -157,17 +155,17 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
     // Funcion para filtrar por igv
     const filterByIgv = (data: Array<Quotation>, igv: string) =>
     {
-        if (igv === "con") return data.filter((quotation) => quotation.hasTaxes);
-        if (igv === "sin") return data.filter((quotation) => !quotation.hasTaxes);
+        if (igv === "con") return data.filter((quotation) => quotation.hasTaxes && quotation.isActive);
+        if (igv === "sin") return data.filter((quotation) => !quotation.hasTaxes && quotation.isActive);
         return data;
     };
 
     // Funcion para filtrar por estado
     const filterByState = (data: Array<Quotation>, state: string) =>
     {
-        if (state === "pendiente") return data.filter((quotation) => quotation.status === "Pending");
-        if (state === "aprovado") return data.filter((quotation) => quotation.status === "Approved");
-        if (state === "rechazado") return data.filter((quotation) => quotation.status === "Rejected");
+        if (state === "pendiente") return data.filter((quotation) => quotation.status === "Pending" && quotation.isActive);
+        if (state === "aprovado") return data.filter((quotation) => quotation.status === "Approved" && quotation.isActive);
+        if (state === "rechazado") return data.filter((quotation) => quotation.status === "Rejected" && quotation.isActive);
         return data;
     };
 

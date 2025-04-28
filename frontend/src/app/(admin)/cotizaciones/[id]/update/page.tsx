@@ -57,7 +57,6 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
 
     return (
         <>
-            <HeaderPage title="Editar cotización" description="Modifica los detalles de la cotización" />
             <HeaderPage
                 title="Editar cotización"
                 breadcrumbs={(
