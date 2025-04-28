@@ -23,7 +23,6 @@ public enum QuotationFrequency
     Semiannual,
 }
 
-
 public class Quotation : BaseModel
 {
     [Required]

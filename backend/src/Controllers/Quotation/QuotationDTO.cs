@@ -129,21 +129,22 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [MaxLength(10, ErrorMessage = "Solo puede haber hasta 10 términos y condiciones")]
     public IList<string> TermsAndConditions { get; set; } = new List<string>();
 
-    public Quotation MapToEntity() => new()
-    {
-        Status = QuotationStatus.Pending,
-        Frequency = Frequency,
-        HasTaxes = HasTaxes,
-        CreationDate = CreationDate.ToUniversalTime(),
-        ExpirationDate = ExpirationDate.ToUniversalTime(),
-        ServiceAddress = ServiceAddress,
-        PaymentMethod = PaymentMethod,
-        Others = Others,
-        Availability = Availability,
-        Desinsectant = Desinsectant,
-        Derodent = Derodent,
-        Disinfectant = Disinfectant,
-    };
+    public Quotation MapToEntity() =>
+        new()
+        {
+            Status = QuotationStatus.Pending,
+            Frequency = Frequency,
+            HasTaxes = HasTaxes,
+            CreationDate = CreationDate.ToUniversalTime(),
+            ExpirationDate = ExpirationDate.ToUniversalTime(),
+            ServiceAddress = ServiceAddress,
+            PaymentMethod = PaymentMethod,
+            Others = Others,
+            Availability = Availability,
+            Desinsectant = Desinsectant,
+            Derodent = Derodent,
+            Disinfectant = Disinfectant,
+        };
 }
 
 public class QuotationPatchDTO : IEntityPatcher<Quotation>
@@ -160,6 +161,9 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     public string? PaymentMethod { get; set; }
     public string? Others { get; set; }
     public string? Availability { get; set; }
+
+    // requires diffing
+    public IList<QuotationServicePatchDTO>? QuotationServices { get; set; }
 
     public void ApplyPatch(Quotation entity)
     {
@@ -180,6 +184,23 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
         if (Availability != null)
             entity.Availability = Availability;
     }
+}
+
+public class QuotationServicePatchDTO
+{
+    public required Guid Id { get; set; }
+
+    [Description("Amount of items")]
+    public required int Amount { get; set; }
+
+    [Description("Name and description of the service")]
+    public required string NameDescription { get; set; }
+
+    [Description("Price of this service")]
+    public decimal? Price { get; set; }
+
+    [Description("Accesories to use for this service")]
+    public string? Accesories { get; set; }
 }
 
 public class QuotationStatusPatchDTO

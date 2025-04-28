@@ -43,15 +43,15 @@ public class QuotationController(
         _dbSet.Add(entity);
 
         // set services
-        entity.QuotationServices = createDto.QuotationServices
-            .Select(qs => new QuotationService
+        entity.QuotationServices = createDto
+            .QuotationServices.Select(qs => new QuotationService
             {
                 Amount = qs.Amount,
                 NameDescription = qs.NameDescription,
                 Price = qs.Price,
-                Accesories = qs.Accesories
+                Accesories = qs.Accesories,
             })
-        .ToList();
+            .ToList();
 
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
@@ -84,14 +84,16 @@ public class QuotationController(
         return entity == null ? NotFound() : Ok(entity);
     }
 
-    [EndpointSummary("Partial edit one by id")]
+    [EndpointSummary("Edit one quotation by ID")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
     {
-        var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
+        var quotation = await _dbSet.Include(q => q.Services)
+            .Include(q => q.QuotationServices)
+            .FirstOrDefaultAsync(q => q.Id == id);
         if (quotation == null)
             return NotFound();
 
@@ -139,6 +141,53 @@ public class QuotationController(
 
             foreach (var service in servicesToAdd)
                 quotation.Services.Add(service);
+        }
+
+        // diff and update quotationservices
+        if (patchDto.QuotationServices is not null)
+        {
+            // diff
+            var existing = quotation.QuotationServices;
+
+            // to create
+            var toCreate = patchDto.QuotationServices
+                .Where(qs => !existing.Any(e => e.Id == qs.Id))
+                .Select(qs => new QuotationService
+                {
+                    Amount = qs.Amount,
+                    NameDescription = qs.NameDescription,
+                    Price = qs.Price,
+                    Accesories = qs.Accesories,
+                })
+                .ToList();
+
+            // to update
+            var toUpdate = patchDto.QuotationServices
+                .Where(qs => existing.Any(e => e.Id == qs.Id))
+                .ToList();
+            foreach (var qs in toUpdate)
+            {
+                var existingService = existing.First(e => e.Id == qs.Id);
+                existingService.Amount = qs.Amount;
+                existingService.NameDescription = qs.NameDescription;
+                existingService.Price = qs.Price;
+                existingService.Accesories = qs.Accesories;
+            }
+
+            // to delete
+            var toDelete = existing
+                .Where(e => !patchDto.QuotationServices.Any(qs => qs.Id == e.Id))
+                .ToList();
+
+            // apply create/delete
+            foreach (var qs in toCreate)
+            {
+                quotation.QuotationServices.Add(qs);
+            }
+            foreach (var qs in toDelete)
+            {
+                quotation.QuotationServices.Remove(qs);
+            }
         }
 
         patchDto.ApplyPatch(quotation);
