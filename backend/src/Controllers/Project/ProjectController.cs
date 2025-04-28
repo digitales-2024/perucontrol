@@ -554,11 +554,7 @@ public class ProjectController(
         }
 
         // send
-        return File(
-            excelBytes,
-            "application/vnd.ms-excel",
-            "schedule.xlsx"
-        );
+        return File(excelBytes, "application/vnd.ms-excel", "schedule.xlsx");
     }
 
     [EndpointSummary("Generate Schedule PDF")]
@@ -568,7 +564,10 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
-        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id, isPdf: true);
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(
+            id,
+            isPdf: true
+        );
         if (error is not null)
         {
             return BadRequest(error);

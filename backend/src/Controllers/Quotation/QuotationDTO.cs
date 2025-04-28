@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PeruControl.Model;
@@ -71,12 +72,6 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [MinLength(1)]
     public required ICollection<Guid> ServiceIds { get; set; }
 
-    [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
-    public required uint Area { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public required uint SpacesCount { get; set; }
-
     public required QuotationFrequency Frequency { get; set; }
 
     public required bool HasTaxes { get; set; }
@@ -93,82 +88,55 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [StringLength(100, ErrorMessage = "El método de pago no puede exceder 100 caracteres")]
     public required string PaymentMethod { get; set; }
 
-    [StringLength(500, ErrorMessage = "El campo no puede exceder 500 caracteres")]
+    [StringLength(100, ErrorMessage = "El campo no puede exceder 100 caracteres")]
     public required string Others { get; set; }
 
-    [Required(ErrorMessage = "La lista de servicios es obligatoria")]
-    [StringLength(1000, ErrorMessage = "La lista de servicios no puede exceder 1000 caracteres")]
-    public required string ServiceListText { get; set; }
+    [StringLength(100, ErrorMessage = "La Disponibilidad no puede exceder 100 caracteres")]
+    public required string Availability { get; set; }
 
-    [Required(ErrorMessage = "La descripción del servicio es obligatoria")]
-    [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
-    public required string ServiceDescription { get; set; }
+    // ======
+    // List of services
+    // ======
 
-    [Required(ErrorMessage = "El detalle del servicio es obligatorio")]
-    [StringLength(1000, ErrorMessage = "El detalle no puede exceder 1000 caracteres")]
-    public required string ServiceDetail { get; set; }
+    [MinLength(1, ErrorMessage = "La lista de servicios es obligatoria")]
+    public required IList<QuotationService> QuotationServices { get; set; }
 
-    [Column(TypeName = "decimal(18,2)")]
-    [Range(
-        0,
-        9999999.99,
-        ErrorMessage = "El precio debe ser un valor positivo y no mayor a 9,999,999.99"
-    )]
-    public required decimal Price { get; set; }
+    // ======
+    // Products to use
+    // ======
 
-    [Required(ErrorMessage = "La disponibilidad requerida es obligatoria")]
-    [StringLength(200, ErrorMessage = "La disponibilidad no puede exceder 200 caracteres")]
-    public required string RequiredAvailability { get; set; }
+    [Description("Name and description of the Desinsectant to use")]
+    public string? Desinsectant { get; set; }
 
-    [Required(ErrorMessage = "El tiempo de servicio es obligatorio")]
-    [StringLength(100, ErrorMessage = "El tiempo de servicio no puede exceder 100 caracteres")]
-    public required string ServiceTime { get; set; }
+    [Description("Name and description of the Rodenticide to use")]
+    public string? Derodent { get; set; }
 
-    [StringLength(255, ErrorMessage = "El campo no puede exceder 255 caracteres")]
-    public required string CustomField6 { get; set; }
+    [Description("Name and description of the Disinfectant to use")]
+    public string? Disinfectant { get; set; }
 
-    [Required(ErrorMessage = "Las áreas tratadas son obligatorias")]
-    [StringLength(500, ErrorMessage = "Las áreas tratadas no pueden exceder 500 caracteres")]
-    public required string TreatedAreas { get; set; }
+    // ======
+    // Terms and Conditions
+    // ======
 
-    [Required(ErrorMessage = "Los entregables son obligatorios")]
-    [StringLength(500, ErrorMessage = "Los entregables no pueden exceder 500 caracteres")]
-    public required string Deliverables { get; set; }
+    [MinLength(1, ErrorMessage = "La lista de términos y condiciones es obligatoria")]
+    [MaxLength(10, ErrorMessage = "Solo puede haber hasta 10 términos y condiciones")]
+    public IList<string> TermsAndConditions { get; set; } = new List<string>();
 
-    // [Required(ErrorMessage = "Los terminos y condiciones son obligatorios")]
-    // [StringLength(500, ErrorMessage = "Los términos y condiciones no pueden exceder")]
-    // public required string Terms { get; set; }
-
-    [Column(TypeName = "TEXT")]
-    public string? CustomField10 { get; set; }
-
-    public Quotation MapToEntity()
+    public Quotation MapToEntity() => new()
     {
-        return new Quotation
-        {
-            Status = QuotationStatus.Pending,
-            Frequency = Frequency,
-            Area = Area,
-            SpacesCount = SpacesCount,
-            HasTaxes = HasTaxes,
-            CreationDate = CreationDate.ToUniversalTime(),
-            ExpirationDate = ExpirationDate.ToUniversalTime(),
-            ServiceAddress = ServiceAddress,
-            PaymentMethod = PaymentMethod,
-            Others = Others,
-            ServiceListText = ServiceListText,
-            ServiceDescription = ServiceDescription,
-            ServiceDetail = ServiceDetail,
-            Price = Price,
-            RequiredAvailability = RequiredAvailability,
-            ServiceTime = ServiceTime,
-            CustomField6 = CustomField6,
-            TreatedAreas = TreatedAreas,
-            Deliverables = Deliverables,
-            // Terms = Terms,
-            CustomField10 = CustomField10,
-        };
-    }
+        Status = QuotationStatus.Pending,
+        Frequency = Frequency,
+        HasTaxes = HasTaxes,
+        CreationDate = CreationDate.ToUniversalTime(),
+        ExpirationDate = ExpirationDate.ToUniversalTime(),
+        ServiceAddress = ServiceAddress,
+        PaymentMethod = PaymentMethod,
+        Others = Others,
+        Availability = Availability,
+        Desinsectant = Desinsectant,
+        Derodent = Derodent,
+        Disinfectant = Disinfectant,
+    };
 }
 
 public class QuotationPatchDTO : IEntityPatcher<Quotation>

@@ -13,6 +13,7 @@ public class QuotationController(
     LibreOfficeConverterService pDFConverterService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
+
     [EndpointSummary("Create a Quotation")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -39,9 +40,20 @@ public class QuotationController(
         var entity = createDto.MapToEntity();
         entity.Id = Guid.NewGuid();
         entity.Client = client;
-        entity.Services = services;
 
         _dbSet.Add(entity);
+
+        // set services
+        entity.QuotationServices = createDto.QuotationServices
+            .Select(qs => new QuotationService
+            {
+                Amount = qs.Amount,
+                NameDescription = qs.NameDescription,
+                Price = qs.Price,
+                Accesories = qs.Accesories
+            })
+        .ToList();
+
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
     }

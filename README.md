@@ -7,9 +7,9 @@ para el proyecto Perucontrol.
 
 - `develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-ci/job/develop/)
 
-- `backend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-backend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-backend-develop-deploy/)
+- `backend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fdeploy-develop%2Fperucontrol-backend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol/job/deploy-develop/job/perucontrol-backend-develop-deploy/)
 
-- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-frontend-develop-deploy/)
+- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fdeploy-develop%2Fperucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol/job/deploy-develop/job/perucontrol-frontend-develop-deploy/)
 
 ---
 
