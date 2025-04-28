@@ -31,12 +31,12 @@ public sealed class ApiTest1
         Assert.IsTrue(loginResponse.AccessExpiresIn > 0, "AccessExpiresIn should be positive");
         Assert.IsTrue(loginResponse.RefreshExpiresIn > 0, "RefreshExpiresIn should be positive");
     }
+}
 
     public class LoginResponse
     {
-        public string AccessToken { get; set; } = default!;
-        public string RefreshToken { get; set; } = default!;
+        public required string AccessToken { get; set; }
+        public required string RefreshToken { get; set; }
         public int AccessExpiresIn { get; set; }
         public int RefreshExpiresIn { get; set; }
     }
-}
