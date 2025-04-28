@@ -203,7 +203,7 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 
 public class QuotationServicePatchDTO
 {
-    public required Guid Id { get; set; }
+    public required Guid? Id { get; set; }
 
     [Description("Amount of items")]
     public required int Amount { get; set; }

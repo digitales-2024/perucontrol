@@ -84,18 +84,31 @@ public class QuotationController(
         return entity == null ? NotFound() : Ok(entity);
     }
 
-    [EndpointSummary("Edit one quotation by ID")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
     {
-        var quotation = await _dbSet.Include(q => q.Services)
+        // Use AsNoTracking() to avoid tracking issues with the first query
+        var quotation = await _dbSet
+            .AsNoTracking() // Add this
+            .Include(q => q.Services)
             .Include(q => q.QuotationServices)
             .FirstOrDefaultAsync(q => q.Id == id);
+
         if (quotation == null)
             return NotFound();
+
+        // Now get a clean tracked entity for updating
+        var trackedQuotation = await _dbSet.FindAsync(id);
+        if (trackedQuotation == null)
+            return NotFound();
+
+        // Load related entities for the tracked entity
+        await _context.Entry(trackedQuotation).Collection(q => q.Services).LoadAsync();
+
+        await _context.Entry(trackedQuotation).Collection(q => q.QuotationServices).LoadAsync();
 
         if (patchDto.ClientId != null)
         {
@@ -104,7 +117,7 @@ public class QuotationController(
             {
                 return NotFound("Cliente no encontrado");
             }
-            quotation.Client = client;
+            trackedQuotation.Client = client;
         }
 
         if (patchDto.ServiceIds != null)
@@ -118,82 +131,106 @@ public class QuotationController(
             if (newServiceIds.Count != patchDto.ServiceIds.Count)
             {
                 var invalidIds = patchDto.ServiceIds.Except(newServiceIds).ToList();
-
                 return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
             }
 
-            // Get services to remove (existing ones not in new list)
-            var servicesToRemove = quotation
-                .Services.Where(s => !newServiceIds.Contains(s.Id))
-                .ToList();
+            // Clear existing services and add the new ones
+            trackedQuotation.Services.Clear();
 
-            // Get services to add (new ones not in existing list)
-            var existingServiceIds = quotation.Services.Select(s => s.Id);
             var servicesToAdd = await _context
-                .Services.Where(s =>
-                    newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id)
-                )
+                .Services.Where(s => newServiceIds.Contains(s.Id))
                 .ToListAsync();
 
-            // Apply the changes
-            foreach (var service in servicesToRemove)
-                quotation.Services.Remove(service);
-
             foreach (var service in servicesToAdd)
-                quotation.Services.Add(service);
+                trackedQuotation.Services.Add(service);
         }
 
-        // diff and update quotationservices
         if (patchDto.QuotationServices is not null)
         {
-            // diff
-            var existing = quotation.QuotationServices;
+            // Get existing services
+            var existingServices = trackedQuotation.QuotationServices.ToList();
+            var existingIds = existingServices.Select(x => x.Id).ToList();
 
-            // to create
-            var toCreate = patchDto.QuotationServices
-                .Where(qs => !existing.Any(e => e.Id == qs.Id))
-                .Select(qs => new QuotationService
+            // Keep track of processed IDs to determine what to delete later
+            var processedIds = new List<Guid>();
+
+            foreach (var patchQs in patchDto.QuotationServices)
+            {
+                if (patchQs.Id != null)
                 {
-                    Amount = qs.Amount,
-                    NameDescription = qs.NameDescription,
-                    Price = qs.Price,
-                    Accesories = qs.Accesories,
-                })
-                .ToList();
+                    // Try to find existing service
+                    var existingService = existingServices.FirstOrDefault(e => e.Id == patchQs.Id);
 
-            // to update
-            var toUpdate = patchDto.QuotationServices
-                .Where(qs => existing.Any(e => e.Id == qs.Id))
-                .ToList();
-            foreach (var qs in toUpdate)
-            {
-                var existingService = existing.First(e => e.Id == qs.Id);
-                existingService.Amount = qs.Amount;
-                existingService.NameDescription = qs.NameDescription;
-                existingService.Price = qs.Price;
-                existingService.Accesories = qs.Accesories;
+                    if (existingService != null)
+                    {
+                        // Update existing service
+                        existingService.Amount = patchQs.Amount;
+                        if (patchQs.NameDescription != null)
+                            existingService.NameDescription = patchQs.NameDescription;
+                        if (patchQs.Price != null)
+                            existingService.Price = patchQs.Price;
+                        existingService.Accesories = patchQs.Accesories;
+
+                        processedIds.Add(existingService.Id);
+                    }
+                    else
+                    {
+                        // ID specified but not found - create new with specific ID
+                        // Note: This might not work if ID is auto-generated
+                        // Alternative: Ignore the ID and just create new
+                        var newQuotationService = new QuotationService
+                        {
+                            Quotation = trackedQuotation,
+                            Amount = patchQs.Amount,
+                            NameDescription = patchQs.NameDescription ?? "",
+                            Price = patchQs.Price,
+                            Accesories = patchQs.Accesories,
+                        };
+
+                        _context.Add(newQuotationService);
+                        // We'll get the ID after save, can't add to processedIds yet
+                    }
+                }
+                else
+                {
+                    // Create new without specified ID
+                    var newQuotationService = new QuotationService
+                    {
+                        Quotation = trackedQuotation,
+                        Amount = patchQs.Amount,
+                        NameDescription = patchQs.NameDescription ?? "",
+                        Price = patchQs.Price,
+                        Accesories = patchQs.Accesories,
+                    };
+
+                    _context.Add(newQuotationService);
+                    // We'll get the ID after save, can't add to processedIds yet
+                }
             }
 
-            // to delete
-            var toDelete = existing
-                .Where(e => !patchDto.QuotationServices.Any(qs => qs.Id == e.Id))
-                .ToList();
+            // Delete any existing services that weren't processed
+            var toDelete = existingServices.Where(e => !processedIds.Contains(e.Id)).ToList();
 
-            // apply create/delete
-            foreach (var qs in toCreate)
+            foreach (var service in toDelete)
             {
-                quotation.QuotationServices.Add(qs);
-            }
-            foreach (var qs in toDelete)
-            {
-                quotation.QuotationServices.Remove(qs);
+                _context.Remove(service);
             }
         }
 
-        patchDto.ApplyPatch(quotation);
-        await _context.SaveChangesAsync();
+        // Apply other property updates
+        patchDto.ApplyPatch(trackedQuotation);
 
-        return Ok(quotation);
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Ok(trackedQuotation);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await _dbSet.AnyAsync(q => q.Id == id))
+                return NotFound();
+            throw;
+        }
     }
 
     [EndpointSummary("Update Quotation State")]
