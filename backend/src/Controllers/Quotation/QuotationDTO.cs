@@ -106,7 +106,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     // ======
 
     [MinLength(1, ErrorMessage = "La lista de servicios es obligatoria")]
-    public required IList<QuotationService> QuotationServices { get; set; }
+    public required IList<QuotationServiceCreateDTO> QuotationServices { get; set; }
 
     // ======
     // Products to use
@@ -145,6 +145,21 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
             Derodent = Derodent,
             Disinfectant = Disinfectant,
         };
+}
+
+public class QuotationServiceCreateDTO
+{
+    [Description("Amount of items")]
+    public required int Amount { get; set; }
+
+    [Description("Name and description of the service")]
+    public required string NameDescription { get; set; }
+
+    [Description("Price of this service")]
+    public decimal? Price { get; set; }
+
+    [Description("Accesories to use for this service")]
+    public string? Accesories { get; set; }
 }
 
 public class QuotationPatchDTO : IEntityPatcher<Quotation>
