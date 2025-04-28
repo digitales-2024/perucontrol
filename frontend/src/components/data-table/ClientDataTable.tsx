@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, Calendar, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -47,11 +43,6 @@ type DropdownAction<T> = {
     className?: string
 }
 
-type DateRangeField = {
-    field: string
-    format: string
-}
-
 interface ClientTableProps<T> {
     columns: Array<ColumnDef<T>>
     data: Array<T>
@@ -60,7 +51,6 @@ interface ClientTableProps<T> {
     statusFilter?: (data: Array<T>, status: string) => Array<T>
     typeDocumentFilter?: (data: Array<T>, typeDocument: string) => Array<T>,
     searchFields?: Array<keyof T | string>
-    dateRangeField?: DateRangeField | null
     actionButtons?: Array<ActionButton<T>>
     dropdownActions?: Array<DropdownAction<T>>
     onRowClick?: (row: T) => void
@@ -77,7 +67,6 @@ export function ClientTable<T extends object>({
     statusFilter,
     typeDocumentFilter,
     searchFields,
-    dateRangeField,
     actionButtons,
     dropdownActions,
     onRowClick,
@@ -86,56 +75,56 @@ export function ClientTable<T extends object>({
     className,
 }: ClientTableProps<T>)
 {
-    const [activeTab, setActiveTab] = useState("todos");
+    const [activeTab, setActiveTab] = useState("activo");
     const [searchTerm, setSearchTerm] = useState("");
-    const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-        from: undefined,
-        to: undefined,
-    });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    const [filteredData, setFilteredData] = useState<Array<T>>(() =>
+    {
+        const initialData = [...data];
+
+        // Aplicar filtro de activos por defecto
+        if (statusFilter)
+        {
+            return statusFilter(initialData, "activo");
+        }
+        if (statusField)
+        {
+            return initialData.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                return Boolean(fieldValue);
+            });
+        }
+        return initialData;
+    });
 
     // Filtrar datos cuando cambian los filtros
     useEffect(() =>
     {
         let result = [...data];
 
-        // Filtrar por estado
-        if (statusFilter && activeTab !== "todos")
+        // 1. Primero aplicar filtro por estado (activo/inactivo)
+        if (statusFilter)
         {
-            result = statusFilter(result, activeTab);
+            result = statusFilter(result, activeTab === "dni" || activeTab === "ruc" ? "activo" : activeTab);
         }
-        else if (statusField && activeTab !== "todos")
+        else if (statusField)
         {
-            // Filtrado básico por campo de estado si no se proporciona una función personalizada
             result = result.filter((item) =>
             {
-                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "activo") return Boolean(fieldValue);
-                if (activeTab === "inactivo") return !Boolean(fieldValue);
-                return true;
+                const isActive = Boolean(statusField in item ? item[statusField as keyof T] : undefined);
+                return activeTab === "inactivo" ? !isActive : isActive;
             });
         }
 
-        // Filtar por tipo de documento
-        if (typeDocumentFilter && activeTab !== "todos")
+        // 2. Luego aplicar filtro por tipo de documento si corresponde
+        if ((activeTab === "dni" || activeTab === "ruc") && typeDocumentFilter)
         {
             result = typeDocumentFilter(result, activeTab);
         }
-        else if (statusField && activeTab !== "todos")
-        {
-            // Filtrado básico por campo de tipo de documento si no se proporciona una función personalizada
-            result = result.filter((item) =>
-            {
-                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "dni") return fieldValue === "dni";
-                if (activeTab === "ruc") return fieldValue === "ruc";
-                return true;
-            });
-        }
 
-        // Filtrar por término de búsqueda
+        // 3. Filtrar por término de búsqueda
         if (searchTerm && searchFields && searchFields.length > 0)
         {
             result = result.filter((item) => searchFields.some((field) =>
@@ -145,30 +134,8 @@ export function ClientTable<T extends object>({
             }));
         }
 
-        // Filtrar por rango de fechas
-        if (dateRangeField && dateRange.from && dateRange.to)
-        {
-            result = result.filter((item) =>
-            {
-                const fieldValue = dateRangeField.field in item ? item[dateRangeField.field as keyof T] : null;
-                if (!fieldValue) return false;
-
-                const itemDate = new Date(fieldValue as string);
-                if (isNaN(itemDate.getTime())) return false;
-
-                // Set time to midnight for accurate date comparison
-                const from = new Date(dateRange.from!);
-                const to = new Date(dateRange.to!);
-                from.setHours(0, 0, 0, 0);
-                to.setHours(23, 59, 59, 999);
-                itemDate.setHours(0, 0, 0, 0);
-
-                return itemDate >= from && itemDate <= to;
-            });
-        }
-
         setFilteredData(result);
-    }, [data, activeTab, searchTerm, dateRange, statusField, statusFilter, typeDocumentFilter, searchFields, dateRangeField]);
+    }, [data, activeTab, searchTerm, statusField, statusFilter, typeDocumentFilter, searchFields]);
 
     // Configurar la tabla
     const table = useReactTable({
@@ -185,22 +152,6 @@ export function ClientTable<T extends object>({
             columnFilters,
         },
     });
-
-    // Formatear rango de fechas para mostrar
-    const formattedDateRange = () =>
-    {
-        if (dateRange.from && dateRange.to)
-        {
-            return `${format(dateRange.from, "dd/MM/yyyy")} - ${format(dateRange.to, "dd/MM/yyyy")}`;
-        }
-        return "";
-    };
-
-    // Limpiar filtro de fechas
-    const clearDateRange = () =>
-    {
-        setDateRange({ from: undefined, to: undefined });
-    };
 
     return (
         <div className={cn("w-full bg-white rounded-md shadow-sm border border-gray-200 mt-4", className)}>
@@ -245,55 +196,6 @@ export function ClientTable<T extends object>({
                 </div>
 
                 <div className="flex flex-wrap sm:items-center gap-2">
-                    {dateRangeField && (
-                        <>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className={cn(
-                                            "justify-start text-left font-normal border border-gray-300",
-                                            !dateRange.from && "text-muted-foreground",
-                                        )}
-                                    >
-                                        <Calendar className="mr-2 h-4 w-4" />
-                                        {dateRange.from ? formattedDateRange() : (
-                                            <span>
-                                                Seleccionar fechas
-                                            </span>)
-                                        }
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="end">
-                                    <CalendarComponent
-                                        initialFocus
-                                        mode="range"
-                                        defaultMonth={dateRange.from}
-                                        selected={{
-                                            from: dateRange.from,
-                                            to: dateRange.to,
-                                        }}
-                                        onSelect={(range) =>
-                                        {
-                                            setDateRange({
-                                                from: range?.from,
-                                                to: range?.to,
-                                            });
-                                        }}
-                                        numberOfMonths={2}
-                                        locale={es}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-
-                            {dateRange.from && dateRange.to && (
-                                <Button variant="ghost" size="icon" onClick={clearDateRange} className="h-8 w-8">
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            )}
-                        </>
-                    )}
-
                     {toolbarActions && (
                         <div className="flex items-center gap-2 ml-0 sm:ml-auto">
                             {toolbarActions}
@@ -312,13 +214,6 @@ export function ClientTable<T extends object>({
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
-                                {/*
-                                {((actionButtons?.length ?? 0) > 0 || (dropdownActions?.length ?? 0) > 0) && (
-                                    <TableHead className="px-4 py-3 text-black text-center hover:bg-transparent font-bold text-sm md:text-base">
-                                        Acciones
-                                    </TableHead>
-                                )}
-                    */}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -342,30 +237,38 @@ export function ClientTable<T extends object>({
                                                 {actionButtons?.map((action, index) =>
                                                 {
                                                     const isDisabled = action.disabled ? action.disabled(row.original) : false;
+
+                                                    // Determinar si el botón debe ser mostrado
+                                                    const showButton = (action.label === "Eliminar" && !isDisabled) ||
+                                                    (action.label === "Reactivar" && isDisabled) ||
+                                                    (action.label === "Editar" && !isDisabled);
+
                                                     return (
-                                                        <TooltipProvider key={index}>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className={cn("h-8 w-8 p-0", action.className)}
-                                                                        onClick={() => !isDisabled && action.onClick(row.original)}
-                                                                        disabled={isDisabled}
-                                                                    >
-                                                                        <span className="sr-only">
+                                                        showButton && ( // Solo renderiza el botón si debe ser mostrado
+                                                            <TooltipProvider key={index}>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className={cn("h-8 w-8 p-0", action.className)}
+                                                                            onClick={() => action.onClick(row.original)}
+                                                                            disabled={(action.label === "Reactivar") && !isDisabled}
+                                                                        >
+                                                                            <span className="sr-only">
+                                                                                {action.label}
+                                                                            </span>
+                                                                            {action.icon}
+                                                                        </Button>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>
                                                                             {action.label}
-                                                                        </span>
-                                                                        {action.icon}
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p>
-                                                                        {action.label}
-                                                                    </p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                                                        </p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        )
                                                     );
                                                 })}
 

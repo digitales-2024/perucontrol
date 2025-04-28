@@ -29,7 +29,6 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
     // Contar proyecto por estado
     const getProjectByStatus = (status: string) =>
     {
-        if (status === "todos") return data.length;
         if (status === "activo") return data.filter((project) => project.isActive).length;
         if (status === "inactivo") return data.filter((project) => !project.isActive).length;
         return 0;
@@ -38,17 +37,16 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
     // contar proyectos por estado
     const getQuotationByState = (state: string) =>
     {
-        if (state === "pendiente") return data.filter((project) => project.status === "Pending").length;
-        if (state === "completado") return data.filter((project) => project.status === "Completed").length;
-        if (state === "rechazado") return data.filter((project) => project.status === "Rejected").length;
+        if (state === "pendiente") return data.filter((project) => project.status === "Pending" && project.isActive).length;
+        if (state === "completado") return data.filter((project) => project.status === "Completed" && project.isActive).length;
+        if (state === "rechazado") return data.filter((project) => project.status === "Rejected" && project.isActive).length;
         return 0;
     };
 
     // Opciones de estado para las pestañas
     const statusOptions = [
-        { value: "todos", label: "Todos", count: getProjectByStatus("todos") },
-        { value: "activo", label: "Activo", count: getProjectByStatus("activo") },
-        { value: "inactivo", label: "Inactivo", count: getProjectByStatus("inactivo") },
+        { value: "activo", label: "Activos", count: getProjectByStatus("activo") },
+        { value: "inactivo", label: "Eliminados", count: getProjectByStatus("inactivo") },
         { value: "pendiente", label: "Pendiente", count: getQuotationByState("pendiente") },
         { value: "completado", label: "Completado", count: getQuotationByState("completado") },
         { value: "rechazado", label: "Rechazado", count: getQuotationByState("rechazado") },
@@ -83,13 +81,13 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
                 setSelectedProject(row);
                 setShowReactivateProject(true);
             },
+            disabled: (row: ProjectSummary) => !row.isActive,
         },
     ];
 
     // Función para filtrar por estado
     const filterByStatus = (data: Array<ProjectSummary>, status: string) =>
     {
-        if (status === "todos") return data;
         if (status === "activo") return data.filter((quotation) => quotation.isActive);
         if (status === "inactivo") return data.filter((quotation) => !quotation.isActive);
         return data;
@@ -98,9 +96,9 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
     // Funcion para filtrar por estado
     const filterByState = (data: Array<ProjectSummary>, state: string) =>
     {
-        if (state === "pendiente") return data.filter((project) => project.status === "Pending");
-        if (state === "completado") return data.filter((project) => project.status === "Completed");
-        if (state === "rechazado") return data.filter((project) => project.status === "Rejected");
+        if (state === "pendiente") return data.filter((project) => project.status === "Pending" && project.isActive);
+        if (state === "completado") return data.filter((project) => project.status === "Completed" && project.isActive);
+        if (state === "rechazado") return data.filter((project) => project.status === "Rejected" && project.isActive);
         return data;
     };
 

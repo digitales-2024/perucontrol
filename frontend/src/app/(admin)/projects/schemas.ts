@@ -8,7 +8,9 @@ export const clientDataSchema = z.object({
     price: z.number({message: "El precio es requerido"})
         .int("La cantidad debe ser un número entero")
         .min(1, "Debe ser mayor a 0"),
-    ambients: z.array(z.string().min(1, "El ambiente es requerido")),
+    // ambients: z.array(z.string().min(1, "El ambiente es requerido")),
+    ambients: z.array(z.string()),
+
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
     area: z.preprocess(
