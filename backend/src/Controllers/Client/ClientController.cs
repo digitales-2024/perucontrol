@@ -16,7 +16,10 @@ public class ClientController(
     [HttpGet]
     public override async Task<ActionResult<IEnumerable<Client>>> GetAll()
     {
-        return await _context.Clients.Include(c => c.ClientLocations).OrderByDescending(c => c.ClientNumber).ToListAsync();
+        return await _context
+            .Clients.Include(c => c.ClientLocations)
+            .OrderByDescending(c => c.ClientNumber)
+            .ToListAsync();
     }
 
     [EndpointSummary("Get one by ID")]
