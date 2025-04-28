@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Perucontrol
 
-## Getting Started
+Este repositorio contiene tanto el backend y frontend
+para el proyecto Perucontrol.
 
-First, run the development server:
+## Build Status
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- `develop`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-ci%2Fdevelop)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-ci/job/develop/)
+
+- `backend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-backend-develop-deploy)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-backend-develop-deploy/)
+
+- `frontend-develop-deploy`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-frontend-develop-deploy)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-frontend-develop-deploy/)
+
+---
+
+- `staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
+
+
+
+## Husky
+
+En la carpeta raiz, en `.husky` se encuentran los archivos
+de configuración y scripts que ejecutan husky.
+Se utiliza [Husky .NET](https://alirezanet.github.io/Husky.Net/)
+en vez de la versión en javascript.
+
+### Hooks
+
+Los siguientes hooks se ejecutan con husky
+
+- `commit-msg`: Valida que el mensaje del commit siga
+  el formato de [Conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
+- `pre-commit`: En cada commit ejecuta linters y formateadores de código,
+  en el back utiliza [Csharpier](https://csharpier.com/)
+  y en el front [Eslint](https://eslint.org/).
+- `pre-push`: En cada **push** compila tanto el frontend y backend,
+  como primera barrera de proteccion.
+
+
+## Backend
+
+- [ASP.NET 9 Controllers](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-9.0)
+- [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/) como ORM.
+- [Postgres](https://www.postgresql.org/) como base de datos
+
+
+## Plugins de VSCode
+
+No es necesario instalar o usar Visual Studio.
+Para usar VSCode solo se instala el plugin:
+[C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+
+
+### Instalación
+
+Se necesita tener instalado dotnet sdk 9.
+
+#### Arch linux
+
+```sh
+yay -Syu dotnet-sdk-bin aspnet-runtime-bin
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Windows + winget
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+winget install Microsoft.DotNet.SDK.9
+winget install Microsoft.DotNet.DesktopRuntime.9
+winget install Microsoft.DotNet.AspNetCore.9
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Windows
 
-## Learn More
+En windows se instala dotnet desde la página web:
+[https://dotnet.microsoft.com/en-us/download](https://dotnet.microsoft.com/en-us/download)
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Ejecución
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Asumiendo que la base de datos ya está lista,
+para levantar el backend se ejecuta:
 
-## Deploy on Vercel
+```sh
+dotnet watch run
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Swagger/OpenAPI
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Una vez levantado el backend los endpoints de Swagger/OpenAPI se encuentran en
+[http://localhost:5233/scalar/v1](http://localhost:5233/scalar/v1).
+
+#### Autenticación en Swagger/OpenAPI
+
+El backend utiliza Bearer auth y no cookies,
+por lo que los endpoints de login y refresh
+devuelven tokens jwt:
+
+```json
+{
+  "accessToken": "contenido.del_token.jwt",
+  "refreshToken": "contenido.del_token_refresh.jwt",
+  "accessExpiresIn": 1,
+  "refreshExpiresIn": 43200
+}
+```
+
+Para utilizar el resto de endpoints se necesita colocar el `accessToken` en la cabecera
+`Authorization` como `Bearer ${access_token}`.
+
+Para evitar colocar el token varias veces, alternativamente se puede
+iniciar sesión en el **frontend**, esto creará una cookie `pc_access_token`
+que servirá como credencial en Swagger/OpenAPI.
+
+
+
+### Migraciones
+
+Para crear una migración:
+
+```sh
+dotnet ef migrations add "Nombre de la migración"
+```
+
+Esto solo crea los archivos de la migración. Para aplicarlos
+a la base de datos se ejecuta:
+
+```sh
+dotnet ef database update
+```
+
+Tras este ultimo comando la BD esta lista.
+
+Para reinicializar la base de datos en caso de errores
+se ejecuta:
+
+```sh
+dotnet ef database drop
+dotnet ef database update
+```
+
+
+## Frontend
+
+- [Nextjs 15](https://nextjs.org/) (server components)
+- [openapi-ts](https://openapi-ts.dev/)
+- [pnpm](https://pnpm.io/)
+
+### Instalación
+
+- Instalar nodejs
+- Una vez instalado nodejs, Instalar pnpm globalmente con los comandos:
+
+```sh
+npm i -g pnpm
+pnpm setup
+```
+
+- Configurar la URL del backend en las variables de entorno.
+
+
+### Ejecución
+
+- Cada vez que el backend cambie es necesario ejecutar:
+
+    ```sh
+    pnpm run generate
+    ```
+
+    Esto generará endpoints y funciones para conectarse
+    al backend
+
+- Una vez ejecutado `generate`, levanta el frontend con
+  `pnpm run dev`
+
+
+## Pruebas
+
+### E2E
+
+Ver documentacion en carpeta backend
+

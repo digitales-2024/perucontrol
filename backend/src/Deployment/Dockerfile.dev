@@ -1,0 +1,48 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine
+
+# Install required packages
+RUN apk add --no-cache \
+    fontconfig \
+    libreoffice \
+    libreoffice-lang-en_us \
+    libreoffice-lang-es
+
+# Copy fonts
+COPY Fonts /usr/local/share/fonts/
+# Update font cache
+RUN fc-cache -f -v
+
+# Create symlink to ensure 'soffice' command works
+RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+
+# Create directory for LibreOffice user profile to avoid permissions issues
+RUN mkdir -p /tmp/.config && chmod 777 /tmp/.config
+
+#
+# Configure Docker to run as non-root user
+#
+ARG USER_ID
+ARG GROUP_ID
+
+RUN addgroup -g $GROUP_ID developer && \
+    adduser -D -u $USER_ID -G developer developer && \
+    mkdir -p /home/developer && \
+    chown -R developer:developer /home/developer && \
+    mkdir -p /app && \
+    chown -R developer:developer /app
+
+# Switch to the app directory and user before installing tools
+WORKDIR /app
+USER developer
+
+# Install .NET Entity Framework CLI tool
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/home/developer/.dotnet/tools"
+
+# Set development environment
+ENV ASPNETCORE_ENVIRONMENT=Development
+# Optionally expose ports if needed
+# EXPOSE 5000 5001
+
+# Command to run when container starts
+ENTRYPOINT ["/bin/sh"]

@@ -1,0 +1,58 @@
+services:
+  perucontrol-backend-develop:
+    image: docker.io/digitalesacide/perucontrol-backend-develop:${PERUCONTROL_BACKEND_VERSION:-latest}
+    container_name: perucontrol-backend-develop
+    restart: unless-stopped
+    depends_on:
+      perucontrol-db-develop:
+        condition: service_started
+    env_file:
+      - .env.backend
+    networks:
+      - proxy
+      - perucontrol-network-develop
+
+  perucontrol-frontend-develop:
+    image: docker.io/digitalesacide/perucontrol-frontend-develop:${PERUCONTROL_FRONTEND_VERSION:-latest}
+    container_name: perucontrol-frontend-develop
+    restart: unless-stopped
+    depends_on:
+      perucontrol-backend-develop:
+        condition: service_started
+    env_file:
+      - .env.frontend
+    environment:
+      NODE_ENV: "production"
+    networks:
+      - proxy
+      - perucontrol-network-develop
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.perucontrol-frontend-develop.rule=Host(`perucontrol-frontend-develop.acide.win`)"
+      - "traefik.http.routers.perucontrol-frontend-develop.entrypoints=websecure"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls=true"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.perucontrol-frontend-develop.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.perucontrol-frontend-develop.loadbalancer.server.port=3000"
+
+  perucontrol-db-develop:
+    image: postgres:latest
+    container_name: perucontrol-db-develop
+    restart: unless-stopped
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    volumes:
+      # store db data in a volume
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - perucontrol-network-develop
+
+networks:
+  proxy:
+    external: true
+  perucontrol-network-develop:
+    driver: bridge

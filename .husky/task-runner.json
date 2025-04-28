@@ -1,0 +1,38 @@
+{
+    "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+    "tasks": [
+        {
+            "name": "Format with csharpier",
+            "cwd": "backend",
+            "command": "dotnet",
+            "args": [
+                "csharpier",
+                "."
+            ],
+            "include": [ "**/*.cs" ]
+        },
+        {
+            "name": "Format with eslint",
+            "cwd": "frontend",
+            "command": "pnpm",
+            "args": [
+                "lint-staged"
+            ]
+        },
+        {
+            "name": "Validate conventional commit",
+            "command": "bash",
+            "args": [".husky/scripts/commit-msg.sh", ".git/COMMIT_EDITMSG"]
+        },
+        {
+            "name": "Quick backend build",
+            "command": "bash",
+            "args": [".husky/scripts/quick-build-backend.sh"]
+        },
+        {
+            "name": "Quick frontend build",
+            "command": "bash",
+            "args": [".husky/scripts/quick-build-frontend.sh"]
+        }
+    ]
+}

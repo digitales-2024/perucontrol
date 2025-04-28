@@ -1,0 +1,372 @@
+"use server";
+
+import { components } from "@/types/api";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
+import { err, ok, Result } from "@/utils/result";
+import { revalidatePath } from "next/cache";
+
+export async function CreateProject(body: components["schemas"]["ProjectCreateDTO"]): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Project", {
+        ...auth,
+        body,
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function UpdateProject(id: string, newProject: components["schemas"]["ProjectPatchDTO"]): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}", {
+        ...auth,
+        body: newProject,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error updating project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function RemoveProject(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{id}/desactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error deleting project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function ReactivatedProject(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+type StatesQuotation = "Pending" | "Approved" | "Rejected";
+
+export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>
+{
+    console.log(id, newStatus);
+    return err({
+        statusCode: 503,
+        message: "Desactivado - actualizar estado",
+        error: null,
+    });
+}
+
+export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
+}
+
+export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
+}
+
+export async function SaveProjectOperationSheetData(
+    id: string,
+    body: components["schemas"]["ProjectOperationSheetCreateDTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/operation-sheet", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: body.projectAppointmentId!,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GetProjectOperationSheet(projectId: string)
+    : Promise<Result<components["schemas"]["ProjectOperationSheet"] | null, FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/operation-sheet/by-project/{projectId}", {
+        ...auth,
+        params: {
+            path: {
+                projectId: projectId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(data);
+}
+
+export async function AddAppointment(id: string, dueDate: string, serviceIds?: Array<string>): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/appointment", {
+        ...auth,
+        body: {
+            dueDate,
+            serviceIds: serviceIds ?? [],
+        },
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath(`/(admin)/projects/[${id}]`, "page");
+
+    if (error)
+    {
+        console.log("Error updateing dates", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function EditAppointment(
+    projId: string,
+    appId: string,
+    dueDate: string | null, // Fecha planificada (opcional)
+    orderNumber: number | null, // Número de orden (opcional)
+    actualDate: string | null, // Fecha real (opcional)
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{proj_id}/appointment/{app_id}", {
+        ...auth,
+        body: {
+            orderNumber, // Número de orden
+            dueDate, // Fecha planificada
+            actualDate, // Fecha real
+        },
+        params: {
+            path: {
+                proj_id: projId,
+                app_id: appId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error updating appointment project:", error);
+        console.error(projId, appId);
+        return err(error);
+    }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
+
+    return ok(null);
+}
+
+export async function DesactivateAppointment(
+    projId: string,
+    appId: string,
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Project/{proj_id}/appointment/{app_id}", {
+        ...auth,
+        params: {
+            path: {
+
+                proj_id: projId,
+
+                app_id: appId,
+            },
+        },
+    }));
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
+
+    if (error)
+    {
+        console.error("Error desactivando la cita:", error);
+        return err(error);
+    }
+
+    return ok(null);
+}
+
+export async function SaveCertificateData(
+    id: string,
+    body: components["schemas"]["Certificate"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: body.projectAppointmentId!,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
+}
+
+export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodents/pdf`, "POST", "");
+}
+
+export async function GenerateRodentExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodents/excel`, "POST", "");
+}
+
+export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
+}
+
+export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
+}
+
+export async function SaveRodentData(
+    id: string,
+    body: components["schemas"]["RodentRegisterUpdateDTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentId}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentId: id,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GetRodentOfAppointmentById(id: string): Promise<Result<components["schemas"]["RodentRegisterUpdateDTO"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
+}
+
+export async function GenerateSchedulePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/pdf`, "POST", "");
+}
+
+export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
+}
+
+export async function Generate(
+    id: string,
+    endpoint: string,
+    day: string,
+    month: string,
+    year: string,
+): Promise<Result<Blob, FetchError>>
+{
+    const requestBody = {
+        day,
+        month,
+        year,
+    };
+
+    return DownloadFile(
+        `/api/Project/${id}/${endpoint}`,
+        "POST",
+        JSON.stringify(requestBody),
+    );
+}

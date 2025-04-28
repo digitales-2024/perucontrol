@@ -1,0 +1,23 @@
+---
+title: Vista general
+description: ""
+---
+import Uml from "@/components/uml.astro"
+
+<Uml code={`
+@startuml
+:Usuario: --> (Login)
+(Login) --> (Dashboard)
+(Dashboard) -r-> (Gestion de clientes)
+(Dashboard) --> (Gestion de cotizaciones)
+(Dashboard) --> (Gestion de proyectos)
+
+(Gestion de cotizaciones) ---> (Gestion de T&C)
+(Gestion de proyectos) -l-> (Ficha de Operaciones)
+(Gestion de proyectos) ---> (Registro de roedores)
+(Gestion de proyectos) ---> (Cronograma anual)
+(Gestion de proyectos) ---> (Certificados)
+(Gestion de proyectos) ---> (Informes)
+@enduml
+`} />
+
