@@ -28,7 +28,6 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
     // Contar clientes por estado
     const getClientsByStatus = (status: string) =>
     {
-        if (status === "todos") return data.length;
         if (status === "activo") return data.filter((client) => client.isActive).length;
         if (status === "inactivo") return data.filter((client) => !client.isActive).length;
         return 0;
@@ -37,16 +36,15 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
     // Contar clientes por tipo de documento
     const getClientsByDocumentType = (type: string) =>
     {
-        if (type === "dni") return data.filter((client) => client.typeDocument === "dni").length;
-        if (type === "ruc") return data.filter((client) => client.typeDocument === "ruc").length;
+        if (type === "dni") return data.filter((client) => client.typeDocument === "dni" && client.isActive).length;
+        if (type === "ruc") return data.filter((client) => client.typeDocument === "ruc" && client.isActive).length;
         return 0;
     };
 
     // Opciones de estado para las pestañas
     const statusOptions = [
-        { value: "todos", label: "Todos", count: getClientsByStatus("todos") },
-        { value: "activo", label: "Activo", count: getClientsByStatus("activo") },
-        { value: "inactivo", label: "Inactivo", count: getClientsByStatus("inactivo") },
+        { value: "activo", label: "Activos", count: getClientsByStatus("activo") },
+        { value: "inactivo", label: "Eliminados", count: getClientsByStatus("inactivo") },
         { value: "dni", label: "DNI", count: getClientsByDocumentType("dni") },
         { value: "ruc", label: "RUC", count: getClientsByDocumentType("ruc") },
     ];
@@ -97,7 +95,6 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
     // Función para filtrar por estado
     const filterByStatus = (data: Array<TData>, status: string) =>
     {
-        if (status === "todos") return data;
         if (status === "activo") return data.filter((client) => client.isActive);
         if (status === "inactivo") return data.filter((client) => !client.isActive);
         return data;
@@ -106,8 +103,8 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
     // Función para filtrar por tipo de documento
     const filterByDocumentType = (data: Array<TData>, type: string) =>
     {
-        if (type === "dni") return data.filter((client) => client.typeDocument === "dni");
-        if (type === "ruc") return data.filter((client) => client.typeDocument === "ruc");
+        if (type === "dni") return data.filter((client) => client.isActive && client.typeDocument === "dni");
+        if (type === "ruc") return data.filter((client) => client.isActive && client.typeDocument === "ruc");
         return data;
     };
 

@@ -88,7 +88,7 @@ export function QuotationTable<T extends object>({
     className,
 }: QuotationTableProps<T>)
 {
-    const [activeTab, setActiveTab] = useState("todos");
+    const [activeTab, setActiveTab] = useState("activo");
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
         from: undefined,
@@ -96,36 +96,51 @@ export function QuotationTable<T extends object>({
     });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    const [filteredData, setFilteredData] = useState<Array<T>>(() =>
+    {
+        const initialData = [...data];
+
+        // Aplicar filtro de activos por defecto
+        if (statusFilter)
+        {
+            return statusFilter(initialData, "activo");
+        }
+        if (statusField)
+        {
+            return initialData.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                return Boolean(fieldValue);
+            });
+        }
+        return initialData;
+    });
 
     // Filtrar datos cuando cambian los filtros
     useEffect(() =>
     {
         let result = [...data];
 
-        // Filtrar por estado
-        if (statusFilter && activeTab !== "todos")
+        // 1. Filtrar por estado (activo o inactivo)
+        if (statusFilter)
         {
             result = statusFilter(result, activeTab);
         }
-        else if (statusField && activeTab !== "todos")
+        else if (statusField)
         {
-            // Filtrado básico por campo de estado si no se proporciona una función personalizada
             result = result.filter((item) =>
             {
                 const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "activo") return Boolean(fieldValue);
-                if (activeTab === "inactivo") return !Boolean(fieldValue);
-                return true;
+                return activeTab === "inactivo" ? !Boolean(fieldValue) : Boolean(fieldValue);
             });
         }
 
         // Filtar por IGV
-        if (igvFilter && activeTab !== "todos")
+        if (igvFilter && activeTab !== "activo")
         {
             result = igvFilter(result, activeTab);
         }
-        else if (statusField && activeTab !== "todos")
+        else if (statusField && activeTab !== "activo")
         {
             // Filtrado básico por campo de tipo de documento si no se proporciona una función personalizada
             result = result.filter((item) =>
@@ -138,11 +153,11 @@ export function QuotationTable<T extends object>({
         }
 
         // Filtrar por estado
-        if (stateFilter && activeTab !== "todos")
+        if (stateFilter && activeTab !== "activo")
         {
             result = stateFilter(result, activeTab);
         }
-        else if (statusField && activeTab !== "todos")
+        else if (statusField && activeTab !== "activo")
         {
             // Filtrado básico por campo de estado si no se proporciona una función personalizada
             result = result.filter((item) =>

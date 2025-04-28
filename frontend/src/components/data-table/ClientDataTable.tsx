@@ -86,7 +86,7 @@ export function ClientTable<T extends object>({
     className,
 }: ClientTableProps<T>)
 {
-    const [activeTab, setActiveTab] = useState("todos");
+    const [activeTab, setActiveTab] = useState("activo");
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
         from: undefined,
@@ -94,48 +94,52 @@ export function ClientTable<T extends object>({
     });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    const [filteredData, setFilteredData] = useState<Array<T>>(() =>
+    {
+        const initialData = [...data];
+
+        // Aplicar filtro de activos por defecto
+        if (statusFilter)
+        {
+            return statusFilter(initialData, "activo");
+        }
+        if (statusField)
+        {
+            return initialData.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                return Boolean(fieldValue);
+            });
+        }
+        return initialData;
+    });
 
     // Filtrar datos cuando cambian los filtros
     useEffect(() =>
     {
         let result = [...data];
 
-        // Filtrar por estado
-        if (statusFilter && activeTab !== "todos")
+        // 1. Primero aplicar filtro por estado (activo/inactivo)
+        if (statusFilter)
         {
-            result = statusFilter(result, activeTab);
+            result = statusFilter(result, activeTab === "dni" || activeTab === "ruc" ? "activo" : activeTab);
         }
-        else if (statusField && activeTab !== "todos")
+        else if (statusField)
         {
-            // Filtrado básico por campo de estado si no se proporciona una función personalizada
             result = result.filter((item) =>
             {
-                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "activo") return Boolean(fieldValue);
-                if (activeTab === "inactivo") return !Boolean(fieldValue);
-                return true;
+                const isActive = Boolean(statusField in item ? item[statusField as keyof T] : undefined);
+                return activeTab === "inactivo" ? !isActive : isActive;
             });
         }
 
-        // Filtar por tipo de documento
-        if (typeDocumentFilter && activeTab !== "todos")
+        // 2. Luego aplicar filtro por tipo de documento si corresponde
+        if ((activeTab === "dni" || activeTab === "ruc") && typeDocumentFilter)
         {
             result = typeDocumentFilter(result, activeTab);
         }
-        else if (statusField && activeTab !== "todos")
-        {
-            // Filtrado básico por campo de tipo de documento si no se proporciona una función personalizada
-            result = result.filter((item) =>
-            {
-                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
-                if (activeTab === "dni") return fieldValue === "dni";
-                if (activeTab === "ruc") return fieldValue === "ruc";
-                return true;
-            });
-        }
 
-        // Filtrar por término de búsqueda
+        // 3. Filtrar por término de búsqueda
         if (searchTerm && searchFields && searchFields.length > 0)
         {
             result = result.filter((item) => searchFields.some((field) =>
@@ -145,7 +149,7 @@ export function ClientTable<T extends object>({
             }));
         }
 
-        // Filtrar por rango de fechas
+        // 4. Filtrar por rango de fechas
         if (dateRangeField && dateRange.from && dateRange.to)
         {
             result = result.filter((item) =>
@@ -156,7 +160,6 @@ export function ClientTable<T extends object>({
                 const itemDate = new Date(fieldValue as string);
                 if (isNaN(itemDate.getTime())) return false;
 
-                // Set time to midnight for accurate date comparison
                 const from = new Date(dateRange.from!);
                 const to = new Date(dateRange.to!);
                 from.setHours(0, 0, 0, 0);

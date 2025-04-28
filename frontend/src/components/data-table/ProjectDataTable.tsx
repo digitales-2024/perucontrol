@@ -88,7 +88,7 @@ export function ProjectTable<T extends object>({
     className,
 }: ProjectTableProps<T>)
 {
-    const [activeTab, setActiveTab] = useState("todos");
+    const [activeTab, setActiveTab] = useState("activo");
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
         from: undefined,
@@ -96,7 +96,26 @@ export function ProjectTable<T extends object>({
     });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    // const [filteredData, setFilteredData] = useState<Array<T>>(data);
+    const [filteredData, setFilteredData] = useState<Array<T>>(() =>
+    {
+        const initialData = [...data];
+
+        // Aplicar filtro de activos por defecto
+        if (statusFilter)
+        {
+            return statusFilter(initialData, "activo");
+        }
+        if (statusField)
+        {
+            return initialData.filter((item) =>
+            {
+                const fieldValue = statusField in item ? item[statusField as keyof T] : undefined;
+                return Boolean(fieldValue);
+            });
+        }
+        return initialData;
+    });
 
     // Filtrar datos cuando cambian los filtros
     useEffect(() =>
