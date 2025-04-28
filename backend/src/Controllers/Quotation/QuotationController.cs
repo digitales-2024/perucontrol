@@ -13,7 +13,6 @@ public class QuotationController(
     LibreOfficeConverterService pDFConverterService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
-
     [EndpointSummary("Create a Quotation")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -228,22 +227,7 @@ public class QuotationController(
             { "{{forma_pago}}", quotation.PaymentMethod },
             { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            { "{{lista_servicios_textual}}", quotation.ServiceListText },
-            { "{{descripcion_servicios}}", quotation.ServiceDescription },
-            { "{{detalle_servicios}}", quotation.ServiceDetail },
-            { "{{costo_servicio}}", quotation.Price.ToString() },
-            { "{{tiene_igv_1}}", igv1 },
-            { "{{sub_subtotal}}", quotation.Price.ToString() },
-            { "{{subtotal}}", quotation.Price.ToString() },
-            { "{{tiene_igv_2}}", igv1 },
-            { "{{disponibilidad}}", quotation.RequiredAvailability },
-            { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
-            { "{{hora}}", quotation.ServiceTime },
-            { "{{custom_6}}", quotation.CustomField6 },
-            { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
-            { "{{entregables}}", quotation.Deliverables },
-            // { "{{terminos}}", quotation.Terms },
-            { "{{custom_10}}", quotation.CustomField10 ?? "" },
+            // FIXME: update fields
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
@@ -324,22 +308,7 @@ public class QuotationController(
             { "{{forma_pago}}", quotation.PaymentMethod },
             { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            { "{{lista_servicios_textual}}", quotation.ServiceListText },
-            { "{{descripcion_servicios}}", quotation.ServiceDescription },
-            { "{{detalle_servicios}}", quotation.ServiceDetail },
-            { "{{costo_servicio}}", quotation.Price.ToString() },
-            { "{{tiene_igv_1}}", igv1 },
-            { "{{sub_subtotal}}", quotation.Price.ToString() },
-            { "{{subtotal}}", quotation.Price.ToString() },
-            { "{{tiene_igv_2}}", igv1 },
-            { "{{disponibilidad}}", quotation.RequiredAvailability },
-            { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
-            { "{{hora}}", quotation.ServiceTime },
-            { "{{custom_6}}", quotation.CustomField6 },
-            { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
-            { "{{entregables}}", quotation.Deliverables },
-            // { "{{terminos}}", quotation.Terms },
-            { "{{custom_10}}", quotation.CustomField10 ?? "" },
+            // FIXME: update fields
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,

@@ -143,40 +143,19 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
 {
     public Guid? ClientId { get; set; }
     public ICollection<Guid>? ServiceIds { get; set; }
-    public uint? Area { get; set; }
-    public uint? SpacesCount { get; set; }
     public QuotationFrequency? Frequency { get; set; }
     public bool? HasTaxes { get; set; }
 
-    [Column(TypeName = "TEXT")]
-    public string? TermsAndConditions { get; set; }
-
     public DateTime? CreationDate { get; set; }
-
     public DateTime? ExpirationDate { get; set; }
 
     public string? ServiceAddress { get; set; }
     public string? PaymentMethod { get; set; }
     public string? Others { get; set; }
-    public string? ServiceListText { get; set; }
-    public string? ServiceDescription { get; set; }
-    public string? ServiceDetail { get; set; }
-    public decimal? Price { get; set; }
-    public string? RequiredAvailability { get; set; }
-    public string? ServiceTime { get; set; }
-    public string? CustomField6 { get; set; }
-    public string? TreatedAreas { get; set; }
-    public string? Deliverables { get; set; }
-
-    // public string? Terms { get; set; }
-    public string? CustomField10 { get; set; }
+    public string? Availability { get; set; }
 
     public void ApplyPatch(Quotation entity)
     {
-        if (Area != null)
-            entity.Area = (uint)Area;
-        if (SpacesCount != null)
-            entity.SpacesCount = (uint)SpacesCount;
         if (HasTaxes != null)
             entity.HasTaxes = (bool)HasTaxes;
         if (Frequency != null)
@@ -191,28 +170,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.PaymentMethod = PaymentMethod;
         if (Others != null)
             entity.Others = Others;
-        if (ServiceListText != null)
-            entity.ServiceListText = ServiceListText;
-        if (ServiceDescription != null)
-            entity.ServiceDescription = ServiceDescription;
-        if (ServiceDetail != null)
-            entity.ServiceDetail = ServiceDetail;
-        if (Price != null)
-            entity.Price = Price.Value;
-        if (RequiredAvailability != null)
-            entity.RequiredAvailability = RequiredAvailability;
-        if (ServiceTime != null)
-            entity.ServiceTime = ServiceTime;
-        if (CustomField6 != null)
-            entity.CustomField6 = CustomField6;
-        if (TreatedAreas != null)
-            entity.TreatedAreas = TreatedAreas;
-        if (Deliverables != null)
-            entity.Deliverables = Deliverables;
-        // if (Terms != null)
-        //     entity.Terms = Terms;
-        if (CustomField10 != null)
-            entity.CustomField10 = CustomField10;
+        if (Availability != null)
+            entity.Availability = Availability;
     }
 }
 
