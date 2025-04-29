@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { /* useFieldArray, */ useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -21,7 +21,7 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck/* , X */ } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { addDays, format, parse } from "date-fns";
@@ -29,6 +29,7 @@ import { components, paths } from "@/types/api";
 import { redirect } from "next/navigation";
 import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 import { Textarea } from "@/components/ui/textarea";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -52,6 +53,13 @@ export function CreateQuotation({ terms, clients, services }: {
     const [openTerms, setOpenTerms] = useState(false);
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+
+    /* const { fields: serviceDetailFields, append: appendServiceDetail, remove: removeServiceDetail } = */
+
+    /* useFieldArray({
+        control: form.control,
+        name: "serviceDetails",
+    }); */
 
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
@@ -161,6 +169,42 @@ export function CreateQuotation({ terms, clients, services }: {
             console.error("Error fetching terms and conditions:");
         }
     };
+
+    /* const handleServiceSelection = (serviceId: string) =>
+    {
+        const currentServices = watch("serviceIds") ?? [];
+        let newServices: Array<string>;
+
+        if (currentServices.includes(serviceId))
+        {
+        // Si ya está, lo quitamos
+            newServices = currentServices.filter((id: string) => id !== serviceId);
+
+            // También removemos el serviceDetail correspondiente
+            const indexToRemove = serviceDetailFields.findIndex((detail) => detail.serviceId === serviceId);
+
+            if (indexToRemove !== -1)
+            {
+                removeServiceDetail(indexToRemove);
+            }
+        }
+        else
+        {
+        // Si no está, lo agregamos
+            newServices = [...currentServices, serviceId];
+
+            // También agregamos un nuevo serviceDetail con valores por defecto
+            appendServiceDetail({
+                serviceId: serviceId,
+                description: "",
+                quantity: 1,
+                accessories: "",
+                price: 0,
+            });
+        }
+
+        setValue("serviceIds", newServices);
+    }; */
 
     return (
         <div className="mt-5 ml-3">
@@ -382,6 +426,109 @@ export function CreateQuotation({ terms, clients, services }: {
                                 </FormItem>
                             )}
                         />
+
+                        {/*  Renderizar los detalles del servicio */}
+                        {/*  {serviceDetailFields.map((field, index) =>
+                        {
+                            const service = services.find((s) => s.id === field.serviceId);
+                            return service ? (
+                                <Card key={`service-${field.serviceId}`} className="mb-4">
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <CardTitle className="flex items-center gap-2">
+                                            {serviceIcons[service.name] ?? <ShieldCheck className="h-4 w-4" />}
+                                            {service.name}
+                                        </CardTitle>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleServiceSelection(field.serviceId)}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </CardHeader>
+                                    <CardContent className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                                        <FormField
+                                            control={form.control}
+                                            name={`serviceDetails.${index}.description`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Descripción
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            placeholder="Descripción del servicio"
+                                                            className="resize-none"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name={`serviceDetails.${index}.quantity`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Cantidad
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="1"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name={`serviceDetails.${index}.accessories`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Accesorios
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name={`serviceDetails.${index}.price`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Precio unitario
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </CardContent>
+                                </Card>
+                            ) : null;
+                        })} */}
 
                         {/* Frequency */}
                         <FormField

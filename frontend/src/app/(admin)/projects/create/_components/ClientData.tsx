@@ -32,12 +32,10 @@ const MAX_ENVIRONMENTS = 8;
 
 export function ClientData({ clients, services, quotations, onServicesChange }: ClientDataProps)
 {
-    const { setValue, watch } = useFormContext();
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
-
-    const { control } = useFormContext();
+    const { control, setValue, watch } = useFormContext();
 
     // Usar useFieldArray para manejar los ambientes
     const { fields, append, remove } = useFieldArray({
