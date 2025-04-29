@@ -39,9 +39,20 @@ public class QuotationController(
         var entity = createDto.MapToEntity();
         entity.Id = Guid.NewGuid();
         entity.Client = client;
-        entity.Services = services;
 
         _dbSet.Add(entity);
+
+        // set services
+        entity.QuotationServices = createDto
+            .QuotationServices.Select(qs => new QuotationService
+            {
+                Amount = qs.Amount,
+                NameDescription = qs.NameDescription,
+                Price = qs.Price,
+                Accesories = qs.Accesories,
+            })
+            .ToList();
+
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
     }
@@ -53,6 +64,7 @@ public class QuotationController(
     {
         return await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
             .OrderByDescending(q => q.QuotationNumber)
             .ToListAsync();
@@ -65,22 +77,38 @@ public class QuotationController(
     public override async Task<ActionResult<Quotation>> GetById(Guid id)
     {
         var entity = await _dbSet
+            .Include(q => q.QuotationServices)
             .Include(c => c.Client)
             .Include(s => s.Services)
             .FirstOrDefaultAsync(q => q.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
 
-    [EndpointSummary("Partial edit one by id")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
     {
-        var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
+        // Use AsNoTracking() to avoid tracking issues with the first query
+        var quotation = await _dbSet
+            .AsNoTracking() // Add this
+            .Include(q => q.Services)
+            .Include(q => q.QuotationServices)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
         if (quotation == null)
             return NotFound();
+
+        // Now get a clean tracked entity for updating
+        var trackedQuotation = await _dbSet.FindAsync(id);
+        if (trackedQuotation == null)
+            return NotFound();
+
+        // Load related entities for the tracked entity
+        await _context.Entry(trackedQuotation).Collection(q => q.Services).LoadAsync();
+
+        await _context.Entry(trackedQuotation).Collection(q => q.QuotationServices).LoadAsync();
 
         if (patchDto.ClientId != null)
         {
@@ -89,7 +117,7 @@ public class QuotationController(
             {
                 return NotFound("Cliente no encontrado");
             }
-            quotation.Client = client;
+            trackedQuotation.Client = client;
         }
 
         if (patchDto.ServiceIds != null)
@@ -103,35 +131,106 @@ public class QuotationController(
             if (newServiceIds.Count != patchDto.ServiceIds.Count)
             {
                 var invalidIds = patchDto.ServiceIds.Except(newServiceIds).ToList();
-
                 return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
             }
 
-            // Get services to remove (existing ones not in new list)
-            var servicesToRemove = quotation
-                .Services.Where(s => !newServiceIds.Contains(s.Id))
-                .ToList();
+            // Clear existing services and add the new ones
+            trackedQuotation.Services.Clear();
 
-            // Get services to add (new ones not in existing list)
-            var existingServiceIds = quotation.Services.Select(s => s.Id);
             var servicesToAdd = await _context
-                .Services.Where(s =>
-                    newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id)
-                )
+                .Services.Where(s => newServiceIds.Contains(s.Id))
                 .ToListAsync();
 
-            // Apply the changes
-            foreach (var service in servicesToRemove)
-                quotation.Services.Remove(service);
-
             foreach (var service in servicesToAdd)
-                quotation.Services.Add(service);
+                trackedQuotation.Services.Add(service);
         }
 
-        patchDto.ApplyPatch(quotation);
-        await _context.SaveChangesAsync();
+        if (patchDto.QuotationServices is not null)
+        {
+            // Get existing services
+            var existingServices = trackedQuotation.QuotationServices.ToList();
+            var existingIds = existingServices.Select(x => x.Id).ToList();
 
-        return Ok(quotation);
+            // Keep track of processed IDs to determine what to delete later
+            var processedIds = new List<Guid>();
+
+            foreach (var patchQs in patchDto.QuotationServices)
+            {
+                if (patchQs.Id != null)
+                {
+                    // Try to find existing service
+                    var existingService = existingServices.FirstOrDefault(e => e.Id == patchQs.Id);
+
+                    if (existingService != null)
+                    {
+                        // Update existing service
+                        existingService.Amount = patchQs.Amount;
+                        if (patchQs.NameDescription != null)
+                            existingService.NameDescription = patchQs.NameDescription;
+                        if (patchQs.Price != null)
+                            existingService.Price = patchQs.Price;
+                        existingService.Accesories = patchQs.Accesories;
+
+                        processedIds.Add(existingService.Id);
+                    }
+                    else
+                    {
+                        // ID specified but not found - create new with specific ID
+                        // Note: This might not work if ID is auto-generated
+                        // Alternative: Ignore the ID and just create new
+                        var newQuotationService = new QuotationService
+                        {
+                            Quotation = trackedQuotation,
+                            Amount = patchQs.Amount,
+                            NameDescription = patchQs.NameDescription ?? "",
+                            Price = patchQs.Price,
+                            Accesories = patchQs.Accesories,
+                        };
+
+                        _context.Add(newQuotationService);
+                        // We'll get the ID after save, can't add to processedIds yet
+                    }
+                }
+                else
+                {
+                    // Create new without specified ID
+                    var newQuotationService = new QuotationService
+                    {
+                        Quotation = trackedQuotation,
+                        Amount = patchQs.Amount,
+                        NameDescription = patchQs.NameDescription ?? "",
+                        Price = patchQs.Price,
+                        Accesories = patchQs.Accesories,
+                    };
+
+                    _context.Add(newQuotationService);
+                    // We'll get the ID after save, can't add to processedIds yet
+                }
+            }
+
+            // Delete any existing services that weren't processed
+            var toDelete = existingServices.Where(e => !processedIds.Contains(e.Id)).ToList();
+
+            foreach (var service in toDelete)
+            {
+                _context.Remove(service);
+            }
+        }
+
+        // Apply other property updates
+        patchDto.ApplyPatch(trackedQuotation);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Ok(trackedQuotation);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await _dbSet.AnyAsync(q => q.Id == id))
+                return NotFound();
+            throw;
+        }
     }
 
     [EndpointSummary("Update Quotation State")]
@@ -216,22 +315,7 @@ public class QuotationController(
             { "{{forma_pago}}", quotation.PaymentMethod },
             { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            { "{{lista_servicios_textual}}", quotation.ServiceListText },
-            { "{{descripcion_servicios}}", quotation.ServiceDescription },
-            { "{{detalle_servicios}}", quotation.ServiceDetail },
-            { "{{costo_servicio}}", quotation.Price.ToString() },
-            { "{{tiene_igv_1}}", igv1 },
-            { "{{sub_subtotal}}", quotation.Price.ToString() },
-            { "{{subtotal}}", quotation.Price.ToString() },
-            { "{{tiene_igv_2}}", igv1 },
-            { "{{disponibilidad}}", quotation.RequiredAvailability },
-            { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
-            { "{{hora}}", quotation.ServiceTime },
-            { "{{custom_6}}", quotation.CustomField6 },
-            { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
-            { "{{entregables}}", quotation.Deliverables },
-            // { "{{terminos}}", quotation.Terms },
-            { "{{custom_10}}", quotation.CustomField10 ?? "" },
+            // FIXME: update fields
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
@@ -312,22 +396,7 @@ public class QuotationController(
             { "{{forma_pago}}", quotation.PaymentMethod },
             { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            { "{{lista_servicios_textual}}", quotation.ServiceListText },
-            { "{{descripcion_servicios}}", quotation.ServiceDescription },
-            { "{{detalle_servicios}}", quotation.ServiceDetail },
-            { "{{costo_servicio}}", quotation.Price.ToString() },
-            { "{{tiene_igv_1}}", igv1 },
-            { "{{sub_subtotal}}", quotation.Price.ToString() },
-            { "{{subtotal}}", quotation.Price.ToString() },
-            { "{{tiene_igv_2}}", igv1 },
-            { "{{disponibilidad}}", quotation.RequiredAvailability },
-            { "{{validez_propuesta}}", expiryDaysAmount.ToString("D2") + " días" },
-            { "{{hora}}", quotation.ServiceTime },
-            { "{{custom_6}}", quotation.CustomField6 },
-            { "{{ambientes_a_tratar}}", quotation.TreatedAreas },
-            { "{{entregables}}", quotation.Deliverables },
-            // { "{{terminos}}", quotation.Terms },
-            { "{{custom_10}}", quotation.CustomField10 ?? "" },
+            // FIXME: update fields
         };
         var fileBytes = excelTemplate.GenerateExcelFromTemplate(
             placeholders,
@@ -392,6 +461,7 @@ public class QuotationController(
     {
         var approvedQuotations = await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
             .Where(q => q.Status == QuotationStatus.Approved)
             .Where(q => !_context.Projects.Any(p => p.Quotation!.Id == q.Id))

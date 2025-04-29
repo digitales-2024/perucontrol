@@ -213,55 +213,48 @@ public static class DatabaseSeeder
 
         var defaultQuotations = new List<Quotation>
         {
-            new Quotation
+            new()
             {
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Pending,
                 Frequency = QuotationFrequency.Bimonthly,
-                Area = 420,
-                SpacesCount = 32,
                 HasTaxes = true,
                 CreationDate = DateTime.Now,
                 ExpirationDate = DateTime.Now.AddDays(30),
                 ServiceAddress = "Av. Los Olivos 123, Lima",
                 PaymentMethod = "Transferencia bancaria",
                 Others = "Servicio con garantía de 3 meses",
-                ServiceListText = "Fumigación, Desinfección, Desinsectación",
-                ServiceDescription = "Servicio integral de control de plagas para oficinas",
-                ServiceDetail =
-                    "Incluye fumigación completa de todas las áreas especificadas, con productos de alta calidad y certificados, aplicación de gel insecticida en puntos estratégicos, y colocación de trampas según necesidad.",
-                Price = 1250.00m,
-                RequiredAvailability = "Fines de semana",
-                ServiceTime = "4 horas",
-                CustomField6 = "Garantía extendida",
-                TreatedAreas = "Oficinas, baños, cocina, almacén",
-                Deliverables = "Certificado de fumigación, informe técnico, recomendaciones",
+                Availability = "Inmediata",
+                QuotationServices = new List<QuotationService>
+                {
+                    new()
+                    {
+                        Amount = 1,
+                        NameDescription = "DESINSECTACION",
+                        Price = 150,
+                    },
+                    new()
+                    {
+                        Amount = 1,
+                        NameDescription = "DESRATIZACION",
+                        Price = 150,
+                    },
+                },
             },
-            new Quotation
+            new()
             {
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Approved,
                 Frequency = QuotationFrequency.Semiannual,
-                Area = 42,
-                SpacesCount = 2,
                 HasTaxes = false,
                 CreationDate = DateTime.Now,
                 ExpirationDate = DateTime.Now.AddDays(30),
                 ServiceAddress = "Jr. Las Palmeras 456, San Isidro",
                 PaymentMethod = "Efectivo",
                 Others = "Incluye certificación DIGESA",
-                ServiceListText = "Desratización, Limpieza de tanque",
-                ServiceDescription = "Control de roedores y limpieza sanitaria",
-                ServiceDetail =
-                    "El servicio incluye instalación de cebaderos para control de roedores en perímetro e interior, uso de rodenticidas de última generación, y limpieza profesional de tanques con productos biodegradables.",
-                Price = 850.00m,
-                RequiredAvailability = "Lunes a viernes",
-                ServiceTime = "2 horas",
-                CustomField6 = "Sin productos con olor",
-                TreatedAreas = "Sótano, perímetro exterior, tanque de agua",
-                Deliverables = "Informe técnico, certificado de salubridad",
+                Availability = "1 semana",
             },
         };
 

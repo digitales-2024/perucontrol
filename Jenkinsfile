@@ -40,13 +40,14 @@ pipeline {
 		stage("Run e2e tests") {
 			environment {
 				BASE_URL = "http://perucontrol-frontend-ci-${BUILD_REF}:3000"
+				API_URL = "http://perucontrol-backend-ci-${BUILD_REF}:8080"
 			}
 			steps {
 				// Give time for backend/frontend to start
 				sh 'sleep 5'
 				dir("backend/Tests.E2E") {
 					sh "mkdir reports || true"
-					sh "docker run --network perucontrol-network-ci-${BUILD_REF} -e BASE_URL=${BASE_URL} -v \$(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest dotnet test --logger \"xunit;LogFilePath=reports/testresults.xml\""
+					sh "docker run --network perucontrol-network-ci-${BUILD_REF} -e BASE_URL=${BASE_URL} -e API_URL=${API_URL} -v \$(pwd)/../:/tests digitalesacide/playwright-dotnet9-noble:latest bash -c 'cd /tests/Tests.E2E && dotnet test --logger \"xunit;LogFilePath=reports/testresults.xml\"'"
 				}
 			}
 			post {
