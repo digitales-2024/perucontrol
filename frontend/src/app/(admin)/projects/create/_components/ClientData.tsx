@@ -32,12 +32,10 @@ const MAX_ENVIRONMENTS = 8;
 
 export function ClientData({ clients, services, quotations, onServicesChange }: ClientDataProps)
 {
-    const { setValue, watch } = useFormContext();
     const [quotation, setQuotation] = useState("");
     const [showQuotation, setShowQuotation] = useState(true);
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
-
-    const { control } = useFormContext();
+    const { control, setValue, watch } = useFormContext();
 
     // Usar useFieldArray para manejar los ambientes
     const { fields, append, remove } = useFieldArray({
@@ -72,14 +70,11 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
             setValue("clientId", selectedQuotation.client?.id ?? "");
             setValue("quotationId", selectedQuotation.id ?? null);
             setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
-            setValue("area", selectedQuotation.area ?? 0);
-            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
             setValue(
                 "services",
                 selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? [],
             );
             setValue("frequency", selectedQuotation.frequency);
-            setValue("price", selectedQuotation.price);
 
             // Actualizar las direcciones del cliente asociado a la cotización
             const selectedClient = clients.find((client) => client.id === selectedQuotation.client?.id);
@@ -186,7 +181,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
     }, [watch, onServicesChange]);
 
     return (
-        <Card>
+        <Card className="bg-transparent">
             <CardHeader>
                 <div className="flex justify-between mt-5">
                     <CardTitle className="text-xl font-semibold">
@@ -277,55 +272,6 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                         </FormItem>
                     )}
                 />
-
-                {/* Área y Número de ambientes */}
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                        name="area"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-base">
-                                    Área m2
-                                    <span className="text-red-500">
-                                        *
-                                    </span>
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="m2"
-                                        {...field}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        name="spacesCount"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Nro. de ambientes
-                                    <span className="text-red-500">
-                                        *
-                                    </span>
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="#"
-                                        {...field}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
 
                 {/* Servicios y Número de Orden */}
                 <div className="space-y-4">

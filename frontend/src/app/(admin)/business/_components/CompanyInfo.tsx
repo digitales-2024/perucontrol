@@ -52,8 +52,8 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
     if (isMobile)
     {
         return (
-            <div className="container mx-auto p-4">
-                <Card className="w-full">
+            <div className="container mx-auto p-4 bg-transparent">
+                <Card className="w-full bg-transparent">
                     <CardHeader>
                         <CardTitle className="text-xl flex items-center gap-2">
                             <Building className="h-5 w-5 text-primary" />
@@ -277,8 +277,8 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
     }
 
     return (
-        <div className="container mx-auto p-6">
-            <Card className="w-full max-w-4xl">
+        <div className="container mx-auto p-6 bg-transparent">
+            <Card className="w-full max-w-4xl bg-transparent">
                 <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">
                         <Building className="h-6 w-6 text-primary" />

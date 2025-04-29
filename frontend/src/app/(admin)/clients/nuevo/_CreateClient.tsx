@@ -276,7 +276,7 @@ export const CreateClient = () =>
 
                         <hr />
 
-                        <h3 className="text-lg font-bold mt-4">
+                        <h3 className="text-lg font-bold">
                             Contacto y Dirección
                         </h3>
 

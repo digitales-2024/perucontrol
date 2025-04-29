@@ -135,31 +135,6 @@ export function ServiceDates({
         toast.success("Fechas generadas correctamente");
     }, [serviceDate, frequency, generateDates, setValue, appointments]);
 
-    // const handleAddDate = useCallback(() =>
-    // {
-    //     if (!newDate)
-    //     {
-    //         toast.error("Por favor seleccione una fecha para agregar");
-    //         return;
-    //     }
-    //
-    //     if (selectedServiceIds.length === 0)
-    //     {
-    //         toast.error("Debe seleccionar al menos un servicio");
-    //         return;
-    //     }
-    //
-    //     const newAppointment = {
-    //         dueDate: newDate.toISOString(), // Convertir a formato ISO
-    //         services: [...selectedServiceIds],
-    //     };
-    //
-    //     setValue("appointments", [...appointments, newAppointment]);
-    //     setNewDate(undefined); // Limpiar la fecha nueva después de agregar
-    //     setSelectedServiceIds([]);
-    //     toast.success("Fecha agregada correctamente");
-    // }, [newDate, selectedServiceIds, setValue, appointments]);
-
     const handleDeleteDate = useCallback((index: number) =>
     {
         const removedAppointment = appointments[index];
@@ -256,7 +231,7 @@ export function ServiceDates({
     }, []);
 
     return (
-        <Card className="w-full">
+        <Card className="w-full bg-transparent">
             <CardHeader className="pb-3">
                 <CardTitle className="text-xl flex items-center">
                     <CalendarIcon className="h-5 w-5 mr-2 text-blue-500" />

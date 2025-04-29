@@ -144,7 +144,6 @@ export const certificateSchema = z.object({
     clientName: z.string().optional(),
     location: z.string().optional(),
     businessType: z.string().optional(),
-    treatedArea: z.string().optional(),
     serviceDate: z.string().optional(),
     expirationDate: z.string().min(1, "La fecha de vencimiento es requerida"),
     technicalDirector: z.string().optional(),

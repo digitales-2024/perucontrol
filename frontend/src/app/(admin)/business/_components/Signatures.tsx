@@ -64,7 +64,7 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
     }
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-6 bg-transparent">
             <Card className="w-full max-w-4xl">
                 <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">

@@ -35,12 +35,6 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
         throw quotationErr;
     }
 
-    if (termsErr)
-    {
-        console.error(`Error fetching terms: ${termsErr.message}`);
-        throw termsErr;
-    }
-
     if (clientsError)
     {
         console.error("Error getting all clients:", clientsError);
@@ -51,6 +45,12 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
     {
         console.error("Error getting all services:", servicesError);
         throw servicesError;
+    }
+
+    if (termsErr)
+    {
+        console.error(`error ${termsErr.message}`);
+        throw termsErr;
     }
 
     const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
@@ -84,7 +84,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
                     </Breadcrumb>
                 )}
             />
-            <EditQuotation quotation={quotation} terms={activeTerms} clients={clients} services={services} />
+            <EditQuotation quotation={quotation} clients={clients} services={services} terms={activeTerms} />
         </>
     );
 }

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -27,8 +27,9 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { addDays, format, parse } from "date-fns";
 import { components, paths } from "@/types/api";
 import { redirect } from "next/navigation";
-import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -49,9 +50,9 @@ export function CreateQuotation({ terms, clients, services }: {
     services: Services,
 })
 {
-    const [openTerms, setOpenTerms] = useState(false);
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+    const [openTerms, setOpenTerms] = useState(false);
 
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
@@ -68,8 +69,6 @@ export function CreateQuotation({ terms, clients, services }: {
         defaultValues: {
             clientId: "",
             serviceIds: [],
-            area: 0,
-            spacesCount: 0,
             frequency: "Bimonthly",
             hasTaxes: false,
             creationDate: format(new Date(), "yyyy-MM-dd"),
@@ -77,33 +76,33 @@ export function CreateQuotation({ terms, clients, services }: {
             serviceAddress: "",
             paymentMethod: "",
             others: "",
-            serviceListText: "",
-            serviceDescription: "",
-            serviceDetail: "",
-            price: 0,
-            requiredAvailability: "",
-            serviceTime: "",
-            customField6: "",
-            treatedAreas: "",
-            deliverables: "",
-            customField10: "",
+            availability: "",
+            quotationServices: [],
+            desinsectant: "",
+            derodent: "",
+            disinfectant: "",
+            termsAndConditions: [
+                "Los costos NO inlcuyen IGV.",
+                "El costo es siempre y cuando el trabajo sea preventivo, y no exista algun tipó de plaga existente.",
+                "Hora de Ingreso: A coordinar con el personal encargado.",
+                "Ambientes a Tratar:\n- 1er piso área de desecho, chichas,área de pollo.\n- 2do. piso producción de kekes, producción de tortas decoradas, área de productos por salir, panadería, baño hombre.\n- 3er. piso almacén, área de producción de aderezo, almacén, baño mujer , área de producción de helados, área de dosimetria de helado, oficina y pasadizo,\n- 4to. piso. comedor y cambiadores azotea.",
+                "Todos nuestros productos cuentan con MDSD, Ficha Tecnica y Resolucion Directoral emitida por DIGESA.",
+                "Seguridad:\n- Nuestro personal cuenta con SCITR de Pearson y Salud.\n- Nuestro personal cuenta con los EPPS necesarios a la actividad a realizar y las exigidas por ley.",
+                "Garantía: PERUCIONTROL COM BEL, garantiza el control de sectores propios del local (biletele germánica, moscas y credores.) . De encontrarse otro sector se procederá a una evaluación técnica y se evaluará la consecuencia de haber realizado un servicio mal ejecutado o si el orden y la limpieza es deficiente entre factores o encontrarse.",
+                "Documentos a entregar: Informe tecnico, Planilla de Operaciones, Mapa Murino, Registro de Ronduras, certificados y factura del servicio.",
+                "REPROGRAMACION DEL SERVICIO:  hay algun cambio de dia! El cliente tendrá que avisar con 12 horas de anticipacion para su nueva reprogramación"],
         },
     });
 
     const { setValue, watch } = form;
 
+    const { fields: quotationServiceFields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "quotationServices",
+    });
+
     // Observa los cambios en el campo 'serviceIds'
     const selectedServiceIds = watch("serviceIds");
-
-    // Actualiza automáticamente el campo `serviceListText` cuando cambien los servicios seleccionados
-    useEffect(() =>
-    {
-        const selectedServices = services
-            .filter((service) => selectedServiceIds?.includes(service.id!))
-            .map((service) => service.name)
-            .join(", ");
-        setValue("serviceListText", selectedServices);
-    }, [selectedServiceIds, services, setValue]);
 
     const handleClientChange = (option: Option | null) =>
     {
@@ -135,7 +134,7 @@ export function CreateQuotation({ terms, clients, services }: {
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        console.log("Entro");
+        console.log("Input", JSON.stringify(input, null, 2));
         const [, err] = await toastWrapper(RegisterQuotation(input), {
             loading: "Cargando...",
             success: "Cotización registrada exitosamente",
@@ -148,7 +147,41 @@ export function CreateQuotation({ terms, clients, services }: {
         redirect("./");
     };
 
-    const handleTermsChange = async(id: string, fieldName: keyof CreateQuotationSchema) =>
+    useEffect(() =>
+    {
+        const currentQuotationServices = form.getValues("quotationServices");
+        const currentServiceNames = currentQuotationServices.map((q) => q.nameDescription);
+        const selectedServices = services.filter((service) => selectedServiceIds.includes(service.id!));
+        const selectedServiceNames = selectedServices.map((s) => s.name);
+
+        // Remove services that are no longer selected
+        const indicesToRemove = currentQuotationServices
+            .map((service, index) => ({ ...service, index }))
+            .filter((service) => !selectedServiceNames.includes(service.nameDescription))
+            .map((service) => service.index)
+            .sort((a, b) => b - a); // Sort descending to avoid index shift issues
+
+        indicesToRemove.forEach((index) =>
+        {
+            remove(index);
+        });
+
+        // Add newly selected services
+        selectedServices.forEach((service) =>
+        {
+            if (!currentServiceNames.includes(service.name))
+            {
+                append({
+                    amount: 1,
+                    nameDescription: service.name,
+                    price: 0,
+                    accesories: "",
+                });
+            }
+        });
+    }, [selectedServiceIds, services, form, append, remove]);
+
+    const handleTermsChange = async(id: string, fieldName: `termsAndConditions.${number}`) =>
     {
         const result = await GetTermsAndConditionsById(id);
         if (result)
@@ -329,7 +362,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             </span>
                         </h3>
 
-                        {/* Servicio */}
+                        {/* Servicios */}
                         <FormField
                             control={form.control}
                             name="serviceIds"
@@ -383,6 +416,172 @@ export function CreateQuotation({ terms, clients, services }: {
                             )}
                         />
 
+                        {/*  Renderizar los detalles del servicio */}
+                        <h3 className="text-lg font-bold mt-4">
+                            Detalle de Servicios
+                        </h3>
+
+                        {quotationServiceFields.map((field, index) => (
+                            <div key={field.id} className="border p-4 rounded mb-2 bg-gray-50">
+
+                                <Label className="text-xl font-bold">
+                                    {field.nameDescription}
+                                </Label>
+
+                                <FormField
+                                    control={form.control}
+                                    name={`quotationServices.${index}.amount`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Cantidad
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    min={1}
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name={`quotationServices.${index}.nameDescription`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Nombre / Descripción
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Nombre y Descripción del servicio"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name={`quotationServices.${index}.price`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Precio
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name={`quotationServices.${index}.accesories`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Accesorios
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Accesorios a utilizar en el servicio"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        ))}
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Productos a utilizar
+                        </h3>
+
+                        <FormField
+                            control={form.control}
+                            name="desinsectant"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Desinsectante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Desinsectación"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="derodent"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Derodentizante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Derodentizante"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="disinfectant"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Desinfectante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Desinfectante"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         {/* Frequency */}
                         <FormField
                             control={form.control}
@@ -426,129 +625,6 @@ export function CreateQuotation({ terms, clients, services }: {
                                 </FormItem>
                             )}
                         />
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                            {/* Área m2 */}
-                            <FormField
-                                control={form.control}
-                                name="area"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-base">
-                                            Área m2
-                                            <span className="text-red-500">
-                                                *
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="m2" className="border rounded-md" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Nro de Ambientes */}
-                            <FormField
-                                control={form.control}
-                                name="spacesCount"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-base">
-                                            Nro. de Ambientes
-                                            <span className="text-red-500">
-                                                *
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="#" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        <FormField
-                            control={form.control}
-                            name="serviceDescription"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Descripción del Servicio
-                                        <span className="text-red-500">
-                                            *
-                                        </span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Descripción del Servicio" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="serviceDetail"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Detalle del Servicio
-                                        <span className="text-red-500">
-                                            *
-                                        </span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Detalle del Servicio" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="serviceListText"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Lista de Servicios
-                                        <span className="text-red-500">
-                                            *
-                                        </span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Lista de Servicios" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="treatedAreas"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Ambientes a tratar
-                                        <span className="text-red-500">
-                                            *
-                                        </span>
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Áreas específicas que se tratarán. Se mostrará en el punto 7. de los términos y condiciones.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Áreas Tratadas" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <hr />
 
                         <h3 className="text-lg font-bold mt-4">
                             Costos y facturación
@@ -619,50 +695,42 @@ export function CreateQuotation({ terms, clients, services }: {
                             />
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base">
-                                        Precio
-                                        <span className="text-red-500">
-                                            *
-                                        </span>
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Este precio se mostrará en la cotización, y también se usará para calcular los ingresos.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input placeholder="Precio" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <hr />
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="availability"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Disponibilidad
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <h3 className="text-lg font-bold mt-4">
-                            Otra información
+                            Términos y Condiciones
+                            <span className="text-red-500">
+                                *
+                            </span>
                         </h3>
 
                         <Button type="button" variant="secondary" className="w-[165px] justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
                             Crear Plantilla
                         </Button>
 
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="requiredAvailability">
-                                Disponibilidad Requerida
-                                <span className="text-red-500">
-                                    *
-                                </span>
-                            </FormLabel>
-                            <FormDescription>
-                                Qué disponibilidad se requiere para realizar el servicio. Se mostrará en el punto 3 de los términos y condiciones.
-                            </FormDescription>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "requiredAvailability")}>
+                        {Array.from({ length: 9 }).map((_, index) => (
+                            <div key={index} className="flex flex-col gap-2">
+
+                                <Select onValueChange={(id) => handleTermsChange(id, `termsAndConditions.${index}`)}>
                                     <SelectTrigger className="border rounded-md">
                                         <SelectValue placeholder="Seleccione una plantilla" />
                                     </SelectTrigger>
@@ -681,13 +749,20 @@ export function CreateQuotation({ terms, clients, services }: {
 
                                 <FormField
                                     control={form.control}
-                                    name="requiredAvailability"
+                                    name={`termsAndConditions.${index}`}
                                     render={({ field }) => (
                                         <FormItem>
+                                            <FormLabel>
+                                                Punto
+                                                {" "}
+                                                {" "}
+                                                {index + 1}
+                                            </FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Plantillas de la disponibilidad requerida"
+                                                    placeholder={`Ingrese el texto para el punto ${index + 1}`}
                                                     className="resize-none"
+                                                    rows={6}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -695,198 +770,9 @@ export function CreateQuotation({ terms, clients, services }: {
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
-                        </div>
 
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="serviceTime">
-                                Hora del servicio
-                                <span className="text-red-500">
-                                    *
-                                </span>
-                            </FormLabel>
-                            <FormDescription>
-                                A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
-                            </FormDescription>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "serviceTime")}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <FormField
-                                    control={form.control}
-                                    name="serviceTime"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Plantillas de hora del servicio"
-                                                    className="resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="customField6">
-                                Campo Personalizado 6
-                                <span className="text-red-500">
-                                    *
-                                </span>
-                            </FormLabel>
-                            <FormDescription>
-                                A qué hora se realizará el servicio. Se mostrará en el punto 5 de los términos y condiciones.
-                            </FormDescription>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "customField6")}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <FormField
-                                    control={form.control}
-                                    name="customField6"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Plantilla Campo Personalizado 6"
-                                                    className="resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="deliverables">
-                                Entregables
-                                <span className="text-red-500">
-                                    *
-                                </span>
-                            </FormLabel>
-                            <FormDescription>
-                                Qué se entregará al cliente. Se mostrará en el punto 8 de los términos y condiciones.
-                            </FormDescription>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "deliverables")}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <FormField
-                                    control={form.control}
-                                    name="deliverables"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Plantilla de Entregables"
-                                                    className="resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <FormLabel htmlFor="customField10">
-                                Campo Personalizado 10
-                            </FormLabel>
-                            <FormDescription>
-                                Punto 10 de los términos y condiciones.
-                            </FormDescription>
-                            <div className="flex flex-col gap-2">
-                                <Select onValueChange={(id) => handleTermsChange(id, "customField10")}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <FormField
-                                    control={form.control}
-                                    name="customField10"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Plantilla del Campo Personalizado 10"
-                                                    className="resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
                     <SheetFooter>

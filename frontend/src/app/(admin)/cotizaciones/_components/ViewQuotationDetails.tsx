@@ -162,6 +162,17 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         {quotation.client?.typeDocumentValue}
                                     </p>
                                 </div>
+                                <div className="bg-gray-50 px-4 rounded-lg">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Ubicación
+                                    </h4>
+                                    <div className="flex items-start gap-2">
+                                        <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
+                                        <span className="text-xs md:text-base">
+                                            {quotation.serviceAddress || "Dirección no disponible"}
+                                        </span>
+                                    </div>
+                                </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -230,16 +241,6 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                    Precio
-                                </h4>
-                                <p className="text-base md:text-lg font-semibold">
-                                    S/
-                                    {quotation.price.toFixed(2)}
-                                </p>
-                            </div>
-
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                     Método de Pago
                                 </h4>
                                 <div className="flex items-center gap-2">
@@ -306,44 +307,6 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                    Ubicación
-                                </h4>
-                                <div className="flex items-start gap-2">
-                                    <MapPin className="h-4 w-4 text-blue-500 mt-0.5" />
-                                    <span className="text-xs md:text-base">
-                                        {quotation.serviceAddress || "Dirección no disponible"}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                    Dimensiones
-                                </h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">
-                                            Área
-                                        </p>
-                                        <p className="text-base font-medium">
-                                            {quotation.area}
-                                            {" "}
-                                            m²
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">
-                                            Ambientes
-                                        </p>
-                                        <p className="text-base font-medium">
-                                            {quotation.spacesCount}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
                                     Frecuencia
                                 </h4>
                                 <div className="flex items-center gap-2">
@@ -363,6 +326,50 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     </span>
                                 </div>
                             </div>
+
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                    Productos a utilizar
+                                </h4>
+                                <div className="flex flex-col">
+                                    <div className="flex flex-col mb-2">
+                                        <h5 className="font-bold">
+                                            Desinsectante:
+                                        </h5>
+                                        <div className="flex items-baseline gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                            <p className="text-xs md:text-sm">
+                                                {quotation.desinsectant}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col mb-2">
+                                        <h5 className="font-bold">
+                                            Derodentizante:
+                                        </h5>
+                                        <div className="flex items-baseline gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                            <p className="text-xs md:text-sm">
+                                                {quotation.derodent}
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="flex flex-col mb-2">
+                                        <h5 className="font-bold">
+                                            Desinfectante:
+                                        </h5>
+                                        <div className="flex items-baseline gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                            <p className="text-xs md:text-sm">
+                                                {quotation.disinfectant}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -374,71 +381,18 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         </h3>
                         <Separator />
                         <div className="grid grid-cols-1 gap-4">
-                            {quotation.serviceDescription && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
+                            {quotation.termsAndConditions?.map((term, index) => (
+                                <div key={index} className="bg-gray-50 p-4 rounded-lg">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Descripción del Servicio
+                                        Término
+                                        {" "}
+                                        {index + 1}
                                     </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.serviceDescription}
+                                    <p className="text-sm md:text-base whitespace-pre-line">
+                                        {term || "No especificado"}
                                     </p>
                                 </div>
-                            )}
-
-                            {quotation.serviceDetail && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Detalle del Servicio
-                                    </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.serviceDetail}
-                                    </p>
-                                </div>
-                            )}
-
-                            {quotation.treatedAreas && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Áreas Tratadas
-                                    </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.treatedAreas}
-                                    </p>
-                                </div>
-                            )}
-
-                            {quotation.deliverables && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Entregables
-                                    </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.deliverables}
-                                    </p>
-                                </div>
-                            )}
-
-                            {quotation.requiredAvailability && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Disponibilidad Requerida
-                                    </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.requiredAvailability}
-                                    </p>
-                                </div>
-                            )}
-
-                            {quotation.serviceTime && (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Tiempo de Servicio
-                                    </h4>
-                                    <p className="text-sm md:text-base">
-                                        {quotation.serviceTime}
-                                    </p>
-                                </div>
-                            )}
+                            ))}
                         </div>
                     </div>
                 </CardContent>
