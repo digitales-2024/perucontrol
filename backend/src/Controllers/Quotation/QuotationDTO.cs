@@ -181,6 +181,14 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     // requires diffing
     public IList<QuotationServicePatchDTO>? QuotationServices { get; set; }
 
+    public IList<string>? TermsAndConditions { get; set; } = new List<string>();
+
+    public string? Desinsectant { get; set; }
+
+    public string? Derodent { get; set; }
+
+    public string? Disinfectant { get; set; }
+
     public void ApplyPatch(Quotation entity)
     {
         if (HasTaxes != null)
@@ -199,6 +207,14 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.Others = Others;
         if (Availability != null)
             entity.Availability = Availability;
+        if (TermsAndConditions != null)
+            entity.TermsAndConditions = TermsAndConditions;
+        if (Desinsectant != null)
+            entity.Desinsectant = Desinsectant;
+        if (Derodent != null)
+            entity.Derodent = Derodent;
+        if (Disinfectant != null)
+            entity.Disinfectant = Disinfectant;
     }
 }
 

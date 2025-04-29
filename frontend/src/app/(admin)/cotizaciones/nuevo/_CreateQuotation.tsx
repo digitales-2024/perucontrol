@@ -15,11 +15,11 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RegisterQuotation } from "../actions";
+import { GetTermsAndConditionsById, RegisterQuotation } from "../actions";
 import { CreateQuotationSchema, quotationSchema } from "../schemas";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
@@ -29,6 +29,7 @@ import { components, paths } from "@/types/api";
 import { redirect } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import TermsAndConditions from "../_termsAndConditions/TermsAndConditions";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -43,7 +44,7 @@ type Terms = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
-export function CreateQuotation({ clients, services }: {
+export function CreateQuotation({ terms, clients, services }: {
     terms: Array<Terms>,
     clients: Array<Clients>,
     services: Services,
@@ -51,6 +52,7 @@ export function CreateQuotation({ clients, services }: {
 {
     const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
+    const [openTerms, setOpenTerms] = useState(false);
 
     { /* Creando las opciones para el AutoComplete */ }
     const clientsOptions: Array<Option> =
@@ -178,6 +180,20 @@ export function CreateQuotation({ clients, services }: {
             }
         });
     }, [selectedServiceIds, services, form, append, remove]);
+
+    const handleTermsChange = async(id: string, fieldName: `termsAndConditions.${number}`) =>
+    {
+        const result = await GetTermsAndConditionsById(id);
+        if (result)
+        {
+            const content = result[0].content; // Obtiene el contenido de la plantilla
+            setValue(fieldName, content); // Actualiza solo el campo correspondiente
+        }
+        else
+        {
+            console.error("Error fetching terms and conditions:");
+        }
+    };
 
     return (
         <div className="mt-5 ml-3">
@@ -453,7 +469,6 @@ export function CreateQuotation({ clients, services }: {
                                                     className="resize-none"
                                                     {...field}
                                                 />
-                                                {/* <Input {...field} /> */}
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -495,7 +510,6 @@ export function CreateQuotation({ clients, services }: {
                                                     className="resize-none"
                                                     {...field}
                                                 />
-                                                {/* <Input {...field} /> */}
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -503,6 +517,70 @@ export function CreateQuotation({ clients, services }: {
                                 />
                             </div>
                         ))}
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Productos a utilizar
+                        </h3>
+
+                        <FormField
+                            control={form.control}
+                            name="desinsectant"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Desinsectante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Desinsectación"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="derodent"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Derodentizante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Derodentizante"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="disinfectant"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Desinfectante
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Desinfectante"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         {/* Frequency */}
                         <FormField
@@ -636,90 +714,66 @@ export function CreateQuotation({ clients, services }: {
                                     </FormItem>
                                 )}
                             />
-
-                            <FormField
-                                control={form.control}
-                                name="desinsectant"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Desinsectante
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="derodent"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Derodentizante
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="disinfectant"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Desinfectante
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </div>
+
+                        <h3 className="text-lg font-bold mt-4">
+                            Términos y Condiciones
+                            <span className="text-red-500">
+                                *
+                            </span>
+                        </h3>
+
+                        <Button type="button" variant="secondary" className="w-[165px] justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
+                            Crear Plantilla
+                        </Button>
+
+                        {Array.from({ length: 9 }).map((_, index) => (
+                            <div key={index} className="flex flex-col gap-2">
+
+                                <Select onValueChange={(id) => handleTermsChange(id, `termsAndConditions.${index}`)}>
+                                    <SelectTrigger className="border rounded-md">
+                                        <SelectValue placeholder="Seleccione una plantilla" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                terms.map((terms) => (
+                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                        {terms.name}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <FormField
+                                    control={form.control}
+                                    name={`termsAndConditions.${index}`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Punto
+                                                {" "}
+                                                {" "}
+                                                {index + 1}
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder={`Ingrese el texto para el punto ${index + 1}`}
+                                                    className="resize-none"
+                                                    rows={6}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                        ))}
                     </div>
-
-                    <h3 className="text-lg font-bold mt-4">
-                        Términos y Condiciones
-                        <span className="text-red-500">
-                            *
-                        </span>
-                    </h3>
-
-                    {Array.from({ length: 9 }).map((_, index) => (
-                        <FormField
-                            key={index}
-                            control={form.control}
-                            name={`termsAndConditions.${index}`}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Punto
-                                        {" "}
-                                        {" "}
-                                        {index + 1}
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder={`Ingrese el texto para el punto ${index + 1}`}
-                                            className="resize-none"
-                                            rows={6}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    ))}
 
                     <SheetFooter>
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
@@ -728,6 +782,12 @@ export function CreateQuotation({ clients, services }: {
                     </SheetFooter>
                 </form>
             </Form>
+
+            <TermsAndConditions
+                open={openTerms}
+                setOpen={setOpenTerms}
+                termsAndConditions={terms}
+            />
         </div>
     );
 }

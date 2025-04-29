@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuotationSchema, quotationSchema } from "../../../schemas";
-import { UpdateQuotation } from "../../../actions";
+import { GetTermsAndConditionsById, UpdateQuotation } from "../../../actions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bug, Check, Rat, Shield, ShieldCheck, SprayCanIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import TermsAndConditions from "../../../_termsAndConditions/TermsAndConditions";
 
 // Mapa de iconos para servicios
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -35,22 +36,24 @@ const serviceIcons: Record<string, React.ReactNode> = {
 type Quotation = components["schemas"]["Quotation3"];
 type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]
+type Terms = components["schemas"]["TermsAndConditions"];
 
 export default function EditQuotation({
     quotation,
     clients,
     services,
+    terms,
 }: {
     quotation: Quotation,
     clients: Array<Clients>,
     services: Array<Services>
+    terms: Array<Terms>,
 })
 {
     const [clientAddressOptions, setClientAddressOptions] = useState<Array<Option>>([]);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [openTerms, setOpenTerms] = useState(false);
     const router = useRouter();
-
-    console.log("Data", JSON.stringify(quotation, null, 2));
 
     const activeClients = clients.filter((client) => client.isActive);
 
@@ -77,14 +80,6 @@ export default function EditQuotation({
             paymentMethod: quotation?.paymentMethod ?? "",
             others: quotation?.others ?? "",
             availability: quotation?.availability ?? "",
-            /* quotationServices: quotation?.quotationServices?.map((service) => ({
-                amount: service.amount ?? 1,
-                nameDescription: service.nameDescription ?? "",
-                price: service.price !== null && service.price !== undefined
-                    ? Number(service.price)
-                    : undefined,
-                accesories: service.accesories ?? undefined,
-            })) ?? [], */
             quotationServices: quotation?.quotationServices?.map((service) => ({
                 id: service.id ?? null,
                 amount: service.amount ?? 1,
@@ -95,9 +90,6 @@ export default function EditQuotation({
             desinsectant: quotation?.desinsectant ?? "",
             derodent: quotation?.derodent ?? "",
             disinfectant: quotation?.disinfectant ?? "",
-            /* termsAndConditions: quotation?.termsAndConditions?.length === 9
-                ? quotation.termsAndConditions
-                : Array(9).fill(""), */
             termsAndConditions: quotation?.termsAndConditions?.length === 9
                 ? quotation.termsAndConditions
                 : [
@@ -116,43 +108,8 @@ export default function EditQuotation({
     const watchedClientId = watch("clientId");
     const selectedServiceIds = watch("serviceIds");
 
-    /* useEffect(() =>
-    {
-        const currentQuotationServices = form.getValues("quotationServices");
-        const currentServiceNames = currentQuotationServices.map((q) => q.nameDescription);
-        const selectedServices = services.filter((service) => selectedServiceIds?.includes(service.id!));
-        const selectedServiceNames = selectedServices.map((s) => s.name);
-
-        // Eliminar servicios que ya no están seleccionados
-        const indicesToRemove = currentQuotationServices
-            .map((service, index) => ({ ...service, index }))
-            .filter((service) => !selectedServiceNames.includes(service.nameDescription))
-            .map((service) => service.index)
-            .sort((a, b) => b - a); // Orden descendente para evitar problemas de índice
-
-        indicesToRemove.forEach((index) =>
-        {
-            remove(index);
-        });
-
-        // Agregar nuevos servicios seleccionados
-        selectedServices.forEach((service) =>
-        {
-            if (!currentServiceNames.includes(service.name))
-            {
-                append({
-                    amount: 1,
-                    nameDescription: service.name,
-                    price: 0,
-                    accesories: "",
-                });
-            }
-        });
-    }, [selectedServiceIds, services, form, append, remove]); */
-
     useEffect(() =>
     {
-        // No hacer nada durante la carga inicial
         if (isInitialLoad)
         {
             setIsInitialLoad(false);
@@ -162,13 +119,13 @@ export default function EditQuotation({
         const currentServices = form.getValues("quotationServices");
         const selectedServices = services.filter((s) => selectedServiceIds?.includes(s.id!));
 
-        // Encontrar servicios a agregar (seleccionados pero no en la lista actual)
+        // Servicios a agregar (nuevos seleccionados)
         const servicesToAdd = selectedServices.filter((service) => !currentServices.some((s) => s.nameDescription === service.name));
 
-        // Encontrar servicios a remover (en la lista pero no seleccionados)
+        // Servicios a remover (desmarcados)
         const servicesToRemove = currentServices.filter((service) => !selectedServices.some((s) => s.name === service.nameDescription));
 
-        // Agregar nuevos servicios
+        // Agregar nuevos servicios seleccionados
         servicesToAdd.forEach((service) =>
         {
             append({
@@ -180,25 +137,21 @@ export default function EditQuotation({
             });
         });
 
-        // Eliminar servicios no seleccionados (excepto los que vienen de la cotización)
+        // Eliminar servicios desmarcados
         servicesToRemove.forEach((service) =>
         {
-            const isFromOriginalQuotation = quotation?.quotationServices?.some((qs) => qs.nameDescription === service.nameDescription);
-
-            if (!isFromOriginalQuotation)
+            const index = currentServices.findIndex((s) => s.nameDescription === service.nameDescription);
+            if (index !== -1)
             {
-                const index = currentServices.findIndex((s) => s.nameDescription === service.nameDescription);
-                if (index !== -1)
-                {
-                    remove(index);
-                }
+                remove(index);
             }
         });
-    }, [selectedServiceIds, services, form, append, remove, isInitialLoad, quotation?.quotationServices]);
+
+    }, [selectedServiceIds, services, form, append, remove, isInitialLoad]);
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        const TransformedInput = {
+        const transformedInput = {
             ...input,
             quotationServices: input.quotationServices.map((service) => ({
                 ...service,
@@ -207,7 +160,9 @@ export default function EditQuotation({
                 accesories: service.accesories ?? null,
             })),
         };
-        const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, TransformedInput), {
+
+        console.log("TransformedData", JSON.stringify(transformedInput, null, 2));
+        const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, transformedInput), {
             loading: "Actualizando cotización...",
             success: "¡Cotización actualizada exitosamente!",
         });
@@ -270,8 +225,22 @@ export default function EditQuotation({
         }
     };
 
+    const handleTermsChange = async(id: string, fieldName: `termsAndConditions.${number}`) =>
+    {
+        const result = await GetTermsAndConditionsById(id);
+        if (result)
+        {
+            const content = result[0].content; // Obtiene el contenido de la plantilla
+            setValue(fieldName, content); // Actualiza solo el campo correspondiente
+        }
+        else
+        {
+            console.error("Error fetching terms and conditions:");
+        }
+    };
+
     return (
-        <Card className="w-full mt-5">
+        <Card className="w-full mt-5 bg-transparent">
             <CardHeader className="p-0">
                 <CardTitle className="text-xl">
                     Editar cotización
@@ -575,6 +544,70 @@ export default function EditQuotation({
                                     </div>
                                 ))}
 
+                                <h3 className="text-lg font-bold mt-4">
+                                    Productos a utilizar
+                                </h3>
+
+                                <FormField
+                                    control={form.control}
+                                    name="desinsectant"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Desinsectante
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Desinsectación"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="derodent"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Derodentizante
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Derodentizante"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="disinfectant"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Desinfectante
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Desinfectante"
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 {/* Frecuencia */}
                                 <FormField
                                     control={form.control}
@@ -698,54 +731,6 @@ export default function EditQuotation({
                                         )}
                                     />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="desinsectant"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Desinsectante
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="derodent"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Derodentizante
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="disinfectant"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Desinfectante
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
                                 </div>
                             </div>
 
@@ -756,29 +741,51 @@ export default function EditQuotation({
                                 </span>
                             </h3>
 
+                            <Button type="button" variant="secondary" className="w-[165px] justify-start cursor-pointer" onClick={() => setOpenTerms(true)}>
+                                Crear Plantilla
+                            </Button>
+
                             {Array.from({ length: 9 }).map((_, index) => (
-                                <FormField
-                                    key={index}
-                                    control={form.control}
-                                    name={`termsAndConditions.${index}`}
-                                    render={({ field }) => (
-                                        <FormItem className="mb-4">
-                                            <FormLabel>
-                                                Punto
-                                                {" "}
-                                                {index + 1}
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder={`Ingrese el texto para el punto ${index + 1}`}
-                                                    className="resize-none min-h-[100px]"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div key={index} className="flex flex-col gap-2">
+                                    <Select onValueChange={(id) => handleTermsChange(id, `termsAndConditions.${index}`)}>
+                                        <SelectTrigger className="border rounded-md">
+                                            <SelectValue placeholder="Seleccione una plantilla" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {
+                                                    terms.map((terms) => (
+                                                        <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                            {terms.name}
+                                                        </SelectItem>
+                                                    ))
+                                                }
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`termsAndConditions.${index}`}
+                                        render={({ field }) => (
+                                            <FormItem className="mb-4">
+                                                <FormLabel>
+                                                    Punto
+                                                    {" "}
+                                                    {index + 1}
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder={`Ingrese el texto para el punto ${index + 1}`}
+                                                        className="resize-none min-h-[100px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             ))}
 
                             <div className="flex flex-wrap gap-2 justify-end space-x-2">
@@ -795,6 +802,12 @@ export default function EditQuotation({
                             </div>
                         </form>
                     </Form>
+
+                    <TermsAndConditions
+                        open={openTerms}
+                        setOpen={setOpenTerms}
+                        termsAndConditions={terms}
+                    />
                 </ScrollArea>
             </CardContent>
         </Card>

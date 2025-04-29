@@ -12,7 +12,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
 
     const [
         [quotation, quotationErr],
-        [],
+        [terms, termsErr],
         [clients, clientsError],
         [services, servicesError],
     ] = await Promise.all([
@@ -47,6 +47,14 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
         throw servicesError;
     }
 
+    if (termsErr)
+    {
+        console.error(`error ${termsErr.message}`);
+        throw termsErr;
+    }
+
+    const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
+
     return (
         <>
             <HeaderPage
@@ -76,7 +84,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
                     </Breadcrumb>
                 )}
             />
-            <EditQuotation quotation={quotation} clients={clients} services={services} />
+            <EditQuotation quotation={quotation} clients={clients} services={services} terms={activeTerms} />
         </>
     );
 }

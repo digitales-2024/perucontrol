@@ -189,7 +189,7 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
                 Volver
             </Button>
 
-            <Card className="mt-5">
+            <Card className="mt-5 bg-transparent">
                 <CardHeader>
                     <div className="flex justify-between">
                         <CardTitle className="text-xl font-semibold">

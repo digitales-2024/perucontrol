@@ -4548,7 +4548,9 @@ export interface components {
             modifiedAt?: string;
         };
         ClientLocationDTO: {
-            address?: string | null;
+            /** Format: uuid */
+            id?: string | null;
+            address: string;
         };
         ClientPatchDTO: {
             razonSocial?: string | null;

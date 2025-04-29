@@ -181,7 +181,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
     }, [watch, onServicesChange]);
 
     return (
-        <Card>
+        <Card className="bg-transparent">
             <CardHeader>
                 <div className="flex justify-between mt-5">
                     <CardTitle className="text-xl font-semibold">
