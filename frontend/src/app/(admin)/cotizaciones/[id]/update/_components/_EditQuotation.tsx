@@ -775,11 +775,7 @@ export default function EditQuotation({
                                                     {index + 1}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Textarea
-                                                        placeholder={`Ingrese el texto para el punto ${index + 1}`}
-                                                        className="resize-none min-h-[100px]"
-                                                        {...field}
-                                                    />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
