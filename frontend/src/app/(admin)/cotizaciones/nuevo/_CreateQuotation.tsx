@@ -759,12 +759,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                                 {index + 1}
                                             </FormLabel>
                                             <FormControl>
-                                                <Textarea
-                                                    placeholder={`Ingrese el texto para el punto ${index + 1}`}
-                                                    className="resize-none"
-                                                    rows={6}
-                                                    {...field}
-                                                />
+                                                <Input {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
