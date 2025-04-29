@@ -4,8 +4,6 @@ pipeline {
         //
         // Build config
         //
-        // prefix of the image to build, config triplet
-        //  <project>-<service>-<stage>
         PROJECT_NAME = "perucontrol"
         PROJECT_SERVICE = "backend"
         PROJECT_STAGE = "develop"
@@ -16,7 +14,6 @@ pipeline {
         //
         REMOTE_USER = "ansible"
         REMOTE_IP = credentials("acide-elastika-01")
-        // Folder where docker-compose and .env files are placed
         REMOTE_FOLDER = "/home/${REMOTE_USER}/docker/perucontrol-develop/"
 
         //
