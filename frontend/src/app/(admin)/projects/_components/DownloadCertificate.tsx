@@ -52,7 +52,6 @@ export function DownloadCertificateForm({
             clientName: project.client?.name ?? project.client?.razonSocial ?? "",
             location: project?.address ?? "",
             businessType: project.client?.businessType ?? "",
-            treatedArea: project.quotation?.treatedAreas ?? "",
             serviceDate: appointment.actualDate ?? new Date().toISOString(),
             technicalDirector: "",
             responsible: "",
@@ -351,22 +350,6 @@ export function DownloadCertificateForm({
                                         )}
                                     />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="treatedArea"
-                                        render={({ field }) => (
-                                            <FormItem className="md:col-span-2">
-                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <MapPin className="h-4 w-4 text-blue-500" />
-                                                    Área Tratada
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Descripción del área tratada" disabled {...field} className="border-gray-300" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                 </div>
                             </CardContent>
                         </Card>
