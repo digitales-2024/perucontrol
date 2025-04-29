@@ -71,27 +71,84 @@ public class ClientController(
 
         try
         {
-            // Validación básica
-            if (patchDTO == null)
-                return BadRequest("El cuerpo de la solicitud no puede estar vacío");
-
-            // Cargar cliente con ubicaciones
-            var client = await _context
-                .Clients.Include(c => c.ClientLocations)
+            // Load client WITHOUT tracking to avoid concurrency issues
+            var client = await _dbSet
+                .AsNoTracking()
+                .Include(c => c.ClientLocations)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (client == null)
                 return NotFound("Cliente no encontrado");
 
-            // Validar direcciones si existen
-            if (
-                patchDTO.ClientLocations != null
-                && patchDTO.ClientLocations.Any(l => string.IsNullOrWhiteSpace(l.Address))
-            )
-                return BadRequest("Todas las ubicaciones deben tener una dirección válida");
+            // Create a fresh tracked entity with the original values
+            _context.Attach(client);
 
-            // Aplicar cambios con manejo transaccional
-            await ApplyClientChanges(client, patchDTO);
+            // Apply basic client property updates
+            patchDTO.ApplyPatch(client);
+
+            // Handle locations separately
+            if (patchDTO.ClientLocations is not null)
+            {
+                // Get IDs of existing locations
+                var existingLocationIds = client.ClientLocations.Select(l => l.Id).ToHashSet();
+                var processedIds = new HashSet<Guid>();
+
+                foreach (var patchLocation in patchDTO.ClientLocations)
+                {
+                    if (patchLocation.Id is not null)
+                    {
+                        var locationId = patchLocation.Id.Value;
+
+                        if (existingLocationIds.Contains(locationId))
+                        {
+                            // Get the location directly from the database
+                            var existingLocation = await _context
+                                .Set<ClientLocation>()
+                                .FindAsync(locationId);
+
+                            if (existingLocation != null)
+                            {
+                                // Update properties
+                                existingLocation.Address = patchLocation.Address;
+                                processedIds.Add(locationId);
+                            }
+                        }
+                        else
+                        {
+                            // ID provided but not found, create new with client reference
+                            var newLocation = new ClientLocation
+                            {
+                                Id = locationId,
+                                Address = patchLocation.Address,
+                                Client = client,
+                            };
+                            await _context.Set<ClientLocation>().AddAsync(newLocation);
+                            processedIds.Add(locationId);
+                        }
+                    }
+                    else
+                    {
+                        // Create new location without specified ID
+                        var newLocation = new ClientLocation
+                        {
+                            Address = patchLocation.Address,
+                            Client = client,
+                        };
+                        await _context.Set<ClientLocation>().AddAsync(newLocation);
+                    }
+                }
+
+                // Delete any locations not included in the update
+                var locationsToDelete = await _context
+                    .Set<ClientLocation>()
+                    .Where(l => l.Client.Id == id && !processedIds.Contains(l.Id))
+                    .ToListAsync();
+
+                if (locationsToDelete.Any())
+                {
+                    _context.Set<ClientLocation>().RemoveRange(locationsToDelete);
+                }
+            }
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();

@@ -168,7 +168,5 @@ public class ClientPatchDTO : IEntityPatcher<Client>
             entity.PhoneNumber = PhoneNumber;
         if (ContactName != null)
             entity.ContactName = ContactName;
-        if (ClientLocations != null)
-            entity.ClientLocations = ClientLocations.Select(c => c.MapToEntity()).ToList();
     }
 }

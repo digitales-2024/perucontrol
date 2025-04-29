@@ -39,6 +39,7 @@ public class QuotationController(
         var entity = createDto.MapToEntity();
         entity.Id = Guid.NewGuid();
         entity.Client = client;
+        entity.Services = services;
 
         _dbSet.Add(entity);
 
