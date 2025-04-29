@@ -1565,7 +1565,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Reactivate by id */
+        /** Reactive client by Id */
         patch: {
             parameters: {
                 query?: never;
@@ -1577,6 +1577,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description No Content */
                 204: {
                     headers: {
@@ -3143,7 +3150,6 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Partial edit one by id */
         patch: {
             parameters: {
                 query?: never;
@@ -3360,6 +3366,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Quotation/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactive quotation by Id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Quotation/approved/not-associated": {
         parameters: {
             query?: never;
@@ -3396,53 +3456,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/Quotation/{id}/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reactivate by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
         trace?: never;
     };
     "/api/Service": {
@@ -4904,10 +4917,6 @@ export interface components {
             services?: Array<components["schemas"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
             hasTaxes: boolean;
             /** Format: date-time */
             creationDate: string;
@@ -4916,17 +4925,15 @@ export interface components {
             serviceAddress: string;
             paymentMethod: string;
             others: string;
-            serviceListText: string;
-            serviceDescription: string;
-            serviceDetail: string;
-            /** Format: double */
-            price: number;
-            requiredAvailability: string;
-            serviceTime: string;
-            customField6: string;
-            treatedAreas: string;
-            deliverables: string;
-            customField10?: string | null;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationService"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4942,10 +4949,6 @@ export interface components {
             services?: Array<components["schemas"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
             hasTaxes: boolean;
             /** Format: date-time */
             creationDate: string;
@@ -4954,17 +4957,15 @@ export interface components {
             serviceAddress: string;
             paymentMethod: string;
             others: string;
-            serviceListText: string;
-            serviceDescription: string;
-            serviceDetail: string;
-            /** Format: double */
-            price: number;
-            requiredAvailability: string;
-            serviceTime: string;
-            customField6: string;
-            treatedAreas: string;
-            deliverables: string;
-            customField10?: string | null;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationService"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4980,10 +4981,6 @@ export interface components {
             services?: Array<components["schemas"]["Service"]>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
             hasTaxes: boolean;
             /** Format: date-time */
             creationDate: string;
@@ -4992,17 +4989,15 @@ export interface components {
             serviceAddress: string;
             paymentMethod: string;
             others: string;
-            serviceListText: string;
-            serviceDescription: string;
-            serviceDetail: string;
-            /** Format: double */
-            price: number;
-            requiredAvailability: string;
-            serviceTime: string;
-            customField6: string;
-            treatedAreas: string;
-            deliverables: string;
-            customField10?: string | null;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationService"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -5015,10 +5010,6 @@ export interface components {
             /** Format: uuid */
             clientId: string;
             serviceIds: Array<string>;
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
             frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
             /** Format: date-time */
@@ -5028,17 +5019,15 @@ export interface components {
             serviceAddress: string;
             paymentMethod: string;
             others: string;
-            serviceListText: string;
-            serviceDescription: string;
-            serviceDetail: string;
-            /** Format: double */
-            price: number;
-            requiredAvailability: string;
-            serviceTime: string;
-            customField6: string;
-            treatedAreas: string;
-            deliverables: string;
-            customField10?: string | null;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationServiceCreateDTO"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
         };
         /** @enum {unknown} */
         QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
@@ -5046,13 +5035,8 @@ export interface components {
             /** Format: uuid */
             clientId?: string | null;
             serviceIds?: Array<string> | null;
-            /** Format: uint32 */
-            area?: number | null;
-            /** Format: uint32 */
-            spacesCount?: number | null;
             frequency?: components["schemas"]["NullableOfQuotationFrequency"];
             hasTaxes?: boolean | null;
-            termsAndConditions?: string | null;
             /** Format: date-time */
             creationDate?: string | null;
             /** Format: date-time */
@@ -5060,17 +5044,65 @@ export interface components {
             serviceAddress?: string | null;
             paymentMethod?: string | null;
             others?: string | null;
-            serviceListText?: string | null;
-            serviceDescription?: string | null;
-            serviceDetail?: string | null;
-            /** Format: double */
+            availability?: string | null;
+            quotationServices?: Array<components["schemas"]["QuotationServicePatchDTO"]> | null;
+        };
+        QuotationService: {
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
             price?: number | null;
-            requiredAvailability?: string | null;
-            serviceTime?: string | null;
-            customField6?: string | null;
-            treatedAreas?: string | null;
-            deliverables?: string | null;
-            customField10?: string | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        QuotationServiceCreateDTO: {
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
+            price?: number | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
+        };
+        QuotationServicePatchDTO: {
+            /** Format: uuid */
+            id: string | null;
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
+            price?: number | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";

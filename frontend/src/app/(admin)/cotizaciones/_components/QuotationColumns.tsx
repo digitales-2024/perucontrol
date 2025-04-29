@@ -95,32 +95,6 @@ export const columns: Array<ColumnDef<Quotation>> = [
         },
     },
     {
-        accessorKey: "price",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
-            >
-                PRECIO
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original?.isActive;
-            return (
-                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
-                }`}
-                >
-                    {row.original?.price.toLocaleString("es-PE", {
-                        style: "currency",
-                        currency: "PEN",
-                    })}
-                </span>
-            );
-        },
-    },
-    {
         accessorKey: "expirationDate",
         header: ({ column }) => (
             <Button

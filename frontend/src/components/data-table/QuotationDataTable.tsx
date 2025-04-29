@@ -238,7 +238,7 @@ export function QuotationTable<T extends object>({
     };
 
     return (
-        <div className={cn("w-full bg-white rounded-md shadow-sm border border-gray-200 mt-4", className)}>
+        <div className={cn("w-full bg-transparent rounded-md shadow-sm border border-gray-200 mt-4", className)}>
             {/* Tabs de estado */}
             {statusOptions && statusOptions.length > 0 && (
                 <div className="flex overflow-x-auto border-b border-gray-200">

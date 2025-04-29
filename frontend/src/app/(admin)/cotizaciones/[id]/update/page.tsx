@@ -12,7 +12,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
 
     const [
         [quotation, quotationErr],
-        [terms, termsErr],
+        [],
         [clients, clientsError],
         [services, servicesError],
     ] = await Promise.all([
@@ -35,12 +35,6 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
         throw quotationErr;
     }
 
-    if (termsErr)
-    {
-        console.error(`Error fetching terms: ${termsErr.message}`);
-        throw termsErr;
-    }
-
     if (clientsError)
     {
         console.error("Error getting all clients:", clientsError);
@@ -52,8 +46,6 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
         console.error("Error getting all services:", servicesError);
         throw servicesError;
     }
-
-    const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
 
     return (
         <>
@@ -84,7 +76,7 @@ export default async function EditarCotizacionPage({ params }: { params: Promise
                     </Breadcrumb>
                 )}
             />
-            <EditQuotation quotation={quotation} terms={activeTerms} clients={clients} services={services} />
+            <EditQuotation quotation={quotation} clients={clients} services={services} />
         </>
     );
 }
