@@ -13,7 +13,8 @@ public class ClientLocation : BaseModel
 
 public class ClientLocationDTO : IMapToEntity<ClientLocation>
 {
-    public string? Address { get; set; }
+    public Guid? Id { get; set; }
+    public required string Address { get; set; }
 
     public ClientLocation MapToEntity()
     {

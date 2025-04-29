@@ -144,6 +144,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
             Desinsectant = Desinsectant,
             Derodent = Derodent,
             Disinfectant = Disinfectant,
+            TermsAndConditions = TermsAndConditions,
         };
 }
 
