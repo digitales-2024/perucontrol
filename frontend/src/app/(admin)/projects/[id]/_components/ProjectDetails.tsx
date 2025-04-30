@@ -33,7 +33,6 @@ import { Accordion } from "@/components/ui/accordion";
 import { toastWrapper } from "@/types/toasts";
 import { MurinoMapSection } from "./MurinoMapSection";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
 
