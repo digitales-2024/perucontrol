@@ -93,18 +93,8 @@ public class ProjectController(
                 DueDate = app.DueDate,
                 Services = services.GetServicesForEntityFramework(app.Services, _context),
                 Certificate = new(),
-                RodentRegister = new()
-                {
-                    ServiceDate = app.DueDate,
-                    EnterTime = new TimeSpan(9, 0, 0),
-                    LeaveTime = new TimeSpan(13, 0, 0),
-                },
-                ProjectOperationSheet = new()
-                {
-                    OperationDate = app.DueDate,
-                    EnterTime = new TimeSpan(9, 0, 0),
-                    LeaveTime = new TimeSpan(13, 0, 0),
-                },
+                RodentRegister = new() { ServiceDate = app.DueDate },
+                ProjectOperationSheet = new() { OperationDate = app.DueDate },
             })
             .ToList();
         entity.Appointments = appointments;
@@ -440,12 +430,8 @@ public class ProjectController(
         {
             DueDate = dto.DueDate,
             Certificate = new(),
-            ProjectOperationSheet = new()
-            {
-                OperationDate = dto.DueDate,
-                EnterTime = new TimeSpan(9, 0, 0),
-                LeaveTime = new TimeSpan(13, 0, 0),
-            },
+            ProjectOperationSheet = new() { OperationDate = dto.DueDate },
+            RodentRegister = new() { ServiceDate = dto.DueDate },
             Services = await _context
                 .Services.Where(s => dto.ServiceIds.Contains(s.Id))
                 .ToListAsync(),

@@ -55,6 +55,8 @@ public class AppointmentController(
                 IsActive = a.IsActive,
                 CreatedAt = a.CreatedAt,
                 ModifiedAt = a.ModifiedAt,
+                EnterTime = a.EnterTime, // <-- Add this
+                LeaveTime = a.LeaveTime, // <-- Add this
             })
         );
     }
@@ -83,6 +85,8 @@ public class AppointmentController(
             Services = a.Services,
             Project = a.Project,
             Client = a.Project.Client,
+            EnterTime = a.EnterTime, // <-- Add this
+            LeaveTime = a.LeaveTime, // <-- Add this
         });
 
         return Ok(result);
@@ -133,8 +137,9 @@ public class AppointmentController(
         var placeholders = new Dictionary<string, string>
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
-            { "{hora_ingreso}", sheet.EnterTime.ToString(@"hh\:mm") },
-            { "{hora_salida}", sheet.LeaveTime.ToString(@"hh\:mm") },
+            // FIXME: restore time generation from the parent appointment
+            // { "{hora_ingreso}", sheet.EnterTime.ToString(@"hh\:mm") },
+            // { "{hora_salida}", sheet.LeaveTime.ToString(@"hh\:mm") },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },

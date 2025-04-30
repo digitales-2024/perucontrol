@@ -14,6 +14,9 @@ public class AppointmentGetDTO
     public required bool IsActive { get; set; } = true;
     public required DateTime CreatedAt { get; set; }
     public required DateTime ModifiedAt { get; set; }
+
+    public TimeSpan? EnterTime { get; set; } // <-- Add this
+    public TimeSpan? LeaveTime { get; set; } // <-- Add this
 }
 
 public class AppointmentCertificatePatchDTO : IEntityPatcher<Certificate>

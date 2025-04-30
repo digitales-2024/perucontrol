@@ -151,12 +151,6 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
         if (ServiceDate.HasValue)
             entity.ServiceDate = ServiceDate.Value;
 
-        if (EnterTime != null)
-            entity.EnterTime = (TimeSpan)EnterTime;
-
-        if (LeaveTime != null)
-            entity.LeaveTime = (TimeSpan)LeaveTime;
-
         if (Incidents != null)
             entity.Incidents = Incidents;
 

@@ -5,61 +5,25 @@ namespace PeruControl.Controllers;
 public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet>
 {
     public Guid ProjectAppointmentId { get; set; }
-
     public DateTime? OperationDate { get; set; }
-
-    public TimeSpan? EnterTime { get; set; }
-
-    public TimeSpan? LeaveTime { get; set; }
-
     public string? TreatedAreas { get; set; }
-
     public string? Insects { get; set; }
-
     public string Rodents { get; set; } = string.Empty;
-
     public string? OtherPlagues { get; set; }
-
     public string? Insecticide { get; set; }
-
     public string? Insecticide2 { get; set; }
-
     public string? Rodenticide { get; set; }
-
     public string? Desinfectant { get; set; }
-
     public string? OtherProducts { get; set; }
-
     public string? InsecticideAmount { get; set; }
-
     public string? InsecticideAmount2 { get; set; }
-
     public string? RodenticideAmount { get; set; }
-
     public string? DesinfectantAmount { get; set; }
-
     public string? OtherProductsAmount { get; set; }
-
-    // public string? SanitaryCondition { get; set; }
-
-    // public string? RatExtermination1 { get; set; }
-
-    // public string? RatExtermination2 { get; set; }
-
-    // public string? RatExtermination3 { get; set; }
-
-    // public string? RatExtermination4 { get; set; }
-
-    // public bool? NebulizacionCebosTotal { get; set; } = false;
-
     public string? Staff1 { get; set; }
-
     public string? Staff2 { get; set; }
-
     public string? Staff3 { get; set; }
-
     public string? Staff4 { get; set; }
-
     public bool? AspersionManual { get; set; } = false;
     public bool? AspercionMotor { get; set; } = false;
     public bool? NebulizacionFrio { get; set; } = false;
@@ -69,23 +33,17 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
     public string? NroPlanchasPegantes { get; set; } = string.Empty;
     public string? NroJaulasTomahawk { get; set; } = string.Empty;
-
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
-
     public InfestationDegree? DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
-
     public string? Observations { get; set; } = string.Empty;
-
     public string? Recommendations { get; set; } = string.Empty;
 
-    // Método para crear una nueva entidad
     public ProjectOperationSheet MapToEntity()
     {
         return new ProjectOperationSheet
         {
+            ProjectAppointmentId = ProjectAppointmentId,
             OperationDate = OperationDate?.ToUniversalTime() ?? DateTime.UtcNow,
-            EnterTime = EnterTime ?? TimeSpan.Zero,
-            LeaveTime = LeaveTime ?? TimeSpan.Zero,
             TreatedAreas = TreatedAreas ?? string.Empty,
             Insects = Insects ?? string.Empty,
             Rodents = Rodents ?? string.Empty,
@@ -124,82 +82,46 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
 {
     public Guid ProjectAppointmentId { get; set; }
-
     public DateTime? OperationDate { get; set; }
-
-    public TimeSpan? EnterTime { get; set; }
-
-    public TimeSpan? LeaveTime { get; set; }
-
     public string? TreatedAreas { get; set; }
-
     public string? Insects { get; set; }
-
     public string? Rodents { get; set; } = string.Empty;
-
-    // Remove or ignore old RodentConsumption property if present
-
-    // Add new rodent consumption fields
     public string? RodentConsumptionPartial { get; set; } = string.Empty;
     public string? RodentConsumptionTotal { get; set; } = string.Empty;
     public string? RodentConsumptionDeteriorated { get; set; } = string.Empty;
     public string? RodentConsumptionNone { get; set; } = string.Empty;
-
     public string? Insecticide { get; set; }
-
     public string? Insecticide2 { get; set; }
-
     public string? Rodenticide { get; set; }
-
     public string? Desinfectant { get; set; }
-
     public string? OtherProducts { get; set; }
-
     public string? InsecticideAmount { get; set; }
-
     public string? InsecticideAmount2 { get; set; }
-
     public string? RodenticideAmount { get; set; }
-
     public string? DesinfectantAmount { get; set; }
-
     public string? OtherProductsAmount { get; set; }
-
     public string? Staff1 { get; set; }
-
     public string? Staff2 { get; set; }
-
     public string? Staff3 { get; set; }
-
     public string? Staff4 { get; set; }
-
     public bool? AspersionManual { get; set; } = false;
     public bool? AspercionMotor { get; set; } = false;
     public bool? NebulizacionFrio { get; set; } = false;
     public bool? NebulizacionCaliente { get; set; } = false;
-    public bool? NebulizacionCebosTotal { get; set; } = false;
     public string? ColocacionCebosCebaderos { get; set; } = string.Empty;
     public string? NumeroCeboTotal { get; set; } = string.Empty;
     public string? NumeroCeboRepuestos { get; set; } = string.Empty;
     public string? NroPlanchasPegantes { get; set; } = string.Empty;
     public string? NroJaulasTomahawk { get; set; } = string.Empty;
-
     public InfestationDegree? DegreeInsectInfectivity { get; set; } = InfestationDegree.Negligible;
-
     public InfestationDegree? DegreeRodentInfectivity { get; set; } = InfestationDegree.Negligible;
-
     public string? Observations { get; set; } = string.Empty;
-
     public string? Recommendations { get; set; } = string.Empty;
 
     public void ApplyPatch(ProjectOperationSheet entity)
     {
         if (OperationDate != null)
             entity.OperationDate = (DateTime)OperationDate;
-        if (EnterTime != null)
-            entity.EnterTime = (TimeSpan)EnterTime;
-        if (LeaveTime != null)
-            entity.LeaveTime = (TimeSpan)LeaveTime;
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)

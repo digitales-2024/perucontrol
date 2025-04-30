@@ -14,15 +14,14 @@ namespace PeruControl.Migrations
                 name: "Cancelled",
                 table: "ProjectAppointment",
                 type: "boolean",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Cancelled",
-                table: "ProjectAppointment");
+            migrationBuilder.DropColumn(name: "Cancelled", table: "ProjectAppointment");
         }
     }
 }

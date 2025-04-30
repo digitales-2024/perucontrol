@@ -5,9 +5,10 @@ namespace PeruControl.Controllers;
 public class AppointmentCreateDTO
 {
     public DateTime DueDate { get; set; }
-
-    // public virtual ICollection<Service> ServiceIds { get; set; } = new HashSet<Service>();
     public List<Guid> ServiceIds { get; set; } = new List<Guid>();
+
+    public TimeSpan? EnterTime { get; set; } // <-- Add this
+    public TimeSpan? LeaveTime { get; set; } // <-- Add this
 }
 
 public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
@@ -15,6 +16,8 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     public int? OrderNumber { get; set; } = null;
     public DateTime? DueDate { get; set; }
     public DateTime? ActualDate { get; set; }
+    public TimeSpan? EnterTime { get; set; } // <-- Add this
+    public TimeSpan? LeaveTime { get; set; } // <-- Add this
 
     public void ApplyPatch(ProjectAppointment entity)
     {
@@ -24,6 +27,10 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
             entity.DueDate = (DateTime)DueDate;
         if (ActualDate != null)
             entity.ActualDate = ActualDate;
+        if (EnterTime != null)
+            entity.EnterTime = EnterTime.Value;
+        if (LeaveTime != null)
+            entity.LeaveTime = LeaveTime.Value;
     }
 }
 
@@ -36,4 +43,7 @@ public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
     public virtual Project Project { get; set; } = null!;
     public virtual Client Client { get; set; } = null!;
+
+    public TimeSpan? EnterTime { get; set; } // <-- Add this
+    public TimeSpan? LeaveTime { get; set; } // <-- Add this
 }
