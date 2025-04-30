@@ -39,7 +39,10 @@ public class ProjectOperationSheet : BaseModel
     public string Rodents { get; set; } = string.Empty;
 
     // Consumo de Roedores
-    public RodentConsumption? RodentConsumption { get; set; }
+    public string RodentConsumptionPartial { get; set; } = string.Empty;
+    public string RodentConsumptionTotal { get; set; } = string.Empty;
+    public string RodentConsumptionDeteriorated { get; set; } = string.Empty;
+    public string RodentConsumptionNone { get; set; } = string.Empty;
 
     // otras
     [Required]
