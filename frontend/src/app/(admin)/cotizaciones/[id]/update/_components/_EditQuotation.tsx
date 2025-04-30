@@ -161,7 +161,6 @@ export default function EditQuotation({
             })),
         };
 
-        console.log("TransformedData", JSON.stringify(transformedInput, null, 2));
         const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, transformedInput), {
             loading: "Actualizando cotización...",
             success: "¡Cotización actualizada exitosamente!",

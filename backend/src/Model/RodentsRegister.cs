@@ -25,6 +25,9 @@ public class RodentRegister : BaseModel
 
     /// Medidas correctivas
     public string? CorrectiveMeasures { get; set; }
+
+    /// Representante de la empresa
+    public string? CompanyRepresentative { get; set; }
 }
 
 public class RodentArea : BaseModel
@@ -54,6 +57,7 @@ public enum RodentResult
     RoedMto,
     Others,
 }
+
 
 public static class RodentResultExtensions
 {
@@ -153,6 +157,8 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 
     public List<RodentAreaUpdateDTO> RodentAreas { get; set; } = new();
 
+    public string? CompanyRepresentative { get; set; }
+
     public void ApplyPatch(RodentRegister entity)
     {
         if (ServiceDate.HasValue)
@@ -169,5 +175,8 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 
         if (CorrectiveMeasures != null)
             entity.CorrectiveMeasures = CorrectiveMeasures;
+
+        if (CompanyRepresentative != null)
+            entity.CompanyRepresentative = CompanyRepresentative;
     }
 }

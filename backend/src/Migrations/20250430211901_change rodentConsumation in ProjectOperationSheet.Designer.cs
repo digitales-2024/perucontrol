@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250430211901_change rodentConsumation in ProjectOperationSheet")]
+    partial class changerodentConsumationinProjectOperationSheet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -786,6 +789,9 @@ namespace PeruControl.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Deteriorated")
+                        .HasColumnType("text");
+
                     b.Property<int>("Frequency")
                         .HasColumnType("integer");
 
@@ -799,6 +805,12 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NoConsumption")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Partial")
+                        .HasColumnType("text");
+
                     b.Property<string>("ProductDose")
                         .IsRequired()
                         .HasColumnType("text");
@@ -806,9 +818,6 @@ namespace PeruControl.Migrations
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("RodentConsumption")
-                        .HasColumnType("integer");
 
                     b.Property<int>("RodentMaterials")
                         .HasColumnType("integer");
@@ -818,6 +827,9 @@ namespace PeruControl.Migrations
 
                     b.Property<int>("RodentResult")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Total")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

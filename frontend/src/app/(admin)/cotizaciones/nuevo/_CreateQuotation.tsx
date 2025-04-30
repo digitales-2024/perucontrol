@@ -44,6 +44,22 @@ type Terms = components["schemas"]["TermsAndConditions"];
 type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
+interface QuotationService {
+  id?: string | null;
+  amount: number;
+  nameDescription: string;
+  price?: number;
+  accesories?: string;
+}
+
+interface Service {
+  name: string;
+  id?: string;
+  isActive: boolean;
+  createdAt: string;
+  modifiedAt: string;
+}
+
 export function CreateQuotation({ terms, clients, services }: {
     terms: Array<Terms>,
     clients: Array<Clients>,
@@ -102,7 +118,7 @@ export function CreateQuotation({ terms, clients, services }: {
     });
 
     // Observa los cambios en el campo 'serviceIds'
-    const selectedServiceIds = watch("serviceIds");
+    // const selectedServiceIds = watch("serviceIds");
 
     const handleClientChange = (option: Option | null) =>
     {
@@ -149,37 +165,121 @@ export function CreateQuotation({ terms, clients, services }: {
 
     useEffect(() =>
     {
-        const currentQuotationServices = form.getValues("quotationServices");
-        const currentServiceNames = currentQuotationServices.map((q) => q.nameDescription);
-        const selectedServices = services.filter((service) => selectedServiceIds.includes(service.id!));
-        const selectedServiceNames = selectedServices.map((s) => s.name);
-
-        // Remove services that are no longer selected
-        const indicesToRemove = currentQuotationServices
-            .map((service, index) => ({ ...service, index }))
-            .filter((service) => !selectedServiceNames.includes(service.nameDescription))
-            .map((service) => service.index)
-            .sort((a, b) => b - a); // Sort descending to avoid index shift issues
-
-        indicesToRemove.forEach((index) =>
+        const subscription = watch((value, { name }) =>
         {
-            remove(index);
-        });
-
-        // Add newly selected services
-        selectedServices.forEach((service) =>
-        {
-            if (!currentServiceNames.includes(service.name))
+        // Solo ejecutar cuando cambien serviceIds
+            if (name === "serviceIds")
             {
-                append({
-                    amount: 1,
-                    nameDescription: service.name,
-                    price: 0,
-                    accesories: "",
+                const currentServices = form.getValues("quotationServices");
+                const selectedServices = services.filter((s) => value.serviceIds?.includes(s.id!));
+
+                // Eliminar servicios no seleccionados
+                currentServices.forEach((service, index) =>
+                {
+                    if (!selectedServices.some((s) => s.name === service.nameDescription))
+                    {
+                        remove(index);
+                    }
+                });
+
+                // Agregar nuevos servicios
+                selectedServices.forEach((service) =>
+                {
+                    if (!currentServices.some((s) => s.nameDescription === service.name))
+                    {
+                        append({
+                            amount: 1,
+                            nameDescription: service.name,
+                            price: 0,
+                            accesories: "",
+                        });
+                    }
                 });
             }
         });
-    }, [selectedServiceIds, services, form, append, remove]);
+
+        return () => subscription.unsubscribe();
+    }, [watch, services, append, remove, form]);
+
+    useEffect(() =>
+    {
+        const savedData = localStorage.getItem("duplicateQuotation");
+        if (savedData)
+        {
+            try
+            {
+                const parsedData = JSON.parse(savedData);
+
+                // Transformación mejorada de datos
+                const transformedData = {
+                    ...parsedData,
+                    clientId: parsedData.client?.id ?? "",
+                    serviceIds: parsedData.services?.map((s: Service) => s.id) ?? [],
+                    frequency: parsedData.frequency ?? "Bimonthly",
+                    hasTaxes: parsedData.hasTaxes ?? false,
+                    creationDate: parsedData.creationDate
+                        ? format(new Date(parsedData.creationDate), "yyyy-MM-dd")
+                        : format(new Date(), "yyyy-MM-dd"),
+                    expirationDate: parsedData.expirationDate
+                        ? format(new Date(parsedData.expirationDate), "yyyy-MM-dd")
+                        : format(addDays(new Date(), 7), "yyyy-MM-dd"),
+                    serviceAddress: parsedData.serviceAddress ?? "",
+                    paymentMethod: parsedData.paymentMethod ?? "",
+                    others: parsedData.others ?? "",
+                    availability: parsedData.availability ?? "",
+                    quotationServices: parsedData.quotationServices?.map((qs: QuotationService) => ({
+                        amount: qs.amount || 1,
+                        nameDescription: qs.nameDescription || "",
+                        price: qs.price ?? 0,
+                        accesories: qs.accesories ?? "",
+                    })) ?? [],
+                    desinsectant: parsedData.desinsectant ?? "",
+                    derodent: parsedData.derodent ?? "",
+                    disinfectant: parsedData.disinfectant ?? "",
+                    termsAndConditions: parsedData.termsAndConditions ?? [],
+                };
+
+                // Resetear formulario con datos transformados
+                form.reset(transformedData);
+
+                // Manejar AutoComplete de Cliente
+                if (parsedData.client)
+                {
+                    const clientOption = clientsOptions.find((opt) => opt.value === parsedData.client.id);
+                    if (clientOption)
+                    {
+                        // Forzar actualización del AutoComplete
+                        form.setValue("clientId", clientOption.value, { shouldValidate: true });
+                        handleClientChange(clientOption);
+
+                        // Cargar dirección después de 100ms
+                        setTimeout(() =>
+                        {
+                            if (parsedData.serviceAddress)
+                            {
+                                form.setValue("serviceAddress", parsedData.serviceAddress, { shouldValidate: true });
+                            }
+                        }, 100);
+                    }
+                }
+
+                // Cargar servicios después de 150ms
+                setTimeout(() =>
+                {
+                    if (transformedData.serviceIds.length > 0)
+                    {
+                        form.setValue("serviceIds", transformedData.serviceIds, { shouldValidate: true });
+                    }
+                }, 150);
+
+                localStorage.removeItem("duplicateQuotation");
+            }
+            catch (error)
+            {
+                console.error("Error al cargar datos:", error);
+            }
+        }
+    }, [form, clientsOptions]);
 
     const handleTermsChange = async(id: string, fieldName: `termsAndConditions.${number}`) =>
     {
@@ -729,24 +829,6 @@ export function CreateQuotation({ terms, clients, services }: {
 
                         {Array.from({ length: 9 }).map((_, index) => (
                             <div key={index} className="flex flex-col gap-2">
-
-                                <Select onValueChange={(id) => handleTermsChange(id, `termsAndConditions.${index}`)}>
-                                    <SelectTrigger className="border rounded-md">
-                                        <SelectValue placeholder="Seleccione una plantilla" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {
-                                                terms.map((terms) => (
-                                                    <SelectItem key={terms.id} value={terms.id ?? ""}>
-                                                        {terms.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
                                 <FormField
                                     control={form.control}
                                     name={`termsAndConditions.${index}`}
@@ -758,6 +840,33 @@ export function CreateQuotation({ terms, clients, services }: {
                                                 {" "}
                                                 {index + 1}
                                             </FormLabel>
+
+                                            {/* Lista de plantillas */}
+                                            {
+                                                terms.length === 0 ? (
+                                                    <div className="text-xs text-red-400">
+                                                        No hay plantillas disponibles.
+                                                    </div>
+                                                ) : (
+                                                    <Select onValueChange={(id) => handleTermsChange(id, `termsAndConditions.${index}`)}>
+                                                        <SelectTrigger className="border rounded-md">
+                                                            <SelectValue placeholder="Seleccione una plantilla" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                {
+                                                                    terms.map((terms) => (
+                                                                        <SelectItem key={terms.id} value={terms.id ?? ""}>
+                                                                            {terms.name}
+                                                                        </SelectItem>
+                                                                    ))
+                                                                }
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                )
+                                            }
+
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>

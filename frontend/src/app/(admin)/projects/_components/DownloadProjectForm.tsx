@@ -29,12 +29,12 @@ const infestationLevels = [
     { id: "Negligible", label: "Insignificante" },
 ];
 
-const rodentConsumptionLevels = [
+/* const rodentConsumptionLevels = [
     { id: "Partial", label: "Parcial" },
     { id: "Total", label: "Total" },
     { id: "Deteriorated", label: "Deteriorado" },
     { id: "NoConsumption", label: "Sin Consumo" },
-];
+]; */
 
 export function DownloadProjectForm({
     onOpenChange,
@@ -67,7 +67,10 @@ export function DownloadProjectForm({
             certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
             insects: operationSheet.insects ?? "",
             rodents: operationSheet.rodents ?? "",
-            rodentConsumption: operationSheet.rodentConsumption ?? "Partial",
+            partial: operationSheet.partial ?? "",
+            total: operationSheet.total ?? "",
+            deteriorated: operationSheet.deteriorated ?? "",
+            noConsumption: operationSheet.noConsumption ?? "",
             otherPlagues: operationSheet.otherPlagues ?? "",
             insecticide: operationSheet.insecticide ?? "",
             insecticide2: operationSheet.insecticide2 ?? "",
@@ -425,28 +428,66 @@ export function DownloadProjectForm({
                                                     <MilkOff className="h-4 w-4 text-blue-500" />
                                                     Consumo de roedores
                                                 </FormLabel>
-                                                <div className="space-y-2">
-                                                    {rodentConsumptionLevels.map((level) => (
-                                                        <FormField
-                                                            key={level.id}
-                                                            control={form.control}
-                                                            name="rodentConsumption"
-                                                            render={({ field }) => (
-                                                                <FormItem className="flex items-start space-x-3 space-y-0">
-                                                                    <FormControl>
-                                                                        <Checkbox
-                                                                            checked={field.value === level.id}
-                                                                            onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
-                                                                            }
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormLabel className="text-sm font-normal">
-                                                                        {level.label}
-                                                                    </FormLabel>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    ))}
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Parcial
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="partial"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Parcial" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Consumo Total
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="total"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Total" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Deteriorado
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="deteriorated"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Deteriorado" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Sin Consumo
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="noConsumption"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Sin Consumo" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
                                                 </div>
 
                                                 <FormLabel className="flex items-center gap-2 font-medium">

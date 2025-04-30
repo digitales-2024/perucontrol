@@ -119,7 +119,6 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        var (r_p, r_t, r_d, r_s) = sheet.RodentConsumption?.ToCheckbox() ?? ("", "", "", "");
         var (in_a, in_m, in_b, in_i) =
             sheet.DegreeInsectInfectivity?.ToCheckbox() ?? ("", "", "", "");
         var (ro_a, ro_m, ro_b, ro_i) =
@@ -137,10 +136,10 @@ public class AppointmentController(
             { "{servicios}", serviceNamesStr },
             { "{diag_insectos}", sheet.Insects },
             { "{diag_roedores}", sheet.Rodents },
-            { "{r_p}", r_p },
-            { "{r_t}", r_t },
-            { "{r_d}", r_d },
-            { "{r_s}", r_s },
+            { "{partial}", sheet.Partial ?? "" },
+            { "{total}", sheet.Total ?? "" },
+            { "{deteriorated}", sheet.Deteriorated ?? "" },
+            { "{no_consumption}", sheet.NoConsumption ?? "" },
             { "{diag_otros}", sheet.OtherPlagues },
             { "{ma_manual}", sheet.AspersionManual ? "x" : "" },
             { "{ma_motor}", sheet.AspercionMotor ? "x" : "" },

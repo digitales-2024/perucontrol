@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250430200439_add CompanyRepresentative to RodentRegister")]
+    partial class addCompanyRepresentativetoRodentRegister
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -502,9 +505,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Deteriorated")
-                        .HasColumnType("text");
-
                     b.Property<TimeSpan>("EnterTime")
                         .HasColumnType("interval");
 
@@ -545,9 +545,6 @@ namespace PeruControl.Migrations
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("NoConsumption")
-                        .HasColumnType("text");
-
                     b.Property<string>("NroJaulasTomahawk")
                         .IsRequired()
                         .HasColumnType("text");
@@ -583,15 +580,15 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Partial")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Recommendations")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("RodentConsumption")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Rodenticide")
                         .IsRequired()
@@ -619,9 +616,6 @@ namespace PeruControl.Migrations
 
                     b.Property<string>("Staff4")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Total")
                         .HasColumnType("text");
 
                     b.Property<string>("TreatedAreas")

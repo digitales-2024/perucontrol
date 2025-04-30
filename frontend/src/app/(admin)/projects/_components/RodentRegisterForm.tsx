@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarClock, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CalendarClock, CircleUser, PlusCircle, Save, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -36,6 +36,7 @@ export function RodentControlForm({
             leaveTime: rodent.leaveTime ?? "",
             incidents: rodent.incidents ?? null,
             correctiveMeasures: rodent.correctiveMeasures ?? null,
+            companyRepresentative: rodent.companyRepresentative ?? null,
             rodentAreas: rodent.rodentAreas!.length > 0
                 ? rodent.rodentAreas?.map((area) => ({
                     name: area.name ?? "",
@@ -78,8 +79,6 @@ export function RodentControlForm({
             ...formData,
             serviceDate: formData.serviceDate ? formData.serviceDate.toString() : null,
         };
-
-        console.log(transformedData);
 
         const [, saveError] = await toastWrapper(
             SaveRodentData(appointment.id!, transformedData),
@@ -227,6 +226,30 @@ export function RodentControlForm({
                                         </FormItem>
                                     )}
                                 />
+
+                                <FormField
+                                    control={form.control}
+                                    name="companyRepresentative"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="flex items-center gap-2 font-medium">
+                                                <CircleUser className="h-4 w-4 text-blue-500" />
+                                                Representante de la Compañia
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Representante"
+                                                    value={field.value ?? ""}  // Aquí estamos usando un valor vacío en lugar de null
+                                                    // {...field}
+                                                    onChange={field.onChange}  // Aseguramos que se mantenga la lógica de onChange
+                                                    className="border-gray-300"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                             </div>
 
                             {fields.map((field, index) => (

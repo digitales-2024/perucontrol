@@ -4602,8 +4602,6 @@ export interface components {
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
-        /** @enum {unknown|null} */
-        NullableOfRodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption" | null;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -4697,7 +4695,10 @@ export interface components {
             treatedAreas: string;
             insects: string;
             rodents: string;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
+            partial?: string | null;
+            total?: string | null;
+            deteriorated?: string | null;
+            noConsumption?: string | null;
             otherPlagues: string;
             aspersionManual: boolean;
             aspercionMotor: boolean;
@@ -4742,7 +4743,10 @@ export interface components {
             enterTime?: string | null;
             leaveTime?: string | null;
             treatedAreas?: string | null;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
+            partial?: string | null;
+            total?: string | null;
+            deteriorated?: string | null;
+            noConsumption?: string | null;
             insects?: string | null;
             rodents?: string | null;
             otherPlagues?: string | null;
@@ -4781,7 +4785,10 @@ export interface components {
             operationDate?: string | null;
             enterTime?: string | null;
             leaveTime?: string | null;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
+            partial?: string | null;
+            total?: string | null;
+            deteriorated?: string | null;
+            noConsumption?: string | null;
             treatedAreas?: string | null;
             insects?: string | null;
             rodents?: string | null;
@@ -5048,6 +5055,10 @@ export interface components {
             others?: string | null;
             availability?: string | null;
             quotationServices?: Array<components["schemas"]["QuotationServicePatchDTO"]> | null;
+            termsAndConditions?: Array<string> | null;
+            desinsectant?: string | null;
+            derodent?: string | null;
+            disinfectant?: string | null;
         };
         QuotationService: {
             /**
@@ -5164,6 +5175,7 @@ export interface components {
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
             incidents?: string | null;
             correctiveMeasures?: string | null;
+            companyRepresentative?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -5180,6 +5192,7 @@ export interface components {
             incidents?: string | null;
             correctiveMeasures?: string | null;
             rodentAreas?: Array<components["schemas"]["RodentAreaUpdateDTO"]>;
+            companyRepresentative?: string | null;
         };
         /** @enum {unknown} */
         RodentResult: "Active" | "Inactive" | "RoedMto" | "Others";

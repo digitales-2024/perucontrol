@@ -1,6 +1,5 @@
 "use client";
 
-import type { components } from "@/types/api";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,10 +24,12 @@ import {
     XCircle,
     Check,
     X,
+    Copy,
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
+import { CreateQuotationSchema2 } from "../schemas";
 
-export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation3"] })
+export function ViewQuotationDetails({ quotation }: { quotation: CreateQuotationSchema2 })
 {
     const { id: quotationId } = useParams();
     const router = useRouter();
@@ -103,7 +104,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                             <div className="flex flex-wrap items-center gap-2">
                                 <CardTitle className="text-xl md:text-2xl">
                                     Cotización #
-                                    {quotation.quotationNumber || "Sin número"}
+                                    {quotation.quotationNumber ?? "Sin número"}
                                 </CardTitle>
                                 <div className="flex items-center gap-2">
                                     {getStatusIcon(quotation.status)}
@@ -112,31 +113,80 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                             </div>
                             <CardDescription>
                                 Creada el
+                                {" "}
                                 {formatDate(quotation.creationDate)}
                             </CardDescription>
                         </div>
-                        <div className="flex sm:hidden space-x-2">
-                            {quotation.isActive && (
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => router.push(`/quotations/${quotationId}/edit`)}
-                                >
-                                    <Pencil className="h-4 w-4" />
-                                </Button>
-                            )}
-                        </div>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-evenly space-x-2 gap-1">
                             {quotation.isActive && (
-                                <Button
-                                    variant="outline"
-                                    className="hidden sm:flex items-center gap-2"
-                                    onClick={() => router.push(`/cotizaciones/${quotationId}/update`)}
-                                >
-                                    <Edit className="h-4 w-4" />
-                                    Editar
-                                </Button>
+                                <>
+                                    <div>
+                                        {/* Botón para pantallas pequeñas */}
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="sm:hidden"
+                                            onClick={() => router.push(`/quotations/${quotationId}/edit`)}
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+
+                                        {/* Botón para pantallas grandes */}
+                                        <Button
+                                            variant="outline"
+                                            className="hidden sm:flex items-center gap-2"
+                                            onClick={() => router.push(`/cotizaciones/${quotationId}/update`)}
+                                        >
+                                            <Edit className="h-4 w-4" />
+                                            Editar
+                                        </Button>
+                                    </div>
+
+                                    <div>
+                                        {/* Botón para pantallas pequeñas */}
+                                        <Button
+                                            variant="outline"
+                                            // className="hidden sm:flex items-center gap-2"
+                                            className="sm:hidden"
+                                            onClick={() =>
+                                            {
+                                                localStorage.setItem(
+                                                    "duplicateQuotation",
+                                                    JSON.stringify({
+                                                        ...quotation,
+                                                        creationDate: quotation.creationDate,
+                                                        expirationDate: quotation.expirationDate,
+                                                    }),
+                                                );
+                                                router.push("/cotizaciones/nuevo");
+                                            }}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+
+                                        {/* Botón para pantallas grandes */}
+                                        <Button
+                                            variant="outline"
+                                            className="hidden sm:flex items-center gap-2"
+                                            onClick={() =>
+                                            {
+                                                localStorage.setItem(
+                                                    "duplicateQuotation",
+                                                    JSON.stringify({
+                                                        ...quotation,
+                                                        creationDate: quotation.creationDate,
+                                                        expirationDate: quotation.expirationDate,
+                                                    }),
+                                                );
+                                                router.push("/cotizaciones/nuevo");
+                                            }}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                            Duplicar Cotización
+                                        </Button>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>
@@ -272,38 +322,6 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                     </span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Información del servicio */}
-                    <div className="space-y-2">
-                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-blue-500" />
-                            Detalles del Servicio
-                        </h3>
-                        <Separator />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                    Servicios
-                                </h4>
-                                <div className="space-y-2">
-                                    {quotation.services && quotation.services.length > 0 ? (
-                                        quotation.services.map((service) => (
-                                            <div key={service.id} className="flex items-center gap-2">
-                                                <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                                <span className="text-xs md:text-base">
-                                                    {service.name}
-                                                </span>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-muted-foreground">
-                                            No hay servicios registrados
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
 
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h4 className="font-medium text-sm text-muted-foreground mb-2">
@@ -324,6 +342,59 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                                             ? "Quincenal"
                                                             : "No especificada"}
                                     </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Información del servicio */}
+                    <div className="space-y-2">
+                        <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
+                            <Shield className="h-5 w-5 text-blue-500" />
+                            Detalles del Servicio
+                        </h3>
+                        <Separator />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                    Servicios
+                                </h4>
+                                <div className="space-y-4">
+                                    {quotation.quotationServices && quotation.quotationServices.length > 0 ? (
+                                        quotation.quotationServices.map((service, index) => (
+                                            <div
+                                                key={service.id ?? `service-${index}`}
+                                                className="border rounded-md p-3 bg-white shadow-sm"
+                                            >
+                                                <p className="text-sm font-semibold">
+                                                    {service.nameDescription}
+                                                </p>
+
+                                                <div className="text-sm text-muted-foreground space-y-1 mt-1">
+                                                    <p>
+                                                        Cantidad:
+                                                        {service.amount}
+                                                    </p>
+                                                    {service.price !== undefined && (
+                                                        <p>
+                                                            Precio unitario: $
+                                                            {service.price.toFixed(2)}
+                                                        </p>
+                                                    )}
+                                                    {service.accesories && (
+                                                        <p>
+                                                            Accesorios:
+                                                            {service.accesories}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-muted-foreground">
+                                            No hay servicios registrados
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -420,4 +491,3 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
     );
 }
-

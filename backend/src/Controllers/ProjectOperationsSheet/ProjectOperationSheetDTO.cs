@@ -14,7 +14,13 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public string? TreatedAreas { get; set; }
 
-    public RodentConsumption? RodentConsumption { get; set; }
+    public string? Partial { get; set; }
+
+    public string? Total { get; set; }
+
+    public string? Deteriorated { get; set; }
+
+    public string? NoConsumption { get; set; }
 
     public string? Insects { get; set; }
 
@@ -41,18 +47,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public string? DesinfectantAmount { get; set; }
 
     public string? OtherProductsAmount { get; set; }
-
-    // public string? SanitaryCondition { get; set; }
-
-    // public string? RatExtermination1 { get; set; }
-
-    // public string? RatExtermination2 { get; set; }
-
-    // public string? RatExtermination3 { get; set; }
-
-    // public string? RatExtermination4 { get; set; }
-
-    // public bool? NebulizacionCebosTotal { get; set; } = false;
 
     public string? Staff1 { get; set; }
 
@@ -91,7 +85,10 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             TreatedAreas = TreatedAreas ?? string.Empty,
             Insects = Insects ?? string.Empty,
             Rodents = Rodents ?? string.Empty,
-            RodentConsumption = RodentConsumption,
+            Partial = Partial ?? string.Empty,
+            Total = Total ?? string.Empty,
+            Deteriorated = Deteriorated ?? string.Empty,
+            NoConsumption = NoConsumption ?? string.Empty,
             OtherPlagues = OtherPlagues ?? string.Empty,
             Insecticide = Insecticide ?? string.Empty,
             Insecticide2 = Insecticide2 ?? string.Empty,
@@ -134,7 +131,13 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 
     public TimeSpan? LeaveTime { get; set; }
 
-    public RodentConsumption? RodentConsumption { get; set; }
+    public string? Partial { get; set; }
+
+    public string? Total { get; set; }
+
+    public string? Deteriorated { get; set; }
+
+    public string? NoConsumption { get; set; }
 
     public string? TreatedAreas { get; set; }
 
@@ -199,8 +202,14 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.EnterTime = (TimeSpan)EnterTime;
         if (LeaveTime != null)
             entity.LeaveTime = (TimeSpan)LeaveTime;
-        if (RodentConsumption != null)
-            entity.RodentConsumption = (RodentConsumption)RodentConsumption;
+        if (Partial != null)
+            entity.Partial = Partial;
+        if (Total != null)
+            entity.Total = Total;
+        if (Deteriorated != null)
+            entity.Deteriorated = Deteriorated;
+        if (NoConsumption != null)
+            entity.NoConsumption = NoConsumption;
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)
