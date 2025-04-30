@@ -33,6 +33,9 @@ public class ProjectAppointment : BaseModel
     /// The actual date the appointment was performed
     public DateTime? ActualDate { get; set; }
 
+    /// Represents that the appointment was not performed
+    public bool? Cancelled { get; set; } = false;
+
     /// Services performed on this appointment
     [JsonIgnore]
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();
