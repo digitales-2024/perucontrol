@@ -612,7 +612,6 @@ export function ProjectDetails({
 
                     <CardContent>
                         <div className="space-y-4">
-
                             {/* Agregar nueva fecha */}
                             {/*
                             <div className="flex flex-col sm:flex-row sm:items-end gap-4">

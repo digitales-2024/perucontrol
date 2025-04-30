@@ -111,7 +111,7 @@ public class AppointmentController(
         if (project == null || sheet == null || client == null)
         {
             return (
-                new byte[0],
+                [],
                 $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
             );
         }
@@ -119,7 +119,12 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        var (r_p, r_t, r_d, r_s) = sheet.RodentConsumption?.ToCheckbox() ?? ("", "", "", "");
+        // Use the string properties directly instead of the enum/ToCheckbox
+        var r_p = sheet.RodentConsumptionPartial;
+        var r_t = sheet.RodentConsumptionTotal;
+        var r_d = sheet.RodentConsumptionDeteriorated;
+        var r_s = sheet.RodentConsumptionNone;
+
         var (in_a, in_m, in_b, in_i) =
             sheet.DegreeInsectInfectivity?.ToCheckbox() ?? ("", "", "", "");
         var (ro_a, ro_m, ro_b, ro_i) =
@@ -154,7 +159,7 @@ public class AppointmentController(
             { "{insecticida_1}", sheet.Insecticide },
             { "{insecticida_1_cantidad}", sheet.InsecticideAmount },
             { "{insecticida_2}", sheet.Insecticide2 },
-            { "{insecticida_2_cantidad}", sheet.Insecticide2 },
+            { "{insecticida_2_cantidad}", sheet.InsecticideAmount2 },
             { "{rodenticida}", sheet.Rodenticide },
             { "{rodenticida_cantidad}", sheet.RodenticideAmount },
             { "{desinfectante}", sheet.Desinfectant },

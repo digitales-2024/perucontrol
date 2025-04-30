@@ -14,11 +14,9 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
 
     public string? TreatedAreas { get; set; }
 
-    public RodentConsumption? RodentConsumption { get; set; }
-
     public string? Insects { get; set; }
 
-    public string? Rodents { get; set; }
+    public string Rodents { get; set; } = string.Empty;
 
     public string? OtherPlagues { get; set; }
 
@@ -91,7 +89,6 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
             TreatedAreas = TreatedAreas ?? string.Empty,
             Insects = Insects ?? string.Empty,
             Rodents = Rodents ?? string.Empty,
-            RodentConsumption = RodentConsumption,
             OtherPlagues = OtherPlagues ?? string.Empty,
             Insecticide = Insecticide ?? string.Empty,
             Insecticide2 = Insecticide2 ?? string.Empty,
@@ -134,15 +131,19 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 
     public TimeSpan? LeaveTime { get; set; }
 
-    public RodentConsumption? RodentConsumption { get; set; }
-
     public string? TreatedAreas { get; set; }
 
     public string? Insects { get; set; }
 
-    public string? Rodents { get; set; }
+    public string? Rodents { get; set; } = string.Empty;
 
-    public string? OtherPlagues { get; set; }
+    // Remove or ignore old RodentConsumption property if present
+
+    // Add new rodent consumption fields
+    public string? RodentConsumptionPartial { get; set; } = string.Empty;
+    public string? RodentConsumptionTotal { get; set; } = string.Empty;
+    public string? RodentConsumptionDeteriorated { get; set; } = string.Empty;
+    public string? RodentConsumptionNone { get; set; } = string.Empty;
 
     public string? Insecticide { get; set; }
 
@@ -199,16 +200,20 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.EnterTime = (TimeSpan)EnterTime;
         if (LeaveTime != null)
             entity.LeaveTime = (TimeSpan)LeaveTime;
-        if (RodentConsumption != null)
-            entity.RodentConsumption = (RodentConsumption)RodentConsumption;
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)
             entity.Insects = Insects;
         if (Rodents != null)
             entity.Rodents = Rodents;
-        if (OtherPlagues != null)
-            entity.OtherPlagues = OtherPlagues;
+        if (RodentConsumptionPartial != null)
+            entity.RodentConsumptionPartial = RodentConsumptionPartial;
+        if (RodentConsumptionTotal != null)
+            entity.RodentConsumptionTotal = RodentConsumptionTotal;
+        if (RodentConsumptionDeteriorated != null)
+            entity.RodentConsumptionDeteriorated = RodentConsumptionDeteriorated;
+        if (RodentConsumptionNone != null)
+            entity.RodentConsumptionNone = RodentConsumptionNone;
         if (Insecticide != null)
             entity.Insecticide = Insecticide;
         if (Insecticide2 != null)
