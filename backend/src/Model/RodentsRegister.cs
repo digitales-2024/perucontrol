@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
@@ -11,12 +10,6 @@ public class RodentRegister : BaseModel
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
 
     public required DateTime ServiceDate { get; set; }
-
-    [Required]
-    public required TimeSpan EnterTime { get; set; }
-
-    [Required]
-    public required TimeSpan LeaveTime { get; set; }
 
     public IEnumerable<RodentArea> RodentAreas { get; set; } = new HashSet<RodentArea>();
 

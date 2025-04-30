@@ -14,14 +14,6 @@ public class ProjectOperationSheet : BaseModel
     // fecha_op
     public required DateTime OperationDate { get; set; }
 
-    // hora_ingreso
-    [Required]
-    public required TimeSpan EnterTime { get; set; }
-
-    // hora_salida
-    [Required]
-    public required TimeSpan LeaveTime { get; set; }
-
     // areas_tratadas
     [Required]
     public string TreatedAreas { get; set; } = string.Empty;

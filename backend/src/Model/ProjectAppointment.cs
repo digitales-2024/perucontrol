@@ -27,6 +27,14 @@ public class ProjectAppointment : BaseModel
     [JsonIgnore]
     public RodentRegister RodentRegister { get; set; } = null!;
 
+    // hora_ingreso
+    [Required]
+    public required TimeSpan EnterTime { get; set; }
+
+    // hora_salida
+    [Required]
+    public required TimeSpan LeaveTime { get; set; }
+
     /// The date by which the appointment should be performed
     public required DateTime DueDate { get; set; }
 
