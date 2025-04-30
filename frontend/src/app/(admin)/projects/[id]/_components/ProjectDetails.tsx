@@ -33,6 +33,7 @@ import { Accordion } from "@/components/ui/accordion";
 import { toastWrapper } from "@/types/toasts";
 import { MurinoMapSection } from "./MurinoMapSection";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
 
@@ -612,7 +613,6 @@ export function ProjectDetails({
 
                     <CardContent>
                         <div className="space-y-4">
-
                             {/* Agregar nueva fecha */}
                             {/*
                             <div className="flex flex-col sm:flex-row sm:items-end gap-4">
