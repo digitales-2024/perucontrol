@@ -60,30 +60,10 @@ public class OdsTemplateService
                         ReplaceInTextSpan(span, placeholders);
                     }
 
-                    // Find all paragraph elements that might contain placeholders
                     var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
                     foreach (var paragraph in paragraphs)
                     {
-                        // Only process direct text in paragraphs (not in child spans)
-                        if (!paragraph.Descendants(textns + "span").Any() && paragraph.Value != "")
-                        {
-                            string text = paragraph.Value;
-                            bool replacementMade = false;
-
-                            foreach (var placeholder in placeholders)
-                            {
-                                if (text.Contains(placeholder.Key))
-                                {
-                                    text = text.Replace(placeholder.Key, placeholder.Value);
-                                    replacementMade = true;
-                                }
-                            }
-
-                            if (replacementMade)
-                            {
-                                paragraph.Value = text;
-                            }
-                        }
+                        ReplacePlaceholdersInElement(paragraph, placeholders);
                     }
 
                     // Write the modified XML back to the entry
@@ -99,7 +79,7 @@ public class OdsTemplateService
         return outputMs.ToArray();
     }
 
-    private void ReplaceInTextSpan(XElement span, Dictionary<string, string> placeholders)
+    private static void ReplaceInTextSpan(XElement span, Dictionary<string, string> placeholders)
     {
         // Process text directly in the span (not in child elements)
         if (span.Nodes().All(n => n.NodeType == System.Xml.XmlNodeType.Text))
@@ -152,6 +132,32 @@ public class OdsTemplateService
                     {
                         ReplaceInTextSpan(childElement, placeholders);
                     }
+                }
+            }
+        }
+    }
+
+    private void ReplacePlaceholdersInElement(XElement element, Dictionary<string, string> placeholders)
+    {
+        foreach (var node in element.DescendantNodesAndSelf())
+        {
+            if (node is XText textNode)
+            {
+                string text = textNode.Value;
+                bool replacementMade = false;
+
+                foreach (var placeholder in placeholders)
+                {
+                    if (text.Contains(placeholder.Key))
+                    {
+                        text = text.Replace(placeholder.Key, placeholder.Value);
+                        replacementMade = true;
+                    }
+                }
+
+                if (replacementMade)
+                {
+                    textNode.Value = text;
                 }
             }
         }
