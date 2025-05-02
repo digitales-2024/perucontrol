@@ -89,15 +89,19 @@ public class ProjectService(
         }
 
         // Transform appointments into Schedule2Data
-        var scheduleData = project
-            .Appointments.OrderBy(a => a.DueDate)
-            .Select(a => new Schedule2Data(
-                a.DueDate.GetSpanishMonthName(),
-                a.DueDate,
-                a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
-                string.Join(", ", a.Services.Select(s => s.Name).OrderBy(n => n)),
-                "Documentos" // Replace with actual documents if available
-            ))
+        var scheduleData = project.Appointments
+            .OrderBy(a => a.DueDate)
+            .Select(a =>
+                new Schedule2Data(
+                    a.DueDate.GetSpanishMonthName(),
+                    a.DueDate,
+                    a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
+                    string.Join(",",
+                        a.Services.Select(s => s.Name.Trim()).OrderBy(n => n)
+                    ),
+                    "Documentos"
+                )
+            )
             .ToList();
 
         // Send the data to the ODS generation system

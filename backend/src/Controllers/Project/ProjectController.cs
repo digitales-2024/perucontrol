@@ -599,6 +599,28 @@ public class ProjectController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
+    [EndpointSummary("Generate Schedule Format 2 excel")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule2/excel")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2Excel(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // send
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "cronograma.ods");
+    }
+
     [EndpointSummary("Generate Schedule Format 2 PDF")]
     [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
     [HttpGet("{id}/schedule2/pdf")]

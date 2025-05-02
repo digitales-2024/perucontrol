@@ -273,6 +273,9 @@ public class OdsTemplateService
 
                                 i += spanCount;
                             }
+
+                            // Remove the original template row (row 6)
+                            insertAfterRow.Remove();
                         }
                     }
 
