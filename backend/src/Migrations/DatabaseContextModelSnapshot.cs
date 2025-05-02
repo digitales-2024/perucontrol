@@ -839,6 +839,9 @@ namespace PeruControl.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CompanyRepresentative")
+                        .HasColumnType("text");
+
                     b.Property<string>("CorrectiveMeasures")
                         .HasColumnType("text");
 

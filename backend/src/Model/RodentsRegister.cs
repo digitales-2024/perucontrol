@@ -18,6 +18,9 @@ public class RodentRegister : BaseModel
 
     /// Medidas correctivas
     public string? CorrectiveMeasures { get; set; }
+
+    /// Representante de la empresa
+    public string? CompanyRepresentative { get; set; }
 }
 
 public class RodentArea : BaseModel
@@ -47,6 +50,7 @@ public enum RodentResult
     RoedMto,
     Others,
 }
+
 
 public static class RodentResultExtensions
 {
@@ -125,7 +129,6 @@ public static class RodentMaterialsExtensions
 public class RodentAreaUpdateDTO
 {
     public Guid? Id { get; set; }
-
     public string Name { get; set; } = null!;
     public int CebaderoTrampa { get; set; }
     public QuotationFrequency Frequency { get; set; }
@@ -139,12 +142,12 @@ public class RodentAreaUpdateDTO
 public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 {
     public DateTime? ServiceDate { get; set; }
-    public TimeSpan? EnterTime { get; set; }
-    public TimeSpan? LeaveTime { get; set; }
     public string? Incidents { get; set; }
     public string? CorrectiveMeasures { get; set; }
 
     public List<RodentAreaUpdateDTO> RodentAreas { get; set; } = new();
+
+    public string? CompanyRepresentative { get; set; }
 
     public void ApplyPatch(RodentRegister entity)
     {
@@ -156,5 +159,8 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 
         if (CorrectiveMeasures != null)
             entity.CorrectiveMeasures = CorrectiveMeasures;
+
+        if (CompanyRepresentative != null)
+            entity.CompanyRepresentative = CompanyRepresentative;
     }
 }

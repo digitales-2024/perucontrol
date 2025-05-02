@@ -8,7 +8,6 @@ export const clientDataSchema = z.object({
     price: z.number({message: "El precio es requerido"})
         .int("La cantidad debe ser un número entero")
         .min(1, "Debe ser mayor a 0"),
-    // ambients: z.array(z.string().min(1, "El ambiente es requerido")),
     ambients: z.array(z.string()),
 
     address: z.string().min(1, "La dirección es requerida")
@@ -79,8 +78,6 @@ export type ProjectFormFields = {
 export const downloadProjectSchema = z.object({
     projectAppointmentId: z.string(),
     operationDate: z.string(),
-    enterTime: z.string(),
-    leaveTime: z.string(),
     razonSocial: z.string(),
     address: z.string(),
     businessType: z.string(),
@@ -89,7 +86,10 @@ export const downloadProjectSchema = z.object({
     certificateNumber: z.string(),
     insects: z.string(),
     rodents: z.string(),
-    rodentConsumption: z.enum(["Partial", "Total", "Deteriorated", "NoConsumption"]).optional(),
+    rodentConsumptionPartial: z.string(),
+    rodentConsumptionTotal: z.string(),
+    rodentConsumptionDeteriorated: z.string(),
+    rodentConsumptionNone: z.string(),
     otherPlagues: z.string(),
     insecticide: z.string(),
     insecticide2: z.string(),
@@ -178,13 +178,12 @@ export const RodentAreaSchema = z.object({
 export const RodentControlFormSchema = z.object({
     serviceDate: z.string().nullable()
         .optional(),
-    enterTime: z.string(),
-    leaveTime: z.string(),
     incidents: z.string().nullable()
         .optional(),
     correctiveMeasures: z.string().nullable()
         .optional(),
     rodentAreas: z.array(RodentAreaSchema).min(1, "Debe agregar al menos un área"),
+    companyRepresentative: z.string().nullable(),
 });
 
 // Exporta el type de React Hook Form

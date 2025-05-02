@@ -7,6 +7,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public Guid ProjectAppointmentId { get; set; }
     public DateTime? OperationDate { get; set; }
     public string? TreatedAreas { get; set; }
+
     public string? Insects { get; set; }
     public string Rodents { get; set; } = string.Empty;
     public string? OtherPlagues { get; set; }
@@ -20,6 +21,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     public string? RodenticideAmount { get; set; }
     public string? DesinfectantAmount { get; set; }
     public string? OtherProductsAmount { get; set; }
+
     public string? Staff1 { get; set; }
     public string? Staff2 { get; set; }
     public string? Staff3 { get; set; }
@@ -86,6 +88,7 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     public string? TreatedAreas { get; set; }
     public string? Insects { get; set; }
     public string? Rodents { get; set; } = string.Empty;
+    public string? OtherPlagues { get; set; }
     public string? RodentConsumptionPartial { get; set; } = string.Empty;
     public string? RodentConsumptionTotal { get; set; } = string.Empty;
     public string? RodentConsumptionDeteriorated { get; set; } = string.Empty;
@@ -128,6 +131,8 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
             entity.Insects = Insects;
         if (Rodents != null)
             entity.Rodents = Rodents;
+        if (OtherPlagues != null)
+            entity.OtherPlagues = OtherPlagues;
         if (RodentConsumptionPartial != null)
             entity.RodentConsumptionPartial = RodentConsumptionPartial;
         if (RodentConsumptionTotal != null)

@@ -4348,6 +4348,8 @@ export interface components {
             /** Format: date-time */
             dueDate?: string;
             serviceIds?: Array<string>;
+            enterTime?: string | null;
+            leaveTime?: string | null;
         };
         AppointmentCreateDTOThroughProject: {
             /** Format: date-time */
@@ -4371,6 +4373,8 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
+            enterTime?: string | null;
+            leaveTime?: string | null;
         };
         AppointmentGetDTO2: {
             /** Format: int32 */
@@ -4384,6 +4388,8 @@ export interface components {
             services?: Array<components["schemas"]["Service"]>;
             project?: components["schemas"]["Project"];
             client?: components["schemas"]["Client"];
+            enterTime?: string | null;
+            leaveTime?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4399,6 +4405,8 @@ export interface components {
             dueDate?: string | null;
             /** Format: date-time */
             actualDate?: string | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
         };
         Business: {
             digesaNumber: string;
@@ -4602,8 +4610,6 @@ export interface components {
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
-        /** @enum {unknown|null} */
-        NullableOfRodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption" | null;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -4639,10 +4645,13 @@ export interface components {
             appointmentNumber: number;
             /** Format: int32 */
             certificateNumber?: number | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
             /** Format: date-time */
             dueDate: string;
             /** Format: date-time */
             actualDate?: string | null;
+            cancelled?: boolean | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4692,12 +4701,13 @@ export interface components {
             projectAppointmentId: string;
             /** Format: date-time */
             operationDate: string;
-            enterTime: string;
-            leaveTime: string;
             treatedAreas: string;
             insects: string;
             rodents: string;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
+            rodentConsumptionPartial?: string;
+            rodentConsumptionTotal?: string;
+            rodentConsumptionDeteriorated?: string;
+            rodentConsumptionNone?: string;
             otherPlagues: string;
             aspersionManual: boolean;
             aspercionMotor: boolean;
@@ -4739,12 +4749,9 @@ export interface components {
             projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
-            enterTime?: string | null;
-            leaveTime?: string | null;
             treatedAreas?: string | null;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             insects?: string | null;
-            rodents?: string | null;
+            rodents?: string;
             otherPlagues?: string | null;
             insecticide?: string | null;
             insecticide2?: string | null;
@@ -4779,13 +4786,13 @@ export interface components {
             projectAppointmentId?: string;
             /** Format: date-time */
             operationDate?: string | null;
-            enterTime?: string | null;
-            leaveTime?: string | null;
-            rodentConsumption?: components["schemas"]["NullableOfRodentConsumption"];
             treatedAreas?: string | null;
             insects?: string | null;
             rodents?: string | null;
-            otherPlagues?: string | null;
+            rodentConsumptionPartial?: string | null;
+            rodentConsumptionTotal?: string | null;
+            rodentConsumptionDeteriorated?: string | null;
+            rodentConsumptionNone?: string | null;
             insecticide?: string | null;
             insecticide2?: string | null;
             rodenticide?: string | null;
@@ -4804,7 +4811,6 @@ export interface components {
             aspercionMotor?: boolean | null;
             nebulizacionFrio?: boolean | null;
             nebulizacionCaliente?: boolean | null;
-            nebulizacionCebosTotal?: boolean | null;
             colocacionCebosCebaderos?: string | null;
             numeroCeboTotal?: string | null;
             numeroCeboRepuestos?: string | null;
@@ -5048,6 +5054,10 @@ export interface components {
             others?: string | null;
             availability?: string | null;
             quotationServices?: Array<components["schemas"]["QuotationServicePatchDTO"]> | null;
+            termsAndConditions?: Array<string> | null;
+            desinsectant?: string | null;
+            derodent?: string | null;
+            disinfectant?: string | null;
         };
         QuotationService: {
             /**
@@ -5159,11 +5169,10 @@ export interface components {
             projectAppointmentId?: string;
             /** Format: date-time */
             serviceDate: string;
-            enterTime: string;
-            leaveTime: string;
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
             incidents?: string | null;
             correctiveMeasures?: string | null;
+            companyRepresentative?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -5180,6 +5189,7 @@ export interface components {
             incidents?: string | null;
             correctiveMeasures?: string | null;
             rodentAreas?: Array<components["schemas"]["RodentAreaUpdateDTO"]>;
+            companyRepresentative?: string | null;
         };
         /** @enum {unknown} */
         RodentResult: "Active" | "Inactive" | "RoedMto" | "Others";
