@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
 import { parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -29,13 +29,6 @@ const infestationLevels = [
     { id: "Negligible", label: "Insignificante" },
 ];
 
-const rodentConsumptionLevels = [
-    { id: "Partial", label: "Parcial" },
-    { id: "Total", label: "Total" },
-    { id: "Deteriorated", label: "Deteriorado" },
-    { id: "NoConsumption", label: "Sin Consumo" },
-];
-
 export function DownloadProjectForm({
     onOpenChange,
     project,
@@ -56,9 +49,7 @@ export function DownloadProjectForm({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
             projectAppointmentId: appointment.id!,
-            operationDate: appointment.actualDate!,
-            enterTime: operationSheet.enterTime ?? "",
-            leaveTime: operationSheet.leaveTime ?? "",
+            operationDate: operationSheet.operationDate ?? appointment.actualDate!,
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
             businessType: client.businessType ?? "",
@@ -67,7 +58,10 @@ export function DownloadProjectForm({
             certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
             insects: operationSheet.insects ?? "",
             rodents: operationSheet.rodents ?? "",
-            rodentConsumption: operationSheet.rodentConsumption ?? "Partial",
+            rodentConsumptionPartial: operationSheet.rodentConsumptionPartial ?? "",
+            rodentConsumptionTotal: operationSheet.rodentConsumptionTotal ?? "",
+            rodentConsumptionDeteriorated: operationSheet.rodentConsumptionDeteriorated ?? "",
+            rodentConsumptionNone: operationSheet.rodentConsumptionNone ?? "",
             otherPlagues: operationSheet.otherPlagues ?? "",
             insecticide: operationSheet.insecticide ?? "",
             insecticide2: operationSheet.insecticide2 ?? "",
@@ -171,6 +165,7 @@ export function DownloadProjectForm({
 
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
+        console.log(JSON.stringify(input, null, 2));
         const [result, error] = await toastWrapper(
             SaveProjectOperationSheetData(appointment.id!, input),
             {
@@ -232,7 +227,7 @@ export function DownloadProjectForm({
                                         </CardHeader>
                                         <Separator />
                                         <CardContent className="pt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 gap-6">
                                                 <FormField
                                                     control={form.control}
                                                     name="operationDate"
@@ -249,12 +244,8 @@ export function DownloadProjectForm({
                                                                     {
                                                                         if (date)
                                                                         {
-                                                                            const utcDate = new Date(Date.UTC(
-                                                                                date.getFullYear(),
-                                                                                date.getMonth(),
-                                                                                date.getDate(),
-                                                                            ));
-                                                                            field.onChange(utcDate.toISOString());
+                                                                            const localDate = new Date(date);
+                                                                            field.onChange(localDate.toISOString());
                                                                         }
                                                                         else
                                                                         {
@@ -267,41 +258,6 @@ export function DownloadProjectForm({
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="enterTime"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                                    <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                    Hora de Ingreso
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="09:30" {...field} className="border-gray-300" />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="leaveTime"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                                    <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                    Hora de Salida
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="15:30" {...field} className="border-gray-300" />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -425,28 +381,66 @@ export function DownloadProjectForm({
                                                     <MilkOff className="h-4 w-4 text-blue-500" />
                                                     Consumo de roedores
                                                 </FormLabel>
-                                                <div className="space-y-2">
-                                                    {rodentConsumptionLevels.map((level) => (
-                                                        <FormField
-                                                            key={level.id}
-                                                            control={form.control}
-                                                            name="rodentConsumption"
-                                                            render={({ field }) => (
-                                                                <FormItem className="flex items-start space-x-3 space-y-0">
-                                                                    <FormControl>
-                                                                        <Checkbox
-                                                                            checked={field.value === level.id}
-                                                                            onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
-                                                                            }
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormLabel className="text-sm font-normal">
-                                                                        {level.label}
-                                                                    </FormLabel>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    ))}
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Parcial
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionPartial"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Parcial" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Consumo Total
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionTotal"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Total" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Deteriorado
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionDeteriorated"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Deteriorado" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Sin Consumo
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionNone"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Sin Consumo" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
                                                 </div>
 
                                                 <FormLabel className="flex items-center gap-2 font-medium">

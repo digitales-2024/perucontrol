@@ -57,7 +57,11 @@ export default async function CotizacionPage()
                     </Breadcrumb>
                 )}
             />
-            <CreateQuotation terms={activeTerms} clients={clients} services={services} />
+            <CreateQuotation
+                terms={activeTerms}
+                clients={clients}
+                services={services}
+            />
         </>
     );
 }

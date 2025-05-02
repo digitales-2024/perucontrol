@@ -123,7 +123,7 @@ public class AppointmentController(
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
 
-        // Use the string properties directly instead of the enum/ToCheckbox
+         // Use the string properties directly instead of the enum/ToCheckbox
         var r_p = sheet.RodentConsumptionPartial;
         var r_t = sheet.RodentConsumptionTotal;
         var r_d = sheet.RodentConsumptionDeteriorated;
@@ -151,6 +151,10 @@ public class AppointmentController(
             { "{r_t}", r_t },
             { "{r_d}", r_d },
             { "{r_s}", r_s },
+            /* { "{partial}", sheet.Partial ?? "" },
+            { "{total}", sheet.Total ?? "" },
+            { "{deteriorated}", sheet.Deteriorated ?? "" },
+            { "{no_consumption}", sheet.NoConsumption ?? "" }, */
             { "{diag_otros}", sheet.OtherPlagues },
             { "{ma_manual}", sheet.AspersionManual ? "x" : "" },
             { "{ma_motor}", sheet.AspercionMotor ? "x" : "" },

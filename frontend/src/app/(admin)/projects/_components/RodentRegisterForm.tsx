@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarClock, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CircleUser, PlusCircle, Save, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -32,10 +32,9 @@ export function RodentControlForm({
         resolver: zodResolver(RodentControlFormSchema),
         defaultValues: {
             serviceDate: rodent.serviceDate ?? null,
-            enterTime: rodent.enterTime ?? "",
-            leaveTime: rodent.leaveTime ?? "",
             incidents: rodent.incidents ?? null,
             correctiveMeasures: rodent.correctiveMeasures ?? null,
+            companyRepresentative: rodent.companyRepresentative ?? null,
             rodentAreas: rodent.rodentAreas!.length > 0
                 ? rodent.rodentAreas?.map((area) => ({
                     name: area.name ?? "",
@@ -78,8 +77,6 @@ export function RodentControlForm({
             ...formData,
             serviceDate: formData.serviceDate ? formData.serviceDate.toString() : null,
         };
-
-        console.log(transformedData);
 
         const [, saveError] = await toastWrapper(
             SaveRodentData(appointment.id!, transformedData),
@@ -142,8 +139,6 @@ export function RodentControlForm({
             serviceDate: input.serviceDate ? input.serviceDate.toString() : null,
         };
 
-        console.log(JSON.stringify(preparedInput, null, 2));
-
         const [result, error] = await toastWrapper(
             SaveRodentData(appointment.id!, preparedInput),
             {
@@ -193,41 +188,28 @@ export function RodentControlForm({
                                 </h3>
                             </div>
 
-                            <div className="flex flex-wrap gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="enterTime"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                Hora de Ingreso
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="09:30" {...field} className="border-gray-300" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="leaveTime"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="flex items-center gap-2 font-medium">
-                                                <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                Hora de Salida
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="15:30" {...field} className="border-gray-300" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="companyRepresentative"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-2 font-medium">
+                                            <CircleUser className="h-4 w-4 text-blue-500" />
+                                            Representante de la Compañia
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Representante"
+                                                value={field.value ?? ""}
+                                                // {...field}
+                                                onChange={field.onChange}
+                                                className="border-gray-300"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             {fields.map((field, index) => (
                                 <Card key={field.id} className="border shadow-sm mb-4">
