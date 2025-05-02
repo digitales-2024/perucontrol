@@ -129,7 +129,6 @@ public static class RodentMaterialsExtensions
 public class RodentAreaUpdateDTO
 {
     public Guid? Id { get; set; }
-
     public string Name { get; set; } = null!;
     public int CebaderoTrampa { get; set; }
     public QuotationFrequency Frequency { get; set; }
@@ -143,8 +142,6 @@ public class RodentAreaUpdateDTO
 public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 {
     public DateTime? ServiceDate { get; set; }
-    public TimeSpan? EnterTime { get; set; }
-    public TimeSpan? LeaveTime { get; set; }
     public string? Incidents { get; set; }
     public string? CorrectiveMeasures { get; set; }
 

@@ -78,8 +78,6 @@ export type ProjectFormFields = {
 export const downloadProjectSchema = z.object({
     projectAppointmentId: z.string(),
     operationDate: z.string(),
-    enterTime: z.string(),
-    leaveTime: z.string(),
     razonSocial: z.string(),
     address: z.string(),
     businessType: z.string(),
@@ -88,10 +86,10 @@ export const downloadProjectSchema = z.object({
     certificateNumber: z.string(),
     insects: z.string(),
     rodents: z.string(),
-    partial: z.string(),
-    total: z.string(),
-    deteriorated: z.string(),
-    noConsumption: z.string(),
+    rodentConsumptionPartial: z.string(),
+    rodentConsumptionTotal: z.string(),
+    rodentConsumptionDeteriorated: z.string(),
+    rodentConsumptionNone: z.string(),
     otherPlagues: z.string(),
     insecticide: z.string(),
     insecticide2: z.string(),
@@ -180,8 +178,6 @@ export const RodentAreaSchema = z.object({
 export const RodentControlFormSchema = z.object({
     serviceDate: z.string().nullable()
         .optional(),
-    enterTime: z.string(),
-    leaveTime: z.string(),
     incidents: z.string().nullable()
         .optional(),
     correctiveMeasures: z.string().nullable()

@@ -511,15 +511,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-<<<<<<< HEAD
-                    b.Property<string>("Deteriorated")
-                        .HasColumnType("text");
-
-                    b.Property<TimeSpan>("EnterTime")
-                        .HasColumnType("interval");
-
-=======
->>>>>>> 6da235c6367b5b55deae83afde2ac14ed3518c2e
                     b.Property<string>("Insecticide")
                         .IsRequired()
                         .HasColumnType("text");
@@ -553,9 +544,6 @@ namespace PeruControl.Migrations
 
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("NoConsumption")
-                        .HasColumnType("text");
 
                     b.Property<string>("NroJaulasTomahawk")
                         .IsRequired()
@@ -592,9 +580,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Partial")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
 
@@ -602,8 +587,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("RodentConsumptionDeteriorated")
                         .IsRequired()
                         .HasColumnType("text");
@@ -620,7 +603,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
->>>>>>> 6da235c6367b5b55deae83afde2ac14ed3518c2e
                     b.Property<string>("Rodenticide")
                         .IsRequired()
                         .HasColumnType("text");
@@ -647,9 +629,6 @@ namespace PeruControl.Migrations
 
                     b.Property<string>("Staff4")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Total")
                         .HasColumnType("text");
 
                     b.Property<string>("TreatedAreas")

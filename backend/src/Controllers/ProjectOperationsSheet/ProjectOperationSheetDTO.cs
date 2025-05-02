@@ -85,22 +85,10 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
 {
     public Guid ProjectAppointmentId { get; set; }
     public DateTime? OperationDate { get; set; }
-
-    /* public TimeSpan? EnterTime { get; set; }
-
-    public TimeSpan? LeaveTime { get; set; }
-
-    public string? Partial { get; set; }
-
-    public string? Total { get; set; }
-
-    public string? Deteriorated { get; set; }
-
-    public string? NoConsumption { get; set; } */
-
     public string? TreatedAreas { get; set; }
     public string? Insects { get; set; }
     public string? Rodents { get; set; } = string.Empty;
+    public string? OtherPlagues { get; set; }
     public string? RodentConsumptionPartial { get; set; } = string.Empty;
     public string? RodentConsumptionTotal { get; set; } = string.Empty;
     public string? RodentConsumptionDeteriorated { get; set; } = string.Empty;
@@ -137,24 +125,14 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
     {
         if (OperationDate != null)
             entity.OperationDate = (DateTime)OperationDate;
-        /* if (EnterTime != null)
-            entity.EnterTime = (TimeSpan)EnterTime;
-        if (LeaveTime != null)
-            entity.LeaveTime = (TimeSpan)LeaveTime;
-        if (Partial != null)
-            entity.Partial = Partial;
-        if (Total != null)
-            entity.Total = Total;
-        if (Deteriorated != null)
-            entity.Deteriorated = Deteriorated;
-        if (NoConsumption != null)
-            entity.NoConsumption = NoConsumption; */
         if (TreatedAreas != null)
             entity.TreatedAreas = TreatedAreas;
         if (Insects != null)
             entity.Insects = Insects;
         if (Rodents != null)
             entity.Rodents = Rodents;
+        if (OtherPlagues != null)
+            entity.OtherPlagues = OtherPlagues;
         if (RodentConsumptionPartial != null)
             entity.RodentConsumptionPartial = RodentConsumptionPartial;
         if (RodentConsumptionTotal != null)
