@@ -139,8 +139,6 @@ export function RodentControlForm({
             serviceDate: input.serviceDate ? input.serviceDate.toString() : null,
         };
 
-        console.log(JSON.stringify(preparedInput, null, 2));
-
         const [result, error] = await toastWrapper(
             SaveRodentData(appointment.id!, preparedInput),
             {

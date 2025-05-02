@@ -27,9 +27,10 @@ import {
     Copy,
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
-import { CreateQuotationSchema2 } from "../schemas";
+// import { CreateQuotationSchema2 } from "../schemas";
+import { components } from "@/types/api";
 
-export function ViewQuotationDetails({ quotation }: { quotation: CreateQuotationSchema2 })
+export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation3"] })
 {
     const { id: quotationId } = useParams();
     const router = useRouter();
@@ -378,7 +379,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: CreateQuotation
                                                     {service.price !== undefined && (
                                                         <p>
                                                             Precio unitario: $
-                                                            {service.price.toFixed(2)}
+                                                            {service.price!.toFixed(2)}
                                                         </p>
                                                     )}
                                                     {service.accesories && (
