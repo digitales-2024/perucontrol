@@ -14,14 +14,6 @@ public class ProjectOperationSheet : BaseModel
     // fecha_op
     public required DateTime OperationDate { get; set; }
 
-    // hora_ingreso
-    [Required]
-    public required TimeSpan EnterTime { get; set; }
-
-    // hora_salida
-    [Required]
-    public required TimeSpan LeaveTime { get; set; }
-
     // areas_tratadas
     [Required]
     public string TreatedAreas { get; set; } = string.Empty;
@@ -39,13 +31,10 @@ public class ProjectOperationSheet : BaseModel
     public string Rodents { get; set; } = string.Empty;
 
     // Consumo de Roedores
-    public string? Partial { get; set; } = string.Empty;
-
-    public string? Total { get; set; } = string.Empty;
-
-    public string? Deteriorated { get; set; } = string.Empty;
-
-    public string? NoConsumption { get; set; } = string.Empty;
+    public string RodentConsumptionPartial { get; set; } = string.Empty;
+    public string RodentConsumptionTotal { get; set; } = string.Empty;
+    public string RodentConsumptionDeteriorated { get; set; } = string.Empty;
+    public string RodentConsumptionNone { get; set; } = string.Empty;
 
     // otras
     [Required]

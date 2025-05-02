@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250430140323_OperationSheetRodentsString")]
+    partial class OperationSheetRodentsString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -438,9 +441,6 @@ namespace PeruControl.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentNumber"));
 
-                    b.Property<bool?>("Cancelled")
-                        .HasColumnType("boolean");
-
                     b.Property<int?>("CertificateNumber")
                         .HasColumnType("integer");
 
@@ -452,14 +452,8 @@ namespace PeruControl.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan?>("EnterTime")
-                        .HasColumnType("interval");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
-
-                    b.Property<TimeSpan?>("LeaveTime")
-                        .HasColumnType("interval");
 
                     b.Property<DateTime>("ModifiedAt")
                         .ValueGeneratedOnAdd()
@@ -511,15 +505,9 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-<<<<<<< HEAD
-                    b.Property<string>("Deteriorated")
-                        .HasColumnType("text");
-
                     b.Property<TimeSpan>("EnterTime")
                         .HasColumnType("interval");
 
-=======
->>>>>>> 6da235c6367b5b55deae83afde2ac14ed3518c2e
                     b.Property<string>("Insecticide")
                         .IsRequired()
                         .HasColumnType("text");
@@ -543,6 +531,9 @@ namespace PeruControl.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<TimeSpan>("LeaveTime")
+                        .HasColumnType("interval");
+
                     b.Property<DateTime>("ModifiedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -553,9 +544,6 @@ namespace PeruControl.Migrations
 
                     b.Property<bool>("NebulizacionFrio")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("NoConsumption")
-                        .HasColumnType("text");
 
                     b.Property<string>("NroJaulasTomahawk")
                         .IsRequired()
@@ -592,9 +580,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Partial")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
 
@@ -602,8 +587,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("RodentConsumptionDeteriorated")
                         .IsRequired()
                         .HasColumnType("text");
@@ -620,7 +603,6 @@ namespace PeruControl.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
->>>>>>> 6da235c6367b5b55deae83afde2ac14ed3518c2e
                     b.Property<string>("Rodenticide")
                         .IsRequired()
                         .HasColumnType("text");
@@ -647,9 +629,6 @@ namespace PeruControl.Migrations
 
                     b.Property<string>("Staff4")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Total")
                         .HasColumnType("text");
 
                     b.Property<string>("TreatedAreas")
@@ -860,20 +839,23 @@ namespace PeruControl.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompanyRepresentative")
-                        .HasColumnType("text");
-
                     b.Property<string>("CorrectiveMeasures")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<TimeSpan>("EnterTime")
+                        .HasColumnType("interval");
+
                     b.Property<string>("Incidents")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<TimeSpan>("LeaveTime")
+                        .HasColumnType("interval");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");

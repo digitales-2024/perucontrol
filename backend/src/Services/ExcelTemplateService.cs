@@ -256,7 +256,7 @@ public class ExcelTemplateService
         var firstSheet =
             sheets.FirstOrDefault() ?? throw new Exception("No sheets found in template.");
         var templateWorksheetPart =
-            (WorksheetPart)workbookPart.GetPartById(firstSheet.Id)
+            (WorksheetPart)workbookPart.GetPartById(firstSheet.Id!)
             ?? throw new Exception("Couldnt load template worksheet part");
 
         // Create a new worksheet for each month in the dictionary

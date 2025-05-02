@@ -27,11 +27,20 @@ public class ProjectAppointment : BaseModel
     [JsonIgnore]
     public RodentRegister RodentRegister { get; set; } = null!;
 
+    // hora_ingreso
+    public TimeSpan? EnterTime { get; set; }
+
+    // hora_salida
+    public TimeSpan? LeaveTime { get; set; }
+
     /// The date by which the appointment should be performed
     public required DateTime DueDate { get; set; }
 
     /// The actual date the appointment was performed
     public DateTime? ActualDate { get; set; }
+
+    /// Represents that the appointment was not performed
+    public bool? Cancelled { get; set; } = false;
 
     /// Services performed on this appointment
     [JsonIgnore]

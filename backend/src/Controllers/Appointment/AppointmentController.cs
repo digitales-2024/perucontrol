@@ -55,6 +55,8 @@ public class AppointmentController(
                 IsActive = a.IsActive,
                 CreatedAt = a.CreatedAt,
                 ModifiedAt = a.ModifiedAt,
+                EnterTime = a.EnterTime, // <-- Add this
+                LeaveTime = a.LeaveTime, // <-- Add this
             })
         );
     }
@@ -83,6 +85,8 @@ public class AppointmentController(
             Services = a.Services,
             Project = a.Project,
             Client = a.Project.Client,
+            EnterTime = a.EnterTime, // <-- Add this
+            LeaveTime = a.LeaveTime, // <-- Add this
         });
 
         return Ok(result);
@@ -111,13 +115,19 @@ public class AppointmentController(
         if (project == null || sheet == null || client == null)
         {
             return (
-                new byte[0],
+                [],
                 $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
             );
         }
 
         var serviceNames = project.Services.Select(s => s.Name).ToList();
         var serviceNamesStr = string.Join(", ", serviceNames);
+
+         // Use the string properties directly instead of the enum/ToCheckbox
+        var r_p = sheet.RodentConsumptionPartial;
+        var r_t = sheet.RodentConsumptionTotal;
+        var r_d = sheet.RodentConsumptionDeteriorated;
+        var r_s = sheet.RodentConsumptionNone;
 
         var (in_a, in_m, in_b, in_i) =
             sheet.DegreeInsectInfectivity?.ToCheckbox() ?? ("", "", "", "");
@@ -127,8 +137,9 @@ public class AppointmentController(
         var placeholders = new Dictionary<string, string>
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
-            { "{hora_ingreso}", sheet.EnterTime.ToString(@"hh\:mm") },
-            { "{hora_salida}", sheet.LeaveTime.ToString(@"hh\:mm") },
+            // FIXME: restore time generation from the parent appointment
+            // { "{hora_ingreso}", sheet.EnterTime.ToString(@"hh\:mm") },
+            // { "{hora_salida}", sheet.LeaveTime.ToString(@"hh\:mm") },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },
@@ -136,10 +147,14 @@ public class AppointmentController(
             { "{servicios}", serviceNamesStr },
             { "{diag_insectos}", sheet.Insects },
             { "{diag_roedores}", sheet.Rodents },
-            { "{partial}", sheet.Partial ?? "" },
+            { "{r_p}", r_p },
+            { "{r_t}", r_t },
+            { "{r_d}", r_d },
+            { "{r_s}", r_s },
+            /* { "{partial}", sheet.Partial ?? "" },
             { "{total}", sheet.Total ?? "" },
             { "{deteriorated}", sheet.Deteriorated ?? "" },
-            { "{no_consumption}", sheet.NoConsumption ?? "" },
+            { "{no_consumption}", sheet.NoConsumption ?? "" }, */
             { "{diag_otros}", sheet.OtherPlagues },
             { "{ma_manual}", sheet.AspersionManual ? "x" : "" },
             { "{ma_motor}", sheet.AspercionMotor ? "x" : "" },
@@ -153,7 +168,7 @@ public class AppointmentController(
             { "{insecticida_1}", sheet.Insecticide },
             { "{insecticida_1_cantidad}", sheet.InsecticideAmount },
             { "{insecticida_2}", sheet.Insecticide2 },
-            { "{insecticida_2_cantidad}", sheet.Insecticide2 },
+            { "{insecticida_2_cantidad}", sheet.InsecticideAmount2 },
             { "{rodenticida}", sheet.Rodenticide },
             { "{rodenticida_cantidad}", sheet.RodenticideAmount },
             { "{desinfectante}", sheet.Desinfectant },
