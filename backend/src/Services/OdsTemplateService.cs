@@ -171,6 +171,9 @@ public (byte[], string?) GenerateSchedule2()
     List<Schedule2Data> mockData = [
         new ("Octubre", new DateTime(2023, 10, 1), "Lunes", "Servicio 1", "Documentos 1"),
         new ("Octubre", new DateTime(2023, 10, 2), "Martes", "Servicio 2", "Documentos 2"),
+        new ("Noviembre", new DateTime(2023, 11, 1), "Lunes", "Servicio 1", "Documentos 1"),
+        new ("Noviembre", new DateTime(2023, 11, 2), "Martes", "Servicio 2", "Documentos 2"),
+        // Add more data as needed
         // Add more data as needed
     ];
 
@@ -209,23 +212,58 @@ public (byte[], string?) GenerateSchedule2()
                         var templateRow = new XElement(insertAfterRow); // Clone as template
 
                         XElement lastInserted = insertAfterRow;
-                        foreach (var data in mockData)
-                        {
-                            var newRow = new XElement(templateRow);
 
-                            // Replace placeholders in the new row
-                            foreach (var cell in newRow.Descendants(textns + "p"))
+                        int i = 0;
+                        while (i < mockData.Count)
+                        {
+                            // Find how many consecutive rows share the same MonthName
+                            int spanCount = 1;
+                            while (i + spanCount < mockData.Count && mockData[i + spanCount].MonthName == mockData[i].MonthName)
+                                spanCount++;
+
+                            for (int j = 0; j < spanCount; j++)
                             {
-                                cell.Value = cell.Value
-                                    .Replace("{{MONTH}}", data.MonthName)
-                                    .Replace("{{DATE}}", data.Date.ToString("yyyy-MM-dd"))
-                                    .Replace("{{DAY}}", data.ServiceDayName)
-                                    .Replace("{{SERVICE}}", data.Service)
-                                    .Replace("{{DOCUMENTS}}", data.Doucuments);
+                                var data = mockData[i + j];
+                                var newRow = new XElement(templateRow);
+
+                                // Replace placeholders
+                                foreach (var cell in newRow.Descendants(textns + "p"))
+                                {
+                                    cell.Value = cell.Value
+                                        .Replace("{{MONTH}}", data.MonthName)
+                                        .Replace("{{DATE}}", data.Date.ToString("yyyy-MM-dd"))
+                                        .Replace("{{DAY}}", data.ServiceDayName)
+                                        .Replace("{{SERVICE}}", data.Service)
+                                        .Replace("{{DOCUMENTS}}", data.Doucuments);
+                                }
+
+                                // Handle merging for the first row of the group
+                                if (j == 0)
+                                {
+                                    // Set number-rows-spanned on the first cell
+                                    var monthCell = newRow.Elements(tablens + "table-cell").FirstOrDefault();
+                                    monthCell?.SetAttributeValue(tablens + "number-rows-spanned", spanCount);
+                                }
+                                else
+                                {
+                                    // Remove the first cell for subsequent rows (merged cell)
+                                    var monthCell = newRow.Elements(tablens + "table-cell").FirstOrDefault();
+                                    if (monthCell != null)
+                                    {
+                                        // Replace with a covered cell
+                                        var coveredCell = new XElement(tablens + "table-cell",
+                                            new XAttribute(tablens + "number-columns-repeated", 1),
+                                            new XAttribute(tablens + "covered-table-cell", "true")
+                                        );
+                                        monthCell.ReplaceWith(coveredCell);
+                                    }
+                                }
+
+                                lastInserted.AddAfterSelf(newRow);
+                                lastInserted = newRow;
                             }
 
-                            lastInserted.AddAfterSelf(newRow);
-                            lastInserted = newRow;
+                            i += spanCount;
                         }
                     }
                 }
