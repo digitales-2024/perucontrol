@@ -16,7 +16,6 @@ public class ReportGenerationRequest
 [Authorize]
 public class ProjectController(
     DatabaseContext db,
-    ServiceCacheProvider services,
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
     S3Service s3Service,
@@ -55,10 +54,15 @@ public class ProjectController(
         if (createDTO.Services.Count == 0)
             return BadRequest("Debe ingresar al menos un servicio");
 
-        if (!services.ValidateIds(createDTO.Services))
+        // Fetch services from the database by IDs
+        var serviceEntities = await _context
+            .Services.Where(s => createDTO.Services.Contains(s.Id))
+            .ToListAsync();
+
+        if (serviceEntities.Count != createDTO.Services.Count)
             return NotFound("Algunos servicios no fueron encontrados");
 
-        entity.Services = services.GetServicesForEntityFramework(createDTO.Services, _context);
+        entity.Services = serviceEntities;
 
         // merge all appointments with the same date
         var mergedAppointments = createDTO
@@ -87,16 +91,24 @@ public class ProjectController(
         }
 
         // Create Appointments
-        var appointments = createDTO
-            .AppointmentCreateDTOs.Select(app => new ProjectAppointment
-            {
-                DueDate = app.DueDate,
-                Services = services.GetServicesForEntityFramework(app.Services, _context),
-                Certificate = new(),
-                RodentRegister = new() { ServiceDate = app.DueDate },
-                ProjectOperationSheet = new() { OperationDate = app.DueDate },
-            })
-            .ToList();
+        var appointments = new List<ProjectAppointment>();
+        foreach (var app in createDTO.AppointmentCreateDTOs)
+        {
+            var appointmentServices = serviceEntities
+                .Where(s => app.Services.Contains(s.Id))
+                .ToList();
+
+            appointments.Add(
+                new ProjectAppointment
+                {
+                    DueDate = app.DueDate,
+                    Services = appointmentServices,
+                    Certificate = new(),
+                    RodentRegister = new() { ServiceDate = app.DueDate },
+                    ProjectOperationSheet = new() { OperationDate = app.DueDate },
+                }
+            );
+        }
         entity.Appointments = appointments;
 
         // Create and populate the project
@@ -563,7 +575,6 @@ public class ProjectController(
             return NotFound("Error generando excel");
         }
 
-        // TODO: convert to ods, then convert to pdf?
         var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
         if (odsErr != "")
         {
@@ -588,6 +599,62 @@ public class ProjectController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
+    [EndpointSummary("Generate Schedule Format 2 excel")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule2/excel")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2Excel(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // send
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "cronograma.ods");
+    }
+
+    [EndpointSummary("Generate Schedule Format 2 PDF")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule2/pdf")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2PDF(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Upload Murino Map")]
+    [EndpointDescription("Allows uploading the Murino Map")]
     [HttpPost("{id}/upload-murino-map")]
     public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
     {

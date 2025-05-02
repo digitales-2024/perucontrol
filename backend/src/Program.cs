@@ -116,7 +116,6 @@ builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
 builder.Services.AddScoped<LibreOfficeConverterService>();
 builder.Services.AddScoped<SvgTemplateService>();
-builder.Services.AddScoped<ServiceCacheProvider>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<S3Service>();
 builder.Services.AddScoped<WhatsappService>();
@@ -164,14 +163,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogInformation("Seeding development data");
         await DatabaseSeeder.SeedClients(app.Services, logger);
     }
-
-    //
-    // Initialize service cache
-    //
-    var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    var cacheProvider = scope.ServiceProvider.GetRequiredService<ServiceCacheProvider>();
-    var services = await db.Set<Service>().ToListAsync();
-    cacheProvider.Initialize(services);
 }
 
 app.UseGlobalExceptionHandler();

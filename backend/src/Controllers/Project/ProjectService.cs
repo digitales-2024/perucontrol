@@ -4,7 +4,11 @@ using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
-public class ProjectService(DatabaseContext db, ExcelTemplateService excelTemplateService)
+public class ProjectService(
+    DatabaseContext db,
+    ExcelTemplateService excelTemplateService,
+    OdsTemplateService odsTemplateService
+)
 {
     /// <summary>
     /// Collects all appointments, organizes them, and generates an excel file
@@ -70,6 +74,38 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
             project
         );
         return (bytes, null);
+    }
+
+    public async Task<(byte[], string?)> GenerateAppointmentSchedule2Excel(Guid projectId)
+    {
+        var project = await db
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+        if (project is null)
+        {
+            return ([], "No se encontró el servicio.");
+        }
+
+        // Transform appointments into Schedule2Data
+        var scheduleData = project.Appointments
+            .OrderBy(a => a.DueDate)
+            .Select(a =>
+                new Schedule2Data(
+                    a.DueDate.GetSpanishMonthName(),
+                    a.DueDate,
+                    a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
+                    string.Join(",",
+                        a.Services.Select(s => s.Name.Trim()).OrderBy(n => n)
+                    ),
+                    "Documentos"
+                )
+            )
+            .ToList();
+
+        // Send the data to the ODS generation system
+        return odsTemplateService.GenerateSchedule2(scheduleData);
     }
 }
 
