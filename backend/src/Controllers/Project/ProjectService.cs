@@ -4,7 +4,8 @@ using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
-public class ProjectService(DatabaseContext db, ExcelTemplateService excelTemplateService)
+public class ProjectService(DatabaseContext db, ExcelTemplateService excelTemplateService,
+        OdsTemplateService odsTemplateService)
 {
     /// <summary>
     /// Collects all appointments, organizes them, and generates an excel file
@@ -70,6 +71,27 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
             project
         );
         return (bytes, null);
+    }
+
+    public async Task<(byte[], string?)> GenerateAppointmentSchedule2Excel(
+        Guid projectId
+    )
+    {
+        var project = await db
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+        if (project is null)
+        {
+            return (null, "No se encontró el servicio.");
+        }
+
+        // Sort the months
+        var templateFile = "Templates/cronograma_plantilla_2.ods";
+
+        // Send the data to the excel generation system
+        return odsTemplateService.GenerateSchedule2();
     }
 }
 

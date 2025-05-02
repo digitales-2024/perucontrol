@@ -156,4 +156,97 @@ public class OdsTemplateService
             }
         }
     }
+
+public (byte[], string?) GenerateSchedule2()
+{
+    var templatePath = "Templates/cronograma_plantilla_2.ods";
+    using var ms = new MemoryStream();
+    using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+    {
+        fs.CopyTo(ms);
+    }
+    ms.Position = 0;
+    using var outputMs = new MemoryStream();
+
+    List<Schedule2Data> mockData = [
+        new ("Octubre", new DateTime(2023, 10, 1), "Lunes", "Servicio 1", "Documentos 1"),
+        new ("Octubre", new DateTime(2023, 10, 2), "Martes", "Servicio 2", "Documentos 2"),
+        // Add more data as needed
+    ];
+
+    using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+    using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+    {
+        foreach (var entry in inputArchive.Entries)
+        {
+            if (entry.FullName != "content.xml")
+            {
+                var newEntry = outputArchive.CreateEntry(entry.FullName);
+                using var entryStream = entry.Open();
+                using var newEntryStream = newEntry.Open();
+                entryStream.CopyTo(newEntryStream);
+            }
+            else
+            {
+                var contentEntry = outputArchive.CreateEntry("content.xml");
+                using var entryStream = entry.Open();
+                var xmlDoc = XDocument.Load(entryStream);
+
+                XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                // Find the first table in the document
+                var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                if (table != null)
+                {
+                    // Get all rows in the table
+                    var rows = table.Elements(tablens + "table-row").ToList();
+
+                    // Ensure there are at least 6 rows
+                    if (rows.Count > 6)
+                    {
+                        var insertAfterRow = rows[5]; // 6th row (index 5)
+                        var templateRow = new XElement(insertAfterRow); // Clone as template
+
+                        XElement lastInserted = insertAfterRow;
+                        foreach (var data in mockData)
+                        {
+                            var newRow = new XElement(templateRow);
+
+                            // Replace placeholders in the new row
+                            foreach (var cell in newRow.Descendants(textns + "p"))
+                            {
+                                cell.Value = cell.Value
+                                    .Replace("{{MONTH}}", data.MonthName)
+                                    .Replace("{{DATE}}", data.Date.ToString("yyyy-MM-dd"))
+                                    .Replace("{{DAY}}", data.ServiceDayName)
+                                    .Replace("{{SERVICE}}", data.Service)
+                                    .Replace("{{DOCUMENTS}}", data.Doucuments);
+                            }
+
+                            lastInserted.AddAfterSelf(newRow);
+                            lastInserted = newRow;
+                        }
+                    }
+                }
+
+                // Write the modified XML back to the entry
+                using var newEntryStream = contentEntry.Open();
+                using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                writer.Formatting = Formatting.None;
+                xmlDoc.Save(writer);
+            }
+        }
+    }
+
+    return (outputMs.ToArray(), null);
 }
+}
+
+public record Schedule2Data(
+    string MonthName,
+    DateTime Date,
+    string ServiceDayName,
+    string Service,
+    string Doucuments
+) {}

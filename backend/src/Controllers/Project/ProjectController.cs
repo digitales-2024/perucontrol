@@ -563,7 +563,6 @@ public class ProjectController(
             return NotFound("Error generando excel");
         }
 
-        // TODO: convert to ods, then convert to pdf?
         var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
         if (odsErr != "")
         {
@@ -588,6 +587,43 @@ public class ProjectController(
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
+
+    [EndpointSummary("Generate Schedule Format 2 PDF")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpGet("{id}/schedule2/pdf")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2PDF(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(
+            id
+        );
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Upload Murino Map")]
+    [EndpointDescription("Allows uploading the Murino Map")]
     [HttpPost("{id}/upload-murino-map")]
     public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
     {
