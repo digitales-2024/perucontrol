@@ -157,7 +157,7 @@ public class OdsTemplateService
         }
     }
 
-public (byte[], string?) GenerateSchedule2()
+public (byte[], string?) GenerateSchedule2(List<Schedule2Data> mockData)
 {
     var templatePath = "Templates/cronograma_plantilla_2.ods";
     using var ms = new MemoryStream();
@@ -167,15 +167,6 @@ public (byte[], string?) GenerateSchedule2()
     }
     ms.Position = 0;
     using var outputMs = new MemoryStream();
-
-    List<Schedule2Data> mockData = [
-        new ("Octubre", new DateTime(2023, 10, 1), "Lunes", "Servicio 1", "Documentos 1"),
-        new ("Octubre", new DateTime(2023, 10, 2), "Martes", "Servicio 2", "Documentos 2"),
-        new ("Noviembre", new DateTime(2023, 11, 1), "Lunes", "Servicio 1", "Documentos 1"),
-        new ("Noviembre", new DateTime(2023, 11, 2), "Martes", "Servicio 2", "Documentos 2"),
-        // Add more data as needed
-        // Add more data as needed
-    ];
 
     using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
     using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))

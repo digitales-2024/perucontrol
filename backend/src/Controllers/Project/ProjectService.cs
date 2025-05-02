@@ -84,15 +84,28 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
             .FirstOrDefaultAsync(p => p.Id == projectId);
         if (project is null)
         {
-            return (null, "No se encontró el servicio.");
+            return ([], "No se encontró el servicio.");
         }
 
-        // Sort the months
-        var templateFile = "Templates/cronograma_plantilla_2.ods";
+        // Transform appointments into Schedule2Data
+        var scheduleData = project.Appointments
+            .OrderBy(a => a.DueDate)
+            .Select(a =>
+                new Schedule2Data(
+                    a.DueDate.GetSpanishMonthName(),
+                    a.DueDate,
+                    a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
+                    string.Join(", ", a.Services.Select(s => s.Name).OrderBy(n => n)),
+                    "Documentos" // Replace with actual documents if available
+                )
+            )
+            .ToList();
 
-        // Send the data to the excel generation system
-        return odsTemplateService.GenerateSchedule2();
+        // Send the data to the ODS generation system
+        return odsTemplateService.GenerateSchedule2(scheduleData);
     }
+
+
 }
 
 public class AppointmentInfo
