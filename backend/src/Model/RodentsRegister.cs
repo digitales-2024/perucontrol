@@ -51,7 +51,6 @@ public enum RodentResult
     Others,
 }
 
-
 public static class RodentResultExtensions
 {
     public static (string active, string inactive, string roedMto, string others) GetResultMarkers(

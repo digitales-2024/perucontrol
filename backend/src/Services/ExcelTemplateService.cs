@@ -344,10 +344,7 @@ public class ExcelTemplateService
         return ms.ToArray();
     }
 
-    public byte[] GenerateScheduleSecondFormat(
-        string templatePath,
-        Project project
-    )
+    public byte[] GenerateScheduleSecondFormat(string templatePath, Project project)
     {
         // Load the template excel
         using var ms = new MemoryStream();

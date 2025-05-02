@@ -4,8 +4,11 @@ using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
-public class ProjectService(DatabaseContext db, ExcelTemplateService excelTemplateService,
-        OdsTemplateService odsTemplateService)
+public class ProjectService(
+    DatabaseContext db,
+    ExcelTemplateService excelTemplateService,
+    OdsTemplateService odsTemplateService
+)
 {
     /// <summary>
     /// Collects all appointments, organizes them, and generates an excel file
@@ -73,9 +76,7 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
         return (bytes, null);
     }
 
-    public async Task<(byte[], string?)> GenerateAppointmentSchedule2Excel(
-        Guid projectId
-    )
+    public async Task<(byte[], string?)> GenerateAppointmentSchedule2Excel(Guid projectId)
     {
         var project = await db
             .Projects.Include(p => p.Client)
@@ -88,24 +89,20 @@ public class ProjectService(DatabaseContext db, ExcelTemplateService excelTempla
         }
 
         // Transform appointments into Schedule2Data
-        var scheduleData = project.Appointments
-            .OrderBy(a => a.DueDate)
-            .Select(a =>
-                new Schedule2Data(
-                    a.DueDate.GetSpanishMonthName(),
-                    a.DueDate,
-                    a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
-                    string.Join(", ", a.Services.Select(s => s.Name).OrderBy(n => n)),
-                    "Documentos" // Replace with actual documents if available
-                )
-            )
+        var scheduleData = project
+            .Appointments.OrderBy(a => a.DueDate)
+            .Select(a => new Schedule2Data(
+                a.DueDate.GetSpanishMonthName(),
+                a.DueDate,
+                a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
+                string.Join(", ", a.Services.Select(s => s.Name).OrderBy(n => n)),
+                "Documentos" // Replace with actual documents if available
+            ))
             .ToList();
 
         // Send the data to the ODS generation system
         return odsTemplateService.GenerateSchedule2(scheduleData);
     }
-
-
 }
 
 public class AppointmentInfo

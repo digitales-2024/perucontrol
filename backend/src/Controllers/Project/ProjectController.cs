@@ -25,96 +25,98 @@ public class ProjectController(
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
 
     [EndpointSummary("Create")]
-[HttpPost]
-[ProducesResponseType(StatusCodes.Status201Created)]
-[ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
-{
-    var entity = createDTO.MapToEntity();
-
-    // validate the client exists before creating the project
-    var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
-    if (client == null)
-        return NotFound("Cliente no encontrado");
-
-    entity.Client = client;
-
-    // if a quotation is provided, validate it exists
-    Quotation? quotation = null;
-    if (createDTO.QuotationId != null)
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
-        quotation = await _context.Set<Quotation>().FindAsync(createDTO.QuotationId);
-        if (quotation == null)
-            return NotFound("Cotización no encontrada");
-        entity.Quotation = quotation;
-    }
+        var entity = createDTO.MapToEntity();
 
-    // Validate all services exist
-    if (createDTO.Services.Count == 0)
-        return BadRequest("Debe ingresar al menos un servicio");
+        // validate the client exists before creating the project
+        var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
+        if (client == null)
+            return NotFound("Cliente no encontrado");
 
-    // Fetch services from the database by IDs
-    var serviceEntities = await _context.Services
-        .Where(s => createDTO.Services.Contains(s.Id))
-        .ToListAsync();
+        entity.Client = client;
 
-    if (serviceEntities.Count != createDTO.Services.Count)
-        return NotFound("Algunos servicios no fueron encontrados");
-
-    entity.Services = serviceEntities;
-
-    // merge all appointments with the same date
-    var mergedAppointments = createDTO
-        .AppointmentCreateDTOs.GroupBy(a => a.DueDate)
-        .Select(g => new AppointmentCreateDTOThroughProject
+        // if a quotation is provided, validate it exists
+        Quotation? quotation = null;
+        if (createDTO.QuotationId != null)
         {
-            DueDate = g.Key,
-            Services = g.SelectMany(a => a.Services).Distinct().ToList(),
-        })
-        .ToList();
-
-    createDTO.AppointmentCreateDTOs = mergedAppointments;
-
-    // Validate all appointments have valid service IDs, present in the parent service list
-    foreach (var appointment in createDTO.AppointmentCreateDTOs)
-    {
-        foreach (var serviceId in appointment.Services)
-        {
-            if (!entity.Services.Any(s => s.Id == serviceId))
-            {
-                return BadRequest(
-                    $"El servicio {serviceId} no está en la lista de servicios del proyecto"
-                );
-            }
+            quotation = await _context.Set<Quotation>().FindAsync(createDTO.QuotationId);
+            if (quotation == null)
+                return NotFound("Cotización no encontrada");
+            entity.Quotation = quotation;
         }
-    }
 
-    // Create Appointments
-    var appointments = new List<ProjectAppointment>();
-    foreach (var app in createDTO.AppointmentCreateDTOs)
-    {
-        var appointmentServices = serviceEntities
-            .Where(s => app.Services.Contains(s.Id))
+        // Validate all services exist
+        if (createDTO.Services.Count == 0)
+            return BadRequest("Debe ingresar al menos un servicio");
+
+        // Fetch services from the database by IDs
+        var serviceEntities = await _context
+            .Services.Where(s => createDTO.Services.Contains(s.Id))
+            .ToListAsync();
+
+        if (serviceEntities.Count != createDTO.Services.Count)
+            return NotFound("Algunos servicios no fueron encontrados");
+
+        entity.Services = serviceEntities;
+
+        // merge all appointments with the same date
+        var mergedAppointments = createDTO
+            .AppointmentCreateDTOs.GroupBy(a => a.DueDate)
+            .Select(g => new AppointmentCreateDTOThroughProject
+            {
+                DueDate = g.Key,
+                Services = g.SelectMany(a => a.Services).Distinct().ToList(),
+            })
             .ToList();
 
-        appointments.Add(new ProjectAppointment
+        createDTO.AppointmentCreateDTOs = mergedAppointments;
+
+        // Validate all appointments have valid service IDs, present in the parent service list
+        foreach (var appointment in createDTO.AppointmentCreateDTOs)
         {
-            DueDate = app.DueDate,
-            Services = appointmentServices,
-            Certificate = new(),
-            RodentRegister = new() { ServiceDate = app.DueDate },
-            ProjectOperationSheet = new() { OperationDate = app.DueDate },
-        });
+            foreach (var serviceId in appointment.Services)
+            {
+                if (!entity.Services.Any(s => s.Id == serviceId))
+                {
+                    return BadRequest(
+                        $"El servicio {serviceId} no está en la lista de servicios del proyecto"
+                    );
+                }
+            }
+        }
+
+        // Create Appointments
+        var appointments = new List<ProjectAppointment>();
+        foreach (var app in createDTO.AppointmentCreateDTOs)
+        {
+            var appointmentServices = serviceEntities
+                .Where(s => app.Services.Contains(s.Id))
+                .ToList();
+
+            appointments.Add(
+                new ProjectAppointment
+                {
+                    DueDate = app.DueDate,
+                    Services = appointmentServices,
+                    Certificate = new(),
+                    RodentRegister = new() { ServiceDate = app.DueDate },
+                    ProjectOperationSheet = new() { OperationDate = app.DueDate },
+                }
+            );
+        }
+        entity.Appointments = appointments;
+
+        // Create and populate the project
+        _context.Add(entity);
+        await _context.SaveChangesAsync();
+
+        return Created();
     }
-    entity.Appointments = appointments;
-
-    // Create and populate the project
-    _context.Add(entity);
-    await _context.SaveChangesAsync();
-
-    return Created();
-}
 
     [EndpointSummary("Get all")]
     [HttpGet]
@@ -597,7 +599,6 @@ public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreat
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 
-
     [EndpointSummary("Generate Schedule Format 2 PDF")]
     [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
     [HttpGet("{id}/schedule2/pdf")]
@@ -606,9 +607,7 @@ public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreat
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedule2PDF(Guid id)
     {
-        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(
-            id
-        );
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
         if (error is not null)
         {
             return BadRequest(error);
