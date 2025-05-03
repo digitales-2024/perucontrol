@@ -265,6 +265,7 @@ public class QuotationController(
     public IActionResult GeneratePDF(Guid id)
     {
         var quotation = _dbSet
+        .Include(q => q.QuotationServices)
             .Include(q => q.Client)
             .Include(q => q.Services)
             .FirstOrDefault(q => q.Id == id);
@@ -304,6 +305,7 @@ public class QuotationController(
     public IActionResult GenerateExcel(Guid id)
     {
         var quotation = _dbSet
+            .Include(q => q.QuotationServices)
             .Include(q => q.Client)
             .Include(q => q.Services)
             .FirstOrDefault(q => q.Id == id);
@@ -319,55 +321,18 @@ public class QuotationController(
         if (business == null)
             return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
 
-        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
-        var serviceNamesStr = string.Join(", ", serviceNames);
-        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
-        var expiryDaysAmount = (quotation.ExpirationDate - quotation.CreationDate).Days;
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var igv1 = quotation.HasTaxes ? "SI" : "NO";
-        var quotationNumber =
-            quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
-
-        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
-
-        var placeholders = new Dictionary<string, string>
+        if (!string.IsNullOrEmpty(errorStr) || fileBytes == null)
         {
-            { "{{digesa_habilitacion}}", business.DigesaNumber },
-            { "{{direccion_perucontrol}}", business.Address },
-            { "{{ruc_perucontrol}}", business.RUC },
-            { "{{celulares_perucontrol}}", business.Phones },
-            { "{{gerente_perucontrol}}", business.DirectorName },
-            { "{{fecha_cotizacion}}", quotation.CreationDate.ToString("dd/MM/yyyy") },
-            { "{{cod_cotizacion}}", quotationNumber },
-            { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
-            { "{{fecha_exp_cotizacion}}", quotation.ExpirationDate.ToString("dd/MM/yyyy") },
-            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
-            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
-            { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
-            {
-                "{{direccion_servicio_cliente}}",
-                areAddressesDifferent ? quotation.ServiceAddress : ""
-            },
-            { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
-            { "{{banco_perucontrol}}", business.BankName },
-            { "{{cuenta_banco_perucontrol}}", business.BankAccount },
-            { "{{cci_perucontrol}}", business.BankCCI },
-            { "{{detracciones_perucontrol}}", business.Deductions },
-            { "{{forma_pago}}", quotation.PaymentMethod },
-            { "{{otros}}", quotation.Others },
-            { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            // FIXME: update fields
-        };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-            placeholders,
-            "Templates/cotizacion_plantilla_excel.xlsx"
-        );
+            return BadRequest(errorStr ?? "Error generando archivo ODS");
+        }
 
-        // send
+        // send ODS file
         return File(
             fileBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "quotation.xlsx"
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "quotation.ods"
         );
     }
 

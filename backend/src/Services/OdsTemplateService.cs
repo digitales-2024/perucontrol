@@ -333,9 +333,91 @@ public class OdsTemplateService
         };
 
         var templatePath = "Templates/cotizacion_plantilla.ods";
-        var fileBytes = GenerateOdsFromTemplate(placeholders, templatePath);
+        using var ms = new MemoryStream();
+        using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+        using var outputMs = new MemoryStream();
 
-        return (fileBytes, null);
+        using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "content.xml")
+                {
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else
+                {
+                    var contentEntry = outputArchive.CreateEntry("content.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                    // Replace global placeholders as before
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, placeholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, placeholders);
+                    }
+
+                    // Find the first table in the document
+                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                    if (table != null)
+                    {
+                        var rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 20)
+                        {
+                            var templateRow = table.Elements(tablens + "table-row")
+                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{servicio_cantidad}")));
+
+                            if (templateRow != null)
+                            {
+                                XElement lastInserted = templateRow;
+                                foreach (var service in quotation.QuotationServices)
+                                {
+                                    var newRow = new XElement(templateRow);
+
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell.Value
+                                            .Replace("{servicio_cantidad}", service.Amount.ToString())
+                                            .Replace("{servicio_descripcion}", service.NameDescription)
+                                            .Replace("{servicio_costo}", service.Price?.ToString("0.00") ?? "")
+                                            .Replace("{servicio_accesorios}", service.Accesories ?? "");
+                                    }
+
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                templateRow.Remove();
+                            }
+                        }
+                    }
+
+                    // Write the modified XML back to the entry
+                    using var newEntryStream = contentEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+
+        return (outputMs.ToArray(), null);
     }
 }
 

@@ -71,7 +71,7 @@ public class Quotation : BaseModel
 
     [Required]
     [MinLength(1, ErrorMessage = "La lista de servicios es obligatoria")]
-    public IList<QuotationService> QuotationServices { get; set; } = new List<QuotationService>();
+    public IList<QuotationService> QuotationServices { get; set; } = [];
 
     // ======
     // Products to use
