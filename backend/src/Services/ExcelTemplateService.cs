@@ -344,6 +344,22 @@ public class ExcelTemplateService
         return ms.ToArray();
     }
 
+    public byte[] GenerateScheduleSecondFormat(string templatePath, Project project)
+    {
+        // Load the template excel
+        using var ms = new MemoryStream();
+
+        using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        // Return the excel file as a byte array
+        // Profit
+        return ms.ToArray();
+    }
+
     private WorksheetPart CloneWorksheet(
         WorkbookPart workbookPart,
         WorksheetPart sourceWorksheetPart
