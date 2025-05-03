@@ -47,3 +47,14 @@ public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
     public TimeSpan? EnterTime { get; set; } // <-- Add this
     public TimeSpan? LeaveTime { get; set; } // <-- Add this
 }
+
+public class AppointmentCancelDTO
+{
+    public bool Cancelled { get; set; }
+}
+
+public class UpdateAppointmentTimesDto
+{
+    public TimeSpan? EnterTime { get; set; }
+    public TimeSpan? LeaveTime { get; set; }
+}

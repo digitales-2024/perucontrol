@@ -5,7 +5,7 @@ import Calendar from "./calendar/calendar";
 import { CalendarEvent, Mode } from "./calendar/calendar-types";
 import { GetAppointmentsByDate } from "./actions";
 import { parseISO } from "date-fns";
-import { datesToStatus } from "../(admin)/projects/[id]/_components/AppointmentDetail";
+// import { datesToStatus } from "../(admin)/projects/[id]/_components/AppointmentDetail";
 
 export default function CalendarDemo()
 {
@@ -27,7 +27,7 @@ export default function CalendarDemo()
 
             setEvents(data.map((appointment) =>
             {
-                const status = datesToStatus(appointment.dueDate, appointment.actualDate ?? undefined);
+                // const status = datesToStatus(appointment.dueDate, appointment.actualDate ?? undefined);
 
                 let color = "";
                 let borderColor = "";

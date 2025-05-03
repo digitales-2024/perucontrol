@@ -209,6 +209,68 @@ export async function EditAppointment(
     return ok(null);
 }
 
+export async function CancelAppointment(
+    projId: string,
+    appId: string,
+    cancelled: boolean, // <- true para cancelar, false para reactivar
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{proj_id}/cancel/{app_id}", {
+        ...auth,
+        body: {
+            cancelled,
+        },
+        params: {
+            path: {
+                proj_id: projId,
+                app_id: appId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error cancelling/reactivating appointment:", error);
+        return err(error);
+    }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
+
+    return ok(null);
+}
+
+export async function UpdateAppointmentTimes(
+    id: string,
+    enterTime: string | null,
+    leaveTime: string | null,
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/times", {
+        ...auth,
+        body: {
+            enterTime,
+            leaveTime,
+        },
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error updating appointment times:", error);
+        return err(error);
+    }
+
+    // Revalidar para obtener los datos nuevos
+    revalidatePath(`/(admin)/projects/[${id}]`, "page");
+
+    return ok(null);
+}
+
 export async function DesactivateAppointment(
     projId: string,
     appId: string,

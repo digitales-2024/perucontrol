@@ -2,7 +2,7 @@
 
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,13 +28,26 @@ import { toast } from "sonner";
 import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
-import { AppointmentDetail } from "./AppointmentDetail";
-import { Accordion } from "@/components/ui/accordion";
 import { toastWrapper } from "@/types/toasts";
 import { MurinoMapSection } from "./MurinoMapSection";
 import { cn } from "@/lib/utils";
+import { AppointmentsDataTable } from "./AppointmentsDataTable";
+import { columns } from "./AppointmentsColumns";
 
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
+
+export type AppointmentForTable = {
+  id?: string | undefined;
+  appointmentNumber?: number | null | undefined;
+  dueDate: string;
+  actualDate?: string | null | undefined;
+  servicesIds: Array<string>;
+  services?: Array<{ name: string; id: string }>;
+  isActive?: boolean;
+  cancelled?: boolean/*  | null | undefined */;
+  enterTime?: string | null | undefined;
+  leaveTime?: string | null | undefined;
+};
 
 function getServiceIcon(name: string): string
 {
@@ -52,11 +65,11 @@ function getServiceIcon(name: string): string
 export function ProjectDetails({
     project,
     projectId,
-    murinoMapBase64, // <-- nuevo prop
+    murinoMapBase64,
 }: {
     project: components["schemas"]["ProjectSummarySingle"],
     projectId: string,
-    murinoMapBase64?: string | null, // <-- nuevo prop opcional
+    murinoMapBase64?: string | null,
 })
 {
     const router = useRouter();
@@ -68,10 +81,9 @@ export function ProjectDetails({
     const [editingAppointment, setEditingAppointment] = useState<{
         id: string;
         dueDate: string;
-        field?: string; // Explicitly type as string
+        field?: string;
     } | null>(null);
     const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
-    // const [isAddingDate, setIsAddingDate] = useState(false);
     void setNewDate;
 
     // Ordenar las citas por fecha
@@ -85,6 +97,19 @@ export function ProjectDetails({
                 return dateA - dateB;
             })
         : [];
+
+    const tableData: Array<AppointmentForTable> = sortedAppointments.map((appointment) => ({
+        ...appointment,
+        id: appointment.id!,
+        appointmentNumber: appointment.appointmentNumber ?? 0,
+        actualDate: appointment.actualDate ?? undefined,
+        cancelled: appointment.cancelled ?? undefined,
+        services: appointment.servicesIds.map((id) =>
+        {
+            const service = project.services.find((s) => s.id === id);
+            return service ? { name: service.name, id } : { name: "Desconocido", id };
+        }),
+    }));
 
     const getStatusBadge = (status: string) =>
     {
@@ -143,69 +168,6 @@ export function ProjectDetails({
     {
         router.back();
     };
-
-    // const handleAddDate = async() =>
-    // {
-    //     if (!newDate)
-    //     {
-    //         toast.error("Por favor seleccione una fecha para agregar");
-    //         return;
-    //     }
-    //
-    //     if (selectedServices.length === 0)
-    //     {
-    //         toast.error("Por favor seleccione al menos un servicio");
-    //         return;
-    //     }
-    //
-    //     const newDateISO = newDate.toISOString();
-    //
-    //     // Verificar si la fecha ya existe
-    //     const dateExists = sortedAppointments.some((appointment) => format(new Date(appointment.dueDate ?? ""), "yyyy-MM-dd") === format(newDate, "yyyy-MM-dd"));
-    //
-    //     if (dateExists)
-    //     {
-    //         toast.error("Esta fecha ya está programada");
-    //         return;
-    //     }
-    //
-    //     setIsAddingDate(true);
-    //
-    //     try
-    //     {
-    //         // Llamar a la función AddAppointment con el ID del proyecto y la nueva fecha
-    //         const [newAppointment, error] = await AddAppointment(project.id!, newDateISO, selectedServices);
-    //
-    //         if (error)
-    //         {
-    //             console.error("Error al agregar la cita:", error);
-    //             toast.error("Ocurrió un error al agregar la cita");
-    //             return;
-    //         }
-    //
-    //         // Actualizar la lista de citas con la nueva cita
-    //         [...sortedAppointments, newAppointment].sort((a, b) =>
-    //         {
-    //             const dateA = a?.dueDate ? new Date(a.dueDate).getTime() : 0;
-    //             const dateB = b?.dueDate ? new Date(b.dueDate).getTime() : 0;
-    //             return dateA - dateB;
-    //         });
-    //
-    //         // Actualizar el estado local
-    //         setNewDate(undefined);
-    //         setSelectedServices([]);
-    //         toast.success("Fecha agregada correctamente");
-    //     }
-    //     catch (error)
-    //     {
-    //         console.error("Error inesperado al agregar la cita:", error);
-    //         toast.error("Ocurrió un error inesperado");
-    //     }
-    //     finally
-    //     {
-    //         setIsAddingDate(false);
-    //     }
-    // };
 
     const handleSaveEditedDate = async(newDate: Date) =>
     {
@@ -279,13 +241,6 @@ export function ProjectDetails({
             setIsDesactiveDialogOpen(false);
         }
     };
-
-    const servicesMap = useMemo(() =>
-    {
-        const map = new Map<string, string>();
-        project.services.forEach((service) => map.set(service.id!, service.name));
-        return map;
-    }, [project]);
 
     const downloadExcel = async() =>
     {
@@ -612,36 +567,6 @@ export function ProjectDetails({
 
                     <CardContent>
                         <div className="space-y-4">
-                            {/* Agregar nueva fecha */}
-                            {/*
-                            <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                                <div className="flex-1">
-                                    <Label htmlFor="add-date" className="block mb-2">
-                                        Agregar fecha
-                                    </Label>
-                                    <DatePicker
-                                        value={newDate}
-                                        onChange={setNewDate}
-                                        placeholder="Seleccione fecha"
-                                        className="w-full"
-                                    />
-                                </div>
-                                <Button
-                                    onClick={handleAddDate}
-                                    size="icon"
-                                    className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                                    disabled={!newDate || isAddingDate}
-                                    type="button"
-                                >
-                                    {isAddingDate ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Plus className="h-4 w-4" />
-                                    )}
-                                </Button>
-                            </div>
-                                */}
-
                             {/* Selector de servicios */}
                             {newDate && (
                                 <div className="bg-gray-50 dark:bg-background p-4 rounded-lg">
@@ -684,16 +609,11 @@ export function ProjectDetails({
                             )}
 
                             <div className="space-y-3">
-
-                                <Accordion type="single" collapsible className="w-full">
-                                    {sortedAppointments.map((appointment, idx) => (
-                                        <AppointmentDetail
-                                            projectId={projectId}
-                                            servicesMap={servicesMap}
-                                            appointment={appointment} key={appointment.id!} idx={idx}
-                                        />
-                                    ))}
-                                </Accordion>
+                                <AppointmentsDataTable
+                                    columns={columns}
+                                    data={tableData}
+                                    projectId={projectId}
+                                />
                             </div>
 
                         </div>
