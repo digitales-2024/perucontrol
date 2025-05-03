@@ -46,7 +46,6 @@ public class BusinessController(DatabaseContext db, ImageService imageService)
 
     [EndpointSummary("Get system image by name")]
     [HttpGet("image/{name}")]
-    [AllowAnonymous]
     public IActionResult GetImage(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

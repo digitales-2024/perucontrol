@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using PeruControl.Model;
 
 namespace PeruControl.Services;
 
@@ -137,7 +138,7 @@ public class OdsTemplateService
         }
     }
 
-    private void ReplacePlaceholdersInElement(XElement element, Dictionary<string, string> placeholders)
+    private static void ReplacePlaceholdersInElement(XElement element, Dictionary<string, string> placeholders)
     {
         foreach (var node in element.DescendantNodesAndSelf())
         {
@@ -295,6 +296,46 @@ public class OdsTemplateService
         }
 
         return (outputMs.ToArray(), null);
+    }
+
+    public (byte[], string?) GenerateQuotation(
+        Quotation quotation,
+        Business business
+    )
+    {
+        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
+        var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{{digesa_habilitacion}}", business.DigesaNumber },
+            { "{{direccion_perucontrol}}", business.Address },
+            { "{{ruc_perucontrol}}", business.RUC },
+            { "{{celulares_perucontrol}}", business.Phones },
+            { "{{gerente_perucontrol}}", business.DirectorName },
+            { "{{fecha_cotizacion}}", quotation.CreationDate.ToString("dd/MM/yyyy") },
+            { "{{cod_cotizacion}}", quotationNumber },
+            { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
+            { "{{fecha_exp_cotizacion}}", quotation.ExpirationDate.ToString("dd/MM/yyyy") },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
+            { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
+            { "{{direccion_servicio_cliente}}", areAddressesDifferent ? quotation.ServiceAddress : "" },
+            { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
+            { "{{banco_perucontrol}}", business.BankName },
+            { "{{cuenta_banco_perucontrol}}", business.BankAccount },
+            { "{{cci_perucontrol}}", business.BankCCI },
+            { "{{detracciones_perucontrol}}", business.Deductions },
+            { "{{forma_pago}}", quotation.PaymentMethod },
+            { "{{otros}}", quotation.Others },
+            { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
+            // Add more as needed
+        };
+
+        var templatePath = "Templates/cotizacion_plantilla.ods";
+        var fileBytes = GenerateOdsFromTemplate(placeholders, templatePath);
+
+        return (fileBytes, null);
     }
 }
 

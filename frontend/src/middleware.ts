@@ -66,7 +66,6 @@ export async function middleware(request: NextRequest)
         return response;
     }
 
-    devlog("no cookie refresh performed, just continue");
     return NextResponse.next();
 }
 
