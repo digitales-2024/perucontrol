@@ -329,7 +329,7 @@ public class OdsTemplateService
             { "{{forma_pago}}", quotation.PaymentMethod },
             { "{{otros}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
-            // Add more as needed
+            { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
         };
 
         var templatePath = "Templates/cotizacion_plantilla.ods";
@@ -378,7 +378,36 @@ public class OdsTemplateService
                     var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
                     if (table != null)
                     {
+                        // 1. Generate TermsAndConditions rows at row 31 (index 30, before service rows are added)
                         var rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 30)
+                        {
+                            var termsRow = table.Elements(tablens + "table-row")
+                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{terms}")));
+
+                            if (termsRow != null && quotation.TermsAndConditions != null)
+                            {
+                                XElement lastInserted = termsRow;
+                                for (int i = 0; i < quotation.TermsAndConditions.Count; i++)
+                                {
+                                    var term = quotation.TermsAndConditions[i];
+                                    var newRow = new XElement(termsRow);
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell.Value
+                                            .Replace("{terms}", term)
+                                            .Replace("{idx}", (i + 1).ToString());
+                                    }
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                termsRow.Remove();
+                            }
+                        }
+
+                        // ...now continue with your service row generation as before...
+                        // (your existing code for finding and replacing the service row template)
+                        rows = table.Elements(tablens + "table-row").ToList();
                         if (rows.Count > 20)
                         {
                             var templateRow = table.Elements(tablens + "table-row")

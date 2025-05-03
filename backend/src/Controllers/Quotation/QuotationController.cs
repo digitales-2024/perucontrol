@@ -9,7 +9,6 @@ namespace PeruControl.Controllers;
 [Authorize]
 public class QuotationController(
     DatabaseContext db,
-    ExcelTemplateService excelTemplate,
     OdsTemplateService odsTemplateService,
     LibreOfficeConverterService pDFConverterService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
