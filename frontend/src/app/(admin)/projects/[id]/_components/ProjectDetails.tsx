@@ -44,7 +44,7 @@ export type AppointmentForTable = {
   servicesIds: Array<string>;
   services?: Array<{ name: string; id: string }>;
   isActive?: boolean;
-  cancelled?: boolean;
+  cancelled?: boolean/*  | null | undefined */;
   enterTime?: string | null | undefined;
   leaveTime?: string | null | undefined;
 };

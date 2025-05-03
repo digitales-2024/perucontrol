@@ -69,7 +69,7 @@ export default async function AppoinmentPage({ params }: {
             <AppointmentDetails
                 project={project}
                 projectId={id}
-                appointment={appointment}
+                appointment={{ ...appointment, cancelled: appointment.cancelled ?? false }}  // Si es null, lo asignamos a false
             />
         </>
     );
