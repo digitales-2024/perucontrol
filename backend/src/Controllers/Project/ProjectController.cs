@@ -241,6 +241,10 @@ public class ProjectController(
                     CertificateNumber = a.CertificateNumber,
                     DueDate = a.DueDate,
                     ActualDate = a.ActualDate,
+                    Cancelled = a.Cancelled,
+                    EnterTime = a.EnterTime,
+                    LeaveTime = a.LeaveTime,
+                    AppointmentNumber = a.AppointmentNumber,
                     ServicesIds = a.Services.Select(s => s.Id).ToList(),
                     ProjectOperationSheet = a.ProjectOperationSheet,
                 })
@@ -499,6 +503,45 @@ public class ProjectController(
         dto.ApplyPatch(appointment);
         await _context.SaveChangesAsync();
         return Ok();
+    }
+
+    [EndpointSummary("Cancel or reactivate an Appointment")]
+    [HttpPatch("{proj_id}/cancel/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CancelAppointment(
+      Guid proj_id,
+      Guid app_id,
+      [FromBody] AppointmentCancelDTO dto
+    )
+    {
+        var appointment = await _context.ProjectAppointments.FindAsync(app_id);
+        if (appointment == null)
+            return NotFound();
+
+        appointment.Cancelled = dto.Cancelled;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { appointment.AppointmentNumber, appointment.Cancelled });
+    }
+
+    [EndpointSummary("Update enterTime and leaveTime of a Appointment")]
+    [HttpPatch("{id}/times")]
+    public async Task<IActionResult> UpdateAppointmentTimes(Guid id, [FromBody] UpdateAppointmentTimesDto dto)
+    {
+        var appointment = await _context.ProjectAppointments.FindAsync(id);
+
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        appointment.EnterTime = dto.EnterTime;
+        appointment.LeaveTime = dto.LeaveTime;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     [EndpointSummary("Desactivate Appointment")]

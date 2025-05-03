@@ -1,6 +1,8 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
+import { AppointmentDetails } from "../_components/AppointmentDetail";
+import { notFound } from "next/navigation";
 
 export default async function AppoinmentPage({ params }: {
     params: Promise<{
@@ -9,7 +11,7 @@ export default async function AppoinmentPage({ params }: {
     }>
 })
 {
-    const { id } = await params;
+    const { id, appointment_id } = await params;
 
     const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
         ...auth,
@@ -24,6 +26,14 @@ export default async function AppoinmentPage({ params }: {
     {
         console.error("Error getting project:", projectError);
         return null;
+    }
+
+    // Obtener la cita específica
+    // eslint-disable-next-line camelcase
+    const appointment = project.appointments?.find((a) => a.id === appointment_id);
+    if (!appointment)
+    {
+        return notFound();
     }
 
     return (
@@ -49,14 +59,18 @@ export default async function AppoinmentPage({ params }: {
                             <BreadcrumbItem>
                                 <BreadcrumbPage>
                                     Fecha #
-                                    {project.projectNumber}
+                                    {appointment.appointmentNumber}
                                 </BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>
                 )}
             />
-            :c
+            <AppointmentDetails
+                project={project}
+                projectId={id}
+                appointment={appointment}
+            />
         </>
     );
 }

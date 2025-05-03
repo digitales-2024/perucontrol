@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -43,7 +44,15 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
+    // const serviceNames = appointment.servicesIds.map((service) => service);
     const operationSheet = appointment.projectOperationSheet;
+
+    const servicesMap = useMemo(() =>
+    {
+        const map = new Map<string, string>();
+        project.services.forEach((service) => map.set(service.id!, service.name));
+        return map;
+    }, [project]);
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
@@ -78,7 +87,7 @@ export function DownloadProjectForm({
             staff3: operationSheet.staff3 ?? "",
             staff4: operationSheet.staff4 ?? "",
             aspersionManual: operationSheet.aspersionManual ?? false,
-            aspersionMotor: operationSheet.aspercionMotor ?? false,
+            aspercionMotor: operationSheet.aspercionMotor ?? false,
             nebulizacionFrio: operationSheet.nebulizacionFrio ?? false,
             nebulizacionCaliente: operationSheet.nebulizacionCaliente ?? false,
             colocacionCebosCebaderos: operationSheet.colocacionCebosCebaderos ?? "",
@@ -165,7 +174,7 @@ export function DownloadProjectForm({
 
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
-        console.log(JSON.stringify(input, null, 2));
+        console.log("Operation Sheet", JSON.stringify(input, null, 2));
         const [result, error] = await toastWrapper(
             SaveProjectOperationSheetData(appointment.id!, input),
             {
@@ -313,14 +322,14 @@ export function DownloadProjectForm({
                                                                 Servicios Realizados
                                                             </FormLabel>
                                                             <div className="space-y-2">
-                                                                {project.services?.map((service) => (
+                                                                {appointment.servicesIds?.map((service) => (
                                                                     <FormItem
-                                                                        key={service.id}
+                                                                        key={service}
                                                                         className="flex flex-row items-start space-x-3 space-y-0"
                                                                     >
                                                                         <FormLabel className="text-sm font-normal">
                                                                             {"- "}
-                                                                            {service.name}
+                                                                            {servicesMap.get(service) ?? "-"}
                                                                         </FormLabel>
                                                                     </FormItem>
                                                                 ))}
@@ -633,7 +642,7 @@ export function DownloadProjectForm({
                                                         <div className="space-y-8">
                                                             <FormField
                                                                 control={form.control}
-                                                                name="aspersionMotor"
+                                                                name="aspercionMotor"
                                                                 render={({ field }) => (
                                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                                                         <FormControl>

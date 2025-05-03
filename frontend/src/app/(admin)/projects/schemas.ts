@@ -107,7 +107,7 @@ export const downloadProjectSchema = z.object({
     staff4: z.string(),
     aspersionManual: z.boolean().optional()
         .default(false),
-    aspersionMotor: z.boolean().optional()
+    aspercionMotor: z.boolean().optional()
         .default(false),
     nebulizacionFrio: z.boolean().optional()
         .default(false),
