@@ -302,6 +302,10 @@ public class ProjectAppointmentDTO : BaseModel
     public int? CertificateNumber { get; set; } = null;
     public required DateTime DueDate { get; set; }
     public DateTime? ActualDate { get; set; }
+    public int? AppointmentNumber { get; set; } = null;
+    public bool? Cancelled { get; set; } = false;
+    public TimeSpan? EnterTime { get; set; }
+    public TimeSpan? LeaveTime { get; set; }
     public required ICollection<Guid> ServicesIds { get; set; }
     public required ProjectOperationSheet ProjectOperationSheet { get; set; }
 }

@@ -23,7 +23,7 @@ public enum QuotationFrequency
     Semiannual,
 }
 
-public class Quotation : BaseModel
+public class  Quotation : BaseModel
 {
     [Required]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
