@@ -36,9 +36,8 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             { "{empresa_autorizada}", "PeruControl" },
             { "{direccion_servicio}", project.Address },
             { "{fecha_servicio}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
-            // FIXME: enter/leave time in output documents
-            // { "{hora_ingreso}", rodentRegister.EnterTime.ToString(@"hh\:mm") },
-            // { "{hora_salida}", rodentRegister.LeaveTime.ToString(@"hh\:mm") },
+            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
             { "{incidencias_encontradas}", rodentRegister.Incidents ?? "" },
             { "{medidas_correctivas}", rodentRegister.CorrectiveMeasures ?? "" },
             { "{fecha}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },

@@ -55,8 +55,8 @@ public class AppointmentController(
                 IsActive = a.IsActive,
                 CreatedAt = a.CreatedAt,
                 ModifiedAt = a.ModifiedAt,
-                EnterTime = a.EnterTime, // <-- Add this
-                LeaveTime = a.LeaveTime, // <-- Add this
+                EnterTime = a.EnterTime,
+                LeaveTime = a.LeaveTime,
             })
         );
     }
@@ -85,8 +85,8 @@ public class AppointmentController(
             Services = a.Services,
             Project = a.Project,
             Client = a.Project.Client,
-            EnterTime = a.EnterTime, // <-- Add this
-            LeaveTime = a.LeaveTime, // <-- Add this
+            EnterTime = a.EnterTime,
+            LeaveTime = a.LeaveTime,
         });
 
         return Ok(result);
@@ -137,9 +137,8 @@ public class AppointmentController(
         var placeholders = new Dictionary<string, string>
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
-            // FIXME: restore time generation from the parent appointment
-            // { "{hora_ingreso}", sheet.EnterTime.ToString(@"hh\:mm") },
-            // { "{hora_salida}", sheet.LeaveTime.ToString(@"hh\:mm") },
+            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? ""},
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },
@@ -151,10 +150,6 @@ public class AppointmentController(
             { "{r_t}", r_t },
             { "{r_d}", r_d },
             { "{r_s}", r_s },
-            /* { "{partial}", sheet.Partial ?? "" },
-            { "{total}", sheet.Total ?? "" },
-            { "{deteriorated}", sheet.Deteriorated ?? "" },
-            { "{no_consumption}", sheet.NoConsumption ?? "" }, */
             { "{diag_otros}", sheet.OtherPlagues },
             { "{ma_manual}", sheet.AspersionManual ? "x" : "" },
             { "{ma_motor}", sheet.AspercionMotor ? "x" : "" },

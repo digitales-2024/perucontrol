@@ -260,6 +260,7 @@ public class ProjectController(
                     ServicesIds = a.Services.Select(s => s.Id).ToList(),
                     ProjectOperationSheet = a.ProjectOperationSheet,
                 })
+                .OrderBy(a => a.DueDate)
                 .ToList(),
             CreatedAt = project.CreatedAt,
             ModifiedAt = project.ModifiedAt,
