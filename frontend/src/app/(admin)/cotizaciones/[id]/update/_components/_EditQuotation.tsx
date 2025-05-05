@@ -159,6 +159,7 @@ export default function EditQuotation({
                 price: service.price ?? null,
                 accesories: service.accesories ?? null,
             })),
+            termsAndConditions: input.termsAndConditions.filter((x) => x !== undefined),
         };
 
         const [, err] = await toastWrapper(UpdateQuotation(quotation.id!, transformedInput), {

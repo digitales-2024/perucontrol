@@ -149,8 +149,12 @@ export function CreateQuotation({ terms, clients, services }: {
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        console.log("Input", JSON.stringify(input, null, 2));
-        const [, err] = await toastWrapper(RegisterQuotation(input), {
+        const transformedInput = {
+            ...input,
+            termsAndConditions: input.termsAndConditions.filter((x) => x !== undefined),
+        };
+
+        const [, err] = await toastWrapper(RegisterQuotation(transformedInput), {
             loading: "Cargando...",
             success: "Cotización registrada exitosamente",
         });
