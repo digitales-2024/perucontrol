@@ -98,15 +98,14 @@ export function CreateQuotation({ terms, clients, services }: {
             derodent: "",
             disinfectant: "",
             termsAndConditions: [
-                "Los costos NO inlcuyen IGV.",
-                "El costo es siempre y cuando el trabajo sea preventivo, y no exista algun tipó de plaga existente.",
-                "Hora de Ingreso: A coordinar con el personal encargado.",
-                "Ambientes a Tratar:\n- 1er piso área de desecho, chichas,área de pollo.\n- 2do. piso producción de kekes, producción de tortas decoradas, área de productos por salir, panadería, baño hombre.\n- 3er. piso almacén, área de producción de aderezo, almacén, baño mujer , área de producción de helados, área de dosimetria de helado, oficina y pasadizo,\n- 4to. piso. comedor y cambiadores azotea.",
+                "El costo es siempre y cuando el trabajo sea preventivo, y no exista algun tipo de plaga existente.",
+                "Hora de Ingreso:",
+                "Ambientes a Tratar:",
                 "Todos nuestros productos cuentan con MDSD, Ficha Tecnica y Resolucion Directoral emitida por DIGESA.",
-                "Seguridad:\n- Nuestro personal cuenta con SCITR de Pearson y Salud.\n- Nuestro personal cuenta con los EPPS necesarios a la actividad a realizar y las exigidas por ley.",
+                "Seguridad:\n- Nuestro personal cuenta con SCTR de Pension y Salud.\n- Nuestro personal cuenta con los EPPS necesarios para la actividad a realizar y los exigidas por ley.",
                 "Garantía: PERUCIONTROL COM BEL, garantiza el control de sectores propios del local (biletele germánica, moscas y credores.) . De encontrarse otro sector se procederá a una evaluación técnica y se evaluará la consecuencia de haber realizado un servicio mal ejecutado o si el orden y la limpieza es deficiente entre factores o encontrarse.",
-                "Documentos a entregar: Informe tecnico, Planilla de Operaciones, Mapa Murino, Registro de Ronduras, certificados y factura del servicio.",
-                "REPROGRAMACION DEL SERVICIO:  hay algun cambio de dia! El cliente tendrá que avisar con 12 horas de anticipacion para su nueva reprogramación"],
+                "Documentos a entregar:",
+                "REPROGRAMACION DEL SERVICIO:"],
         },
     });
 
@@ -838,7 +837,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                                 Punto
                                                 {" "}
                                                 {" "}
-                                                {index + 1}
+                                                {index + 2}
                                             </FormLabel>
 
                                             {/* Lista de plantillas */}
@@ -868,7 +867,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                             }
 
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Textarea {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

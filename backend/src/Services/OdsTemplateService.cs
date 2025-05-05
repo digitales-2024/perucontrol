@@ -398,6 +398,11 @@ public class OdsTemplateService
                                 for (int i = 0; i < quotation.TermsAndConditions.Count; i++)
                                 {
                                     var term = quotation.TermsAndConditions[i];
+                                    if (term == null || term == "")
+                                    {
+                                        continue;
+                                    }
+
                                     var newRow = new XElement(termsRow);
                                     foreach (var cell in newRow.Descendants(textns + "p"))
                                     {
