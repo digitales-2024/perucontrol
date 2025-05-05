@@ -305,6 +305,7 @@ public class OdsTemplateService
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
         var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+        var totalCost = quotation.QuotationServices.Sum(s => s.Price ?? 0);
 
         var placeholders = new Dictionary<string, string>
         {
@@ -327,9 +328,15 @@ public class OdsTemplateService
             { "{{cci_perucontrol}}", business.BankCCI },
             { "{{detracciones_perucontrol}}", business.Deductions },
             { "{{forma_pago}}", quotation.PaymentMethod },
-            { "{{otros}}", quotation.Others },
+            { "{{disponibilidad}}", quotation.Availability },
+            { "{{observaciones}}", quotation.Others },
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
             { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
+            { "{{tiene_igv_2}}", quotation.HasTaxes ? "SI" : "NO" },
+            { "{costo_total}", $"S/. {totalCost.ToString("0.00")}" },
+            { "{productos_desinsectacion}", quotation.Desinsectant ?? ""  },
+            { "{productos_desratizacion}", quotation.Derodent ?? "" },
+            { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
         };
 
         var templatePath = "Templates/cotizacion_plantilla.ods";
@@ -396,7 +403,7 @@ public class OdsTemplateService
                                     {
                                         cell.Value = cell.Value
                                             .Replace("{terms}", term)
-                                            .Replace("{idx}", (i + 1).ToString());
+                                            .Replace("{idx}", (i + 2).ToString());
                                     }
                                     lastInserted.AddAfterSelf(newRow);
                                     lastInserted = newRow;
@@ -419,13 +426,22 @@ public class OdsTemplateService
                                 foreach (var service in quotation.QuotationServices)
                                 {
                                     var newRow = new XElement(templateRow);
+                                    var price = "";
+                                    if (service.Price == null || service.Price == 0.0m)
+                                    {
+                                        price = "plus";
+                                    }
+                                    else
+                                    {
+                                        price = service.Price?.ToString("0.00") ?? "plus";
+                                    }
 
                                     foreach (var cell in newRow.Descendants(textns + "p"))
                                     {
                                         cell.Value = cell.Value
                                             .Replace("{servicio_cantidad}", service.Amount.ToString())
                                             .Replace("{servicio_descripcion}", service.NameDescription)
-                                            .Replace("{servicio_costo}", service.Price?.ToString("0.00") ?? "")
+                                            .Replace("{servicio_costo}", $"S/. {price}")
                                             .Replace("{servicio_accesorios}", service.Accesories ?? "");
                                     }
 
@@ -456,4 +472,5 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Doucuments
-) { }
+)
+{ }

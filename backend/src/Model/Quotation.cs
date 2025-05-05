@@ -23,7 +23,7 @@ public enum QuotationFrequency
     Semiannual,
 }
 
-public class  Quotation : BaseModel
+public class Quotation : BaseModel
 {
     [Required]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -119,11 +119,11 @@ public static class QuotationFrequencyExtensions
     {
         return status switch
         {
-            QuotationFrequency.Bimonthly => "BIMENSUALES",
-            QuotationFrequency.Quarterly => "TRIMESTRALES",
-            QuotationFrequency.Semiannual => "SEMESTRALES",
-            QuotationFrequency.Monthly => "MENSUALES",
-            QuotationFrequency.Fortnightly => "QUINCENALES",
+            QuotationFrequency.Bimonthly => "BIMENSUAL",
+            QuotationFrequency.Quarterly => "TRIMESTRAL",
+            QuotationFrequency.Semiannual => "SEMESTRAL",
+            QuotationFrequency.Monthly => "MENSUAL",
+            QuotationFrequency.Fortnightly => "QUINCENAL",
             _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
     }

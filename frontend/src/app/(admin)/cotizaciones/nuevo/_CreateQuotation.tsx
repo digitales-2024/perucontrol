@@ -45,19 +45,19 @@ type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
 interface QuotationService {
-  id?: string | null;
-  amount: number;
-  nameDescription: string;
-  price?: number;
-  accesories?: string;
+    id?: string | null;
+    amount: number;
+    nameDescription: string;
+    price?: number;
+    accesories?: string;
 }
 
 interface Service {
-  name: string;
-  id?: string;
-  isActive: boolean;
-  createdAt: string;
-  modifiedAt: string;
+    name: string;
+    id?: string;
+    isActive: boolean;
+    createdAt: string;
+    modifiedAt: string;
 }
 
 export function CreateQuotation({ terms, clients, services }: {
@@ -167,7 +167,7 @@ export function CreateQuotation({ terms, clients, services }: {
     {
         const subscription = watch((value, { name }) =>
         {
-        // Solo ejecutar cuando cambien serviceIds
+            // Solo ejecutar cuando cambien serviceIds
             if (name === "serviceIds")
             {
                 const currentServices = form.getValues("quotationServices");
@@ -781,10 +781,10 @@ export function CreateQuotation({ terms, clients, services }: {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-base">
-                                            Otros
+                                            Observaciones
                                         </FormLabel>
                                         <FormDescription>
-                                            Información adicional acerca del pago
+                                            Observaciones acerca del pago
                                         </FormDescription>
                                         <FormControl>
                                             <Input placeholder="Otros" {...field} />

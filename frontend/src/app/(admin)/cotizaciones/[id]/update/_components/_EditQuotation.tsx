@@ -270,7 +270,7 @@ export default function EditQuotation({
                                                     emptyMessage="No se encontraron clientes"
                                                     value={
                                                         clientsOptions.find((option) => option.value ===
-                                                                field.value) ?? undefined
+                                                            field.value) ?? undefined
                                                     }
                                                     onValueChange={(option) =>
                                                     {
@@ -305,7 +305,7 @@ export default function EditQuotation({
                                                     emptyMessage="No se encontraron dirreciones"
                                                     value={
                                                         clientAddressOptions.find((option) => option.value ===
-                                                                                        field.value) ?? undefined
+                                                            field.value) ?? undefined
                                                     }
                                                     onValueChange={(option) =>
                                                     {
@@ -695,10 +695,10 @@ export default function EditQuotation({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base">
-                                                    Otros
+                                                    Observaciones
                                                 </FormLabel>
                                                 <FormDescription>
-                                                    Información adicional acerca del pago
+                                                    Observaciones acerca del pago
                                                 </FormDescription>
                                                 <FormControl>
                                                     <Input placeholder="Otros" {...field} />
