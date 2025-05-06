@@ -132,7 +132,7 @@ public class ProjectController(
     }
 
     [EndpointSummary("Get one by Id v2")]
-    [HttpGet("/{id}/v2")]
+    [HttpGet("{id}/v2")]
     [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Project>> GetById2(Guid id)
@@ -193,7 +193,7 @@ public class ProjectController(
     }
 
     [EndpointSummary("Get one by Id v3")]
-    [HttpGet("/{id}/v3")]
+    [HttpGet("{id}/v3")]
     [ProducesResponseType<ProjectSummarySingle2>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Project>> GetById3(Guid id)

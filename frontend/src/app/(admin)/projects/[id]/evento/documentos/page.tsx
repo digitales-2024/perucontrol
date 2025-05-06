@@ -13,7 +13,7 @@ export default async function ProjectsPage({ params }: Props)
     const { id } = await params;
 
     // get project by id
-    const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
+    const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}/v2", {
         ...auth,
         params: {
             path: {

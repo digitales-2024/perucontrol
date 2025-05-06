@@ -1835,7 +1835,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/{id}/v2": {
+    "/api/Project/{id}/v2": {
         parameters: {
             query?: never;
             header?: never;
@@ -1886,7 +1886,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/{id}/v3": {
+    "/api/Project/{id}/v3": {
         parameters: {
             query?: never;
             header?: never;
@@ -2348,6 +2348,114 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Project/{id}/schedule2/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule Format 2 excel
+         * @description Generates the secons Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule2/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule Format 2 PDF
+         * @description Generates the secons Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Project/{id}/upload-murino-map": {
         parameters: {
             query?: never;
@@ -2357,6 +2465,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * Upload Murino Map
+         * @description Allows uploading the Murino Map
+         */
         post: {
             parameters: {
                 query?: never;
@@ -4432,6 +4544,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Product": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all products & solvents */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                        "application/json": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                        "text/json": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a product with Solvents */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCreateInputDTO"];
+                    "text/json": components["schemas"]["ProductCreateInputDTO"];
+                    "application/*+json": components["schemas"]["ProductCreateInputDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4716,6 +4890,19 @@ export interface components {
             status?: number | null;
             detail?: string | null;
             instance?: string | null;
+        };
+        ProductAmountSolventOutputDTO: {
+            amountAndSolvent: string;
+        };
+        ProductCreateInputDTO: {
+            name: string;
+            activeIngredient: string;
+            solvents: Array<string>;
+        };
+        ProductGetAllOutputDTO: {
+            name: string;
+            activeIngredient: string;
+            productAmountSolvents: Array<components["schemas"]["ProductAmountSolventOutputDTO"]>;
         };
         Project: {
             /** Format: int32 */

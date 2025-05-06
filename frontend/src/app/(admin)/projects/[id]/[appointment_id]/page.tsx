@@ -13,7 +13,7 @@ export default async function AppoinmentPage({ params }: {
 {
     const { id, appointment_id } = await params;
 
-    const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
+    const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}/v2", {
         ...auth,
         params: {
             path: {
