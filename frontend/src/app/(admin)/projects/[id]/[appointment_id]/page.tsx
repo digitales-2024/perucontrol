@@ -2,7 +2,6 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { AppointmentDetails } from "../_components/AppointmentDetail";
-import { notFound } from "next/navigation";
 
 export default async function AppoinmentPage({ params }: {
     params: Promise<{
@@ -11,7 +10,21 @@ export default async function AppoinmentPage({ params }: {
     }>
 })
 {
-    const { id, appointment_id } = await params;
+    const { id, appointment_id: appointmentId } = await params;
+
+    const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+        },
+    }));
+    if (appointmentError)
+    {
+        console.error("Error getting project:", appointmentError);
+        return null;
+    }
 
     const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}/v2", {
         ...auth,
@@ -26,14 +39,6 @@ export default async function AppoinmentPage({ params }: {
     {
         console.error("Error getting project:", projectError);
         return null;
-    }
-
-    // Obtener la cita específica
-    // eslint-disable-next-line camelcase
-    const appointment = project.appointments?.find((a) => a.id === appointment_id);
-    if (!appointment)
-    {
-        return notFound();
     }
 
     return (
@@ -69,7 +74,7 @@ export default async function AppoinmentPage({ params }: {
             <AppointmentDetails
                 project={project}
                 projectId={id}
-                appointment={{ ...appointment, cancelled: appointment.cancelled ?? false }}  // Si es null, lo asignamos a false
+                appointment={appointment}  // Si es null, lo asignamos a false
             />
         </>
     );

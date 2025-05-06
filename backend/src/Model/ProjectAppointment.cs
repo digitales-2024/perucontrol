@@ -40,7 +40,7 @@ public class ProjectAppointment : BaseModel
     public DateTime? ActualDate { get; set; }
 
     /// Represents that the appointment was not performed
-    public bool? Cancelled { get; set; } = false;
+    public bool Cancelled { get; set; } = false;
 
     /// Services performed on this appointment
     [JsonIgnore]

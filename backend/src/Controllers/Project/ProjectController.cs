@@ -135,7 +135,7 @@ public class ProjectController(
     [HttpGet("{id}/v2")]
     [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Project>> GetById2(Guid id)
+    public async Task<ActionResult<ProjectSummarySingle>> GetById2(Guid id)
     {
         var project = await _context
             .Projects.Include(p => p.Client)

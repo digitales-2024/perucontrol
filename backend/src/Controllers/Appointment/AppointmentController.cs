@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Services;
+using PeruControl.Utils;
 
 namespace PeruControl.Controllers;
 
@@ -63,10 +64,16 @@ public class AppointmentController(
 
     [EndpointSummary("Get by ID")]
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetAppointmentById(Guid id)
+    public async Task<ActionResult<AppointmentGetOutDTO>> GetAppointmentById(Guid id)
     {
-        await appointmentService.GetById(id);
-        return Ok();
+        var result = await appointmentService.GetById(id);
+
+        return result switch
+        {
+            SuccessResult<AppointmentGetOutDTO> success => Ok(success.Data),
+            NotFoundResult<AppointmentGetOutDTO> error => NotFound(error.Message),
+            _ => NotFound("No se encontró la fecha."),
+        };
     }
 
     [EndpointSummary("Get all appointments")]

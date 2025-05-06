@@ -1,19 +1,29 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Services;
+using PeruControl.Utils;
 
 namespace PeruControl.Controllers;
 
 public class AppointmentService(DatabaseContext db, OdsTemplateService odsTemplate)
 {
-    public async Task<(int, string)> GetById(Guid id)
+    public async Task<Result<AppointmentGetOutDTO>> GetById(Guid id)
     {
-        var appointment = await db.ProjectAppointments.FirstOrDefaultAsync(a => a.Id == id);
+        var appointment = await db
+            .ProjectAppointments.Include(app => app.Services)
+            .Include(app => app.Project)
+            .FirstOrDefaultAsync(a => a.Id == id);
 
         if (appointment is null)
-            return (404, "Fecha no encontrada");
+            return new NotFoundResult<AppointmentGetOutDTO>(
+                "No se encontró la fecha.",
+                HttpStatusCode.NotFound
+            );
 
-        return (200, "");
+        return new SuccessResult<AppointmentGetOutDTO>(
+            AppointmentGetOutDTO.FromEntity(appointment)
+        );
     }
 
     public async Task<(byte[], string?)> FillRodentsExcel(Guid id)
