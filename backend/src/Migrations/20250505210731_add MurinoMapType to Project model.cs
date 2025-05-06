@@ -14,15 +14,14 @@ namespace PeruControl.Migrations
                 name: "MurinoMapType",
                 table: "Projects",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MurinoMapType",
-                table: "Projects");
+            migrationBuilder.DropColumn(name: "MurinoMapType", table: "Projects");
         }
     }
 }

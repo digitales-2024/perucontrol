@@ -264,7 +264,7 @@ public class QuotationController(
     public IActionResult GeneratePDF(Guid id)
     {
         var quotation = _dbSet
-        .Include(q => q.QuotationServices)
+            .Include(q => q.QuotationServices)
             .Include(q => q.Client)
             .Include(q => q.Services)
             .FirstOrDefault(q => q.Id == id);
@@ -328,11 +328,7 @@ public class QuotationController(
         }
 
         // send ODS file
-        return File(
-            fileBytes,
-            "application/vnd.oasis.opendocument.spreadsheet",
-            "quotation.ods"
-        );
+        return File(fileBytes, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
     }
 
     [HttpDelete("{id}")]

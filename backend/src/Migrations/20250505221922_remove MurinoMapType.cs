@@ -10,9 +10,7 @@ namespace PeruControl.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MurinoMapType",
-                table: "ProjectAppointment");
+            migrationBuilder.DropColumn(name: "MurinoMapType", table: "ProjectAppointment");
         }
 
         /// <inheritdoc />
@@ -22,7 +20,8 @@ namespace PeruControl.Migrations
                 name: "MurinoMapType",
                 table: "ProjectAppointment",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
         }
     }
 }

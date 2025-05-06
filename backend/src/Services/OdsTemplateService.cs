@@ -138,7 +138,10 @@ public class OdsTemplateService
         }
     }
 
-    private static void ReplacePlaceholdersInElement(XElement element, Dictionary<string, string> placeholders)
+    private static void ReplacePlaceholdersInElement(
+        XElement element,
+        Dictionary<string, string> placeholders
+    )
     {
         foreach (var node in element.DescendantNodesAndSelf())
         {
@@ -298,13 +301,11 @@ public class OdsTemplateService
         return (outputMs.ToArray(), null);
     }
 
-    public (byte[], string?) GenerateQuotation(
-        Quotation quotation,
-        Business business
-    )
+    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business)
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
-        var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+        var quotationNumber =
+            quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
         var totalCost = quotation.QuotationServices.Sum(s => s.Price ?? 0);
 
         var placeholders = new Dictionary<string, string>
@@ -321,7 +322,10 @@ public class OdsTemplateService
             { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
             { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
             { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
-            { "{{direccion_servicio_cliente}}", areAddressesDifferent ? quotation.ServiceAddress : "" },
+            {
+                "{{direccion_servicio_cliente}}",
+                areAddressesDifferent ? quotation.ServiceAddress : ""
+            },
             { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
             { "{{banco_perucontrol}}", business.BankName },
             { "{{cuenta_banco_perucontrol}}", business.BankAccount },
@@ -334,7 +338,7 @@ public class OdsTemplateService
             { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
             { "{{tiene_igv_2}}", quotation.HasTaxes ? "SI" : "NO" },
             { "{costo_total}", $"S/. {totalCost.ToString("0.00")}" },
-            { "{productos_desinsectacion}", quotation.Desinsectant ?? ""  },
+            { "{productos_desinsectacion}", quotation.Desinsectant ?? "" },
             { "{productos_desratizacion}", quotation.Derodent ?? "" },
             { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
         };
@@ -389,8 +393,12 @@ public class OdsTemplateService
                         var rows = table.Elements(tablens + "table-row").ToList();
                         if (rows.Count > 30)
                         {
-                            var termsRow = table.Elements(tablens + "table-row")
-                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{terms}")));
+                            var termsRow = table
+                                .Elements(tablens + "table-row")
+                                .FirstOrDefault(r =>
+                                    r.Descendants(textns + "p")
+                                        .Any(p => p.Value.Contains("{terms}"))
+                                );
 
                             if (termsRow != null && quotation.TermsAndConditions != null)
                             {
@@ -406,8 +414,8 @@ public class OdsTemplateService
                                     var newRow = new XElement(termsRow);
                                     foreach (var cell in newRow.Descendants(textns + "p"))
                                     {
-                                        cell.Value = cell.Value
-                                            .Replace("{terms}", term)
+                                        cell.Value = cell
+                                            .Value.Replace("{terms}", term)
                                             .Replace("{idx}", (i + 2).ToString());
                                     }
                                     lastInserted.AddAfterSelf(newRow);
@@ -422,8 +430,12 @@ public class OdsTemplateService
                         rows = table.Elements(tablens + "table-row").ToList();
                         if (rows.Count > 20)
                         {
-                            var templateRow = table.Elements(tablens + "table-row")
-                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{servicio_cantidad}")));
+                            var templateRow = table
+                                .Elements(tablens + "table-row")
+                                .FirstOrDefault(r =>
+                                    r.Descendants(textns + "p")
+                                        .Any(p => p.Value.Contains("{servicio_cantidad}"))
+                                );
 
                             if (templateRow != null)
                             {
@@ -443,11 +455,20 @@ public class OdsTemplateService
 
                                     foreach (var cell in newRow.Descendants(textns + "p"))
                                     {
-                                        cell.Value = cell.Value
-                                            .Replace("{servicio_cantidad}", service.Amount.ToString())
-                                            .Replace("{servicio_descripcion}", service.NameDescription)
+                                        cell.Value = cell
+                                            .Value.Replace(
+                                                "{servicio_cantidad}",
+                                                service.Amount.ToString()
+                                            )
+                                            .Replace(
+                                                "{servicio_descripcion}",
+                                                service.NameDescription
+                                            )
                                             .Replace("{servicio_costo}", $"S/. {price}")
-                                            .Replace("{servicio_accesorios}", service.Accesories ?? "");
+                                            .Replace(
+                                                "{servicio_accesorios}",
+                                                service.Accesories ?? ""
+                                            );
                                     }
 
                                     lastInserted.AddAfterSelf(newRow);
@@ -477,5 +498,4 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Doucuments
-)
-{ }
+) { }
