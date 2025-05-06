@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250505214251_add mapaMurino props to ProjectAppointment")]
+    partial class addmapaMurinopropstoProjectAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -461,6 +464,9 @@ namespace PeruControl.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("MurinoMapKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MurinoMapType")
                         .HasColumnType("text");
 
                     b.Property<string>("MurinoMapUrl")

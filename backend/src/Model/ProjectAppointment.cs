@@ -48,4 +48,8 @@ public class ProjectAppointment : BaseModel
 
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;
+
+    // Identificador de mapa murino en R2
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
