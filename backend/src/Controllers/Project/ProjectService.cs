@@ -65,7 +65,7 @@ public class ProjectService(
                 if (!entity.Services.Any(s => s.Id == serviceId))
                 {
                     return (
-                            400,
+                        400,
                         $"El servicio {serviceId} no está en la lista de servicios del proyecto"
                     );
                 }
@@ -88,10 +88,9 @@ public class ProjectService(
                     Certificate = new(),
                     RodentRegister = new() { ServiceDate = app.DueDate },
                     ProjectOperationSheet = new() { OperationDate = app.DueDate },
-                    TreatmentAreas = createDTO.Ambients.Select(areaName => new TreatmentArea
-                    {
-                        AreaName = areaName,
-                    }).ToList(),
+                    TreatmentAreas = createDTO
+                        .Ambients.Select(areaName => new TreatmentArea { AreaName = areaName })
+                        .ToList(),
                 }
             );
         }
@@ -103,7 +102,6 @@ public class ProjectService(
 
         return (201, "");
     }
-
 
     /// <summary>
     /// Collects all appointments, organizes them, and generates an excel file
