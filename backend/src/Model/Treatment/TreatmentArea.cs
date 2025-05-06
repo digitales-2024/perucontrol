@@ -8,12 +8,15 @@ public class TreatmentArea : BaseModel
     public required string AreaName { get; set; }
     public required string ObservedVector { get; set; }
     public required string InfestationLevel { get; set; }
+
     // "Desinsectacion", "Desinfeccion", etc
     public required string PerformedService { get; set; }
+
     // "Pulverizado", "Nebulizado en Frio", etc
     public required string AppliedTechnique { get; set; }
 
     //
     // Relationships
     //
+    public Product Product { get; set; } = null!;
 }

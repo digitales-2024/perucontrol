@@ -138,7 +138,7 @@ public class AppointmentController(
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
             { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? ""},
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },

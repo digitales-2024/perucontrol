@@ -523,9 +523,9 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CancelAppointment(
-      Guid proj_id,
-      Guid app_id,
-      [FromBody] AppointmentCancelDTO dto
+        Guid proj_id,
+        Guid app_id,
+        [FromBody] AppointmentCancelDTO dto
     )
     {
         var appointment = await _context.ProjectAppointments.FindAsync(app_id);
@@ -540,7 +540,10 @@ public class ProjectController(
 
     [EndpointSummary("Update enterTime and leaveTime of a Appointment")]
     [HttpPatch("{id}/times")]
-    public async Task<IActionResult> UpdateAppointmentTimes(Guid id, [FromBody] UpdateAppointmentTimesDto dto)
+    public async Task<IActionResult> UpdateAppointmentTimes(
+        Guid id,
+        [FromBody] UpdateAppointmentTimesDto dto
+    )
     {
         var appointment = await _context.ProjectAppointments.FindAsync(id);
 
