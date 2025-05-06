@@ -4484,6 +4484,8 @@ export interface components {
             isActive: boolean;
             project: components["schemas"]["ProjectBasicInfoDTO"];
             servicesIds: Array<string>;
+            treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;
+            treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
         };
         AppointmentPatchDTO: {
             /** Format: int32 */
@@ -4714,6 +4716,10 @@ export interface components {
             name: string;
             activeIngredient: string;
             solvents: Array<string>;
+        };
+        ProductDTO: {
+            name: string;
+            activeIngredient: string;
         };
         ProductGetAllOutputDTO: {
             name: string;
@@ -5348,6 +5354,25 @@ export interface components {
         TermsAndConditionsPatchDTO: {
             name?: string | null;
             content?: string | null;
+        };
+        TreatmentAreaDTO: {
+            /** Format: uuid */
+            id: string;
+            areaName: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+        };
+        TreatmentProductDTO: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["ProductDTO"];
+            productAmountSolvent: string;
+            equipmentUsed?: string | null;
+            appliedTechnique?: string | null;
+            appliedService?: string | null;
+            appliedTime?: string | null;
         };
         UpdateAppointmentTimesDto: {
             enterTime?: string | null;
