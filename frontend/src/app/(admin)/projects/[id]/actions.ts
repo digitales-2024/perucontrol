@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ok, err, Result } from "@/utils/result";
 import { FetchError } from "@/types/backend";
 
-export async function UploadMurinoMap(projectId: string, formData: FormData): Promise<Result<null, FetchError>>
+export async function UploadMurinoMap(appointmentId: string, formData: FormData): Promise<Result<null, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -26,7 +26,7 @@ export async function UploadMurinoMap(projectId: string, formData: FormData): Pr
         const singleForm = new FormData();
         singleForm.append("file", file);
 
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Project/${projectId}/upload-murino-map`, {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${appointmentId}/upload-murino-map`, {
             method: "POST",
             body: singleForm,
             headers: {
@@ -43,7 +43,7 @@ export async function UploadMurinoMap(projectId: string, formData: FormData): Pr
             });
         }
 
-        revalidatePath(`/admin/projects/${projectId}`, "page");
+        revalidatePath(`/admin/projects/${appointmentId}`, "page");
         return ok(null);
     }
     catch (e)

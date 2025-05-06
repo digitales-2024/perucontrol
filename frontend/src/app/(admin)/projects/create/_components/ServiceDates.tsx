@@ -34,7 +34,6 @@ export function ServiceDates({
     const appointments: Array<AppointmentWithServices> = useWatch({ name: "appointments" }) ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
-    // const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
@@ -83,32 +82,62 @@ export function ServiceDates({
         const endDate = addMonths(startDate, 12); // Límite = 1 año desde el inicio
         let currentDate = new Date(startDate); // hacemos una copia para no modificar el original
 
-        while (currentDate < endDate)
+        if (frequency === "Fortnightly")
         {
-            dates.push({
-                dueDate: currentDate.toISOString(),
-                services: [...selectedServiceIds],
-            });
+            // Obtener el día inicial y calcular el segundo día del mes (día inicial + 14)
+            const firstDay = startDate.getDate();
+            const secondDay = Math.min(firstDay + 14, 28); // Limite de 28 para evitar el desvordamiento mensual
 
-            // Calculamos la siguiente fecha, siempre creando una nueva instancia
-            switch (frequency)
+            while (currentDate < endDate)
             {
-            case "Fortnightly":
-                currentDate = new Date(currentDate);
-                currentDate.setDate(currentDate.getDate() + 15);
-                break;
-            case "Monthly":
+            // Añadir la primera fecha del mes
+                dates.push({
+                    dueDate: new Date(currentDate).toISOString(),
+                    services: [...selectedServiceIds],
+                });
+
+                // Calcular la segunda fecha del mes
+                const secondDate = new Date(currentDate);
+                secondDate.setDate(secondDay);
+
+                // Añadir la segunda fecha sólo si está dentro de la fecha final
+                if (secondDate < endDate)
+                {
+                    dates.push({
+                        dueDate: secondDate.toISOString(),
+                        services: [...selectedServiceIds],
+                    });
+                }
+
+                // Pasar a la primera fecha del mes siguiente
                 currentDate = addMonths(currentDate, 1);
-                break;
-            case "Bimonthly":
-                currentDate = addMonths(currentDate, 2);
-                break;
-            case "Quarterly":
-                currentDate = addMonths(currentDate, 3);
-                break;
-            case "Semiannual":
-                currentDate = addMonths(currentDate, 6);
-                break;
+                currentDate.setDate(firstDay);
+            }
+        }
+        else
+        {
+            while (currentDate < endDate)
+            {
+                dates.push({
+                    dueDate: new Date(currentDate).toISOString(),
+                    services: [...selectedServiceIds],
+                });
+
+                switch (frequency)
+                {
+                case "Monthly":
+                    currentDate = addMonths(currentDate, 1);
+                    break;
+                case "Bimonthly":
+                    currentDate = addMonths(currentDate, 2);
+                    break;
+                case "Quarterly":
+                    currentDate = addMonths(currentDate, 3);
+                    break;
+                case "Semiannual":
+                    currentDate = addMonths(currentDate, 6);
+                    break;
+                }
             }
         }
 

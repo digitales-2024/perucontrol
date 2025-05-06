@@ -29,7 +29,6 @@ import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, Generat
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
-import { MurinoMapSection } from "./MurinoMapSection";
 import { cn } from "@/lib/utils";
 import { AppointmentsDataTable } from "./AppointmentsDataTable";
 import { columns } from "./AppointmentsColumns";
@@ -65,11 +64,9 @@ function getServiceIcon(name: string): string
 export function ProjectDetails({
     project,
     projectId,
-    murinoMapBase64,
 }: {
     project: components["schemas"]["ProjectSummarySingle"],
     projectId: string,
-    murinoMapBase64?: string | null,
 })
 {
     const router = useRouter();
@@ -545,12 +542,6 @@ export function ProjectDetails({
                                 </div>
                             </div>
                         )}
-
-                        {/* Nueva sección: Mapa Murino */}
-                        <MurinoMapSection
-                            murinoMapBase64={murinoMapBase64}
-                            projectId={projectId}
-                        />
 
                     </CardContent>
                 </Card>

@@ -18,7 +18,7 @@ public class ProjectController(
     DatabaseContext db,
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
-    S3Service s3Service,
+    // S3Service s3Service,
     WordTemplateService wordTemplateService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
@@ -619,79 +619,6 @@ public class ProjectController(
 
         // send
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
-    }
-
-    [EndpointSummary("Upload Murino Map")]
-    [EndpointDescription("Allows uploading the Murino Map")]
-    [HttpPost("{id}/upload-murino-map")]
-    public async Task<IActionResult> UploadMurinoMap([FromRoute] Guid id, [FromForm] IFormFile file)
-    {
-        if (file == null || file.Length == 0)
-            return BadRequest("No file uploaded.");
-
-        var project = await _context.Projects.FindAsync(id);
-        if (project == null)
-            return NotFound("Proyecto no encontrado");
-
-        var key = $"mapa-murino-{id}.png";
-        var bucketName = "perucontrol";
-
-        try
-        {
-            // Opcional: Validar que sea PNG
-            if (!file.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                return BadRequest("Solo se permiten archivos PNG");
-
-            // Delete previous image if exists
-            if (!string.IsNullOrEmpty(project.MurinoMapKey))
-            {
-                await s3Service.DeleteObjectAsync(bucketName, project.MurinoMapKey);
-            }
-
-            var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), "image/png");
-
-            // Guarda los datos en el modelo
-            project.MurinoMapKey = result.Key;
-            project.MurinoMapUrl = result.Url;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { url = result.Url });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Error guardando la imagen: {ex.Message}");
-        }
-    }
-
-    [EndpointSummary("Get murino map file")]
-    [HttpGet("{id}/murino-map")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMurinoMap([FromRoute] Guid id)
-    {
-        var project = await _context.Projects.FindAsync(id);
-        if (project == null)
-            return NotFound("Proyecto no encontrado");
-
-        if (
-            string.IsNullOrEmpty(project.MurinoMapKey) || string.IsNullOrEmpty(project.MurinoMapUrl)
-        )
-            return NotFound("Mapa murino no cargado");
-
-        try
-        {
-            // El bucket es estático según S3Service
-            var bucketName = "perucontrol";
-            var stream = await s3Service.DownloadImageAsync(project.MurinoMapKey, bucketName);
-            if (stream == null)
-                return NotFound("Imagen no encontrada en R2");
-
-            return File(stream, "image/png", $"mapa-murino-{id}.png");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Error descargando la imagen: {ex.Message}");
-        }
     }
 
     [EndpointSummary("Generate Disinfection Report Word")]

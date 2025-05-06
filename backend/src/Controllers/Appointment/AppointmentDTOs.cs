@@ -17,6 +17,9 @@ public class AppointmentGetDTO
 
     public TimeSpan? EnterTime { get; set; } // <-- Add this
     public TimeSpan? LeaveTime { get; set; } // <-- Add this
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
 
 public class AppointmentCertificatePatchDTO : IEntityPatcher<Certificate>

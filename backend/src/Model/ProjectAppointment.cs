@@ -57,4 +57,8 @@ public class ProjectAppointment : BaseModel
     // List of treated areas
     [JsonIgnore]
     public ICollection<TreatmentArea> TreatmentAreas { get; set; } = new HashSet<TreatmentArea>();
+
+    // Identificador de mapa murino en R2
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }

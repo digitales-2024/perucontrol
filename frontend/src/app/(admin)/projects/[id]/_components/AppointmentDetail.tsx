@@ -11,6 +11,7 @@ import { AppointmentForTable } from "./ProjectDetails";
 import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes } from "../../actions";
+import { MurinoMapSection } from "./MurinoMapSection";
 
 interface AppointmentDetailsProps {
     projectId: string;
@@ -18,9 +19,15 @@ interface AppointmentDetailsProps {
     // project: components["schemas"]["ProjectSummarySingle"],
     project: components["schemas"]["AppointmentGetOutDTO"]["project"],
     services?: Array<components["schemas"]["Service"]>;
+    murinoMapBase64?: string | null,
 }
 
-export function AppointmentDetails({ projectId, appointment, project }: AppointmentDetailsProps)
+export function AppointmentDetails({
+    projectId,
+    appointment,
+    project,
+    murinoMapBase64,
+}: AppointmentDetailsProps)
 {
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
     const [editActualDateOpen, setEditActualDateOpen] = useState(false);
@@ -263,6 +270,12 @@ export function AppointmentDetails({ projectId, appointment, project }: Appointm
                     </div>
                 </div>
             </div>
+
+            {/* Nueva sección: Mapa Murino */}
+            <MurinoMapSection
+                murinoMapBase64={murinoMapBase64}
+                appointmentId={appointment.id!}
+            />
 
             {/* Acciones */}
             <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 pt-4 border-t">
