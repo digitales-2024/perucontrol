@@ -819,43 +819,6 @@ public class AppointmentController(
       }
     }
 
-    // [EndpointSummary("Get murino map file")]
-    // [HttpGet("{id}/murino-map")]
-    // [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
-    // [ProducesResponseType(StatusCodes.Status404NotFound)]
-    // public async Task<IActionResult> GetMurinoMap([FromRoute] Guid id)
-    // {
-    //     Console.WriteLine($"ID: {id}");
-    //     var projectAppointment = await db.ProjectAppointments.FindAsync(id);
-    //     if (projectAppointment == null)
-    //         return NotFound("Appointment no encontrado");
-
-    //     if (
-    //         string.IsNullOrEmpty(projectAppointment.MurinoMapKey) || string.IsNullOrEmpty(projectAppointment.MurinoMapUrl)
-    //     )
-    //         return NotFound("Mapa murino no cargado");
-
-    //     try
-    //     {
-    //         // El bucket es estático según S3Service
-    //         var bucketName = "perucontrol";
-    //         var stream = await s3Service.DownloadImageAsync(projectAppointment.MurinoMapKey, bucketName);
-    //         if (stream == null)
-    //             return NotFound("Imagen no encontrada en R2");
-
-    //         // Determinar el tipo de contenido y nombre de archivo
-    //         var contentType = "image/pdf"; // Default por compatibilidad
-    //         var fileName = $"mapa-murino-{id}{Path.GetExtension(projectAppointment.MurinoMapKey)}";
-
-    //         return File(stream, contentType, fileName);
-    //         /* return File(stream, "image/png", $"mapa-murino-{id}.png"); */
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         return StatusCode(500, $"Error descargando la imagen: {ex.Message}");
-    //     }
-    // }
-
     [EndpointSummary("Get murino map file")]
     [HttpGet("{id}/murino-map")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]

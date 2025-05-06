@@ -11,6 +11,12 @@ export const companyInfoSchema = z.object({
     bankAccount: z.string().min(1, "El número de cuenta es requerido"),
     bankCCI: z.string().min(1, "El código CCI es requerido"),
     deductions: z.string().optional(),
+    thechnicalDirectorName: z.string().min(1, "El nombre del Director Técnico es requerdio"),
+    thechnicalDirectorPosition: z.string().min(1, "El cargo del Director Técnico es requerido"),
+    thechnicalDirectorCIP: z.string().min(1, "El CIP del Director Técnico es requerido"),
+    responsibleName: z.string().min(1, "El nombre del Responsable es requerido"),
+    responsiblePosition: z.string().min(1, "El cargo del Responsable es requerido"),
+    responsibleCIP: z.string().min(1, "El CIP del Responsable es requerido"),
 });
 
 export type CompanyInfoSchema = z.infer<typeof companyInfoSchema>;

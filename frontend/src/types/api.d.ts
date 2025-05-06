@@ -2459,11 +2459,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Generate Schedule Format 2 excel
          * @description Generates the secons Schedule spreadsheet for a project.
          */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -2498,8 +2500,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2513,11 +2513,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Generate Schedule Format 2 PDF
          * @description Generates the secons Schedule spreadsheet for a project.
          */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -2552,8 +2554,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -4638,6 +4638,12 @@ export interface components {
             bankAccount: string;
             bankCCI: string;
             deductions: string;
+            thechnicalDirectorName: string;
+            thechnicalDirectorPosition: string;
+            thechnicalDirectorCIP: string;
+            responsibleName: string;
+            responsiblePosition: string;
+            responsibleCIP: string;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -4658,6 +4664,12 @@ export interface components {
             bankAccount?: string | null;
             bankCCI?: string | null;
             deductions?: string | null;
+            thechnicalDirectorName?: string | null;
+            thechnicalDirectorPosition?: string | null;
+            thechnicalDirectorCIP?: string | null;
+            responsibleName?: string | null;
+            responsiblePosition?: string | null;
+            responsibleCIP?: string | null;
         };
         Certificate: {
             /** Format: uuid */

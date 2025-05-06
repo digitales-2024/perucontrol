@@ -15,12 +15,30 @@ type SignaturesFormValues = {
     signature2: FileList;
 };
 
+type thechnicalDirector = {
+  name?: string,
+  position?: string,
+  cip?: string,
+}
+
+type responsible = {
+  name?: string,
+  position?: string,
+  cip?: string,
+}
+
 const signatureArray = [
-    ["signature1", "Director Técnico"],
-    ["signature2", "Responsable"],
+    ["signature1", "Director Técnico", "Nombre", "Cargo", "CIP"],
+    ["signature2", "Responsable", "Nombre", "Cargo", "CIP"],
 ];
 
-export function SignaturesForm({ initialImages }: { initialImages?: [string?, string?] })
+interface SignaturesFormProps {
+  initialImages?: [string?, string?],
+  thechnicalDirector?: thechnicalDirector,
+  responsible?: responsible
+}
+
+export function SignaturesForm({ initialImages, thechnicalDirector, responsible }: SignaturesFormProps)
 {
     const form = useForm<SignaturesFormValues>();
     const [previews, setPreviews] = useState<[string?, string?, string?]>([
@@ -78,50 +96,84 @@ export function SignaturesForm({ initialImages }: { initialImages?: [string?, st
                 <CardContent>
                     <Form {...form}>
                         <form id="signatures-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {signatureArray.map(([field, name], idx) => (
-                                    <FormField
-                                        key={field}
-                                        control={form.control}
-                                        name={field as keyof SignaturesFormValues}
-                                        render={({ field: f }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2">
-                                                    <ImageIcon className="h-4 w-4 text-primary" />
-                                                    {name}
-                                                </FormLabel>
-                                                {previews[idx] && (
-                                                    <img
-                                                        src={previews[idx]}
-                                                        alt={`Firma ${idx + 1}`}
-                                                        className="mb-2 rounded border h-24 object-contain w-full"
-                                                    />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {signatureArray.map(([field, name], idx) =>
+                                {
+                                    const info = field === "signature1" ? thechnicalDirector : responsible;
+                                    return (
+                                        <div key={idx}>
+                                            <FormField
+                                                key={field}
+                                                control={form.control}
+                                                name={field as keyof SignaturesFormValues}
+                                                render={({ field: f }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center gap-2">
+                                                            <ImageIcon className="h-4 w-4 text-primary" />
+                                                            {name}
+                                                        </FormLabel>
+                                                        {previews[idx] && (
+                                                            <img
+                                                                src={previews[idx]}
+                                                                alt={`Firma ${idx + 1}`}
+                                                                className="mb-2 rounded border h-24 object-contain w-full"
+                                                            />
+                                                        )}
+                                                        <p className="text-xs text-muted-foreground mb-2">
+                                                            Cargar una nueva imágen:
+                                                        </p>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="file"
+                                                                accept="image/png"
+                                                                onChange={(e) =>
+                                                                {
+                                                                    const files = e.target.files;
+                                                                    if (files && files[0] && files[0].type !== "image/png")
+                                                                    {
+                                                                        e.target.value = ""; // Reset input
+                                                                        return;
+                                                                    }
+                                                                    f.onChange(files);
+                                                                    handlePreview(field as keyof SignaturesFormValues, files);
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
                                                 )}
-                                                <p className="text-xs text-muted-foreground mb-2">
-                                                    Cargar una nueva imágen:
-                                                </p>
-                                                <FormControl>
-                                                    <Input
-                                                        type="file"
-                                                        accept="image/png"
-                                                        onChange={(e) =>
-                                                        {
-                                                            const files = e.target.files;
-                                                            if (files && files[0] && files[0].type !== "image/png")
-                                                            {
-                                                                e.target.value = ""; // Reset input
-                                                                return;
-                                                            }
-                                                            f.onChange(files);
-                                                            handlePreview(field as keyof SignaturesFormValues, files);
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                ))}
+                                            />
+                                            <div className="mt-5 space-y-2 text-sm font-medium text-gray-800">
+                                                <div className="flex gap-2 items-center">
+                                                    <span className="w-10">
+                                                        Nombre:
+                                                    </span>
+                                                    <span className="border-b border-dashed border-gray-400 flex-1 py-0.5">
+                                                        {info?.name ?? ""}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-2 items-center">
+                                                    <span className="w-10">
+                                                        Cargo:
+                                                    </span>
+                                                    <span className="border-b border-dashed border-gray-400 flex-1 py-0.5">
+                                                        {info?.position ?? ""}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-2 items-center">
+                                                    <span className="w-10">
+                                                        CIP:
+                                                    </span>
+                                                    <span className="border-b border-dashed border-gray-400 flex-1 py-0.5">
+                                                        {info?.cip ?? ""}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    );
+                                })}
                             </div>
                         </form>
                     </Form>
