@@ -15,7 +15,8 @@ import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppoi
 interface AppointmentDetailsProps {
     projectId: string;
     appointment: AppointmentForTable;
-    project: components["schemas"]["ProjectSummarySingle"],
+    // project: components["schemas"]["ProjectSummarySingle"],
+    project: components["schemas"]["AppointmentGetOutDTO"]["project"],
     services?: Array<components["schemas"]["Service"]>;
 }
 

@@ -19,7 +19,7 @@ public class AppointmentGetOutDTO
     public required bool IsActive { get; init; }
 
     // Project basic fields
-    public ProjectBasicInfoDTO Project { get; init; } = null!;
+    public required ProjectBasicInfoDTO Project { get; init; } = null!;
 
     // Service IDs only
     public required IEnumerable<Guid> ServicesIds { get; init; } = Array.Empty<Guid>();
@@ -45,6 +45,7 @@ public class AppointmentGetOutDTO
                 ProjectNumber = appointment.Project.ProjectNumber,
                 Address = appointment.Project.Address,
                 Status = appointment.Project.Status,
+                Services = appointment.Project.Services.ToList(),
             },
             ServicesIds = appointment.Services.Select(s => s.Id),
             IsActive = appointment.IsActive,
@@ -55,9 +56,10 @@ public class AppointmentGetOutDTO
 // Simple DTO for project basic info
 public class ProjectBasicInfoDTO
 {
-    public Guid Id { get; init; }
-    public int ProjectNumber { get; init; }
-    public string Address { get; init; } = string.Empty;
+    public required Guid Id { get; init; }
+    public required int ProjectNumber { get; init; }
+    public required string Address { get; init; } = string.Empty;
+    public required IList<Service> Services { get; init; } = null!;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ProjectStatus Status { get; init; }

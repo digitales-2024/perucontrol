@@ -26,21 +26,6 @@ export default async function AppoinmentPage({ params }: {
         return null;
     }
 
-    const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}/v2", {
-        ...auth,
-        params: {
-            path: {
-                id,
-            },
-        },
-    }));
-
-    if (projectError)
-    {
-        console.error("Error getting project:", projectError);
-        return null;
-    }
-
     return (
         <>
             <HeaderPage
@@ -57,7 +42,7 @@ export default async function AppoinmentPage({ params }: {
                             <BreadcrumbItem>
                                 <BreadcrumbLink href={`/projects/${id}`}>
                                     Servicio #
-                                    {project.projectNumber}
+                                    {appointment.project.projectNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
@@ -72,7 +57,7 @@ export default async function AppoinmentPage({ params }: {
                 )}
             />
             <AppointmentDetails
-                project={project}
+                project={appointment.project}
                 projectId={id}
                 appointment={appointment}  // Si es null, lo asignamos a false
             />

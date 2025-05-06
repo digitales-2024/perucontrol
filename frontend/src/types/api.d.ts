@@ -4476,7 +4476,7 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string | null;
             isActive: boolean;
-            project?: components["schemas"]["ProjectBasicInfoDTO"];
+            project: components["schemas"]["ProjectBasicInfoDTO"];
             servicesIds: Array<string>;
         };
         AppointmentPatchDTO: {
@@ -4778,10 +4778,11 @@ export interface components {
         };
         ProjectBasicInfoDTO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: int32 */
-            projectNumber?: number;
-            address?: string;
+            projectNumber: number;
+            address: string;
+            services: Array<components["schemas"]["Service"]>;
             status?: components["schemas"]["ProjectStatus"];
         };
         ProjectCreateDTO: {
