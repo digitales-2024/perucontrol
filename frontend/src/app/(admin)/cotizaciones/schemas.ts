@@ -25,7 +25,8 @@ export const quotationSchema = z.object({
     desinsectant: z.string(),
     derodent: z.string(),
     disinfectant: z.string(),
-    termsAndConditions: z.array(z.string().min(1, "La lista de términos y condiciones es obligatoria")),
+    termsAndConditions: z.array(z.string().min(1, "La lista de términos y condiciones es obligatoria")
+        .optional()),
 });
 
 export type CreateQuotationSchema = z.infer<typeof quotationSchema>;

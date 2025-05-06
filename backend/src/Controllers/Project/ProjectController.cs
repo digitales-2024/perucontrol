@@ -260,6 +260,7 @@ public class ProjectController(
                     ServicesIds = a.Services.Select(s => s.Id).ToList(),
                     ProjectOperationSheet = a.ProjectOperationSheet,
                 })
+                .OrderBy(a => a.DueDate)
                 .ToList(),
             CreatedAt = project.CreatedAt,
             ModifiedAt = project.ModifiedAt,
@@ -644,8 +645,7 @@ public class ProjectController(
 
     [EndpointSummary("Generate Schedule Format 2 excel")]
     [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
-    [HttpGet("{id}/schedule2/excel")]
-    [AllowAnonymous]
+    [HttpPost("{id}/schedule2/excel")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedule2Excel(Guid id)
@@ -666,8 +666,7 @@ public class ProjectController(
 
     [EndpointSummary("Generate Schedule Format 2 PDF")]
     [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
-    [HttpGet("{id}/schedule2/pdf")]
-    [AllowAnonymous]
+    [HttpPost("{id}/schedule2/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedule2PDF(Guid id)

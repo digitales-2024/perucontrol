@@ -20,15 +20,13 @@ export const columns: Array<ColumnDef<AppointmentForTable>> = [
         cell: ({ row }) =>
         {
             const isActive = row.original.isActive;
-            const appointmentNumber = row.original.appointmentNumber;
 
             return (
-                <div className={`items-center flex justify-center text-center text-xs md:text-sm ${
-                    !isActive ? "line-through text-red-500" : ""
+                <div className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
                 }`}
                 >
                     <Hash className="mr-1" />
-                    {appointmentNumber}
+                    {row.index + 1}
                 </div>
             );
         },
@@ -86,7 +84,8 @@ export const columns: Array<ColumnDef<AppointmentForTable>> = [
                     month: "2-digit",
                     year: "numeric",
                 }).format(new Date(rawDate))
-                : "Fecha no disponible";
+                : "Pendiente";
+
             return (
                 <div
                     className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}

@@ -45,19 +45,19 @@ type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
 interface QuotationService {
-  id?: string | null;
-  amount: number;
-  nameDescription: string;
-  price?: number;
-  accesories?: string;
+    id?: string | null;
+    amount: number;
+    nameDescription: string;
+    price?: number;
+    accesories?: string;
 }
 
 interface Service {
-  name: string;
-  id?: string;
-  isActive: boolean;
-  createdAt: string;
-  modifiedAt: string;
+    name: string;
+    id?: string;
+    isActive: boolean;
+    createdAt: string;
+    modifiedAt: string;
 }
 
 export function CreateQuotation({ terms, clients, services }: {
@@ -98,15 +98,14 @@ export function CreateQuotation({ terms, clients, services }: {
             derodent: "",
             disinfectant: "",
             termsAndConditions: [
-                "Los costos NO inlcuyen IGV.",
-                "El costo es siempre y cuando el trabajo sea preventivo, y no exista algun tipó de plaga existente.",
-                "Hora de Ingreso: A coordinar con el personal encargado.",
-                "Ambientes a Tratar:\n- 1er piso área de desecho, chichas,área de pollo.\n- 2do. piso producción de kekes, producción de tortas decoradas, área de productos por salir, panadería, baño hombre.\n- 3er. piso almacén, área de producción de aderezo, almacén, baño mujer , área de producción de helados, área de dosimetria de helado, oficina y pasadizo,\n- 4to. piso. comedor y cambiadores azotea.",
+                "El costo es siempre y cuando el trabajo sea preventivo, y no exista algun tipo de plaga existente.",
+                "Hora de Ingreso:",
+                "Ambientes a Tratar:",
                 "Todos nuestros productos cuentan con MDSD, Ficha Tecnica y Resolucion Directoral emitida por DIGESA.",
-                "Seguridad:\n- Nuestro personal cuenta con SCITR de Pearson y Salud.\n- Nuestro personal cuenta con los EPPS necesarios a la actividad a realizar y las exigidas por ley.",
+                "Seguridad:\n- Nuestro personal cuenta con SCTR de Pension y Salud.\n- Nuestro personal cuenta con los EPPS necesarios para la actividad a realizar y los exigidas por ley.",
                 "Garantía: PERUCIONTROL COM BEL, garantiza el control de sectores propios del local (biletele germánica, moscas y credores.) . De encontrarse otro sector se procederá a una evaluación técnica y se evaluará la consecuencia de haber realizado un servicio mal ejecutado o si el orden y la limpieza es deficiente entre factores o encontrarse.",
-                "Documentos a entregar: Informe tecnico, Planilla de Operaciones, Mapa Murino, Registro de Ronduras, certificados y factura del servicio.",
-                "REPROGRAMACION DEL SERVICIO:  hay algun cambio de dia! El cliente tendrá que avisar con 12 horas de anticipacion para su nueva reprogramación"],
+                "Documentos a entregar:",
+                "REPROGRAMACION DEL SERVICIO:"],
         },
     });
 
@@ -150,8 +149,12 @@ export function CreateQuotation({ terms, clients, services }: {
 
     const onSubmit = async(input: CreateQuotationSchema) =>
     {
-        console.log("Input", JSON.stringify(input, null, 2));
-        const [, err] = await toastWrapper(RegisterQuotation(input), {
+        const transformedInput = {
+            ...input,
+            termsAndConditions: input.termsAndConditions.filter((x) => x !== undefined),
+        };
+
+        const [, err] = await toastWrapper(RegisterQuotation(transformedInput), {
             loading: "Cargando...",
             success: "Cotización registrada exitosamente",
         });
@@ -167,7 +170,7 @@ export function CreateQuotation({ terms, clients, services }: {
     {
         const subscription = watch((value, { name }) =>
         {
-        // Solo ejecutar cuando cambien serviceIds
+            // Solo ejecutar cuando cambien serviceIds
             if (name === "serviceIds")
             {
                 const currentServices = form.getValues("quotationServices");
@@ -781,10 +784,10 @@ export function CreateQuotation({ terms, clients, services }: {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-base">
-                                            Otros
+                                            Observaciones
                                         </FormLabel>
                                         <FormDescription>
-                                            Información adicional acerca del pago
+                                            Observaciones acerca del pago
                                         </FormDescription>
                                         <FormControl>
                                             <Input placeholder="Otros" {...field} />
@@ -838,7 +841,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                                 Punto
                                                 {" "}
                                                 {" "}
-                                                {index + 1}
+                                                {index + 2}
                                             </FormLabel>
 
                                             {/* Lista de plantillas */}
@@ -868,7 +871,7 @@ export function CreateQuotation({ terms, clients, services }: {
                                             }
 
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Textarea {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

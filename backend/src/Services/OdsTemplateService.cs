@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using PeruControl.Model;
 
 namespace PeruControl.Services;
 
@@ -60,30 +61,10 @@ public class OdsTemplateService
                         ReplaceInTextSpan(span, placeholders);
                     }
 
-                    // Find all paragraph elements that might contain placeholders
                     var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
                     foreach (var paragraph in paragraphs)
                     {
-                        // Only process direct text in paragraphs (not in child spans)
-                        if (!paragraph.Descendants(textns + "span").Any() && paragraph.Value != "")
-                        {
-                            string text = paragraph.Value;
-                            bool replacementMade = false;
-
-                            foreach (var placeholder in placeholders)
-                            {
-                                if (text.Contains(placeholder.Key))
-                                {
-                                    text = text.Replace(placeholder.Key, placeholder.Value);
-                                    replacementMade = true;
-                                }
-                            }
-
-                            if (replacementMade)
-                            {
-                                paragraph.Value = text;
-                            }
-                        }
+                        ReplacePlaceholdersInElement(paragraph, placeholders);
                     }
 
                     // Write the modified XML back to the entry
@@ -99,7 +80,7 @@ public class OdsTemplateService
         return outputMs.ToArray();
     }
 
-    private void ReplaceInTextSpan(XElement span, Dictionary<string, string> placeholders)
+    private static void ReplaceInTextSpan(XElement span, Dictionary<string, string> placeholders)
     {
         // Process text directly in the span (not in child elements)
         if (span.Nodes().All(n => n.NodeType == System.Xml.XmlNodeType.Text))
@@ -152,6 +133,32 @@ public class OdsTemplateService
                     {
                         ReplaceInTextSpan(childElement, placeholders);
                     }
+                }
+            }
+        }
+    }
+
+    private static void ReplacePlaceholdersInElement(XElement element, Dictionary<string, string> placeholders)
+    {
+        foreach (var node in element.DescendantNodesAndSelf())
+        {
+            if (node is XText textNode)
+            {
+                string text = textNode.Value;
+                bool replacementMade = false;
+
+                foreach (var placeholder in placeholders)
+                {
+                    if (text.Contains(placeholder.Key))
+                    {
+                        text = text.Replace(placeholder.Key, placeholder.Value);
+                        replacementMade = true;
+                    }
+                }
+
+                if (replacementMade)
+                {
+                    textNode.Value = text;
                 }
             }
         }
@@ -290,6 +297,178 @@ public class OdsTemplateService
 
         return (outputMs.ToArray(), null);
     }
+
+    public (byte[], string?) GenerateQuotation(
+        Quotation quotation,
+        Business business
+    )
+    {
+        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
+        var quotationNumber = quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+        var totalCost = quotation.QuotationServices.Sum(s => s.Price ?? 0);
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{{digesa_habilitacion}}", business.DigesaNumber },
+            { "{{direccion_perucontrol}}", business.Address },
+            { "{{ruc_perucontrol}}", business.RUC },
+            { "{{celulares_perucontrol}}", business.Phones },
+            { "{{gerente_perucontrol}}", business.DirectorName },
+            { "{{fecha_cotizacion}}", quotation.CreationDate.ToString("dd/MM/yyyy") },
+            { "{{cod_cotizacion}}", quotationNumber },
+            { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
+            { "{{fecha_exp_cotizacion}}", quotation.ExpirationDate.ToString("dd/MM/yyyy") },
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
+            { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
+            { "{{direccion_servicio_cliente}}", areAddressesDifferent ? quotation.ServiceAddress : "" },
+            { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
+            { "{{banco_perucontrol}}", business.BankName },
+            { "{{cuenta_banco_perucontrol}}", business.BankAccount },
+            { "{{cci_perucontrol}}", business.BankCCI },
+            { "{{detracciones_perucontrol}}", business.Deductions },
+            { "{{forma_pago}}", quotation.PaymentMethod },
+            { "{{disponibilidad}}", quotation.Availability },
+            { "{{observaciones}}", quotation.Others },
+            { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
+            { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
+            { "{{tiene_igv_2}}", quotation.HasTaxes ? "SI" : "NO" },
+            { "{costo_total}", $"S/. {totalCost.ToString("0.00")}" },
+            { "{productos_desinsectacion}", quotation.Desinsectant ?? ""  },
+            { "{productos_desratizacion}", quotation.Derodent ?? "" },
+            { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
+        };
+
+        var templatePath = "Templates/cotizacion_plantilla.ods";
+        using var ms = new MemoryStream();
+        using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+        using var outputMs = new MemoryStream();
+
+        using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "content.xml")
+                {
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else
+                {
+                    var contentEntry = outputArchive.CreateEntry("content.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                    // Replace global placeholders as before
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, placeholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, placeholders);
+                    }
+
+                    // Find the first table in the document
+                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                    if (table != null)
+                    {
+                        // 1. Generate TermsAndConditions rows at row 31 (index 30, before service rows are added)
+                        var rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 30)
+                        {
+                            var termsRow = table.Elements(tablens + "table-row")
+                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{terms}")));
+
+                            if (termsRow != null && quotation.TermsAndConditions != null)
+                            {
+                                XElement lastInserted = termsRow;
+                                for (int i = 0; i < quotation.TermsAndConditions.Count; i++)
+                                {
+                                    var term = quotation.TermsAndConditions[i];
+                                    if (term == null || term == "")
+                                    {
+                                        continue;
+                                    }
+
+                                    var newRow = new XElement(termsRow);
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell.Value
+                                            .Replace("{terms}", term)
+                                            .Replace("{idx}", (i + 2).ToString());
+                                    }
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                termsRow.Remove();
+                            }
+                        }
+
+                        // ...now continue with your service row generation as before...
+                        // (your existing code for finding and replacing the service row template)
+                        rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 20)
+                        {
+                            var templateRow = table.Elements(tablens + "table-row")
+                                .FirstOrDefault(r => r.Descendants(textns + "p").Any(p => p.Value.Contains("{servicio_cantidad}")));
+
+                            if (templateRow != null)
+                            {
+                                XElement lastInserted = templateRow;
+                                foreach (var service in quotation.QuotationServices)
+                                {
+                                    var newRow = new XElement(templateRow);
+                                    var price = "";
+                                    if (service.Price == null || service.Price == 0.0m)
+                                    {
+                                        price = "plus";
+                                    }
+                                    else
+                                    {
+                                        price = service.Price?.ToString("0.00") ?? "plus";
+                                    }
+
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell.Value
+                                            .Replace("{servicio_cantidad}", service.Amount.ToString())
+                                            .Replace("{servicio_descripcion}", service.NameDescription)
+                                            .Replace("{servicio_costo}", $"S/. {price}")
+                                            .Replace("{servicio_accesorios}", service.Accesories ?? "");
+                                    }
+
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                templateRow.Remove();
+                            }
+                        }
+                    }
+
+                    // Write the modified XML back to the entry
+                    using var newEntryStream = contentEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+
+        return (outputMs.ToArray(), null);
+    }
 }
 
 public record Schedule2Data(
@@ -298,4 +477,5 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Doucuments
-) { }
+)
+{ }
