@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250506204408_AppointmentProductAdjustments")]
+    partial class AppointmentProductAdjustments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,30 +211,6 @@ namespace PeruControl.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RUC")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ResponsibleCIP")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ResponsibleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ResponsiblePosition")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThechnicalDirectorCIP")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThechnicalDirectorName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThechnicalDirectorPosition")
                         .IsRequired()
                         .HasColumnType("text");
 

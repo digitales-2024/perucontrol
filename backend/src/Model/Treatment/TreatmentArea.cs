@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace PeruControl.Model;
 
 public class TreatmentArea : BaseModel
@@ -18,6 +20,9 @@ public class TreatmentArea : BaseModel
     //
     // Relationships
     //
+    [JsonIgnore]
     public IList<TreatmentProduct> TreatmentProducts { get; set; } = new List<TreatmentProduct>();
+
+    [JsonIgnore]
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
 }
