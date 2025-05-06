@@ -9,6 +9,9 @@ public class AppointmentCreateDTO
 
     public TimeSpan? EnterTime { get; set; } // <-- Add this
     public TimeSpan? LeaveTime { get; set; } // <-- Add this
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 }
 
 public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
@@ -18,6 +21,8 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     public DateTime? ActualDate { get; set; }
     public TimeSpan? EnterTime { get; set; } // <-- Add this
     public TimeSpan? LeaveTime { get; set; } // <-- Add this
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
 
     public void ApplyPatch(ProjectAppointment entity)
     {
@@ -31,6 +36,10 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
             entity.EnterTime = EnterTime.Value;
         if (LeaveTime != null)
             entity.LeaveTime = LeaveTime.Value;
+        if (MurinoMapKey != null)
+            entity.MurinoMapKey = MurinoMapKey;
+        if (MurinoMapUrl != null)
+            entity.MurinoMapUrl = MurinoMapUrl;
     }
 }
 
@@ -46,6 +55,10 @@ public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
 
     public TimeSpan? EnterTime { get; set; } // <-- Add this
     public TimeSpan? LeaveTime { get; set; } // <-- Add this
+
+    public string? MurinoMapKey { get; set; }
+    public string? MurinoMapUrl { get; set; }
+
 }
 
 public class AppointmentCancelDTO
