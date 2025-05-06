@@ -15,7 +15,7 @@ public class TreatmentProductController(
 ) : ControllerBase
 {
     [EndpointSummary("Edit Appoinment Treatment Products")]
-    [HttpGet("/api/Appointment/{appointmentid}/treatment-products")]
+    [HttpGet("/api/Appointment/{appointmentid}/TreatmentProduct")]
     public async Task<
         ActionResult<IEnumerable<TreatmentProductDTO>>
     > GetAppointmentTreatmentProducts(Guid appointmentid)
@@ -34,7 +34,7 @@ public class TreatmentProductController(
     }
 
     [EndpointSummary("Edit Appoinment Treatment Products")]
-    [HttpPatch("/api/Appointment/{appointmentid}/treatment-products")]
+    [HttpPatch("/api/Appointment/{appointmentid}/TreatmentProduct")]
     public async Task<ActionResult> EditAppointmentTreatmentProducts(
         Guid appointmentid,
         [FromBody] IList<TreatmentProductInDTO> dto
