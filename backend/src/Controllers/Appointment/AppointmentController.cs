@@ -77,23 +77,6 @@ public class AppointmentController(
         };
     }
 
-    [EndpointSummary("Edit Appoinment Treatment Products")]
-    [HttpPatch("{id}/treatment-products")]
-    public async Task<ActionResult<AppointmentGetOutDTO>> EditAppointmentTreatmentProducts(
-        Guid id,
-        [FromBody] IList<TreatmentProductInDTO> dto
-    )
-    {
-        var result = await appointmentService.PatchTreatmentProducts(id, dto);
-
-        return result switch
-        {
-            SuccessResult success => Ok(),
-            Utils.NotFoundResult error => NotFound(error.Message),
-            _ => throw new Exception("Unexpected result type"),
-        };
-    }
-
     [EndpointSummary("Get all appointments")]
     [HttpGet("all")]
     [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
