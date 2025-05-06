@@ -48,4 +48,13 @@ public class ProjectAppointment : BaseModel
 
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;
+
+    // List of products used in the appointment
+    [JsonIgnore]
+    public ICollection<TreatmentProduct> TreatmentProducts { get; set; } =
+        new HashSet<TreatmentProduct>();
+
+    // List of treated areas
+    [JsonIgnore]
+    public ICollection<TreatmentArea> TreatmentAreas { get; set; } = new HashSet<TreatmentArea>();
 }

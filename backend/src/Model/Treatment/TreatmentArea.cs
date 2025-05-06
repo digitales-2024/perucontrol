@@ -19,4 +19,5 @@ public class TreatmentArea : BaseModel
     // Relationships
     //
     public IList<TreatmentProduct> TreatmentProducts { get; set; } = new List<TreatmentProduct>();
+    public ProjectAppointment ProjectAppointment { get; set; } = null!;
 }
