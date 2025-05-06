@@ -31,4 +31,22 @@ public class Business : BaseModel
 
     // `Detracciones`, e.g. "00-101-385558"
     public required string Deductions { get; set; }
+
+    // Nombre del director tecnico
+    public required string ThechnicalDirectorName { get; set; }
+
+    // Cargo del director tecnico
+    public required string ThechnicalDirectorPosition { get; set; }
+
+    // CIP del director tecnico
+    public required string ThechnicalDirectorCIP { get; set; }
+
+    // Nombre del responsable
+    public required string ResponsibleName { get; set; }
+
+    // Cargo del responsable
+    public required string ResponsiblePosition { get; set; }
+
+    // CIP del responsable
+    public required string ResponsibleCIP { get; set; }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -11,9 +12,11 @@ using PeruControl.Model;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250506180854_add technicalDirector and responsible to business")]
+    partial class addtechnicalDirectorandresponsibletobusiness
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -381,67 +384,6 @@ namespace PeruControl.Migrations
                     b.ToTable("ClientLocations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Product", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ActiveIngredient")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.ProductAmountSolvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AmountAndSolvent")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductAmountSolvent");
-                });
-
             modelBuilder.Entity("PeruControl.Model.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -517,7 +459,7 @@ namespace PeruControl.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentNumber"));
 
-                    b.Property<bool>("Cancelled")
+                    b.Property<bool?>("Cancelled")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("CertificateNumber")
@@ -558,7 +500,7 @@ namespace PeruControl.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectAppointments");
+                    b.ToTable("ProjectAppointment");
                 });
 
             modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
@@ -841,17 +783,13 @@ namespace PeruControl.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NameDescription")
                         .IsRequired()
@@ -880,9 +818,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Frequency")
                         .HasColumnType("integer");
@@ -891,9 +827,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -939,9 +873,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Incidents")
                         .HasColumnType("text");
@@ -950,9 +882,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ProjectAppointmentId")
                         .HasColumnType("uuid");
@@ -997,6 +927,40 @@ namespace PeruControl.Migrations
                     b.ToTable("Services");
                 });
 
+            modelBuilder.Entity("PeruControl.Model.Supply", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Supplies");
+                });
+
             modelBuilder.Entity("PeruControl.Model.TermsAndConditions", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1029,106 +993,6 @@ namespace PeruControl.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TermsAndConditions");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.TreatmentArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AppliedTechnique")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AreaName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("InfestationLevel")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("ObservedVector")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PerformedService")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ProjectAppointmentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectAppointmentId");
-
-                    b.ToTable("TreatmentAreas");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.TreatmentProduct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AppliedService")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AppliedTechnique")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AppliedTime")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("EquipmentUsed")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<Guid>("ProductConcentrationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjectAppointmentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductConcentrationId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ProjectAppointmentId");
-
-                    b.ToTable("TreatmentProducts");
                 });
 
             modelBuilder.Entity("PeruControl.Model.User", b =>
@@ -1245,21 +1109,6 @@ namespace PeruControl.Migrations
                     b.ToTable("QuotationService");
                 });
 
-            modelBuilder.Entity("TreatmentAreaTreatmentProduct", b =>
-                {
-                    b.Property<Guid>("TreatmentAreasId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TreatmentProductsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("TreatmentAreasId", "TreatmentProductsId");
-
-                    b.HasIndex("TreatmentProductsId");
-
-                    b.ToTable("TreatmentAreaTreatmentProduct");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -1331,17 +1180,6 @@ namespace PeruControl.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.ProductAmountSolvent", b =>
-                {
-                    b.HasOne("PeruControl.Model.Product", "Product")
-                        .WithMany("ProductAmountSolvents")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("PeruControl.Model.Project", b =>
@@ -1427,44 +1265,6 @@ namespace PeruControl.Migrations
                     b.Navigation("ProjectAppointment");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.TreatmentArea", b =>
-                {
-                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
-                        .WithMany("TreatmentAreas")
-                        .HasForeignKey("ProjectAppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProjectAppointment");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.TreatmentProduct", b =>
-                {
-                    b.HasOne("PeruControl.Model.ProductAmountSolvent", "ProductConcentration")
-                        .WithMany()
-                        .HasForeignKey("ProductConcentrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
-                        .WithMany("TreatmentProducts")
-                        .HasForeignKey("ProjectAppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductConcentration");
-
-                    b.Navigation("ProjectAppointment");
-                });
-
             modelBuilder.Entity("ProjectAppointmentService", b =>
                 {
                     b.HasOne("PeruControl.Model.ProjectAppointment", null)
@@ -1510,31 +1310,11 @@ namespace PeruControl.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TreatmentAreaTreatmentProduct", b =>
-                {
-                    b.HasOne("PeruControl.Model.TreatmentArea", null)
-                        .WithMany()
-                        .HasForeignKey("TreatmentAreasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeruControl.Model.TreatmentProduct", null)
-                        .WithMany()
-                        .HasForeignKey("TreatmentProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("PeruControl.Model.Client", b =>
                 {
                     b.Navigation("ClientLocations");
 
                     b.Navigation("ClientToQuotations");
-                });
-
-            modelBuilder.Entity("PeruControl.Model.Product", b =>
-                {
-                    b.Navigation("ProductAmountSolvents");
                 });
 
             modelBuilder.Entity("PeruControl.Model.Project", b =>
@@ -1552,10 +1332,6 @@ namespace PeruControl.Migrations
 
                     b.Navigation("RodentRegister")
                         .IsRequired();
-
-                    b.Navigation("TreatmentAreas");
-
-                    b.Navigation("TreatmentProducts");
                 });
 
             modelBuilder.Entity("PeruControl.Model.Quotation", b =>

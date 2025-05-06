@@ -35,6 +35,12 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
             bankAccount: businessInfo.bankAccount ?? "",
             bankCCI: businessInfo.bankCCI ?? "",
             deductions: businessInfo.deductions ?? "",
+            thechnicalDirectorName: businessInfo.thechnicalDirectorName ?? "",
+            thechnicalDirectorPosition: businessInfo.thechnicalDirectorPosition ?? "",
+            thechnicalDirectorCIP: businessInfo.thechnicalDirectorCIP ?? "",
+            responsibleName: businessInfo.responsibleName ?? "",
+            responsiblePosition: businessInfo.responsiblePosition ?? "",
+            responsibleCIP: businessInfo.responsibleCIP ?? "",
         },
     });
 
@@ -75,6 +81,9 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                                 </TabsTrigger>
                                 <TabsTrigger value="bank">
                                     Banco
+                                </TabsTrigger>
+                                <TabsTrigger value="representants">
+                                    representants
                                 </TabsTrigger>
                             </TabsList>
 
@@ -260,6 +269,111 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                                                     )}
                                                 />
                                             </TabsContent>
+
+                                            <TabsContent value="representants" className="space-y-4 mt-0">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="thechnicalDirectorName"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                Nombre del Director Técnico
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Nombre" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="thechnicalDirectorPosition"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                Posición del Director Técnico
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Posición" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="thechnicalDirectorCIP"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                CIP del Director Técnico
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="CPI" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="responsibleName"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                Nombre del Representante
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Nombre" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="responsiblePosition"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                Posición del Representante
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Posición" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="responsibleCIP"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                <FileText className="h-4 w-4 text-primary" />
+                                                                CIP del representante
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="CPI" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </TabsContent>
+
                                         </div>
                                     </ScrollArea>
                                 </form>
@@ -486,6 +600,118 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                                             </FormItem>
                                         )}
                                     />
+                                </div>
+
+                                <div className="mt-5">
+                                    <h3 className="text-lg font-medium mb-4">
+                                        Información del Representante
+                                    </h3>
+                                    <Separator className="mb-4" />
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                                        <FormField
+                                            control={form.control}
+                                            name="thechnicalDirectorName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        Nombre del Director Técnico
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Nombre" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="thechnicalDirectorPosition"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        Posición del Director Técnico
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Posición" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="thechnicalDirectorCIP"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        CIP del Director Técnico
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="CPI" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="responsibleName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        Nombre del Representante
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Nombre" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="responsiblePosition"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        Posición del Representante
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Posición" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="responsibleCIP"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4 text-primary" />
+                                                        CIP del representante
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="CPI" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </form>

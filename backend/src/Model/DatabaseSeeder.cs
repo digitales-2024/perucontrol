@@ -134,6 +134,12 @@ public static class DatabaseSeeder
             BankAccount = "215-20391810-0-04",
             BankCCI = "002-21500203918100429",
             Deductions = "00-101-385558",
+            ThechnicalDirectorName = "",
+            ThechnicalDirectorPosition = "",
+            ThechnicalDirectorCIP = "",
+            ResponsibleName = "",
+            ResponsiblePosition = "",
+            ResponsibleCIP = ""
         };
         await context.Businesses.AddAsync(business);
         await context.SaveChangesAsync();

@@ -50,11 +50,23 @@ export default async function ClientsPage()
         );
     }
 
+    const thechnicalDirector = {
+        name: businessInfo[0].thechnicalDirectorName,
+        position: businessInfo[0].thechnicalDirectorPosition,
+        cip: businessInfo[0].thechnicalDirectorCIP,
+    };
+
+    const responsible = {
+        name: businessInfo[0].responsibleName,
+        position: businessInfo[0].responsiblePosition,
+        cip: businessInfo[0].responsibleCIP,
+    };
+
     return (
         <>
             <HeaderPage title="Información de PeruControl" />
             <CompanyInfoForm businessInfo={Array.isArray(businessInfo) ? businessInfo[0] : businessInfo} />
-            <SignaturesForm initialImages={[img1,img2]} />
+            <SignaturesForm initialImages={[img1,img2]} thechnicalDirector={thechnicalDirector} responsible={responsible} />
         </>
     );
 }

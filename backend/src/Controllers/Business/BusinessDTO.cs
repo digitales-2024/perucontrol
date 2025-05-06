@@ -22,6 +22,12 @@ public class BusinessPatchDTO : IEntityPatcher<Business>
     public string? BankAccount { get; set; }
     public string? BankCCI { get; set; }
     public string? Deductions { get; set; }
+    public string? ThechnicalDirectorName { get; set; }
+    public string? ThechnicalDirectorPosition { get; set; }
+    public string? ThechnicalDirectorCIP { get; set; }
+    public string? ResponsibleName { get; set; }
+    public string? ResponsiblePosition { get; set; }
+    public string? ResponsibleCIP { get; set; }
 
     public void ApplyPatch(Business entity)
     {
@@ -64,6 +70,30 @@ public class BusinessPatchDTO : IEntityPatcher<Business>
         if (Deductions != null)
         {
             entity.Deductions = Deductions;
+        }
+        if (ThechnicalDirectorName != null)
+        {
+            entity.ThechnicalDirectorName = ThechnicalDirectorName;
+        }
+        if (ThechnicalDirectorPosition != null)
+        {
+            entity.ThechnicalDirectorPosition = ThechnicalDirectorPosition;
+        }
+        if (ThechnicalDirectorCIP != null)
+        {
+            entity.ThechnicalDirectorCIP = ThechnicalDirectorCIP;
+        }
+        if (ResponsibleName != null)
+        {
+            entity.ResponsibleName = ResponsibleName;
+        }
+        if (ResponsiblePosition != null)
+        {
+            entity.ResponsiblePosition = ResponsiblePosition;
+        }
+        if (ResponsibleCIP != null)
+        {
+            entity.ResponsibleCIP = ResponsibleCIP;
         }
     }
 }
