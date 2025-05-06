@@ -7,23 +7,23 @@ namespace PeruControl.Model;
 public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-    public required DbSet<ProjectAppointment> Appointments { get; set; }
     public required DbSet<Business> Businesses { get; set; }
     public required DbSet<Client> Clients { get; set; }
     public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<Quotation> Quotations { get; set; }
     public required DbSet<QuotationService> QuotationServices { get; set; }
+    public required DbSet<RodentRegister> RodentRegisters { get; set; }
+    public required DbSet<RodentArea> RodentAreas { get; set; }
     public required DbSet<Service> Services { get; set; }
     public required DbSet<Product> Products { get; set; }
     public required DbSet<Project> Projects { get; set; }
     public required DbSet<ProjectAppointment> ProjectAppointments { get; set; }
-    public required DbSet<ProjectOrderNumber> ProjectOrderNumbers { get; set; }
-    public required DbSet<RodentRegister> RodentRegisters { get; set; }
-    public required DbSet<RodentArea> RodentAreas { get; set; }
-    public required DbSet<Supply> Supplies { get; set; }
-    public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
     public required DbSet<ProjectOperationSheet> ProjectOperationSheet { get; set; }
+    public required DbSet<ProjectOrderNumber> ProjectOrderNumbers { get; set; }
+    public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
+    public required DbSet<TreatmentArea> TreatmentAreas { get; set; }
+    public required DbSet<TreatmentProduct> TreatmentProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -33,12 +33,17 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Model.ClientLocation.SetUp<ClientLocation>(builder);
         PeruControl.Model.Quotation.SetUp<Quotation>(builder);
+        PeruControl.Model.QuotationService.SetUp<QuotationService>(builder);
+        PeruControl.Model.RodentRegister.SetUp<RodentRegister>(builder);
+        PeruControl.Model.RodentArea.SetUp<RodentArea>(builder);
+        PeruControl.Model.Service.SetUp<Service>(builder);
+        PeruControl.Model.Product.SetUp<Product>(builder);
         PeruControl.Model.Project.SetUp<Project>(builder);
         PeruControl.Model.ProjectAppointment.SetUp<ProjectAppointment>(builder);
-        PeruControl.Model.Service.SetUp<Service>(builder);
-        PeruControl.Model.Supply.SetUp<Supply>(builder);
-        PeruControl.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
         PeruControl.Model.ProjectOperationSheet.SetUp<ProjectOperationSheet>(builder);
+        PeruControl.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
+        PeruControl.Model.TreatmentArea.SetUp<TreatmentArea>(builder);
+        PeruControl.Model.TreatmentProduct.SetUp<TreatmentProduct>(builder);
     }
 
     public override int SaveChanges()

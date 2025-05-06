@@ -38,7 +38,7 @@ public class AppointmentController(
     )
     {
         var appointments = await db
-            .Appointments.Where(a => a.DueDate >= start && a.DueDate <= end)
+            .ProjectAppointments.Where(a => a.DueDate >= start && a.DueDate <= end)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -61,13 +61,21 @@ public class AppointmentController(
         );
     }
 
+    [EndpointSummary("Get by ID")]
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetAppointmentById(Guid id)
+    {
+        await appointmentService.GetById(id);
+        return Ok();
+    }
+
     [EndpointSummary("Get all appointments")]
     [HttpGet("all")]
     [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AppointmentGetDTO2>>> GetAllAppointments()
     {
         var appointments = await db
-            .Appointments.Include(a => a.Services)
+            .ProjectAppointments.Include(a => a.Services)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -95,7 +103,7 @@ public class AppointmentController(
     private (byte[], string) OperationSheetSpreadsheetTemplate(Guid id)
     {
         var appointment = db
-            .Appointments.Include(a => a.Project)
+            .ProjectAppointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .Include(a => a.Project)
             .ThenInclude(p => p.Services)

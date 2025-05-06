@@ -6,6 +6,16 @@ namespace PeruControl.Controllers;
 
 public class AppointmentService(DatabaseContext db, OdsTemplateService odsTemplate)
 {
+    public async Task<(int, string)> GetById(Guid id)
+    {
+        var appointment = await db.ProjectAppointments.FirstOrDefaultAsync(a => a.Id == id);
+
+        if (appointment is null)
+            return (404, "Fecha no encontrada");
+
+        return (200, "");
+    }
+
     public async Task<(byte[], string?)> FillRodentsExcel(Guid id)
     {
         var business = await db.Businesses.FirstOrDefaultAsync();
