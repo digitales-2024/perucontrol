@@ -88,6 +88,10 @@ public class ProjectService(
                     Certificate = new(),
                     RodentRegister = new() { ServiceDate = app.DueDate },
                     ProjectOperationSheet = new() { OperationDate = app.DueDate },
+                    TreatmentAreas = createDTO.Ambients.Select(areaName => new TreatmentArea
+                    {
+                        AreaName = areaName,
+                    }).ToList(),
                 }
             );
         }
