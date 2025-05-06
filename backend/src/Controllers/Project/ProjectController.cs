@@ -31,91 +31,14 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
-        var entity = createDTO.MapToEntity();
-
-        // validate the client exists before creating the project
-        var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
-        if (client == null)
-            return NotFound("Cliente no encontrado");
-
-        entity.Client = client;
-
-        // if a quotation is provided, validate it exists
-        Quotation? quotation = null;
-        if (createDTO.QuotationId != null)
+        var (status, msg) = await projectService.CreateProject(createDTO);
+        return status switch
         {
-            quotation = await _context.Set<Quotation>().FindAsync(createDTO.QuotationId);
-            if (quotation == null)
-                return NotFound("Cotización no encontrada");
-            entity.Quotation = quotation;
-        }
-
-        // Validate all services exist
-        if (createDTO.Services.Count == 0)
-            return BadRequest("Debe ingresar al menos un servicio");
-
-        // Fetch services from the database by IDs
-        var serviceEntities = await _context
-            .Services.Where(s => createDTO.Services.Contains(s.Id))
-            .ToListAsync();
-
-        if (serviceEntities.Count != createDTO.Services.Count)
-            return NotFound("Algunos servicios no fueron encontrados");
-
-        entity.Services = serviceEntities;
-
-        // merge all appointments with the same date
-        var mergedAppointments = createDTO
-            .AppointmentCreateDTOs.GroupBy(a => a.DueDate)
-            .Select(g => new AppointmentCreateDTOThroughProject
-            {
-                DueDate = g.Key,
-                Services = g.SelectMany(a => a.Services).Distinct().ToList(),
-            })
-            .ToList();
-
-        createDTO.AppointmentCreateDTOs = mergedAppointments;
-
-        // Validate all appointments have valid service IDs, present in the parent service list
-        foreach (var appointment in createDTO.AppointmentCreateDTOs)
-        {
-            foreach (var serviceId in appointment.Services)
-            {
-                if (!entity.Services.Any(s => s.Id == serviceId))
-                {
-                    return BadRequest(
-                        $"El servicio {serviceId} no está en la lista de servicios del proyecto"
-                    );
-                }
-            }
-        }
-
-        // Create Appointments
-        var appointments = new List<ProjectAppointment>();
-        foreach (var app in createDTO.AppointmentCreateDTOs)
-        {
-            var appointmentServices = serviceEntities
-                .Where(s => app.Services.Contains(s.Id))
-                .ToList();
-
-            appointments.Add(
-                new ProjectAppointment
-                {
-                    DueDate = app.DueDate,
-                    Services = appointmentServices,
-                    Certificate = new(),
-                    RodentRegister = new() { ServiceDate = app.DueDate },
-                    ProjectOperationSheet = new() { OperationDate = app.DueDate },
-                }
-            );
-        }
-        entity.Appointments = appointments;
-
-        // Create and populate the project
-        _context.Add(entity);
-        await _context.SaveChangesAsync();
-
-        return Created();
+            201 => Created(),
+            400 => BadRequest(msg),
+            404 => NotFound(msg),
+            _ => throw new InvalidOperationException("Unexpected status code"),
+        };
     }
 
     [EndpointSummary("Get all")]
@@ -209,10 +132,10 @@ public class ProjectController(
     }
 
     [EndpointSummary("Get one by Id v2")]
-    [HttpGet("/{id}/v2")]
+    [HttpGet("{id}/v2")]
     [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Project>> GetById2(Guid id)
+    public async Task<ActionResult<ProjectSummarySingle>> GetById2(Guid id)
     {
         var project = await _context
             .Projects.Include(p => p.Client)
@@ -270,7 +193,7 @@ public class ProjectController(
     }
 
     [EndpointSummary("Get one by Id v3")]
-    [HttpGet("/{id}/v3")]
+    [HttpGet("{id}/v3")]
     [ProducesResponseType<ProjectSummarySingle2>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Project>> GetById3(Guid id)
@@ -523,9 +446,9 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CancelAppointment(
-      Guid proj_id,
-      Guid app_id,
-      [FromBody] AppointmentCancelDTO dto
+        Guid proj_id,
+        Guid app_id,
+        [FromBody] AppointmentCancelDTO dto
     )
     {
         var appointment = await _context.ProjectAppointments.FindAsync(app_id);
@@ -540,7 +463,10 @@ public class ProjectController(
 
     [EndpointSummary("Update enterTime and leaveTime of a Appointment")]
     [HttpPatch("{id}/times")]
-    public async Task<IActionResult> UpdateAppointmentTimes(Guid id, [FromBody] UpdateAppointmentTimesDto dto)
+    public async Task<IActionResult> UpdateAppointmentTimes(
+        Guid id,
+        [FromBody] UpdateAppointmentTimesDto dto
+    )
     {
         var appointment = await _context.ProjectAppointments.FindAsync(id);
 

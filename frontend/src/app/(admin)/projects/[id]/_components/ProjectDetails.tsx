@@ -36,16 +36,16 @@ import { columns } from "./AppointmentsColumns";
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
 
 export type AppointmentForTable = {
-  id?: string | undefined;
-  appointmentNumber?: number | null | undefined;
-  dueDate: string;
-  actualDate?: string | null | undefined;
-  servicesIds: Array<string>;
-  services?: Array<{ name: string; id: string }>;
-  isActive?: boolean;
-  cancelled?: boolean/*  | null | undefined */;
-  enterTime?: string | null | undefined;
-  leaveTime?: string | null | undefined;
+    id?: string | undefined;
+    appointmentNumber?: number | null | undefined;
+    dueDate: string;
+    actualDate?: string | null | undefined;
+    servicesIds: Array<string>;
+    services?: Array<{ name: string; id: string }>;
+    isActive?: boolean;
+    cancelled?: boolean/*  | null | undefined */;
+    enterTime?: string | null | undefined;
+    leaveTime?: string | null | undefined;
 };
 
 function getServiceIcon(name: string): string

@@ -2,7 +2,6 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { AppointmentDetails } from "../_components/AppointmentDetail";
-import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 
@@ -36,40 +35,32 @@ export default async function AppoinmentPage({ params }: {
     }>
 })
 {
-    const { id, appointment_id } = await params;
+    const { id, appointment_id: appointmentId } = await params;
 
-    const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
+    const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
         ...auth,
         params: {
             path: {
-                id,
+                id: appointmentId,
             },
         },
     }));
 
-    // Obtener la cita específica
-    // eslint-disable-next-line camelcase
-    const appointment = project.appointments?.find((a) => a.id === appointment_id);
-    if (!appointment)
+    if (appointmentError)
     {
-        return notFound();
+        console.error("Error getting project:", appointmentError);
+        return null;
     }
 
     // obtener imagen del mapa murino
     let murinoMapBase64: string | null = null;
     try
     {
-        murinoMapBase64 = await fetchMurinoMapBase64(appointment_id);
+        murinoMapBase64 = await fetchMurinoMapBase64(appointmentId);
     }
     catch (e)
     {
         console.error("Error fetching murino map:", e);
-    }
-
-    if (projectError)
-    {
-        console.error("Error getting project:", projectError);
-        return null;
     }
 
     return (
@@ -88,7 +79,7 @@ export default async function AppoinmentPage({ params }: {
                             <BreadcrumbItem>
                                 <BreadcrumbLink href={`/projects/${id}`}>
                                     Servicio #
-                                    {project.projectNumber}
+                                    {appointment.project.projectNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
@@ -103,9 +94,9 @@ export default async function AppoinmentPage({ params }: {
                 )}
             />
             <AppointmentDetails
-                project={project}
+                project={appointment.project}
                 projectId={id}
-                appointment={{ ...appointment, cancelled: appointment.cancelled ?? false }}  // Si es null, lo asignamos a false
+                appointment={appointment}  // Si es null, lo asignamos a false
                 murinoMapBase64={murinoMapBase64}
             />
         </>

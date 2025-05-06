@@ -58,7 +58,6 @@ public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
 
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
-
 }
 
 public class AppointmentCancelDTO

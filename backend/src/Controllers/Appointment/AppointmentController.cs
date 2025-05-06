@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Services;
+using PeruControl.Utils;
 
 namespace PeruControl.Controllers;
 
@@ -39,7 +40,7 @@ public class AppointmentController(
     )
     {
         var appointments = await db
-            .Appointments.Where(a => a.DueDate >= start && a.DueDate <= end)
+            .ProjectAppointments.Where(a => a.DueDate >= start && a.DueDate <= end)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -62,13 +63,27 @@ public class AppointmentController(
         );
     }
 
+    [EndpointSummary("Get by ID")]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AppointmentGetOutDTO>> GetAppointmentById(Guid id)
+    {
+        var result = await appointmentService.GetById(id);
+
+        return result switch
+        {
+            SuccessResult<AppointmentGetOutDTO> success => Ok(success.Data),
+            NotFoundResult<AppointmentGetOutDTO> error => NotFound(error.Message),
+            _ => NotFound("No se encontró la fecha."),
+        };
+    }
+
     [EndpointSummary("Get all appointments")]
     [HttpGet("all")]
     [ProducesResponseType<IEnumerable<AppointmentGetDTO2>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AppointmentGetDTO2>>> GetAllAppointments()
     {
         var appointments = await db
-            .Appointments.Include(a => a.Services)
+            .ProjectAppointments.Include(a => a.Services)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .ToListAsync();
@@ -96,7 +111,7 @@ public class AppointmentController(
     private (byte[], string) OperationSheetSpreadsheetTemplate(Guid id)
     {
         var appointment = db
-            .Appointments.Include(a => a.Project)
+            .ProjectAppointments.Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .Include(a => a.Project)
             .ThenInclude(p => p.Services)
@@ -139,7 +154,7 @@ public class AppointmentController(
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
             { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? ""},
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },
@@ -782,41 +797,41 @@ public class AppointmentController(
         var projectAppointment = await db.ProjectAppointments.FindAsync(id);
         if (projectAppointment == null)
             return NotFound("Appointment no encontrado");
-            
+
         // Validar tipo de archivo
-      var allowedExtensions = new[] { ".png", ".pdf" };
-      var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-      
-      if (!allowedExtensions.Contains(fileExtension))
-          return BadRequest("Solo se permiten archivos PNG o PDF");
+        var allowedExtensions = new[] { ".png", ".pdf" };
+        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-      try
-      {
-          // Determinar el tipo de contenido
-          var contentType = fileExtension == ".pdf" ? "application/pdf" : "image/png";
-          var key = $"mapa-murino-{id}{fileExtension}";
-          var bucketName = "perucontrol";
+        if (!allowedExtensions.Contains(fileExtension))
+            return BadRequest("Solo se permiten archivos PNG o PDF");
 
-          // Eliminar archivo anterior si existe
-          if (!string.IsNullOrEmpty(projectAppointment.MurinoMapKey))
-          {
-              await s3Service.DeleteObjectAsync(bucketName, projectAppointment.MurinoMapKey);
-          }
+        try
+        {
+            // Determinar el tipo de contenido
+            var contentType = fileExtension == ".pdf" ? "application/pdf" : "image/png";
+            var key = $"mapa-murino-{id}{fileExtension}";
+            var bucketName = "perucontrol";
 
-          // Subir el nuevo archivo
-          var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), contentType);
+            // Eliminar archivo anterior si existe
+            if (!string.IsNullOrEmpty(projectAppointment.MurinoMapKey))
+            {
+                await s3Service.DeleteObjectAsync(bucketName, projectAppointment.MurinoMapKey);
+            }
 
-          // Actualizar el proyecto
-          projectAppointment.MurinoMapKey = result.Key;
-          projectAppointment.MurinoMapUrl = result.Url;
-          await db.SaveChangesAsync();
+            // Subir el nuevo archivo
+            var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), contentType);
 
-          return Ok(new { url = result.Url, type = contentType });
-      }
-      catch (Exception ex)
-      {
-          return StatusCode(500, $"Error guardando el archivo: {ex.Message}");
-      }
+            // Actualizar el proyecto
+            projectAppointment.MurinoMapKey = result.Key;
+            projectAppointment.MurinoMapUrl = result.Url;
+            await db.SaveChangesAsync();
+
+            return Ok(new { url = result.Url, type = contentType });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error guardando el archivo: {ex.Message}");
+        }
     }
 
     // [EndpointSummary("Get murino map file")]
@@ -866,23 +881,30 @@ public class AppointmentController(
         if (projectAppointment == null)
             return NotFound("Appointment no encontrado");
 
-        if (string.IsNullOrEmpty(projectAppointment.MurinoMapKey) || string.IsNullOrEmpty(projectAppointment.MurinoMapUrl))
+        if (
+            string.IsNullOrEmpty(projectAppointment.MurinoMapKey)
+            || string.IsNullOrEmpty(projectAppointment.MurinoMapUrl)
+        )
             return NotFound("Mapa murino no cargado");
 
         try
         {
             var bucketName = "perucontrol";
-            var stream = await s3Service.DownloadImageAsync(projectAppointment.MurinoMapKey, bucketName);
+            var stream = await s3Service.DownloadImageAsync(
+                projectAppointment.MurinoMapKey,
+                bucketName
+            );
             if (stream == null)
                 return NotFound("Archivo no encontrado en R2");
 
             // Determinar tipo de contenido basado en la extensión del archivo
-            var fileExtension = Path.GetExtension(projectAppointment.MurinoMapKey).ToLowerInvariant();
+            var fileExtension = Path.GetExtension(projectAppointment.MurinoMapKey)
+                .ToLowerInvariant();
             var contentType = fileExtension switch
             {
                 ".pdf" => "application/pdf",
                 ".png" => "image/png",
-                _ => "application/octet-stream" // Tipo genérico si no se reconoce
+                _ => "application/octet-stream", // Tipo genérico si no se reconoce
             };
 
             // Agregar header personalizado

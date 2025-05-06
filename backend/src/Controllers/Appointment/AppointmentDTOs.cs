@@ -20,7 +20,6 @@ public class AppointmentGetDTO
 
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
-
 }
 
 public class AppointmentCertificatePatchDTO : IEntityPatcher<Certificate>

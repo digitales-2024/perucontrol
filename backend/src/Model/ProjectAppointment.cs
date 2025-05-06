@@ -40,7 +40,7 @@ public class ProjectAppointment : BaseModel
     public DateTime? ActualDate { get; set; }
 
     /// Represents that the appointment was not performed
-    public bool? Cancelled { get; set; } = false;
+    public bool Cancelled { get; set; } = false;
 
     /// Services performed on this appointment
     [JsonIgnore]
@@ -48,6 +48,15 @@ public class ProjectAppointment : BaseModel
 
     [JsonIgnore]
     public Certificate Certificate { get; set; } = null!;
+
+    // List of products used in the appointment
+    [JsonIgnore]
+    public ICollection<TreatmentProduct> TreatmentProducts { get; set; } =
+        new HashSet<TreatmentProduct>();
+
+    // List of treated areas
+    [JsonIgnore]
+    public ICollection<TreatmentArea> TreatmentAreas { get; set; } = new HashSet<TreatmentArea>();
 
     // Identificador de mapa murino en R2
     public string? MurinoMapKey { get; set; }

@@ -10,6 +10,99 @@ public class ProjectService(
     OdsTemplateService odsTemplateService
 )
 {
+    public async Task<(int, string)> CreateProject(ProjectCreateDTO createDTO)
+    {
+        var entity = createDTO.MapToEntity();
+
+        // validate the client exists before creating the project
+        var client = await db.Set<Client>().FindAsync(createDTO.ClientId);
+        if (client == null)
+            return (404, "Cliente no encontrado");
+
+        entity.Client = client;
+
+        // if a quotation is provided, validate it exists
+        Quotation? quotation = null;
+        if (createDTO.QuotationId != null)
+        {
+            quotation = await db.Set<Quotation>().FindAsync(createDTO.QuotationId);
+            if (quotation == null)
+                return (404, "Cotización no encontrada");
+            entity.Quotation = quotation;
+        }
+
+        // Validate all services exist
+        if (createDTO.Services.Count == 0)
+            return (400, "Debe ingresar al menos un servicio");
+
+        // Fetch services from the database by IDs
+        var serviceEntities = await db
+            .Services.Where(s => createDTO.Services.Contains(s.Id))
+            .ToListAsync();
+
+        if (serviceEntities.Count != createDTO.Services.Count)
+            return (404, "Algunos servicios no fueron encontrados");
+
+        entity.Services = serviceEntities;
+
+        // merge all appointments with the same date
+        var mergedAppointments = createDTO
+            .AppointmentCreateDTOs.GroupBy(a => a.DueDate)
+            .Select(g => new AppointmentCreateDTOThroughProject
+            {
+                DueDate = g.Key,
+                Services = g.SelectMany(a => a.Services).Distinct().ToList(),
+            })
+            .ToList();
+
+        createDTO.AppointmentCreateDTOs = mergedAppointments;
+
+        // Validate all appointments have valid service IDs, present in the parent service list
+        foreach (var appointment in createDTO.AppointmentCreateDTOs)
+        {
+            foreach (var serviceId in appointment.Services)
+            {
+                if (!entity.Services.Any(s => s.Id == serviceId))
+                {
+                    return (
+                        400,
+                        $"El servicio {serviceId} no está en la lista de servicios del proyecto"
+                    );
+                }
+            }
+        }
+
+        // Create Appointments
+        var appointments = new List<ProjectAppointment>();
+        foreach (var app in createDTO.AppointmentCreateDTOs)
+        {
+            var appointmentServices = serviceEntities
+                .Where(s => app.Services.Contains(s.Id))
+                .ToList();
+
+            appointments.Add(
+                new ProjectAppointment
+                {
+                    DueDate = app.DueDate,
+                    Services = appointmentServices,
+                    Certificate = new(),
+                    RodentRegister = new() { ServiceDate = app.DueDate },
+                    ProjectOperationSheet = new() { OperationDate = app.DueDate },
+                    TreatmentAreas = createDTO
+                        .Ambients.Select(areaName => new TreatmentArea { AreaName = areaName })
+                        .ToList(),
+                }
+            );
+        }
+        entity.Appointments = appointments;
+
+        // Create and populate the project
+        db.Add(entity);
+        await db.SaveChangesAsync();
+
+        return (201, "");
+    }
+
     /// <summary>
     /// Collects all appointments, organizes them, and generates an excel file
     /// with a worksheet for each month, in order.
@@ -89,19 +182,15 @@ public class ProjectService(
         }
 
         // Transform appointments into Schedule2Data
-        var scheduleData = project.Appointments
-            .OrderBy(a => a.DueDate)
-            .Select(a =>
-                new Schedule2Data(
-                    a.DueDate.GetSpanishMonthName(),
-                    a.DueDate,
-                    a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
-                    string.Join(",",
-                        a.Services.Select(s => s.Name.Trim()).OrderBy(n => n)
-                    ),
-                    "Documentos"
-                )
-            )
+        var scheduleData = project
+            .Appointments.OrderBy(a => a.DueDate)
+            .Select(a => new Schedule2Data(
+                a.DueDate.GetSpanishMonthName(),
+                a.DueDate,
+                a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
+                string.Join(",", a.Services.Select(s => s.Name.Trim()).OrderBy(n => n)),
+                "Documentos"
+            ))
             .ToList();
 
         // Send the data to the ODS generation system
