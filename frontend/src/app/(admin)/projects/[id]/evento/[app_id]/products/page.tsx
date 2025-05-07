@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
-import { TreatmentProductForm } from "./_components/Products";
+import { TreatmentProductForm } from "./_components/TreatmentProduct";
 import { backend, wrapper } from "@/types/backend";
 
 interface Props {

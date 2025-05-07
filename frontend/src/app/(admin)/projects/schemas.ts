@@ -205,3 +205,30 @@ export const TreatmentProductSchema = z.object({
 });
 
 export type TreatmentProductFormValues = z.infer<typeof TreatmentProductSchema>;
+
+// export const TreatmentAreaSchema = z.object({
+//     products: z
+//         .array(z.object({
+//             areaName: z.string().min(1, "El nombre del área es requerido"),
+//             observerVector: z.string(),
+//             infestationLevel: z.string(),
+//             performedService: z.string(),
+//             appliedTechnique: z.string(),
+//             /* appliedService: z.string().nullable(),
+//             appliedTime: z.string().nullable(), */
+//         }))
+//         .min(1, "Debe haber al menos un producto"),
+// });
+
+export const treatmentAreaSchema = z.object({
+    areas: z.array(z.object({
+        areaName: z.string().min(1, "El nombre del área es requerido"),
+        observerVector: z.string(),
+        infestationLevel: z.string(),
+        performedService: z.string(),
+        appliedTechnique: z.string(),
+    }))
+        .min(1, "Debe haber al menos un producto"),
+});
+
+export type TreatmentAreaFormValues = z.infer<typeof treatmentAreaSchema>;

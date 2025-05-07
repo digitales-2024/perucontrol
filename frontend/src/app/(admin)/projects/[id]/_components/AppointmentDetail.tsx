@@ -279,9 +279,16 @@ export function AppointmentDetails({
             {/* Acciones */}
             <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 pt-4 border-t">
                 <DocumentButton
+                    href={`/projects/${projectId}/evento/${appointment.id}/treatment-areas`}
+                    disabled={actionsDisabled}
+                    disabledTitle={actionsDisabled ? "No se puede ver el registro de áreas tratadas" : ""}
+                >
+                    Áreas de Tratamiento
+                </DocumentButton>
+                <DocumentButton
                     href={`/projects/${projectId}/evento/${appointment.id}/products`}
                     disabled={actionsDisabled}
-                    disabledTitle={actionsDisabled ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
+                    disabledTitle={actionsDisabled ? "No se puede ver el registro de productos" : ""}
                 >
                     Productos
                 </DocumentButton>
