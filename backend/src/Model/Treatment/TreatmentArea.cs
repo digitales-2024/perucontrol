@@ -7,7 +7,7 @@ public class TreatmentArea : BaseModel
     //
     // Plain properties
     //
-    public required string AreaName { get; set; }
+    public required string AreaName { get; init; }
     public string? ObservedVector { get; set; }
     public string? InfestationLevel { get; set; }
 

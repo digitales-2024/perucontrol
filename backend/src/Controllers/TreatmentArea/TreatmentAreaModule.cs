@@ -1,4 +1,4 @@
-namespace PeruControl.Controllers;
+namespace PeruControl.Controllers.TreatmentArea;
 
 public class TreatmentAreaModule : IModule
 {
@@ -8,4 +8,3 @@ public class TreatmentAreaModule : IModule
         return services;
     }
 }
-

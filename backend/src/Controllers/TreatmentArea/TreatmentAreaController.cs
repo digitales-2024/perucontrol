@@ -4,30 +4,44 @@ using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Utils;
 
-namespace PeruControl.Controllers;
+namespace PeruControl.Controllers.TreatmentArea;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class TreatmentAreaController(
-    DatabaseContext db,
-    TreatmentAreaService treatmentAreaService
-) : ControllerBase
+public class TreatmentAreaController(DatabaseContext db, TreatmentAreaService treatmentAreaService)
+    : ControllerBase
 {
-    [EndpointSummary("Edit Appoinment Treatment Areas")]
+    [EndpointSummary("Get Treatment Areas of an Appointment")]
     [HttpGet("/api/Appointment/{appointmentid}/TreatmentArea")]
-    public async Task<
-        ActionResult<IEnumerable<TreatmentAreaDTO>>
-    > GetAppointmentTreatmentAreas(Guid appointmentid)
+    public async Task<ActionResult<IEnumerable<TreatmentAreaGetDTO>>> GetAppointmentTreatmentAreas(
+        Guid appointmentid
+    )
     {
         var appointment = await db
-            .ProjectAppointments
-            .Include(pa => pa.TreatmentAreas)
+            .ProjectAppointments.Include(pa => pa.TreatmentAreas)
             .FirstOrDefaultAsync(x => x.Id == appointmentid);
 
         if (appointment is null)
             return NotFound("Fecha no encontrada");
 
         return Ok(appointment.TreatmentAreas.Select(TreatmentAreaDTO.FromEntity));
+    }
+
+    [EndpointSummary("Edit Treatment Areas of an Appointment")]
+    [HttpPatch("/api/Appointment/{appointmentid}/TreatmentArea")]
+    public async Task<ActionResult> EditAppointmentTreatmentAreas(
+        Guid appointmentid,
+        [FromBody] IList<TreatmentAreaInDTO> dto
+    )
+    {
+        var result = await treatmentAreaService.UpdateTreatmentAreas(appointmentid, dto);
+
+        return result switch
+        {
+            SuccessResult => Ok(),
+            Utils.NotFoundResult error => NotFound(error.Message),
+            _ => throw new Exception("Unexpected result type"),
+        };
     }
 }

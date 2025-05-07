@@ -14,7 +14,7 @@ public class TreatmentProductController(
     TreatmentProductService treatmentProductService
 ) : ControllerBase
 {
-    [EndpointSummary("Edit Appoinment Treatment Products")]
+    [EndpointSummary("Get Treatment Products of an Appointment")]
     [HttpGet("/api/Appointment/{appointmentid}/TreatmentProduct")]
     public async Task<
         ActionResult<IEnumerable<TreatmentProductDTO>>
@@ -33,7 +33,7 @@ public class TreatmentProductController(
         return Ok(appointment.TreatmentProducts.Select(TreatmentProductDTO.FromEntity));
     }
 
-    [EndpointSummary("Edit Appoinment Treatment Products")]
+    [EndpointSummary("Edit Treatment Products of an Appointment")]
     [HttpPatch("/api/Appointment/{appointmentid}/TreatmentProduct")]
     public async Task<ActionResult> EditAppointmentTreatmentProducts(
         Guid appointmentid,

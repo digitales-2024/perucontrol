@@ -269,4 +269,67 @@ public static class DatabaseSeeder
 
         logger.LogInformation("Seeded {count} quoations", defaultQuotations.Count);
     }
+
+    public static async Task SeedProductsAsync(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Products.AnyAsync())
+        {
+            return;
+        }
+
+        var defaultEntities = new List<Product>
+        {
+            new()
+            {
+                Name = "Alfaphos EC",
+                ActiveIngredient = "Temephos 25% + Alfacipermetrina 10%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "240ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                    new() { AmountAndSolvent = "60ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "Glutamonio",
+                ActiveIngredient = "Amonio cuaternario de 5ta generación",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "60ml en 06L de agua" },
+                    new() { AmountAndSolvent = "120ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "S-Delta 50 SC",
+                ActiveIngredient = "Deltametrina 50%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "140ml en 06L de agua" },
+                    new() { AmountAndSolvent = "160ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "Chuspisol 10 WG",
+                ActiveIngredient = "Tiametoxam 10%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "50g en 50ml de agua" },
+                    new() { AmountAndSolvent = "45g en 50ml de agua" },
+                    new() { AmountAndSolvent = "40g en 50ml de agua" },
+                ],
+            },
+        };
+
+        await context.Products.AddRangeAsync(defaultEntities);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} products", defaultEntities.Count);
+    }
 }
