@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.Linq;
 
 namespace PeruControl.Services;
 
@@ -125,43 +126,16 @@ public class WordTemplateService
         }
 
         var body = mainPart.Document.Body;
-        Table? table = body.Elements<Table>().ToList()[3] ?? throw new InvalidOperationException("No table found in the document.");
+        // Access the 4th table (index 3) more safely
+        Table table = body.Elements<Table>().ElementAtOrDefault(3) 
+            ?? throw new InvalidOperationException("The fourth table was not found in the document.");
 
-        // Find the template row - assuming it's a row that contains "{product.name}"
-        // This is a simplistic way to find it. A more robust way might involve a specific bookmark or style.
-        TableRow? templateRow = null;
-        foreach (var row in table.Elements<TableRow>())
-        {
-            bool foundPlaceholder = false;
-            foreach (var cell in row.Elements<TableCell>())
-            {
-                foreach (var textElement in cell.Descendants<Text>())
-                {
-                    if (textElement.Text.Contains("{product.name}"))
-                    {
-                        foundPlaceholder = true;
-                        break;
-                    }
-                }
-                if (foundPlaceholder) break;
-            }
-            if (foundPlaceholder)
-            {
-                templateRow = row;
-                break;
-            }
-        }
+        // Find the template row using LINQ and ensure it's found
+        TableRow templateRow = table.Elements<TableRow>()
+            .FirstOrDefault(row => row.Descendants<Text>().Any(text => text.Text.Contains("{product.name}")))
+            ?? throw new InvalidOperationException("Template row with placeholder '{product.name}' not found in the table.");
 
-        if (templateRow == null)
-        {
-            // If you want to return the original template if no template row is found:
-            // wordDoc.Save();
-            // return ms.ToArray();
-            throw new InvalidOperationException("Template row with placeholder '{product.name}' not found in the table.");
-        }
-
-        // Dummy data for 2 rows, as requested
-        var productData = new List<Dictionary<string, string>>
+        var productsToInsert = new List<Dictionary<string, string>>
         {
             new() {
                 { "{product.name}", "Awesome Product 1" },
@@ -178,29 +152,20 @@ public class WordTemplateService
         };
 
         // Create and append new rows based on the template row
-        foreach (var data in productData)
+        foreach (var productDataEntry in productsToInsert) // Renamed 'data' to 'productDataEntry' for clarity
         {
             var newRow = (TableRow)templateRow.CloneNode(true); // Deep clone
             foreach (var cell in newRow.Elements<TableCell>())
             {
                 foreach (var textElement in cell.Descendants<Text>())
                 {
-                    // It's important to iterate through placeholders for each text element
-                    // as a single text element might, in rare cases, be split by Word but still contain parts of a placeholder,
-                    // or a text element might contain multiple placeholders (though less common for simple templates).
-                    // For simplicity, we'll assume a full placeholder is within a single Text element for now.
-                    string originalText = textElement.Text;
-                    string modifiedText = originalText;
-                    foreach (var placeholderEntry in data)
+                    string currentText = textElement.Text;
+                    foreach (var placeholderEntry in productDataEntry)
                     {
-                        if (modifiedText.Contains(placeholderEntry.Key))
-                        {
-                            modifiedText = modifiedText.Replace(placeholderEntry.Key, placeholderEntry.Value);
-                        }
+                        // String.Replace doesn't throw if Key is not found, it just returns original string.
+                        currentText = currentText.Replace(placeholderEntry.Key, placeholderEntry.Value);
                     }
-                    if (originalText != modifiedText) {
-                        textElement.Text = modifiedText;
-                    }
+                    textElement.Text = currentText;
                 }
             }
             table.AppendChild(newRow);
