@@ -27,4 +27,21 @@ public class TreatmentAreaController(DatabaseContext db, TreatmentAreaService tr
 
         return Ok(appointment.TreatmentAreas.Select(TreatmentAreaDTO.FromEntity));
     }
+
+    [EndpointSummary("Edit Treatment Areas of an Appointment")]
+    [HttpPatch("/api/Appointment/{appointmentid}/TreatmentArea")]
+    public async Task<ActionResult> EditAppointmentTreatmentAreas(
+        Guid appointmentid,
+        [FromBody] IList<TreatmentAreaInDTO> dto
+    )
+    {
+        var result = await treatmentAreaService.UpdateTreatmentAreas(appointmentid, dto);
+
+        return result switch
+        {
+            SuccessResult => Ok(),
+            Utils.NotFoundResult error => NotFound(error.Message),
+            _ => throw new Exception("Unexpected result type"),
+        };
+    }
 }
