@@ -882,4 +882,36 @@ public class AppointmentController(
             return StatusCode(500, $"Error descargando el archivo: {ex.Message}");
         }
     }
+
+    [EndpointSummary("Download Report 01 Word")]
+    [HttpGet("{id}/report-01/word")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult DownloadReport01Word(Guid id)
+    {
+        var appointment = db.ProjectAppointments
+            .Include(a => a.TreatmentProducts)
+            .FirstOrDefault(a => a.Id == id);
+
+        if (appointment == null)
+        {
+            return NotFound("Appointment not found");
+        }
+
+
+        var fileBytes = wordTemplateService.GenerateReport01(appointment);
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(fileBytes, "docx");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "reporte_01.pdf");
+    }
 }
