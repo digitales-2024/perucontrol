@@ -86,7 +86,7 @@ public class TreatmentAreaDTO
     public string? PerformedService { get; init; }
     public string? AppliedTechnique { get; init; }
 
-    public static TreatmentAreaDTO FromEntity(TreatmentArea area)
+    public static TreatmentAreaDTO FromEntity(Model.TreatmentArea area)
     {
         return new TreatmentAreaDTO
         {
