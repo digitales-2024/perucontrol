@@ -89,7 +89,10 @@ public class ProjectService(
                     RodentRegister = new() { ServiceDate = app.DueDate },
                     ProjectOperationSheet = new() { OperationDate = app.DueDate },
                     TreatmentAreas = createDTO
-                        .Ambients.Select(areaName => new TreatmentArea { AreaName = areaName })
+                        .Ambients.Select(areaName => new Model.TreatmentArea
+                        {
+                            AreaName = areaName,
+                        })
                         .ToList(),
                 }
             );

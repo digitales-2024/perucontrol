@@ -106,7 +106,7 @@ var modules = new IModule[]
     new AppointmentModule(),
     new PeruControl.Controllers.Product.ProductModule(),
     new TreatmentProductModule(),
-    new TreatmentAreaModule(),
+    new PeruControl.Controllers.TreatmentArea.TreatmentAreaModule(),
 };
 foreach (var module in modules)
 {
@@ -165,6 +165,7 @@ using (var scope = app.Services.CreateScope())
     {
         logger.LogInformation("Seeding development data");
         await DatabaseSeeder.SeedClients(app.Services, logger);
+        await DatabaseSeeder.SeedProductsAsync(app.Services, logger);
     }
 }
 
