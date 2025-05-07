@@ -104,6 +104,7 @@ public class TreatmentProductDTO
 {
     public required Guid Id { get; init; }
     public required ProductDTO Product { get; init; } = null!;
+    public required Guid ProductAmountSolventId { get; init; }
     public required string ProductAmountSolvent { get; init; } = null!;
     public string? EquipmentUsed { get; init; }
     public string? AppliedTechnique { get; init; }
@@ -117,9 +118,11 @@ public class TreatmentProductDTO
             Id = product.Id,
             Product = new()
             {
+                Id = product.Product.Id,
                 Name = product.Product.Name,
                 ActiveIngredient = product.Product.ActiveIngredient,
             },
+            ProductAmountSolventId = product.ProductAmountSolvent.Id,
             ProductAmountSolvent = product.ProductAmountSolvent.AmountAndSolvent,
             EquipmentUsed = product.EquipmentUsed,
             AppliedTechnique = product.AppliedTechnique,
@@ -131,6 +134,7 @@ public class TreatmentProductDTO
 
 public class ProductDTO
 {
+    public required Guid Id { get; init; }
     public required string Name { get; set; }
     public required string ActiveIngredient { get; set; }
 }

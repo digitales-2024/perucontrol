@@ -73,7 +73,7 @@ public class AppointmentController(
         {
             SuccessResult<AppointmentGetOutDTO> success => Ok(success.Data),
             NotFoundResult<AppointmentGetOutDTO> error => NotFound(error.Message),
-            _ => NotFound("No se encontró la fecha."),
+            _ => throw new Exception("Unexpected result type"),
         };
     }
 

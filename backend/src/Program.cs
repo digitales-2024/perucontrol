@@ -105,6 +105,8 @@ var modules = new IModule[]
     new ProjectModule(),
     new AppointmentModule(),
     new PeruControl.Controllers.Product.ProductModule(),
+    new TreatmentProductModule(),
+    new TreatmentAreaModule(),
 };
 foreach (var module in modules)
 {

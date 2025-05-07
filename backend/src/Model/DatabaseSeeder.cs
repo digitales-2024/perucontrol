@@ -139,7 +139,7 @@ public static class DatabaseSeeder
             ThechnicalDirectorCIP = "",
             ResponsibleName = "",
             ResponsiblePosition = "",
-            ResponsibleCIP = ""
+            ResponsibleCIP = "",
         };
         await context.Businesses.AddAsync(business);
         await context.SaveChangesAsync();
