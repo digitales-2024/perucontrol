@@ -4214,6 +4214,72 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/TreatmentProduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Edit Appoinment Treatment Products */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["TreatmentProductDTO"]>;
+                        "application/json": Array<components["schemas"]["TreatmentProductDTO"]>;
+                        "text/json": Array<components["schemas"]["TreatmentProductDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Appoinment Treatment Products */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                    "text/json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                    "application/*+json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/User": {
         parameters: {
             query?: never;
@@ -4484,6 +4550,8 @@ export interface components {
             isActive: boolean;
             project: components["schemas"]["ProjectBasicInfoDTO"];
             servicesIds: Array<string>;
+            treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;
+            treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
         };
         AppointmentPatchDTO: {
             /** Format: int32 */
@@ -4720,6 +4788,8 @@ export interface components {
             instance?: string | null;
         };
         ProductAmountSolventOutputDTO: {
+            /** Format: uuid */
+            id: string;
             amountAndSolvent: string;
         };
         ProductCreateInputDTO: {
@@ -4727,7 +4797,15 @@ export interface components {
             activeIngredient: string;
             solvents: Array<string>;
         };
+        ProductDTO: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            activeIngredient: string;
+        };
         ProductGetAllOutputDTO: {
+            /** Format: uuid */
+            id: string;
             name: string;
             activeIngredient: string;
             productAmountSolvents: Array<components["schemas"]["ProductAmountSolventOutputDTO"]>;
@@ -5360,6 +5438,39 @@ export interface components {
         TermsAndConditionsPatchDTO: {
             name?: string | null;
             content?: string | null;
+        };
+        TreatmentAreaDTO: {
+            /** Format: uuid */
+            id: string;
+            areaName: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+        };
+        TreatmentProductDTO: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["ProductDTO"];
+            /** Format: uuid */
+            productAmountSolventId: string;
+            productAmountSolvent: string;
+            equipmentUsed?: string | null;
+            appliedTechnique?: string | null;
+            appliedService?: string | null;
+            appliedTime?: string | null;
+        };
+        TreatmentProductInDTO: {
+            /** Format: uuid */
+            id?: string | null;
+            /** Format: uuid */
+            productId: string;
+            /** Format: uuid */
+            productAmountSolventId: string;
+            equipmentUsed?: string | null;
+            appliedTechnique?: string | null;
+            appliedService?: string | null;
+            appliedTime?: string | null;
         };
         UpdateAppointmentTimesDto: {
             enterTime?: string | null;

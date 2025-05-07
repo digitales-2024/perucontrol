@@ -15,70 +15,64 @@ namespace PeruControl.Migrations
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ResponsibleName",
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ResponsiblePosition",
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ThechnicalDirectorCIP",
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ThechnicalDirectorName",
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ThechnicalDirectorPosition",
                 table: "Businesses",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "ResponsibleCIP",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ResponsibleCIP", table: "Businesses");
 
-            migrationBuilder.DropColumn(
-                name: "ResponsibleName",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ResponsibleName", table: "Businesses");
 
-            migrationBuilder.DropColumn(
-                name: "ResponsiblePosition",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ResponsiblePosition", table: "Businesses");
 
-            migrationBuilder.DropColumn(
-                name: "ThechnicalDirectorCIP",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ThechnicalDirectorCIP", table: "Businesses");
 
-            migrationBuilder.DropColumn(
-                name: "ThechnicalDirectorName",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ThechnicalDirectorName", table: "Businesses");
 
-            migrationBuilder.DropColumn(
-                name: "ThechnicalDirectorPosition",
-                table: "Businesses");
+            migrationBuilder.DropColumn(name: "ThechnicalDirectorPosition", table: "Businesses");
         }
     }
 }

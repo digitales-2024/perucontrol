@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 using PeruControl.Services;
@@ -14,13 +13,15 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             .ProjectAppointments.Include(app => app.Services)
             .Include(app => app.Project)
             .ThenInclude(proj => proj.Services)
+            .Include(app => app.TreatmentAreas)
+            .Include(app => app.TreatmentProducts)
+            .ThenInclude(treatmentArea => treatmentArea.Product)
+            .Include(app => app.TreatmentProducts)
+            .ThenInclude(treatmentArea => treatmentArea.ProductAmountSolvent)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (appointment is null)
-            return new NotFoundResult<AppointmentGetOutDTO>(
-                "No se encontró la fecha.",
-                HttpStatusCode.NotFound
-            );
+            return new NotFoundResult<AppointmentGetOutDTO>("No se encontró la fecha.");
 
         return new SuccessResult<AppointmentGetOutDTO>(
             AppointmentGetOutDTO.FromEntity(appointment)
