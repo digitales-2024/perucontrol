@@ -135,21 +135,25 @@ public class WordTemplateService
             .FirstOrDefault(row => row.Descendants<Text>().Any(text => text.Text.Contains("{product.name}")))
             ?? throw new InvalidOperationException("Template row with placeholder '{product.name}' not found in the table.");
 
-        var productsToInsert = new List<Dictionary<string, string>>
+        // Populate productsToInsert from the appointment's TreatmentProducts
+        if (appointment.TreatmentProducts == null || !appointment.TreatmentProducts.Any())
         {
-            new() {
-                { "{product.name}", "Awesome Product 1" },
-                { "{product.ingredient}", "Magic Ingredient A" },
-                { "{product.amount}", "100g" },
-                { "{product.equipment}", "Standard Sprayer" }
-            },
-            new() {
-                { "{product.name}", "Super Product 2" },
-                { "{product.ingredient}", "Secret Sauce B" },
-                { "{product.amount}", "20ml" },
-                { "{product.equipment}", "Ultra Fogger" }
-            }
-        };
+            // Optional: Handle case where there are no products.
+            // For now, we'll proceed, and no new rows will be added if TreatmentProducts is empty.
+            // Or, you could throw an exception or return the template with no products:
+            // wordDoc.Save(); 
+            // return ms.ToArray();
+            // throw new InvalidOperationException("No treatment products found in the appointment.");
+        }
+
+        var productsToInsert = appointment.TreatmentProducts!
+            .Select(tp => new Dictionary<string, string>
+            {
+                { "{product.name}", tp.Product.Name },
+                { "{product.ingredient}", tp.Product.ActiveIngredient },
+                { "{product.amount}", tp.ProductAmountSolvent.AmountAndSolvent },
+                { "{product.equipment}", tp.EquipmentUsed ?? "" } // Use empty string if EquipmentUsed is null
+            }).ToList();
 
         // Create and append new rows based on the template row
         foreach (var productDataEntry in productsToInsert) // Renamed 'data' to 'productDataEntry' for clarity
@@ -163,7 +167,7 @@ public class WordTemplateService
                     foreach (var placeholderEntry in productDataEntry)
                     {
                         // String.Replace doesn't throw if Key is not found, it just returns original string.
-                        currentText = currentText.Replace(placeholderEntry.Key, placeholderEntry.Value);
+                        currentText = currentText.Replace(placeholderEntry.Key, $"\n{placeholderEntry.Value}\n");
                     }
                     textElement.Text = currentText;
                 }

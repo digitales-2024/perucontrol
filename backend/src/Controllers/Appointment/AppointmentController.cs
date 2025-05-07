@@ -891,13 +891,15 @@ public class AppointmentController(
     {
         var appointment = db.ProjectAppointments
             .Include(a => a.TreatmentProducts)
+            .ThenInclude(tp => tp.Product)
+            .Include(a => a.TreatmentProducts)
+            .ThenInclude(tp => tp.ProductAmountSolvent)
             .FirstOrDefault(a => a.Id == id);
 
         if (appointment == null)
         {
             return NotFound("Appointment not found");
         }
-
 
         var fileBytes = wordTemplateService.GenerateReport01(appointment);
 
