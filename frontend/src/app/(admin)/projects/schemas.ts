@@ -188,3 +188,20 @@ export const RodentControlFormSchema = z.object({
 
 // Exporta el type de React Hook Form
 export type RodentControlFormValues = z.infer<typeof RodentControlFormSchema>;
+
+export const TreatmentProductSchema = z.object({
+    products: z
+        .array(z.object({
+            id: z.string().uuid()
+                .nullable(),
+            productId: z.string().uuid(),
+            productAmountSolventId: z.string().uuid(),
+            equipmentUsed: z.string().nullable(),
+            appliedTechnique: z.string().nullable(),
+            appliedService: z.string().nullable(),
+            appliedTime: z.string().nullable(),
+        }))
+        .min(1, "Debe haber al menos un producto"),
+});
+
+export type TreatmentProductFormValues = z.infer<typeof TreatmentProductSchema>;
