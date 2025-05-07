@@ -4214,6 +4214,46 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/TreatmentArea": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Edit Appoinment Treatment Areas */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["TreatmentAreaDTO"]>;
+                        "application/json": Array<components["schemas"]["TreatmentAreaDTO"]>;
+                        "text/json": Array<components["schemas"]["TreatmentAreaDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Appointment/{appointmentid}/TreatmentProduct": {
         parameters: {
             query?: never;
@@ -4808,6 +4848,7 @@ export interface components {
             id: string;
             name: string;
             activeIngredient: string;
+            isActive: boolean;
             productAmountSolvents: Array<components["schemas"]["ProductAmountSolventOutputDTO"]>;
         };
         Project: {

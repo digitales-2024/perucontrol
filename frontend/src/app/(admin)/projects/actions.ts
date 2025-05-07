@@ -432,3 +432,22 @@ export async function Generate(
         JSON.stringify(requestBody),
     );
 }
+
+export async function CreateTreatmentProduct(appointmentId: string, body: Array<components["schemas"]["TreatmentProductInDTO"]>): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/TreatmentProduct", {
+        ...auth,
+        body: body,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}

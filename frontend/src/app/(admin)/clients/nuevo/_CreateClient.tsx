@@ -67,7 +67,6 @@ export const CreateClient = () =>
 
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        console.log(JSON.stringify(input, null, 2));
         const [, error] = await toastWrapper(RegisterClient(input), {
             loading: "Cargando...",
             success: "Cliente registrado exitosamente!",

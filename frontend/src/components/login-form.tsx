@@ -59,7 +59,7 @@ export function LoginForm({
                 <div className="flex flex-col items-center gap-2 text-center">
                     <img
                         className="inline-block"
-                        src="/logo.png"
+                        src="/logo_perucontrol_com.svg"
                         alt="Logo de PeruControl"
                         width={180}
                         height={180}
