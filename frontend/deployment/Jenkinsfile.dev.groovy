@@ -13,10 +13,9 @@ pipeline {
         //
         // VPS setup
         //
-        REMOTE_USER = "ansible"
-        REMOTE_IP = credentials("acide-elastika-01")
-        // Folder where docker-compose and .env files are placed
-        REMOTE_FOLDER = "/home/${REMOTE_USER}/docker/perucontrol-develop/"
+        REMOTE_USER = "fernando"
+        REMOTE_IP = credentials("fernando-hetzner-hel-01-ip")
+        REMOTE_FOLDER = "/home/fernando/services/acide/perucontrol/"
 
         //
         // Docker registry setup
@@ -60,7 +59,7 @@ pipeline {
                     }
 
                     withCredentials(credentialsList) {
-                        sshagent(['ssh-deploy']) {
+                        sshagent(['hetzner-helsink-01']) {
                             // Create a temporary script that will create the .env file
                             // This enables us to use shell variables to properly handle 
                             // the credentials without using binding.getVariable()
