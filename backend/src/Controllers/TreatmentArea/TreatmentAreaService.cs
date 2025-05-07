@@ -31,7 +31,6 @@ public class TreatmentAreaService(DatabaseContext db)
                 return new NotFoundResult($"Area con ID {taDto.Id} no se encontró");
 
             // Update properties
-            area.AreaName = taDto.AreaName;
             area.ObservedVector = taDto.ObservedVector;
             area.InfestationLevel = taDto.InfestationLevel;
             area.PerformedService = taDto.PerformedService;

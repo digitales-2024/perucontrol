@@ -165,6 +165,7 @@ using (var scope = app.Services.CreateScope())
     {
         logger.LogInformation("Seeding development data");
         await DatabaseSeeder.SeedClients(app.Services, logger);
+        await DatabaseSeeder.SeedProductsAsync(app.Services, logger);
     }
 }
 
