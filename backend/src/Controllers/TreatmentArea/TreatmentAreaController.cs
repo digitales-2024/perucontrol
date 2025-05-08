@@ -20,6 +20,7 @@ public class TreatmentAreaController(DatabaseContext db, TreatmentAreaService tr
     {
         var appointment = await db
             .ProjectAppointments.Include(pa => pa.TreatmentAreas)
+            .ThenInclude(ta => ta.TreatmentProducts)
             .FirstOrDefaultAsync(x => x.Id == appointmentid);
 
         if (appointment is null)

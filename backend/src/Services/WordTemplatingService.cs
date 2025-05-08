@@ -232,24 +232,39 @@ public class WordTemplateService
             new() { { "{treated_area}", "Mock Area 3" }, { "{performed_service}", "Mock Service C" }, { "{applied_technique}", "Mock Technique Z" }, { "{applied_product}", "Mock Product P3" } }
         };
 
+        // Data for Table 3 - Replaces mockDataForTable3
+        var dataForTable3 = new List<Dictionary<string, string>>();
+        if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any())
+        {
+            dataForTable3 = [.. appointment.TreatmentAreas
+                .OrderBy(ta => ta.AreaName) // Order by AreaName
+                .Select(ta => new Dictionary<string, string>
+                {
+                    { "{treated_area}", ta.AreaName },
+                    { "{performed_service}", ta.PerformedService ?? "-" },
+                    { "{applied_technique}", ta.AppliedTechnique ?? "-" },
+                    { "{applied_product}", (ta.TreatmentProducts != null && ta.TreatmentProducts.Any()) ? string.Join("\n", ta.TreatmentProducts.Select(tp => tp.Product.Name)) : "-" }
+                })];
+        }
+
         // Prepare data for Table 4 (products)
         var productsToInsert = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
-            productsToInsert = appointment.TreatmentProducts
+            productsToInsert = [.. appointment.TreatmentProducts
                 .Select(tp => new Dictionary<string, string>
                 {
                     { "{product.name}", tp.Product.Name },
                     { "{product.ingredient}", tp.Product.ActiveIngredient },
                     { "{product.amount}", tp.ProductAmountSolvent.AmountAndSolvent },
                     { "{product.equipment}", tp.EquipmentUsed ?? "-" }
-                }).ToList();
+                })];
         }
 
         // Process Tables in Order
         ProcessTable(body, 0, "{service_date}", mockDataForTable1);
         ProcessTable(body, 1, "{area}", dataForTable2);          // Table 2 now uses real data
-        ProcessTable(body, 2, "{treated_area}", mockDataForTable3);
+        ProcessTable(body, 2, "{treated_area}", dataForTable3);  // Table 3 now uses real data
         ProcessTable(body, 3, "{product.name}", productsToInsert);
 
         wordDoc.Save();
