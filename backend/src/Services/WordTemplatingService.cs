@@ -326,6 +326,11 @@ public class WordTemplateService
         {
             Content = "This is nested content in a subsection.\nWith another line of text."
         };
+
+        var listSample = new TextArea
+        {
+            Content = "- My first item\n- My second item\n- My third item"
+        };
         
         var mockSubSection = new TextBlock
         {
@@ -340,7 +345,7 @@ public class WordTemplateService
             Title = "Dynamic Content Section",
             Numbering = "1.1",
             Level = 2,
-            Sections = [mockTextArea, mockSubSection]
+            Sections = [mockTextArea, listSample, mockSubSection]
         };
 
         // Try to replace a placeholder called "{dynamic_content}" with rich content
@@ -499,6 +504,9 @@ public class WordTemplateService
         if (string.IsNullOrWhiteSpace(placeholder))
             throw new ArgumentException("Placeholder cannot be empty", nameof(placeholder));
 
+        // Ensure bullet list definitions exist in the document
+        EnsureBulletListDefinitionExists(wordDoc);
+
         MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? throw new InvalidOperationException("Document has no main part");
         Document doc = mainPart.Document ?? throw new InvalidOperationException("Main part has no document");
         Body body = doc.Body ?? throw new InvalidOperationException("Document has no body");
@@ -635,59 +643,283 @@ public class WordTemplateService
         }
         else if (section is TextArea textArea)
         {
-            Paragraph contentParagraph = new();
-            
-            // Apply paragraph style
-            if (styleParaProps != null)
-            {
-                ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
-                
-                // Ensure indentation settings are preserved from the original paragraph
-                // This should already be handled by the full clone, but let's make sure
-                if (styleParaProps.Indentation != null)
-                {
-                    // If the clone didn't work properly for some reason, explicitly copy the indentation
-                    newProps.Indentation = styleParaProps.Indentation.CloneNode(true) as Indentation;
-                }
-                
-                contentParagraph.ParagraphProperties = newProps;
-            }
-
             if (!string.IsNullOrEmpty(textArea.Content))
             {
+                // Check if this looks like a bullet list (lines starting with "- ")
+                bool isBulletList = false;
                 string[] lines = textArea.Content.Split('\n');
                 if (lines.Length > 0)
                 {
-                    // First line
-                    Run firstRun = new Run(new Text(lines[0]));
-                    if (styleRunProps != null)
-                    {
-                        firstRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
-                    }
-                    contentParagraph.Append(firstRun);
+                    isBulletList = lines.All(line => line.Trim().StartsWith("- "));
+                }
 
-                    // Additional lines
-                    for (int i = 1; i < lines.Length; i++)
+                if (isBulletList)
+                {
+                    // Process as bullet list
+                    foreach (var line in lines)
                     {
-                        Run lineBreakRun = new Run(new Break());
-                        if (styleRunProps != null)
-                        {
-                            lineBreakRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
-                        }
-                        contentParagraph.Append(lineBreakRun);
-
-                        Run textRun = new Run(new Text(lines[i]));
-                        if (styleRunProps != null)
-                        {
-                            textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
-                        }
-                        contentParagraph.Append(textRun);
+                        string bulletText = line.Trim().Substring(2); // Remove the "- " prefix
+                        elements.Add(CreateBulletListItem(bulletText, styleRunProps, styleParaProps));
                     }
                 }
+                else
+                {
+                    // Regular paragraph processing as before
+                    Paragraph contentParagraph = new();
+                    
+                    // Apply paragraph style
+                    if (styleParaProps != null)
+                    {
+                        ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
+                        
+                        // Ensure indentation settings are preserved from the original paragraph
+                        if (styleParaProps.Indentation != null)
+                        {
+                            newProps.Indentation = styleParaProps.Indentation.CloneNode(true) as Indentation;
+                        }
+                        
+                        contentParagraph.ParagraphProperties = newProps;
+                    }
+
+                    if (lines.Length > 0)
+                    {
+                        // First line
+                        Run firstRun = new Run(new Text(lines[0]));
+                        if (styleRunProps != null)
+                        {
+                            firstRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                        }
+                        contentParagraph.Append(firstRun);
+
+                        // Additional lines
+                        for (int i = 1; i < lines.Length; i++)
+                        {
+                            Run lineBreakRun = new Run(new Break());
+                            if (styleRunProps != null)
+                            {
+                                lineBreakRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                            }
+                            contentParagraph.Append(lineBreakRun);
+
+                            Run textRun = new Run(new Text(lines[i]));
+                            if (styleRunProps != null)
+                            {
+                                textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                            }
+                            contentParagraph.Append(textRun);
+                        }
+                    }
+                    elements.Add(contentParagraph);
+                }
             }
-            elements.Add(contentParagraph);
         }
         
         return elements;
+    }
+
+    /// <summary>
+    /// Creates a bullet list item paragraph with the specified text and styling
+    /// </summary>
+    private static Paragraph CreateBulletListItem(string text, RunProperties styleRunProps, ParagraphProperties styleParaProps)
+    {
+        Paragraph listItemPara = new Paragraph();
+        
+        // Create brand new paragraph properties for the bullet list item
+        ParagraphProperties paraProps = new ParagraphProperties();
+        
+        // Copy some basic formatting from original paragraph if available
+        if (styleParaProps != null)
+        {
+            // Copy spacing, alignment, and other paragraph properties if they exist
+            if (styleParaProps.SpacingBetweenLines != null)
+                paraProps.SpacingBetweenLines = styleParaProps.SpacingBetweenLines.CloneNode(true) as SpacingBetweenLines;
+            
+            if (styleParaProps.Justification != null)
+                paraProps.Justification = styleParaProps.Justification.CloneNode(true) as Justification;
+                
+            if (styleParaProps.ContextualSpacing != null)
+                paraProps.ContextualSpacing = styleParaProps.ContextualSpacing.CloneNode(true) as ContextualSpacing;
+        }
+        
+        // Set bullet-specific properties
+        // Indentation for bullets
+        paraProps.Indentation = new Indentation { Left = "720", Hanging = "360" };
+        
+        // Set numbering properties to use our bullet list definition with ID 10
+        paraProps.NumberingProperties = new NumberingProperties
+        {
+            NumberingId = new NumberingId { Val = 10 },
+            NumberingLevelReference = new NumberingLevelReference { Val = 0 }
+        };
+        
+        listItemPara.ParagraphProperties = paraProps;
+        
+        // Add the text content (without the bullet character, as it's provided by the numbering definition)
+        Run textRun = new Run(new Text(text));
+        if (styleRunProps != null)
+        {
+            textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+        }
+        listItemPara.Append(textRun);
+        
+        return listItemPara;
+    }
+
+    /// <summary>
+    /// Ensures that the document has the necessary numbering definitions for bullet lists
+    /// </summary>
+    private static void EnsureBulletListDefinitionExists(WordprocessingDocument wordDoc)
+    {
+        MainDocumentPart mainPart = wordDoc.MainDocumentPart;
+        
+        // Check if the NumberingDefinitionsPart already exists
+        NumberingDefinitionsPart numberingPart = mainPart.NumberingDefinitionsPart;
+        if (numberingPart == null)
+        {
+            // Create a new NumberingDefinitionsPart if it doesn't exist
+            numberingPart = mainPart.AddNewPart<NumberingDefinitionsPart>();
+            
+            // Create a more complete bullet list definition with a unique ID
+            // We'll use ID 10 instead of 1 to avoid conflicts with any existing numbering
+            Numbering numbering = new Numbering();
+            
+            // Create AbstractNum with a complete bullet definition
+            AbstractNum abstractNum = new AbstractNum() { AbstractNumberId = 10 };
+            
+            // Create comprehensive Level 0 definition for bullets
+            Level level = new Level() { LevelIndex = 0 };
+            // Explicitly set to bullet format
+            level.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
+            // Use a solid bullet character
+            level.Append(new LevelText() { Val = "•" });
+            // Must use Symbol font to render bullets correctly
+            level.Append(new RunProperties(
+                new RunFonts() { 
+                    Ascii = "Symbol", 
+                    HighAnsi = "Symbol", 
+                    Hint = FontTypeHintValues.Default 
+                }
+            ));
+            // Indentation settings
+            level.Append(new ParagraphProperties(
+                new Indentation() { Left = "720", Hanging = "360" }
+            ));
+            // Set numbering value (not really used for bullets, but required)
+            level.Append(new StartNumberingValue() { Val = 1 });
+            level.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
+            
+            abstractNum.Append(level);
+            
+            // Add a second level for nested bullets if needed
+            Level level2 = new Level() { LevelIndex = 1 };
+            // Explicitly set to bullet format
+            level2.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
+            level2.Append(new LevelText() { Val = "○" }); // Open circle
+            level2.Append(new RunProperties(
+                new RunFonts() { 
+                    Ascii = "Symbol", 
+                    HighAnsi = "Symbol",
+                    Hint = FontTypeHintValues.Default 
+                }
+            ));
+            level2.Append(new ParagraphProperties(
+                new Indentation() { Left = "1440", Hanging = "360" }
+            ));
+            level2.Append(new StartNumberingValue() { Val = 1 });
+            level2.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
+            
+            abstractNum.Append(level2);
+            
+            // Add multiLevelType to ensure it's treated as a bullet list
+            abstractNum.MultiLevelType = new MultiLevelType() { Val = MultiLevelValues.HybridMultilevel };
+            
+            numbering.Append(abstractNum);
+            
+            // Create NumberingInstance that references the AbstractNum
+            NumberingInstance numberingInstance = new NumberingInstance() { NumberID = 10 };
+            numberingInstance.AbstractNumId = new AbstractNumId() { Val = 10 };
+            
+            numbering.Append(numberingInstance);
+            
+            numberingPart.Numbering = numbering;
+        }
+        else
+        {
+            // Get the existing numbering definitions
+            Numbering numbering = numberingPart.Numbering;
+            if (numbering == null)
+            {
+                numbering = new Numbering();
+                numberingPart.Numbering = numbering;
+            }
+            
+            // Look for existing bullet list definition with ID 10
+            var existingInstance = numbering.Elements<NumberingInstance>()
+                .FirstOrDefault(ni => ni.NumberID?.Value == 10);
+                
+            if (existingInstance == null)
+            {
+                // No existing bullet list definition, create a new one
+                
+                // First check if we already have an AbstractNum with ID 10
+                var existingAbstractNum = numbering.Elements<AbstractNum>()
+                    .FirstOrDefault(an => an.AbstractNumberId?.Value == 10);
+                
+                if (existingAbstractNum == null)
+                {
+                    // Create a new AbstractNum for bullets with ID 10 
+                    AbstractNum abstractNum = new AbstractNum() { AbstractNumberId = 10 };
+                    
+                    // Add multiLevelType to ensure it's treated as a bullet list
+                    abstractNum.MultiLevelType = new MultiLevelType() { Val = MultiLevelValues.HybridMultilevel };
+                    
+                    // Level 0 (first level bullets) - create using properties directly
+                    Level level = new Level() { LevelIndex = 0 };
+                    level.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
+                    level.Append(new LevelText() { Val = "•" });
+                    level.Append(new RunProperties(
+                        new RunFonts() { 
+                            Ascii = "Symbol", 
+                            HighAnsi = "Symbol", 
+                            Hint = FontTypeHintValues.Default 
+                        }
+                    ));
+                    level.Append(new ParagraphProperties(
+                        new Indentation() { Left = "720", Hanging = "360" }
+                    ));
+                    level.Append(new StartNumberingValue() { Val = 1 });
+                    level.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
+                    
+                    abstractNum.Append(level);
+                    
+                    // Level 1 (second level bullets) - create using properties directly
+                    Level level2 = new Level() { LevelIndex = 1 };
+                    level2.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
+                    level2.Append(new LevelText() { Val = "○" });
+                    level2.Append(new RunProperties(
+                        new RunFonts() { 
+                            Ascii = "Symbol", 
+                            HighAnsi = "Symbol", 
+                            Hint = FontTypeHintValues.Default 
+                        }
+                    ));
+                    level2.Append(new ParagraphProperties(
+                        new Indentation() { Left = "1440", Hanging = "360" }
+                    ));
+                    level2.Append(new StartNumberingValue() { Val = 1 });
+                    level2.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
+                    
+                    abstractNum.Append(level2);
+                    
+                    numbering.Append(abstractNum);
+                }
+                
+                // Create a new NumberingInstance that references AbstractNum 10
+                NumberingInstance numberingInstance = new NumberingInstance() { NumberID = 10 };
+                numberingInstance.AbstractNumId = new AbstractNumId() { Val = 10 };
+                
+                numbering.Append(numberingInstance);
+            }
+        }
     }
 }
