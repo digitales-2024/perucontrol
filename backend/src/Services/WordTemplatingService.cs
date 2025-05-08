@@ -209,14 +209,21 @@ public class WordTemplateService
             }
         };
 
-        // Mock data for Table 2
-        var mockDataForTable2 = new List<Dictionary<string, string>>
+        // Data for Table 2 - Replaces mockDataForTable2
+        var dataForTable2 = new List<Dictionary<string, string>>();
+        if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any()) // Assuming TreatmentAreas exists on ProjectAppointment
         {
-            new() { { "{area}", "Residential Area Alpha" }, { "{vector}", "Aedes aegypti" }, { "{infestation}", "High" } },
-            new() { { "{area}", "Commercial Zone Beta" }, { "{vector}", "Culex quinquefasciatus" }, { "{infestation}", "Medium" } },
-            new() { { "{area}", "Industrial Park Gamma" }, { "{vector}", "Anopheles darlingi" }, { "{infestation}", "Low" } }
-        };
-        
+            dataForTable2 = [.. appointment.TreatmentAreas
+                .OrderBy(ta => ta.AreaName) // Order by AreaName
+                .Select(ta => new Dictionary<string, string>
+                {
+                    { "{area}", ta.AreaName },
+                    { "{vector}", ta.ObservedVector ?? "-" },
+                    { "{infestation}", ta.InfestationLevel ?? "-" }
+                })];
+        }
+        // If TreatmentAreas is null or empty, dataForTable2 will remain empty, and no rows will be added for this table.
+
         // Mock data for Table 3
         var mockDataForTable3 = new List<Dictionary<string, string>>
         {
@@ -241,7 +248,7 @@ public class WordTemplateService
 
         // Process Tables in Order
         ProcessTable(body, 0, "{service_date}", mockDataForTable1);
-        ProcessTable(body, 1, "{area}", mockDataForTable2);
+        ProcessTable(body, 1, "{area}", dataForTable2);          // Table 2 now uses real data
         ProcessTable(body, 2, "{treated_area}", mockDataForTable3);
         ProcessTable(body, 3, "{product.name}", productsToInsert);
 
