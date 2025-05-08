@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -473,13 +469,13 @@ public class WordTemplateService
         mainPart.Document.Body ??= new Body();
         Body body = mainPart.Document.Body;
 
-        Paragraph targetHeading = null;
+        Paragraph? targetHeading = null;
         int currentHeadingCount = 0;
         foreach (Paragraph p in body.Elements<Paragraph>()) // Iterate through all paragraphs in the body
         {
             if (
                 p.ParagraphProperties?.ParagraphStyleId != null
-                && p.ParagraphProperties.ParagraphStyleId.Val.Value.StartsWith(
+                && p.ParagraphProperties.ParagraphStyleId.Val!.Value!.StartsWith(
                     "Heading",
                     StringComparison.OrdinalIgnoreCase
                 )
@@ -571,9 +567,9 @@ public class WordTemplateService
             var placeholderRun = runsWithPlaceholder.First();
 
             // Save the run properties (styling) to apply to new content
-            RunProperties originalRunProps =
+            RunProperties? originalRunProps =
                 placeholderRun.RunProperties?.CloneNode(true) as RunProperties;
-            ParagraphProperties originalParaProps =
+            ParagraphProperties? originalParaProps =
                 paragraph.ParagraphProperties?.CloneNode(true) as ParagraphProperties;
 
             // Generate the new content with the same style
@@ -613,8 +609,8 @@ public class WordTemplateService
     /// </summary>
     private static List<OpenXmlElement> GenerateElementsForSectionWithStyle(
         ContentSection section,
-        RunProperties styleRunProps,
-        ParagraphProperties styleParaProps
+        RunProperties? styleRunProps,
+        ParagraphProperties? styleParaProps
     )
     {
         var elements = new List<OpenXmlElement>();
@@ -626,12 +622,13 @@ public class WordTemplateService
             // Apply paragraph style but preserve heading level if any
             if (styleParaProps != null)
             {
-                ParagraphProperties newProps =
+                ParagraphProperties? newProps =
                     styleParaProps.CloneNode(true) as ParagraphProperties;
+
                 // If the TextBlock has a level, we need to set the appropriate heading style
                 if (textBlock.Level >= 0)
                 {
-                    newProps.ParagraphStyleId = new ParagraphStyleId
+                    newProps!.ParagraphStyleId = new ParagraphStyleId
                     {
                         Val = $"Heading{textBlock.Level + 1}",
                     };
@@ -675,7 +672,7 @@ public class WordTemplateService
             }
 
             // Make sure the title is bold
-            titleRun.RunProperties.Bold = new Bold();
+            titleRun.RunProperties!.Bold = new Bold();
 
             titleParagraph.Append(titleRun);
             elements.Add(titleParagraph);
@@ -727,11 +724,11 @@ public class WordTemplateService
                     // Apply paragraph style
                     if (styleParaProps != null)
                     {
-                        ParagraphProperties newProps =
+                        ParagraphProperties? newProps =
                             styleParaProps.CloneNode(true) as ParagraphProperties;
 
                         // Ensure indentation settings are preserved from the original paragraph
-                        if (styleParaProps.Indentation != null)
+                        if (styleParaProps.Indentation != null && newProps != null)
                         {
                             newProps.Indentation =
                                 styleParaProps.Indentation.CloneNode(true) as Indentation;
@@ -783,8 +780,8 @@ public class WordTemplateService
     /// </summary>
     private static Paragraph CreateBulletListItem(
         string text,
-        RunProperties styleRunProps,
-        ParagraphProperties styleParaProps
+        RunProperties? styleRunProps,
+        ParagraphProperties? styleParaProps
     )
     {
         Paragraph listItemPara = new Paragraph();
@@ -838,10 +835,12 @@ public class WordTemplateService
     /// </summary>
     private static void EnsureBulletListDefinitionExists(WordprocessingDocument wordDoc)
     {
-        MainDocumentPart mainPart = wordDoc.MainDocumentPart;
+        MainDocumentPart mainPart =
+            wordDoc.MainDocumentPart
+            ?? throw new InvalidOperationException("Document has no main part");
 
         // Check if the NumberingDefinitionsPart already exists
-        NumberingDefinitionsPart numberingPart = mainPart.NumberingDefinitionsPart;
+        NumberingDefinitionsPart? numberingPart = mainPart.NumberingDefinitionsPart;
         if (numberingPart == null)
         {
             // Create a new NumberingDefinitionsPart if it doesn't exist
