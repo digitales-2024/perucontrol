@@ -14,4 +14,3 @@ public sealed class TextArea : ContentSection
 {
     public required string Content { get; set; }
 }
-

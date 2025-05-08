@@ -1,6 +1,6 @@
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Linq;
 
 namespace PeruControl.Services;
 
@@ -112,21 +112,29 @@ public class WordTemplateService
         int tableIndex,
         string templateRowPlaceholderKey,
         IEnumerable<Dictionary<string, string>> dataEntries
-        )
+    )
     {
-        Table table = body.Elements<Table>().ElementAtOrDefault(tableIndex)
-            ?? throw new InvalidOperationException($"Table at index {tableIndex} was not found in the document.");
+        Table table =
+            body.Elements<Table>().ElementAtOrDefault(tableIndex)
+            ?? throw new InvalidOperationException(
+                $"Table at index {tableIndex} was not found in the document."
+            );
 
-        TableRow? templateRow = table.Elements<TableRow>()
-            .FirstOrDefault(row => row.Descendants<Text>().Any(text => text.Text.Contains(templateRowPlaceholderKey)));
-        
+        TableRow? templateRow = table
+            .Elements<TableRow>()
+            .FirstOrDefault(row =>
+                row.Descendants<Text>().Any(text => text.Text.Contains(templateRowPlaceholderKey))
+            );
+
         if (templateRow == null)
         {
             // If there are no data entries, not finding a template row might be acceptable if the table was meant to be empty.
             // However, if there are data entries, then a template row is essential.
             if (dataEntries.Any())
             {
-                throw new InvalidOperationException($"Template row with placeholder '{templateRowPlaceholderKey}' not found in table at index {tableIndex}, but data was provided.");
+                throw new InvalidOperationException(
+                    $"Template row with placeholder '{templateRowPlaceholderKey}' not found in table at index {tableIndex}, but data was provided."
+                );
             }
             // No data entries and no template row, nothing to do for this table.
             return;
@@ -143,7 +151,10 @@ public class WordTemplateService
                     string currentCellText = textElement.Text;
                     foreach (var placeholderEntry in dataEntry)
                     {
-                            currentCellText = currentCellText.Replace(placeholderEntry.Key, placeholderEntry.Value);
+                        currentCellText = currentCellText.Replace(
+                            placeholderEntry.Key,
+                            placeholderEntry.Value
+                        );
                     }
                     textElement.Text = currentCellText;
                 }
@@ -175,7 +186,9 @@ public class WordTemplateService
         var mainPart = wordDoc.MainDocumentPart;
         if (mainPart?.Document?.Body == null)
         {
-            throw new InvalidOperationException("Invalid Word document template: MainDocumentPart or Body is null.");
+            throw new InvalidOperationException(
+                "Invalid Word document template: MainDocumentPart or Body is null."
+            );
         }
 
         var body = mainPart.Document.Body;
@@ -183,88 +196,125 @@ public class WordTemplateService
         // Mock data for Table 1
         var mockDataForTable1 = new List<Dictionary<string, string>>
         {
-            new() {
+            new()
+            {
                 { "{service_date}", "2024-07-29" },
                 { "{service_hour}", "09:00 AM" },
                 { "{treatment_type}", "Fumigation" },
                 { "{used_products}", "Product X, Product Y" },
                 { "{performed_by}", "John Doe" },
-                { "{supervisor}", "Jane Smith" }
+                { "{supervisor}", "Jane Smith" },
             },
-            new() {
+            new()
+            {
                 { "{service_date}", "2024-07-30" },
                 { "{service_hour}", "10:30 AM" },
                 { "{treatment_type}", "Disinfection" },
                 { "{used_products}", "Product Z" },
                 { "{performed_by}", "Peter Pan" },
-                { "{supervisor}", "Wendy Darling" }
+                { "{supervisor}", "Wendy Darling" },
             },
-            new() {
+            new()
+            {
                 { "{service_date}", "2024-07-31" },
                 { "{service_hour}", "02:15 PM" },
                 { "{treatment_type}", "Pest Control" },
                 { "{used_products}", "Product A, Product B, Product C" },
                 { "{performed_by}", "Alice Wonderland" },
-                { "{supervisor}", "Mad Hatter" }
-            }
+                { "{supervisor}", "Mad Hatter" },
+            },
         };
 
         // Data for Table 2 - Replaces mockDataForTable2
         var dataForTable2 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any()) // Assuming TreatmentAreas exists on ProjectAppointment
         {
-            dataForTable2 = [.. appointment.TreatmentAreas
-                .OrderBy(ta => ta.AreaName) // Order by AreaName
-                .Select(ta => new Dictionary<string, string>
-                {
-                    { "{area}", ta.AreaName },
-                    { "{vector}", ta.ObservedVector ?? "-" },
-                    { "{infestation}", ta.InfestationLevel ?? "-" }
-                })];
+            dataForTable2 =
+            [
+                .. appointment
+                    .TreatmentAreas.OrderBy(ta => ta.AreaName) // Order by AreaName
+                    .Select(ta => new Dictionary<string, string>
+                    {
+                        { "{area}", ta.AreaName },
+                        { "{vector}", ta.ObservedVector ?? "-" },
+                        { "{infestation}", ta.InfestationLevel ?? "-" },
+                    }),
+            ];
         }
         // If TreatmentAreas is null or empty, dataForTable2 will remain empty, and no rows will be added for this table.
 
         // Mock data for Table 3
         var mockDataForTable3 = new List<Dictionary<string, string>>
         {
-            new() { { "{treated_area}", "Mock Area 1" }, { "{performed_service}", "Mock Service A" }, { "{applied_technique}", "Mock Technique X" }, { "{applied_product}", "Mock Product P1" } },
-            new() { { "{treated_area}", "Mock Area 2" }, { "{performed_service}", "Mock Service B" }, { "{applied_technique}", "Mock Technique Y" }, { "{applied_product}", "Mock Product P2" } },
-            new() { { "{treated_area}", "Mock Area 3" }, { "{performed_service}", "Mock Service C" }, { "{applied_technique}", "Mock Technique Z" }, { "{applied_product}", "Mock Product P3" } }
+            new()
+            {
+                { "{treated_area}", "Mock Area 1" },
+                { "{performed_service}", "Mock Service A" },
+                { "{applied_technique}", "Mock Technique X" },
+                { "{applied_product}", "Mock Product P1" },
+            },
+            new()
+            {
+                { "{treated_area}", "Mock Area 2" },
+                { "{performed_service}", "Mock Service B" },
+                { "{applied_technique}", "Mock Technique Y" },
+                { "{applied_product}", "Mock Product P2" },
+            },
+            new()
+            {
+                { "{treated_area}", "Mock Area 3" },
+                { "{performed_service}", "Mock Service C" },
+                { "{applied_technique}", "Mock Technique Z" },
+                { "{applied_product}", "Mock Product P3" },
+            },
         };
 
         // Data for Table 3 - Replaces mockDataForTable3
         var dataForTable3 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any())
         {
-            dataForTable3 = [.. appointment.TreatmentAreas
-                .OrderBy(ta => ta.AreaName) // Order by AreaName
-                .Select(ta => new Dictionary<string, string>
-                {
-                    { "{treated_area}", ta.AreaName },
-                    { "{performed_service}", ta.PerformedService ?? "-" },
-                    { "{applied_technique}", ta.AppliedTechnique ?? "-" },
-                    { "{applied_product}", (ta.TreatmentProducts != null && ta.TreatmentProducts.Any()) ? string.Join("\n", ta.TreatmentProducts.Select(tp => tp.Product.Name)) : "-" }
-                })];
+            dataForTable3 =
+            [
+                .. appointment
+                    .TreatmentAreas.OrderBy(ta => ta.AreaName) // Order by AreaName
+                    .Select(ta => new Dictionary<string, string>
+                    {
+                        { "{treated_area}", ta.AreaName },
+                        { "{performed_service}", ta.PerformedService ?? "-" },
+                        { "{applied_technique}", ta.AppliedTechnique ?? "-" },
+                        {
+                            "{applied_product}",
+                            (ta.TreatmentProducts != null && ta.TreatmentProducts.Any())
+                                ? string.Join(
+                                    "\n",
+                                    ta.TreatmentProducts.Select(tp => tp.Product.Name)
+                                )
+                                : "-"
+                        },
+                    }),
+            ];
         }
 
         // Prepare data for Table 4 (products)
         var productsToInsert = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
-            productsToInsert = [.. appointment.TreatmentProducts
-                .Select(tp => new Dictionary<string, string>
+            productsToInsert =
+            [
+                .. appointment.TreatmentProducts.Select(tp => new Dictionary<string, string>
                 {
                     { "{product.name}", tp.Product.Name },
                     { "{product.ingredient}", tp.Product.ActiveIngredient },
                     { "{product.amount}", tp.ProductAmountSolvent.AmountAndSolvent },
-                    { "{product.equipment}", tp.EquipmentUsed ?? "-" }
-                })];
+                    { "{product.equipment}", tp.EquipmentUsed ?? "-" },
+                }),
+            ];
         }
 
         // Process Tables in Order
         ProcessTable(body, 0, "{service_date}", mockDataForTable1);
-        ProcessTable(body, 1, "{area}", dataForTable2);          // Table 2 now uses real data
-        ProcessTable(body, 2, "{treated_area}", dataForTable3);  // Table 3 now uses real data
+        ProcessTable(body, 1, "{area}", dataForTable2); // Table 2 now uses real data
+        ProcessTable(body, 2, "{treated_area}", dataForTable3); // Table 3 now uses real data
         ProcessTable(body, 3, "{product.name}", productsToInsert);
 
         wordDoc.Save();

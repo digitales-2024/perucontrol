@@ -26,7 +26,7 @@ public class TreatmentAreaController(DatabaseContext db, TreatmentAreaService tr
         if (appointment is null)
             return NotFound("Fecha no encontrada");
 
-        return Ok(appointment.TreatmentAreas.Select(TreatmentAreaDTO.FromEntity));
+        return Ok(appointment.TreatmentAreas.Select(TreatmentAreaGetDTO.FromEntity));
     }
 
     [EndpointSummary("Edit Treatment Areas of an Appointment")]

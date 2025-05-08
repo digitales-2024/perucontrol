@@ -7,4 +7,3 @@ public class DisinfectionReport : BaseModel
     [Column(TypeName = "jsonb")]
     public required ContentSection ContentSection { get; set; }
 }
-

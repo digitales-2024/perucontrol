@@ -889,8 +889,8 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult DownloadReport01Word(Guid id)
     {
-        var appointment = db.ProjectAppointments
-            .Include(a => a.TreatmentProducts)
+        var appointment = db
+            .ProjectAppointments.Include(a => a.TreatmentProducts)
             .ThenInclude(tp => tp.Product)
             .Include(a => a.TreatmentProducts)
             .ThenInclude(tp => tp.ProductAmountSolvent)
