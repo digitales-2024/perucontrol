@@ -21,7 +21,7 @@ public class TreatmentArea : BaseModel
     // Relationships
     //
     [JsonIgnore]
-    public IList<TreatmentProduct> TreatmentProducts { get; set; } = new List<TreatmentProduct>();
+    public IList<TreatmentProduct> TreatmentProducts { get; set; } = [];
 
     [JsonIgnore]
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
