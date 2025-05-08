@@ -51,11 +51,11 @@ public class ProjectAppointment : BaseModel
 
     // List of products used in the appointment
     [JsonIgnore]
-    public IList<TreatmentProduct> TreatmentProducts { get; set; } = new List<TreatmentProduct>();
+    public IList<TreatmentProduct> TreatmentProducts { get; set; } = [];
 
     // List of treated areas
     [JsonIgnore]
-    public IList<TreatmentArea> TreatmentAreas { get; set; } = new List<TreatmentArea>();
+    public IList<TreatmentArea> TreatmentAreas { get; set; } = [];
 
     // Identificador de mapa murino en R2
     public string? MurinoMapKey { get; set; }

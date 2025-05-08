@@ -894,6 +894,7 @@ public class AppointmentController(
             .ThenInclude(tp => tp.Product)
             .Include(a => a.TreatmentProducts)
             .ThenInclude(tp => tp.ProductAmountSolvent)
+            .Include(a => a.TreatmentAreas)
             .FirstOrDefault(a => a.Id == id);
 
         if (appointment == null)
