@@ -7,7 +7,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 export default async function ProjectsPage()
 {
     // Get all projects
-    const [projects, error] = await wrapper((auth) => backend.GET("/api/Project", auth));
+    const [projects, error] = await wrapper((auth) => backend.GET("/api/Project", { ...auth }));
     if (error)
     {
         console.error(`error ${error.message}`);

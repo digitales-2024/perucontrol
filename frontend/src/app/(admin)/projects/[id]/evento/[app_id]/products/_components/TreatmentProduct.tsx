@@ -105,7 +105,6 @@ export function TreatmentProductForm({
 
     const onSubmit = async(data: TreatmentProductFormValues) =>
     {
-    // envía TODO el array
         const [, error] = await toastWrapper(
             CreateTreatmentProduct(appointmentId, data.products),
             {
@@ -279,7 +278,11 @@ export function TreatmentProductForm({
                                                     Equipo Utilizado
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} placeholder="Pulverizador" value={field.value ?? ""} />
+                                                    <Input
+                                                        {...field}
+                                                        placeholder="Pulverizador"
+                                                        value={field.value ?? ""}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
