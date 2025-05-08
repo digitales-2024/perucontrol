@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using PeruControl.Model.Reports;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using DocumentFormat.OpenXml;
 
 namespace PeruControl.Services;
 
@@ -183,11 +183,12 @@ public class WordTemplateService
                             // Copy RunProperties from the original run to maintain formatting if possible.
                             if (parentRun.RunProperties != null)
                             {
-                                newRunForLine.RunProperties = (RunProperties)parentRun.RunProperties.CloneNode(true);
+                                newRunForLine.RunProperties = (RunProperties)
+                                    parentRun.RunProperties.CloneNode(true);
                             }
                             newRunForLine.Append(new Break());
                             newRunForLine.Append(new Text(lines[i]));
-                            
+
                             // Insert the new Run after the last one processed (either original or newly added).
                             parentRun!.Parent!.InsertAfter(newRunForLine, lastAppendedRun);
                             lastAppendedRun = newRunForLine;
@@ -297,17 +298,23 @@ public class WordTemplateService
         var dataForTable1 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
-            dataForTable1 = [.. appointment.TreatmentProducts
+            dataForTable1 =
+            [
+                .. appointment.TreatmentProducts
                 // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
                 .Select(tp => new Dictionary<string, string>
                 {
                     { "{service_date}", "today" }, // Hardcoded as per requirement
                     { "{service_hour}", tp.AppliedTime ?? "-" },
-                    { "{treatment_type}", $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}" },
+                    {
+                        "{treatment_type}",
+                        $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
+                    },
                     { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" }, // Assuming Product and ProductAmountSolvent are non-null based on schema
-                    { "{performed_by}", "me" },      // Hardcoded
-                    { "{supervisor}", "them" }       // Hardcoded
-                })];
+                    { "{performed_by}", "me" }, // Hardcoded
+                    { "{supervisor}", "them" }, // Hardcoded
+                }),
+            ];
         }
 
         // Process Tables in Order
@@ -319,38 +326,39 @@ public class WordTemplateService
         // Create a placeholder-based content insertion example
         var mockTextArea = new TextArea
         {
-            Content = "This is content generated from a ContentSection.\nIt maintains the style of the placeholder it replaces.\nYou can have multiple lines and they will render properly."
+            Content =
+                "This is content generated from a ContentSection.\nIt maintains the style of the placeholder it replaces.\nYou can have multiple lines and they will render properly.",
         };
-        
+
         var mockSubTextArea = new TextArea
         {
-            Content = "This is nested content in a subsection.\nWith another line of text."
+            Content = "This is nested content in a subsection.\nWith another line of text.",
         };
 
         var listSample = new TextArea
         {
-            Content = "- My first item\n- My second item\n- My third item"
+            Content = "- My first item\n- My second item\n- My third item",
         };
-        
+
         var mockSubSection = new TextBlock
         {
             Title = "Dynamic Subsection",
             Numbering = "1.1.1",
             Level = 3,
-            Sections = [mockSubTextArea]
+            Sections = [mockSubTextArea],
         };
-        
+
         var mockSection = new TextBlock
         {
             Title = "Dynamic Content Section",
             Numbering = "1.1",
             Level = 2,
-            Sections = [mockTextArea, listSample, mockSubSection]
+            Sections = [mockTextArea, listSample, mockSubSection],
         };
 
         // Try to replace a placeholder called "{dynamic_content}" with rich content
         // Make sure your template has this placeholder somewhere
-        try 
+        try
         {
             ReplacePlaceholderWithContent(wordDoc, "{section_5}", [mockSection]);
         }
@@ -358,7 +366,7 @@ public class WordTemplateService
         {
             // Handle the case where the placeholder isn't found
             Console.WriteLine($"Warning: {ex.Message}");
-            
+
             // Optionally, you could append the content at the end of the document if the placeholder isn't found
             // AppendContentSections(wordDoc, [mockSection]);
         }
@@ -367,7 +375,10 @@ public class WordTemplateService
         return ms.ToArray();
     }
 
-    public static void AppendContentSections(WordprocessingDocument wordDoc, IEnumerable<ContentSection> sections)
+    public static void AppendContentSections(
+        WordprocessingDocument wordDoc,
+        IEnumerable<ContentSection> sections
+    )
     {
         ArgumentNullException.ThrowIfNull(wordDoc);
         ArgumentNullException.ThrowIfNull(sections);
@@ -397,11 +408,16 @@ public class WordTemplateService
 
             if (textBlock.Level >= 0)
             {
-                pp.ParagraphStyleId = new ParagraphStyleId() { Val = "Heading" + (textBlock.Level + 1) };
+                pp.ParagraphStyleId = new ParagraphStyleId()
+                {
+                    Val = "Heading" + (textBlock.Level + 1),
+                };
             }
             titleParagraph.Append(pp);
 
-            string fullTitle = (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "") + textBlock.Title;
+            string fullTitle =
+                (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "")
+                + textBlock.Title;
             Run titleRun = new(new Text(fullTitle));
             titleParagraph.Append(titleRun);
             elements.Add(titleParagraph);
@@ -441,11 +457,16 @@ public class WordTemplateService
     public static void InsertContentAfterNthHeading(
         WordprocessingDocument wordDoc,
         int headingNumber, // 1-indexed
-        IEnumerable<ContentSection> sectionsToInsert)
+        IEnumerable<ContentSection> sectionsToInsert
+    )
     {
         ArgumentNullException.ThrowIfNull(wordDoc);
         ArgumentNullException.ThrowIfNull(sectionsToInsert);
-        if (headingNumber <= 0) throw new ArgumentOutOfRangeException(nameof(headingNumber), "Heading number must be positive.");
+        if (headingNumber <= 0)
+            throw new ArgumentOutOfRangeException(
+                nameof(headingNumber),
+                "Heading number must be positive."
+            );
 
         MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? wordDoc.AddMainDocumentPart();
         mainPart.Document ??= new Document();
@@ -456,8 +477,13 @@ public class WordTemplateService
         int currentHeadingCount = 0;
         foreach (Paragraph p in body.Elements<Paragraph>()) // Iterate through all paragraphs in the body
         {
-            if (p.ParagraphProperties?.ParagraphStyleId != null &&
-                p.ParagraphProperties.ParagraphStyleId.Val.Value.StartsWith("Heading", StringComparison.OrdinalIgnoreCase))
+            if (
+                p.ParagraphProperties?.ParagraphStyleId != null
+                && p.ParagraphProperties.ParagraphStyleId.Val.Value.StartsWith(
+                    "Heading",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
             {
                 currentHeadingCount++;
                 if (currentHeadingCount == headingNumber)
@@ -470,7 +496,9 @@ public class WordTemplateService
 
         if (targetHeading == null)
         {
-            throw new InvalidOperationException($"The {headingNumber}th heading was not found in the document.");
+            throw new InvalidOperationException(
+                $"The {headingNumber}th heading was not found in the document."
+            );
         }
 
         OpenXmlElement currentElementToInsertAfter = targetHeading;
@@ -497,7 +525,8 @@ public class WordTemplateService
     public static void ReplacePlaceholderWithContent(
         WordprocessingDocument wordDoc,
         string placeholder,
-        ContentSection[] sections)
+        ContentSection[] sections
+    )
     {
         ArgumentNullException.ThrowIfNull(wordDoc);
         ArgumentNullException.ThrowIfNull(sections);
@@ -507,20 +536,24 @@ public class WordTemplateService
         // Ensure bullet list definitions exist in the document
         EnsureBulletListDefinitionExists(wordDoc);
 
-        MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? throw new InvalidOperationException("Document has no main part");
-        Document doc = mainPart.Document ?? throw new InvalidOperationException("Main part has no document");
+        MainDocumentPart mainPart =
+            wordDoc.MainDocumentPart
+            ?? throw new InvalidOperationException("Document has no main part");
+        Document doc =
+            mainPart.Document ?? throw new InvalidOperationException("Main part has no document");
         Body body = doc.Body ?? throw new InvalidOperationException("Document has no body");
 
         // Find all paragraphs containing the placeholder
-        var paragraphsWithPlaceholder = body
-            .Descendants<Paragraph>()
+        var paragraphsWithPlaceholder = body.Descendants<Paragraph>()
             .Where(p => p.InnerText.Contains(placeholder))
             .ToList();
 
         if (!paragraphsWithPlaceholder.Any())
         {
             // Placeholder not found, throw or log
-            throw new InvalidOperationException($"Placeholder '{placeholder}' not found in document");
+            throw new InvalidOperationException(
+                $"Placeholder '{placeholder}' not found in document"
+            );
         }
 
         foreach (var paragraph in paragraphsWithPlaceholder)
@@ -536,17 +569,23 @@ public class WordTemplateService
 
             // Get the first run with the placeholder (usually should be only one)
             var placeholderRun = runsWithPlaceholder.First();
-            
+
             // Save the run properties (styling) to apply to new content
-            RunProperties originalRunProps = placeholderRun.RunProperties?.CloneNode(true) as RunProperties;
-            ParagraphProperties originalParaProps = paragraph.ParagraphProperties?.CloneNode(true) as ParagraphProperties;
+            RunProperties originalRunProps =
+                placeholderRun.RunProperties?.CloneNode(true) as RunProperties;
+            ParagraphProperties originalParaProps =
+                paragraph.ParagraphProperties?.CloneNode(true) as ParagraphProperties;
 
             // Generate the new content with the same style
             var newParagraphs = new List<Paragraph>();
-            
+
             foreach (var section in sections)
             {
-                List<OpenXmlElement> elements = GenerateElementsForSectionWithStyle(section, originalRunProps, originalParaProps);
+                List<OpenXmlElement> elements = GenerateElementsForSectionWithStyle(
+                    section,
+                    originalRunProps,
+                    originalParaProps
+                );
                 foreach (var element in elements)
                 {
                     if (element is Paragraph para)
@@ -575,46 +614,56 @@ public class WordTemplateService
     private static List<OpenXmlElement> GenerateElementsForSectionWithStyle(
         ContentSection section,
         RunProperties styleRunProps,
-        ParagraphProperties styleParaProps)
+        ParagraphProperties styleParaProps
+    )
     {
         var elements = new List<OpenXmlElement>();
-        
+
         if (section is TextBlock textBlock)
         {
             Paragraph titleParagraph = new();
-            
+
             // Apply paragraph style but preserve heading level if any
             if (styleParaProps != null)
             {
-                ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
+                ParagraphProperties newProps =
+                    styleParaProps.CloneNode(true) as ParagraphProperties;
                 // If the TextBlock has a level, we need to set the appropriate heading style
                 if (textBlock.Level >= 0)
                 {
-                    newProps.ParagraphStyleId = new ParagraphStyleId { Val = $"Heading{textBlock.Level + 1}" };
+                    newProps.ParagraphStyleId = new ParagraphStyleId
+                    {
+                        Val = $"Heading{textBlock.Level + 1}",
+                    };
                 }
-                
+
                 // Make sure we're properly preserving indentation settings
                 // The indentation is preserved because we've cloned the entire ParagraphProperties
-                
+
                 titleParagraph.ParagraphProperties = newProps;
             }
             else if (textBlock.Level >= 0)
             {
                 // No styling from original paragraph, but still need to set heading style
                 ParagraphProperties newProps = new();
-                newProps.ParagraphStyleId = new ParagraphStyleId { Val = $"Heading{textBlock.Level + 1}" };
-                
+                newProps.ParagraphStyleId = new ParagraphStyleId
+                {
+                    Val = $"Heading{textBlock.Level + 1}",
+                };
+
                 // If there's no original styling, we might still want to set a reasonable indentation
                 // Uncomment if needed:
                 // newProps.Indentation = new Indentation() { Left = "720" }; // 720 twips = 0.5 inch
-                
+
                 titleParagraph.ParagraphProperties = newProps;
             }
 
             // Create the title run with formatting
-            string fullTitle = (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "") + textBlock.Title;
+            string fullTitle =
+                (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "")
+                + textBlock.Title;
             Run titleRun = new Run(new Text(fullTitle));
-            
+
             // Apply the run style to maintain formatting
             if (styleRunProps != null)
             {
@@ -624,10 +673,10 @@ public class WordTemplateService
             {
                 titleRun.RunProperties = new RunProperties();
             }
-            
+
             // Make sure the title is bold
             titleRun.RunProperties.Bold = new Bold();
-            
+
             titleParagraph.Append(titleRun);
             elements.Add(titleParagraph);
 
@@ -637,7 +686,13 @@ public class WordTemplateService
                 foreach (var subSection in textBlock.Sections)
                 {
                     // When processing subsections, preserve the indentation by passing along the same parent paragraph properties
-                    elements.AddRange(GenerateElementsForSectionWithStyle(subSection, styleRunProps, styleParaProps));
+                    elements.AddRange(
+                        GenerateElementsForSectionWithStyle(
+                            subSection,
+                            styleRunProps,
+                            styleParaProps
+                        )
+                    );
                 }
             }
         }
@@ -659,25 +714,29 @@ public class WordTemplateService
                     foreach (var line in lines)
                     {
                         string bulletText = line.Trim().Substring(2); // Remove the "- " prefix
-                        elements.Add(CreateBulletListItem(bulletText, styleRunProps, styleParaProps));
+                        elements.Add(
+                            CreateBulletListItem(bulletText, styleRunProps, styleParaProps)
+                        );
                     }
                 }
                 else
                 {
                     // Regular paragraph processing as before
                     Paragraph contentParagraph = new();
-                    
+
                     // Apply paragraph style
                     if (styleParaProps != null)
                     {
-                        ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
-                        
+                        ParagraphProperties newProps =
+                            styleParaProps.CloneNode(true) as ParagraphProperties;
+
                         // Ensure indentation settings are preserved from the original paragraph
                         if (styleParaProps.Indentation != null)
                         {
-                            newProps.Indentation = styleParaProps.Indentation.CloneNode(true) as Indentation;
+                            newProps.Indentation =
+                                styleParaProps.Indentation.CloneNode(true) as Indentation;
                         }
-                        
+
                         contentParagraph.ParagraphProperties = newProps;
                     }
 
@@ -697,14 +756,16 @@ public class WordTemplateService
                             Run lineBreakRun = new Run(new Break());
                             if (styleRunProps != null)
                             {
-                                lineBreakRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                                lineBreakRun.RunProperties =
+                                    styleRunProps.CloneNode(true) as RunProperties;
                             }
                             contentParagraph.Append(lineBreakRun);
 
                             Run textRun = new Run(new Text(lines[i]));
                             if (styleRunProps != null)
                             {
-                                textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                                textRun.RunProperties =
+                                    styleRunProps.CloneNode(true) as RunProperties;
                             }
                             contentParagraph.Append(textRun);
                         }
@@ -713,47 +774,54 @@ public class WordTemplateService
                 }
             }
         }
-        
+
         return elements;
     }
 
     /// <summary>
     /// Creates a bullet list item paragraph with the specified text and styling
     /// </summary>
-    private static Paragraph CreateBulletListItem(string text, RunProperties styleRunProps, ParagraphProperties styleParaProps)
+    private static Paragraph CreateBulletListItem(
+        string text,
+        RunProperties styleRunProps,
+        ParagraphProperties styleParaProps
+    )
     {
         Paragraph listItemPara = new Paragraph();
-        
+
         // Create brand new paragraph properties for the bullet list item
         ParagraphProperties paraProps = new ParagraphProperties();
-        
+
         // Copy some basic formatting from original paragraph if available
         if (styleParaProps != null)
         {
             // Copy spacing, alignment, and other paragraph properties if they exist
             if (styleParaProps.SpacingBetweenLines != null)
-                paraProps.SpacingBetweenLines = styleParaProps.SpacingBetweenLines.CloneNode(true) as SpacingBetweenLines;
-            
+                paraProps.SpacingBetweenLines =
+                    styleParaProps.SpacingBetweenLines.CloneNode(true) as SpacingBetweenLines;
+
             if (styleParaProps.Justification != null)
-                paraProps.Justification = styleParaProps.Justification.CloneNode(true) as Justification;
-                
+                paraProps.Justification =
+                    styleParaProps.Justification.CloneNode(true) as Justification;
+
             if (styleParaProps.ContextualSpacing != null)
-                paraProps.ContextualSpacing = styleParaProps.ContextualSpacing.CloneNode(true) as ContextualSpacing;
+                paraProps.ContextualSpacing =
+                    styleParaProps.ContextualSpacing.CloneNode(true) as ContextualSpacing;
         }
-        
+
         // Set bullet-specific properties
         // Indentation for bullets
         paraProps.Indentation = new Indentation { Left = "720", Hanging = "360" };
-        
+
         // Set numbering properties to use our bullet list definition with ID 10
         paraProps.NumberingProperties = new NumberingProperties
         {
             NumberingId = new NumberingId { Val = 10 },
-            NumberingLevelReference = new NumberingLevelReference { Val = 0 }
+            NumberingLevelReference = new NumberingLevelReference { Val = 0 },
         };
-        
+
         listItemPara.ParagraphProperties = paraProps;
-        
+
         // Add the text content (without the bullet character, as it's provided by the numbering definition)
         Run textRun = new Run(new Text(text));
         if (styleRunProps != null)
@@ -761,7 +829,7 @@ public class WordTemplateService
             textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
         }
         listItemPara.Append(textRun);
-        
+
         return listItemPara;
     }
 
@@ -771,21 +839,21 @@ public class WordTemplateService
     private static void EnsureBulletListDefinitionExists(WordprocessingDocument wordDoc)
     {
         MainDocumentPart mainPart = wordDoc.MainDocumentPart;
-        
+
         // Check if the NumberingDefinitionsPart already exists
         NumberingDefinitionsPart numberingPart = mainPart.NumberingDefinitionsPart;
         if (numberingPart == null)
         {
             // Create a new NumberingDefinitionsPart if it doesn't exist
             numberingPart = mainPart.AddNewPart<NumberingDefinitionsPart>();
-            
+
             // Create a more complete bullet list definition with a unique ID
             // We'll use ID 10 instead of 1 to avoid conflicts with any existing numbering
             Numbering numbering = new Numbering();
-            
+
             // Create AbstractNum with a complete bullet definition
             AbstractNum abstractNum = new AbstractNum() { AbstractNumberId = 10 };
-            
+
             // Create comprehensive Level 0 definition for bullets
             Level level = new Level() { LevelIndex = 0 };
             // Explicitly set to bullet format
@@ -793,54 +861,63 @@ public class WordTemplateService
             // Use a solid bullet character
             level.Append(new LevelText() { Val = "•" });
             // Must use Symbol font to render bullets correctly
-            level.Append(new RunProperties(
-                new RunFonts() { 
-                    Ascii = "Symbol", 
-                    HighAnsi = "Symbol", 
-                    Hint = FontTypeHintValues.Default 
-                }
-            ));
+            level.Append(
+                new RunProperties(
+                    new RunFonts()
+                    {
+                        Ascii = "Symbol",
+                        HighAnsi = "Symbol",
+                        Hint = FontTypeHintValues.Default,
+                    }
+                )
+            );
             // Indentation settings
-            level.Append(new ParagraphProperties(
-                new Indentation() { Left = "720", Hanging = "360" }
-            ));
+            level.Append(
+                new ParagraphProperties(new Indentation() { Left = "720", Hanging = "360" })
+            );
             // Set numbering value (not really used for bullets, but required)
             level.Append(new StartNumberingValue() { Val = 1 });
             level.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
-            
+
             abstractNum.Append(level);
-            
+
             // Add a second level for nested bullets if needed
             Level level2 = new Level() { LevelIndex = 1 };
             // Explicitly set to bullet format
             level2.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
             level2.Append(new LevelText() { Val = "○" }); // Open circle
-            level2.Append(new RunProperties(
-                new RunFonts() { 
-                    Ascii = "Symbol", 
-                    HighAnsi = "Symbol",
-                    Hint = FontTypeHintValues.Default 
-                }
-            ));
-            level2.Append(new ParagraphProperties(
-                new Indentation() { Left = "1440", Hanging = "360" }
-            ));
+            level2.Append(
+                new RunProperties(
+                    new RunFonts()
+                    {
+                        Ascii = "Symbol",
+                        HighAnsi = "Symbol",
+                        Hint = FontTypeHintValues.Default,
+                    }
+                )
+            );
+            level2.Append(
+                new ParagraphProperties(new Indentation() { Left = "1440", Hanging = "360" })
+            );
             level2.Append(new StartNumberingValue() { Val = 1 });
             level2.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
-            
+
             abstractNum.Append(level2);
-            
+
             // Add multiLevelType to ensure it's treated as a bullet list
-            abstractNum.MultiLevelType = new MultiLevelType() { Val = MultiLevelValues.HybridMultilevel };
-            
+            abstractNum.MultiLevelType = new MultiLevelType()
+            {
+                Val = MultiLevelValues.HybridMultilevel,
+            };
+
             numbering.Append(abstractNum);
-            
+
             // Create NumberingInstance that references the AbstractNum
             NumberingInstance numberingInstance = new NumberingInstance() { NumberID = 10 };
             numberingInstance.AbstractNumId = new AbstractNumId() { Val = 10 };
-            
+
             numbering.Append(numberingInstance);
-            
+
             numberingPart.Numbering = numbering;
         }
         else
@@ -852,72 +929,85 @@ public class WordTemplateService
                 numbering = new Numbering();
                 numberingPart.Numbering = numbering;
             }
-            
+
             // Look for existing bullet list definition with ID 10
-            var existingInstance = numbering.Elements<NumberingInstance>()
+            var existingInstance = numbering
+                .Elements<NumberingInstance>()
                 .FirstOrDefault(ni => ni.NumberID?.Value == 10);
-                
+
             if (existingInstance == null)
             {
                 // No existing bullet list definition, create a new one
-                
+
                 // First check if we already have an AbstractNum with ID 10
-                var existingAbstractNum = numbering.Elements<AbstractNum>()
+                var existingAbstractNum = numbering
+                    .Elements<AbstractNum>()
                     .FirstOrDefault(an => an.AbstractNumberId?.Value == 10);
-                
+
                 if (existingAbstractNum == null)
                 {
-                    // Create a new AbstractNum for bullets with ID 10 
+                    // Create a new AbstractNum for bullets with ID 10
                     AbstractNum abstractNum = new AbstractNum() { AbstractNumberId = 10 };
-                    
+
                     // Add multiLevelType to ensure it's treated as a bullet list
-                    abstractNum.MultiLevelType = new MultiLevelType() { Val = MultiLevelValues.HybridMultilevel };
-                    
+                    abstractNum.MultiLevelType = new MultiLevelType()
+                    {
+                        Val = MultiLevelValues.HybridMultilevel,
+                    };
+
                     // Level 0 (first level bullets) - create using properties directly
                     Level level = new Level() { LevelIndex = 0 };
                     level.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
                     level.Append(new LevelText() { Val = "•" });
-                    level.Append(new RunProperties(
-                        new RunFonts() { 
-                            Ascii = "Symbol", 
-                            HighAnsi = "Symbol", 
-                            Hint = FontTypeHintValues.Default 
-                        }
-                    ));
-                    level.Append(new ParagraphProperties(
-                        new Indentation() { Left = "720", Hanging = "360" }
-                    ));
+                    level.Append(
+                        new RunProperties(
+                            new RunFonts()
+                            {
+                                Ascii = "Symbol",
+                                HighAnsi = "Symbol",
+                                Hint = FontTypeHintValues.Default,
+                            }
+                        )
+                    );
+                    level.Append(
+                        new ParagraphProperties(new Indentation() { Left = "720", Hanging = "360" })
+                    );
                     level.Append(new StartNumberingValue() { Val = 1 });
                     level.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
-                    
+
                     abstractNum.Append(level);
-                    
+
                     // Level 1 (second level bullets) - create using properties directly
                     Level level2 = new Level() { LevelIndex = 1 };
                     level2.Append(new NumberingFormat() { Val = NumberFormatValues.Bullet });
                     level2.Append(new LevelText() { Val = "○" });
-                    level2.Append(new RunProperties(
-                        new RunFonts() { 
-                            Ascii = "Symbol", 
-                            HighAnsi = "Symbol", 
-                            Hint = FontTypeHintValues.Default 
-                        }
-                    ));
-                    level2.Append(new ParagraphProperties(
-                        new Indentation() { Left = "1440", Hanging = "360" }
-                    ));
+                    level2.Append(
+                        new RunProperties(
+                            new RunFonts()
+                            {
+                                Ascii = "Symbol",
+                                HighAnsi = "Symbol",
+                                Hint = FontTypeHintValues.Default,
+                            }
+                        )
+                    );
+                    level2.Append(
+                        new ParagraphProperties(
+                            new Indentation() { Left = "1440", Hanging = "360" }
+                        )
+                    );
                     level2.Append(new StartNumberingValue() { Val = 1 });
                     level2.Append(new LevelJustification() { Val = LevelJustificationValues.Left });
-                    
+
                     abstractNum.Append(level2);
-                    
+
                     numbering.Append(abstractNum);
                 }
-                
+
                 // Create a new NumberingInstance that references AbstractNum 10
                 NumberingInstance numberingInstance = new NumberingInstance() { NumberID = 10 };
                 numberingInstance.AbstractNumId = new AbstractNumId() { Val = 10 };
-                
+
                 numbering.Append(numberingInstance);
             }
         }
