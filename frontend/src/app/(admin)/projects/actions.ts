@@ -451,3 +451,22 @@ export async function CreateTreatmentProduct(appointmentId: string, body: Array<
     }
     return ok(null);
 }
+
+export async function CreateTreatmentArea(appointmentId: string, body: Array<components["schemas"]["TreatmentAreaInDTO"]>): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/TreatmentArea", {
+        ...auth,
+        body,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
