@@ -1,6 +1,11 @@
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using PeruControl.Model.Reports;
+using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using DocumentFormat.OpenXml;
 
 namespace PeruControl.Services;
 
@@ -311,7 +316,378 @@ public class WordTemplateService
         ProcessTable(body, 2, "{treated_area}", dataForTable3);
         ProcessTable(body, 3, "{product.name}", productsToInsert);
 
+        // Create a placeholder-based content insertion example
+        var mockTextArea = new TextArea
+        {
+            Content = "This is content generated from a ContentSection.\nIt maintains the style of the placeholder it replaces.\nYou can have multiple lines and they will render properly."
+        };
+        
+        var mockSubTextArea = new TextArea
+        {
+            Content = "This is nested content in a subsection.\nWith another line of text."
+        };
+        
+        var mockSubSection = new TextBlock
+        {
+            Title = "Dynamic Subsection",
+            Numbering = "1.1.1",
+            Level = 3,
+            Sections = [mockSubTextArea]
+        };
+        
+        var mockSection = new TextBlock
+        {
+            Title = "Dynamic Content Section",
+            Numbering = "1.1",
+            Level = 2,
+            Sections = [mockTextArea, mockSubSection]
+        };
+
+        // Try to replace a placeholder called "{dynamic_content}" with rich content
+        // Make sure your template has this placeholder somewhere
+        try 
+        {
+            ReplacePlaceholderWithContent(wordDoc, "{section_5}", [mockSection]);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Handle the case where the placeholder isn't found
+            Console.WriteLine($"Warning: {ex.Message}");
+            
+            // Optionally, you could append the content at the end of the document if the placeholder isn't found
+            // AppendContentSections(wordDoc, [mockSection]);
+        }
+
         wordDoc.Save();
         return ms.ToArray();
+    }
+
+    public static void AppendContentSections(WordprocessingDocument wordDoc, IEnumerable<ContentSection> sections)
+    {
+        ArgumentNullException.ThrowIfNull(wordDoc);
+        ArgumentNullException.ThrowIfNull(sections);
+
+        MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? wordDoc.AddMainDocumentPart();
+        mainPart.Document ??= new Document();
+        mainPart.Document.Body ??= new Body();
+        Body body = mainPart.Document.Body;
+
+        foreach (var section in sections)
+        {
+            List<OpenXmlElement> elements = GenerateElementsForSection(section);
+            foreach (var element in elements)
+            {
+                body.Append(element.CloneNode(true)); // Clone if elements might be reused elsewhere, good practice.
+            }
+        }
+    }
+
+    private static List<OpenXmlElement> GenerateElementsForSection(ContentSection section)
+    {
+        var elements = new List<OpenXmlElement>();
+        if (section is TextBlock textBlock)
+        {
+            Paragraph titleParagraph = new();
+            ParagraphProperties pp = new();
+
+            if (textBlock.Level >= 0)
+            {
+                pp.ParagraphStyleId = new ParagraphStyleId() { Val = "Heading" + (textBlock.Level + 1) };
+            }
+            titleParagraph.Append(pp);
+
+            string fullTitle = (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "") + textBlock.Title;
+            Run titleRun = new(new Text(fullTitle));
+            titleParagraph.Append(titleRun);
+            elements.Add(titleParagraph);
+
+            if (textBlock.Sections != null)
+            {
+                foreach (var subSection in textBlock.Sections)
+                {
+                    elements.AddRange(GenerateElementsForSection(subSection));
+                }
+            }
+        }
+        else if (section is TextArea textArea)
+        {
+            Paragraph contentParagraph = new();
+            if (!string.IsNullOrEmpty(textArea.Content))
+            {
+                string[] lines = textArea.Content.Split('\n');
+                if (lines.Length != 0)
+                {
+                    Run firstRun = new(new Text(lines[0]));
+                    contentParagraph.Append(firstRun);
+
+                    for (int i = 1; i < lines.Length; i++)
+                    {
+                        contentParagraph.Append(new Run(new Break()));
+                        Run subsequentRun = new(new Text(lines[i]));
+                        contentParagraph.Append(subsequentRun);
+                    }
+                }
+            }
+            elements.Add(contentParagraph);
+        }
+        return elements;
+    }
+
+    public static void InsertContentAfterNthHeading(
+        WordprocessingDocument wordDoc,
+        int headingNumber, // 1-indexed
+        IEnumerable<ContentSection> sectionsToInsert)
+    {
+        ArgumentNullException.ThrowIfNull(wordDoc);
+        ArgumentNullException.ThrowIfNull(sectionsToInsert);
+        if (headingNumber <= 0) throw new ArgumentOutOfRangeException(nameof(headingNumber), "Heading number must be positive.");
+
+        MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? wordDoc.AddMainDocumentPart();
+        mainPart.Document ??= new Document();
+        mainPart.Document.Body ??= new Body();
+        Body body = mainPart.Document.Body;
+
+        Paragraph targetHeading = null;
+        int currentHeadingCount = 0;
+        foreach (Paragraph p in body.Elements<Paragraph>()) // Iterate through all paragraphs in the body
+        {
+            if (p.ParagraphProperties?.ParagraphStyleId != null &&
+                p.ParagraphProperties.ParagraphStyleId.Val.Value.StartsWith("Heading", StringComparison.OrdinalIgnoreCase))
+            {
+                currentHeadingCount++;
+                if (currentHeadingCount == headingNumber)
+                {
+                    targetHeading = p;
+                    break;
+                }
+            }
+        }
+
+        if (targetHeading == null)
+        {
+            throw new InvalidOperationException($"The {headingNumber}th heading was not found in the document.");
+        }
+
+        OpenXmlElement currentElementToInsertAfter = targetHeading;
+        foreach (var section in sectionsToInsert)
+        {
+            List<OpenXmlElement> newElements = GenerateElementsForSection(section);
+            foreach (var newElement in newElements)
+            {
+                // Clone the node before inserting if it's from a shared list or might be reused.
+                // GenerateElementsForSection creates new elements, so cloning here might be overly cautious but safe.
+                OpenXmlElement elementToInsert = newElement.CloneNode(true);
+                currentElementToInsertAfter.InsertAfterSelf(elementToInsert);
+                currentElementToInsertAfter = elementToInsert;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Replaces a placeholder in the document with content sections, preserving the original style.
+    /// </summary>
+    /// <param name="wordDoc">The Word document to modify</param>
+    /// <param name="placeholder">The placeholder text to search for and replace</param>
+    /// <param name="sections">The content sections to insert in place of the placeholder</param>
+    public static void ReplacePlaceholderWithContent(
+        WordprocessingDocument wordDoc,
+        string placeholder,
+        ContentSection[] sections)
+    {
+        ArgumentNullException.ThrowIfNull(wordDoc);
+        ArgumentNullException.ThrowIfNull(sections);
+        if (string.IsNullOrWhiteSpace(placeholder))
+            throw new ArgumentException("Placeholder cannot be empty", nameof(placeholder));
+
+        MainDocumentPart mainPart = wordDoc.MainDocumentPart ?? throw new InvalidOperationException("Document has no main part");
+        Document doc = mainPart.Document ?? throw new InvalidOperationException("Main part has no document");
+        Body body = doc.Body ?? throw new InvalidOperationException("Document has no body");
+
+        // Find all paragraphs containing the placeholder
+        var paragraphsWithPlaceholder = body
+            .Descendants<Paragraph>()
+            .Where(p => p.InnerText.Contains(placeholder))
+            .ToList();
+
+        if (!paragraphsWithPlaceholder.Any())
+        {
+            // Placeholder not found, throw or log
+            throw new InvalidOperationException($"Placeholder '{placeholder}' not found in document");
+        }
+
+        foreach (var paragraph in paragraphsWithPlaceholder)
+        {
+            // Get the run containing the placeholder text
+            var runsWithPlaceholder = paragraph
+                .Descendants<Run>()
+                .Where(r => r.InnerText.Contains(placeholder))
+                .ToList();
+
+            if (!runsWithPlaceholder.Any())
+                continue;
+
+            // Get the first run with the placeholder (usually should be only one)
+            var placeholderRun = runsWithPlaceholder.First();
+            
+            // Save the run properties (styling) to apply to new content
+            RunProperties originalRunProps = placeholderRun.RunProperties?.CloneNode(true) as RunProperties;
+            ParagraphProperties originalParaProps = paragraph.ParagraphProperties?.CloneNode(true) as ParagraphProperties;
+
+            // Generate the new content with the same style
+            var newParagraphs = new List<Paragraph>();
+            
+            foreach (var section in sections)
+            {
+                List<OpenXmlElement> elements = GenerateElementsForSectionWithStyle(section, originalRunProps, originalParaProps);
+                foreach (var element in elements)
+                {
+                    if (element is Paragraph para)
+                    {
+                        newParagraphs.Add(para);
+                    }
+                }
+            }
+
+            // Insert the new paragraphs after the placeholder paragraph
+            // We need to reverse the order because InsertAfterSelf puts each new item at the same position,
+            // which would reverse the order if we insert them sequentially
+            for (int i = newParagraphs.Count - 1; i >= 0; i--)
+            {
+                paragraph.InsertAfterSelf(newParagraphs[i]);
+            }
+
+            // Remove the original paragraph with the placeholder
+            paragraph.Remove();
+        }
+    }
+
+    /// <summary>
+    /// Generates OpenXML elements for a content section, applying the given styles.
+    /// </summary>
+    private static List<OpenXmlElement> GenerateElementsForSectionWithStyle(
+        ContentSection section,
+        RunProperties styleRunProps,
+        ParagraphProperties styleParaProps)
+    {
+        var elements = new List<OpenXmlElement>();
+        
+        if (section is TextBlock textBlock)
+        {
+            Paragraph titleParagraph = new();
+            
+            // Apply paragraph style but preserve heading level if any
+            if (styleParaProps != null)
+            {
+                ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
+                // If the TextBlock has a level, we need to set the appropriate heading style
+                if (textBlock.Level >= 0)
+                {
+                    newProps.ParagraphStyleId = new ParagraphStyleId { Val = $"Heading{textBlock.Level + 1}" };
+                }
+                
+                // Make sure we're properly preserving indentation settings
+                // The indentation is preserved because we've cloned the entire ParagraphProperties
+                
+                titleParagraph.ParagraphProperties = newProps;
+            }
+            else if (textBlock.Level >= 0)
+            {
+                // No styling from original paragraph, but still need to set heading style
+                ParagraphProperties newProps = new();
+                newProps.ParagraphStyleId = new ParagraphStyleId { Val = $"Heading{textBlock.Level + 1}" };
+                
+                // If there's no original styling, we might still want to set a reasonable indentation
+                // Uncomment if needed:
+                // newProps.Indentation = new Indentation() { Left = "720" }; // 720 twips = 0.5 inch
+                
+                titleParagraph.ParagraphProperties = newProps;
+            }
+
+            // Create the title run with formatting
+            string fullTitle = (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "") + textBlock.Title;
+            Run titleRun = new Run(new Text(fullTitle));
+            
+            // Apply the run style to maintain formatting
+            if (styleRunProps != null)
+            {
+                titleRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+            }
+            else
+            {
+                titleRun.RunProperties = new RunProperties();
+            }
+            
+            // Make sure the title is bold
+            titleRun.RunProperties.Bold = new Bold();
+            
+            titleParagraph.Append(titleRun);
+            elements.Add(titleParagraph);
+
+            // Process any subsections
+            if (textBlock.Sections != null)
+            {
+                foreach (var subSection in textBlock.Sections)
+                {
+                    // When processing subsections, preserve the indentation by passing along the same parent paragraph properties
+                    elements.AddRange(GenerateElementsForSectionWithStyle(subSection, styleRunProps, styleParaProps));
+                }
+            }
+        }
+        else if (section is TextArea textArea)
+        {
+            Paragraph contentParagraph = new();
+            
+            // Apply paragraph style
+            if (styleParaProps != null)
+            {
+                ParagraphProperties newProps = styleParaProps.CloneNode(true) as ParagraphProperties;
+                
+                // Ensure indentation settings are preserved from the original paragraph
+                // This should already be handled by the full clone, but let's make sure
+                if (styleParaProps.Indentation != null)
+                {
+                    // If the clone didn't work properly for some reason, explicitly copy the indentation
+                    newProps.Indentation = styleParaProps.Indentation.CloneNode(true) as Indentation;
+                }
+                
+                contentParagraph.ParagraphProperties = newProps;
+            }
+
+            if (!string.IsNullOrEmpty(textArea.Content))
+            {
+                string[] lines = textArea.Content.Split('\n');
+                if (lines.Length > 0)
+                {
+                    // First line
+                    Run firstRun = new Run(new Text(lines[0]));
+                    if (styleRunProps != null)
+                    {
+                        firstRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                    }
+                    contentParagraph.Append(firstRun);
+
+                    // Additional lines
+                    for (int i = 1; i < lines.Length; i++)
+                    {
+                        Run lineBreakRun = new Run(new Break());
+                        if (styleRunProps != null)
+                        {
+                            lineBreakRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                        }
+                        contentParagraph.Append(lineBreakRun);
+
+                        Run textRun = new Run(new Text(lines[i]));
+                        if (styleRunProps != null)
+                        {
+                            textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                        }
+                        contentParagraph.Append(textRun);
+                    }
+                }
+            }
+            elements.Add(contentParagraph);
+        }
+        
+        return elements;
     }
 }
