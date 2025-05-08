@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes } from "../../actions";
 import { MurinoMapSection } from "./MurinoMapSection";
+import { TreatmentSummary } from "./TreatmentSummary";
 
 interface AppointmentDetailsProps {
     projectId: string;
@@ -269,6 +270,13 @@ export function AppointmentDetails({
                     </div>
                 </div>
             </div>
+
+            {/* Resumen de Productos y Áreas */}
+            <TreatmentSummary
+                appointmentId={appointment.id!}
+                treatmentAreas={appointment.treatmentAreas ?? []}
+                treatmentProducts={appointment.treatmentProducts ?? []}
+            />
 
             {/* Nueva sección: Mapa Murino */}
             <MurinoMapSection
