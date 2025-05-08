@@ -65,7 +65,7 @@ export default async function ProjectsPage({ params }: Props)
                     </Breadcrumb>
                 )}
             />
-            <TreatmentAreasForm treatmentAreas={treatmentAreas} treatmentProducts={treatmentProducts} appointmentId={appointmentId} />
+            <TreatmentAreasForm treatmentAreas={treatmentAreas} appointmentId={appointmentId} treatmentProducts={treatmentProducts} />
         </>
     );
 }

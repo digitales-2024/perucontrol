@@ -28,7 +28,27 @@ interface TreatmentAreasFormProps {
 export function TreatmentAreasForm({ treatmentAreas, treatmentProducts, appointmentId }: TreatmentAreasFormProps)
 {
     const [open, setOpen] = useState<Record<number, boolean>>({});
-    const [selectedProducts, setSelectedProducts] = useState<Record<number, Array<{ id: string; name: string }>>>({});
+    const [selectedProducts, setSelectedProducts] = useState<Record<number, Array<{ id: string; name: string }>>>(() =>
+    {
+        const initialSelectedProducts: Record<number, Array<{ id: string; name: string }>> = {};
+        const orderedAreas = [...treatmentAreas].reverse();
+
+        orderedAreas.forEach((area, index) =>
+        {
+            if (area.productsList && area.productsList.length > 0)
+            {
+                initialSelectedProducts[index] = area.productsList.map((productId) =>
+                {
+                    const treatmentProduct = treatmentProducts.find((tp) => tp.id === productId);
+                    return {
+                        id: productId,
+                        name: treatmentProduct?.product.name ?? productId,
+                    };
+                });
+            }
+        });
+        return initialSelectedProducts;
+    });
 
     // Invertir el orden de los treatmentAreas, empezando por el primero en ser creado
     const orderedTreatmentAreas = [...treatmentAreas].reverse();
