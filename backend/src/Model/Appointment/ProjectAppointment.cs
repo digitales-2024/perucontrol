@@ -60,4 +60,9 @@ public class ProjectAppointment : BaseModel
     // Identificador de mapa murino en R2
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
+
+    //
+    // Reports
+    //
+    public Reports.CompleteReport CompleteReport { get; set; } = new();
 }

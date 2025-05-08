@@ -4,20 +4,20 @@ namespace PeruControl.Model.Reports;
 
 public class CompleteReport : BaseModel
 {
-    public required DateTime SigningDate { get; set; }
+    public DateTime? SigningDate { get; set; }
 
     [Column(TypeName = "jsonb")]
-    public required ContentSection ContentSection5 { get; set; }
+    public List<ContentSection> ContentSection5 { get; set; } = [];
 
     [Column(TypeName = "jsonb")]
-    public required ContentSection ContentSection6 { get; set; }
+    public List<ContentSection> ContentSection6 { get; set; } = [];
 
     [Column(TypeName = "jsonb")]
-    public required ContentSection ContentSection7 { get; set; }
+    public List<ContentSection> ContentSection7 { get; set; } = [];
 
     [Column(TypeName = "jsonb")]
-    public required ContentSection ContentSection8 { get; set; }
+    public List<ContentSection> ContentSection8 { get; set; } = [];
 
     [Column(TypeName = "jsonb")]
-    public required ContentSection ContentSection9 { get; set; }
+    public List<ContentSection> ContentSection9 { get; set; } = [];
 }
