@@ -15,9 +15,7 @@ public class ProductController(DatabaseContext context, ProductService productSe
     [HttpGet]
     public async Task<ActionResult<IList<ProductGetAllOutputDTO>>> GetAllProducts()
     {
-        var products = await context.Products
-          .Include(p => p.ProductAmountSolvents)
-          .ToListAsync();
+        var products = await context.Products.Include(p => p.ProductAmountSolvents).ToListAsync();
 
         var result = products.Select(p => ProductGetAllOutputDTO.FromProduct(p)).ToList();
         // var result = products.Select(p => ProductGetAllOutputDTO.FromProduct(p)).ToList();
