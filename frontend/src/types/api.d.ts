@@ -920,6 +920,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Appointment/{id}/report-01/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Report 01 Word */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -4214,46 +4265,6 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Appointment/{appointmentid}/TreatmentArea": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Edit Appoinment Treatment Areas */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    appointmentid: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["TreatmentAreaDTO"]>;
-                        "application/json": Array<components["schemas"]["TreatmentAreaDTO"]>;
-                        "text/json": Array<components["schemas"]["TreatmentAreaDTO"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Appointment/{appointmentid}/TreatmentProduct": {
         parameters: {
             query?: never;
@@ -4261,7 +4272,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Edit Appoinment Treatment Products */
+        /** Get Treatment Products of an Appointment */
         get: {
             parameters: {
                 query?: never;
@@ -4291,7 +4302,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Edit Appoinment Treatment Products */
+        /** Edit Treatment Products of an Appointment */
         patch: {
             parameters: {
                 query?: never;
@@ -4434,6 +4445,72 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/TreatmentArea": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Treatment Areas of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                        "application/json": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                        "text/json": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Treatment Areas of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                    "text/json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                    "application/*+json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         trace?: never;
     };
     "/api/Product": {
@@ -5488,6 +5565,25 @@ export interface components {
             infestationLevel?: string | null;
             performedService?: string | null;
             appliedTechnique?: string | null;
+        };
+        TreatmentAreaGetDTO: {
+            /** Format: uuid */
+            id: string;
+            areaName: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+            productsList: Array<string>;
+        };
+        TreatmentAreaInDTO: {
+            /** Format: uuid */
+            id?: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+            treatmentProductIds: Array<string>;
         };
         TreatmentProductDTO: {
             /** Format: uuid */
