@@ -46,7 +46,7 @@ export type AppointmentForTable = {
     cancelled?: boolean/*  | null | undefined */;
     enterTime?: string | null | undefined;
     leaveTime?: string | null | undefined;
-    treatmentAreas?: Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+    treatmentAreas?: Array<components["schemas"]["TreatmentAreaDTO"]>;
     treatmentProducts?: Array<components["schemas"]["TreatmentProductDTO"]>;
 };
 

@@ -9,7 +9,7 @@ import { components } from "@/types/api";
 
 interface TreatmentSummaryProps {
     appointmentId: string;
-    treatmentAreas: Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+    treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;
     treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
 }
 
