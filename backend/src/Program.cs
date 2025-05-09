@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using PeruControl.Controllers;
 using PeruControl.Model;
 using PeruControl.Services;
@@ -15,13 +16,18 @@ builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
 
+// Configure Npgsql data source with JSON support
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new Exception("DB connection string not found");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.EnableDynamicJson();
+var dataSource = dataSourceBuilder.Build();
+builder.Services.AddSingleton(dataSource);
+
 // Database setup
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    var connectionString =
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new Exception("DB connection string not found");
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(dataSource);
 });
 
 // Configure Identity

@@ -64,6 +64,5 @@ public class ProjectAppointment : BaseModel
     //
     // Reports
     //
-    public Guid CompleteReportID { get; set; } = new();
     public Reports.CompleteReport CompleteReport { get; set; } = new();
 }
