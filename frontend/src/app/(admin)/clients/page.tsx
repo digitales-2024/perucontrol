@@ -9,20 +9,31 @@ import {
     BreadcrumbLink,
     BreadcrumbList,
 } from "@/components/ui/breadcrumb";
+import ErrorPage from "@/components/ErrorPage";
 
 export default async function ClientsPage()
 {
     const [clients, error] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
-
     if (error)
     {
         console.error("Error getting all clients:", error);
         return (
             <>
-                <HeaderPage title="Gestión de clientes" description="No se pudieron cargar los clientes." />
-                <p className="text-red-500 text-sm">
-                    Ocurrió un error al obtener los clientes.
-                </p>
+                <HeaderPage
+                    title="Gestión de clientes" description="Gestiona los clientes de tu empresa"
+                    breadcrumbs={(
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href="/clients">
+                                        Todos los clientes
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                    )}
+                />
+                <ErrorPage />
             </>
         );
     }
