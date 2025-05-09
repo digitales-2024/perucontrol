@@ -300,7 +300,7 @@ public class WordTemplateService
                 // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
                 .Select(tp => new Dictionary<string, string>
                 {
-                    { "{service_date}", "today" }, // Hardcoded as per requirement
+                    { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") }, // Changed from "today"
                     { "{service_hour}", tp.AppliedTime ?? "-" },
                     {
                         "{treatment_type}",
@@ -319,53 +319,13 @@ public class WordTemplateService
         ProcessTable(body, 2, "{treated_area}", dataForTable3);
         ProcessTable(body, 3, "{product.name}", productsToInsert);
 
-        // Create a placeholder-based content insertion example
-        var mockTextArea = new TextArea
-        {
-            Content =
-                "This is content generated from a ContentSection.\nIt maintains the style of the placeholder it replaces.\nYou can have multiple lines and they will render properly.",
-        };
-
-        var mockSubTextArea = new TextArea
-        {
-            Content = "This is nested content in a subsection.\nWith another line of text.",
-        };
-
-        var listSample = new TextArea
-        {
-            Content = "- My first item\n- My second item\n- My third item",
-        };
-
-        var mockSubSection = new TextBlock
-        {
-            Title = "Dynamic Subsection",
-            Numbering = "1.1.1",
-            Level = 3,
-            Sections = [mockSubTextArea],
-        };
-
-        var mockSection = new TextBlock
-        {
-            Title = "Dynamic Content Section",
-            Numbering = "1.1",
-            Level = 2,
-            Sections = [mockTextArea, listSample, mockSubSection],
-        };
-
-        // Try to replace a placeholder called "{dynamic_content}" with rich content
+        // Try to replace a placeholder called "{section_5}" with rich content
         // Make sure your template has this placeholder somewhere
-        try
-        {
-            ReplacePlaceholderWithContent(wordDoc, "{section_5}", [mockSection]);
-        }
-        catch (InvalidOperationException ex)
-        {
-            // Handle the case where the placeholder isn't found
-            Console.WriteLine($"Warning: {ex.Message}");
-
-            // Optionally, you could append the content at the end of the document if the placeholder isn't found
-            // AppendContentSections(wordDoc, [mockSection]);
-        }
+        ReplacePlaceholderWithContent(
+            wordDoc,
+            "{section_5}",
+            [.. appointment.CompleteReport.Content]
+        );
 
         wordDoc.Save();
         return ms.ToArray();
