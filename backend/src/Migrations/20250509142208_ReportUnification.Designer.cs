@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -13,9 +14,11 @@ using PeruControl.Model.Reports;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250509142208_ReportUnification")]
+    partial class ReportUnification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -525,7 +528,7 @@ namespace PeruControl.Migrations
                     b.Property<int?>("CertificateNumber")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("CompleteReportId")
+                    b.Property<Guid>("CompleteReportID")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -561,7 +564,7 @@ namespace PeruControl.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompleteReportId");
+                    b.HasIndex("CompleteReportID");
 
                     b.HasIndex("ProjectId");
 
@@ -1399,7 +1402,7 @@ namespace PeruControl.Migrations
                 {
                     b.HasOne("PeruControl.Model.Reports.CompleteReport", "CompleteReport")
                         .WithMany()
-                        .HasForeignKey("CompleteReportId")
+                        .HasForeignKey("CompleteReportID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
