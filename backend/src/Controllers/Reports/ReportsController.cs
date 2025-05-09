@@ -34,10 +34,13 @@ public class ReportsController(DatabaseContext db) : ControllerBase
 
         return Ok(result);
     }
-    
+
     [EndpointSummary("Update CompleteReport of an Appointment")]
     [HttpPatch("/api/Appointment/{appointmentid}/CompleteReport")]
-    public async Task<ActionResult> UpdateCompleteReport(Guid appointmentid, UpdateCompleteReportDTO updateDto)
+    public async Task<ActionResult> UpdateCompleteReport(
+        Guid appointmentid,
+        UpdateCompleteReportDTO updateDto
+    )
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.CompleteReport)
@@ -48,16 +51,16 @@ public class ReportsController(DatabaseContext db) : ControllerBase
 
         if (appointment.CompleteReport == null)
             return NotFound("CompleteReport not found for this appointment");
-            
+
         // Update fields if provided
         if (updateDto.SigningDate.HasValue)
             appointment.CompleteReport.SigningDate = updateDto.SigningDate;
-            
+
         if (updateDto.Content != null)
             appointment.CompleteReport.Content = updateDto.Content;
-            
+
         await db.SaveChangesAsync();
-        
+
         return NoContent();
     }
 }

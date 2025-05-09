@@ -8,14 +8,19 @@ namespace Tests.E2E.Api;
 [TestClass]
 public class ClientTest
 {
-    private static readonly string ApiUrl = Environment.GetEnvironmentVariable("API_URL") ?? throw new InvalidOperationException("BASE_URL envvar is not set. It is needed to run the tests.");
+    private static readonly string ApiUrl =
+        Environment.GetEnvironmentVariable("API_URL")
+        ?? throw new InvalidOperationException(
+            "BASE_URL envvar is not set. It is needed to run the tests."
+        );
 
     // Helper method to create a client and return the created Client object (with Id)
     public static async Task<Client> CreateClientAsync()
     {
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
         var clientDto = new ClientCreateDTO
         {
@@ -28,16 +33,15 @@ public class ClientTest
             Email = $"test{Guid.NewGuid():N}@mail.com",
             PhoneNumber = "999999999",
             ContactName = "Test Contact",
-            ClientLocations =
-            [
-                new() { Address = "Sucursal 1" }
-            ]
+            ClientLocations = [new() { Address = "Sucursal 1" }],
         };
 
         var response = await httpClient.PostAsJsonAsync($"{ApiUrl}/api/client", clientDto);
         response.EnsureSuccessStatusCode();
 
-        var createdClient = await response.Content.ReadFromJsonAsync<Client>() ?? throw new InvalidOperationException("Created client should not be null");
+        var createdClient =
+            await response.Content.ReadFromJsonAsync<Client>()
+            ?? throw new InvalidOperationException("Created client should not be null");
         return createdClient;
     }
 
@@ -63,16 +67,24 @@ public class ClientTest
             Name = "Updated Name",
             FiscalAddress = "Updated Address",
             Email = "updated@mail.com",
-            PhoneNumber = "888888888"
+            PhoneNumber = "888888888",
             // No ClientLocations
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/update/{clientId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/update/{clientId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.NoContent,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         // Fetch updated client
         var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/client/{clientId}");
@@ -96,25 +108,40 @@ public class ClientTest
 
         var patchDto = new ClientPatchDTO
         {
-            ClientLocations = createdClient.ClientLocations
-                .Select(l => new ClientLocationDTO { Id = l.Id, Address = l.Address })
+            ClientLocations = createdClient
+                .ClientLocations.Select(l => new ClientLocationDTO
+                {
+                    Id = l.Id,
+                    Address = l.Address,
+                })
                 .Concat([newLocation])
-                .ToList()
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/update/{clientId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/update/{clientId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.NoContent,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         // Fetch updated client
         var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/client/{clientId}");
         getResponse.EnsureSuccessStatusCode();
         var updatedClient = await getResponse.Content.ReadFromJsonAsync<Client>();
         Assert.IsNotNull(updatedClient);
-        Assert.AreEqual(createdClient.ClientLocations.Count + 1, updatedClient.ClientLocations.Count);
+        Assert.AreEqual(
+            createdClient.ClientLocations.Count + 1,
+            updatedClient.ClientLocations.Count
+        );
         Assert.IsTrue(updatedClient.ClientLocations.Any(l => l.Address == "Sucursal Nueva"));
     }
 
@@ -130,19 +157,29 @@ public class ClientTest
 
         var patchDto = new
         {
-            ClientLocations = createdClient.ClientLocations
-                .Select(l => l.Id == originalLocation.Id
-                    ? editedLocation
-                    : new { Id = l.Id, Address = l.Address })
-                .ToList()
+            ClientLocations = createdClient
+                .ClientLocations.Select(l =>
+                    l.Id == originalLocation.Id
+                        ? editedLocation
+                        : new { Id = l.Id, Address = l.Address }
+                )
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/update/{clientId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/update/{clientId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.NoContent,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         // Fetch updated client
         var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/client/{clientId}");
@@ -167,15 +204,23 @@ public class ClientTest
             ClientLocations = originalLocations
                 .Skip(1) // Remove the first location
                 .Select(l => new { Id = l.Id, Address = l.Address })
-                .ToList()
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/update/{clientId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/update/{clientId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.NoContent,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         // Fetch updated client
         var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/client/{clientId}");
@@ -199,9 +244,10 @@ public class ClientTest
         // Remove the first, edit the second (if exists), add a new one
         var locationsToKeep = originalLocations.Skip(1).ToList();
 
-        var editedLocation = locationsToKeep.Count > 0
-            ? new { Id = locationsToKeep[0].Id, Address = "Sucursal Modificada" }
-            : null;
+        var editedLocation =
+            locationsToKeep.Count > 0
+                ? new { Id = locationsToKeep[0].Id, Address = "Sucursal Modificada" }
+                : null;
 
         var newLocation = new { Address = "Sucursal Nueva Combinada" };
 
@@ -210,17 +256,22 @@ public class ClientTest
             patchLocations.Add(editedLocation);
         patchLocations.Add(newLocation);
 
-        var patchDto = new
-        {
-            ClientLocations = patchLocations
-        };
+        var patchDto = new { ClientLocations = patchLocations };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/update/{clientId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/update/{clientId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.NoContent,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         // Fetch updated client
         var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/client/{clientId}");
@@ -232,7 +283,11 @@ public class ClientTest
         Assert.AreEqual(expectedCount, updatedClient.ClientLocations.Count);
 
         if (editedLocation != null)
-            Assert.IsTrue(updatedClient.ClientLocations.Any(l => l.Address == "Sucursal Modificada"));
-        Assert.IsTrue(updatedClient.ClientLocations.Any(l => l.Address == "Sucursal Nueva Combinada"));
+            Assert.IsTrue(
+                updatedClient.ClientLocations.Any(l => l.Address == "Sucursal Modificada")
+            );
+        Assert.IsTrue(
+            updatedClient.ClientLocations.Any(l => l.Address == "Sucursal Nueva Combinada")
+        );
     }
 }

@@ -12,17 +12,20 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ProjectAppointments_CompleteReports_CompleteReportID",
-                table: "ProjectAppointments");
+                table: "ProjectAppointments"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "CompleteReportID",
                 table: "ProjectAppointments",
-                newName: "CompleteReportId");
+                newName: "CompleteReportId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProjectAppointments_CompleteReportID",
                 table: "ProjectAppointments",
-                newName: "IX_ProjectAppointments_CompleteReportId");
+                newName: "IX_ProjectAppointments_CompleteReportId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProjectAppointments_CompleteReports_CompleteReportId",
@@ -30,7 +33,8 @@ namespace PeruControl.Migrations
                 column: "CompleteReportId",
                 principalTable: "CompleteReports",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -38,17 +42,20 @@ namespace PeruControl.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ProjectAppointments_CompleteReports_CompleteReportId",
-                table: "ProjectAppointments");
+                table: "ProjectAppointments"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "CompleteReportId",
                 table: "ProjectAppointments",
-                newName: "CompleteReportID");
+                newName: "CompleteReportID"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProjectAppointments_CompleteReportId",
                 table: "ProjectAppointments",
-                newName: "IX_ProjectAppointments_CompleteReportID");
+                newName: "IX_ProjectAppointments_CompleteReportID"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProjectAppointments_CompleteReports_CompleteReportID",
@@ -56,7 +63,8 @@ namespace PeruControl.Migrations
                 column: "CompleteReportID",
                 principalTable: "CompleteReports",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }

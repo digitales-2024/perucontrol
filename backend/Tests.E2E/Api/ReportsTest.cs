@@ -1,20 +1,27 @@
+using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PeruControl.Controllers; // For ProjectCreateDTO, ProjectSummary, ProjectSummarySingle etc.
+using PeruControl.Controllers.Reports; // For First() and Any()
 using PeruControl.Model;
 using PeruControl.Model.Reports; // For CompleteReportDTO
-using PeruControl.Controllers; // For ProjectCreateDTO, ProjectSummary, ProjectSummarySingle etc.
-using System.Linq;
-using PeruControl.Controllers.Reports; // For First() and Any()
 
 namespace Tests.E2E.Api;
 
 [TestClass]
 public class ReportsTest
 {
-    private static readonly string ApiUrl = Environment.GetEnvironmentVariable("API_URL") ?? throw new InvalidOperationException("API_URL envvar is not set. It is needed to run the tests.");
+    private static readonly string ApiUrl =
+        Environment.GetEnvironmentVariable("API_URL")
+        ?? throw new InvalidOperationException(
+            "API_URL envvar is not set. It is needed to run the tests."
+        );
 
-    private async Task<(Guid projectId, Guid firstAppointmentId)> CreateProjectAndGetFirstAppointmentIdAsync(HttpClient httpClient)
+    private async Task<(
+        Guid projectId,
+        Guid firstAppointmentId
+    )> CreateProjectAndGetFirstAppointmentIdAsync(HttpClient httpClient)
     {
         // 1. Create a Client
         var client = await ClientTest.CreateClientAsync(); // Assumes this method uses its own httpClient or is passed one
@@ -23,7 +30,10 @@ public class ReportsTest
         // 2. Get an existing Service
         var services = await ServiceTest.GetAllServicesAsync(); // Assumes this method uses its own httpClient or is passed one
         Assert.IsNotNull(services, "Service list should not be null for the test.");
-        Assert.IsTrue(services.Count != 0, "Should have at least one service configured for tests.");
+        Assert.IsTrue(
+            services.Count != 0,
+            "Should have at least one service configured for tests."
+        );
         var service = services.First();
 
         // 3. Create ProjectCreateDTO with a unique address
@@ -38,12 +48,13 @@ public class ReportsTest
             Services = new List<Guid> { service.Id },
             AppointmentCreateDTOs = new List<AppointmentCreateDTOThroughProject>
             {
-                new() {
+                new()
+                {
                     DueDate = DateTime.UtcNow.AddDays(10),
-                    Services = new List<Guid> { service.Id }
-                }
+                    Services = new List<Guid> { service.Id },
+                },
             },
-            Ambients = ["Office", "Warehouse"]
+            Ambients = ["Office", "Warehouse"],
         };
 
         // 4. POST to create the project
@@ -51,26 +62,46 @@ public class ReportsTest
         if (projectResponse.StatusCode != HttpStatusCode.Created)
         {
             var errorContent = await projectResponse.Content.ReadAsStringAsync();
-            Assert.Fail($"Failed to create project for report test. Status: {projectResponse.StatusCode}. Content: {errorContent}");
+            Assert.Fail(
+                $"Failed to create project for report test. Status: {projectResponse.StatusCode}. Content: {errorContent}"
+            );
         }
-        Assert.AreEqual(HttpStatusCode.Created, projectResponse.StatusCode, "Project creation failed.");
+        Assert.AreEqual(
+            HttpStatusCode.Created,
+            projectResponse.StatusCode,
+            "Project creation failed."
+        );
 
         // 5. GET all projects to find the one we just created
         var getAllProjectsResponse = await httpClient.GetAsync($"{ApiUrl}/api/project");
         getAllProjectsResponse.EnsureSuccessStatusCode();
-        var allProjects = await getAllProjectsResponse.Content.ReadFromJsonAsync<List<ProjectSummary>>();
+        var allProjects = await getAllProjectsResponse.Content.ReadFromJsonAsync<
+            List<ProjectSummary>
+        >();
         Assert.IsNotNull(allProjects, "Could not fetch all projects.");
 
         var createdProjectSummary = allProjects.FirstOrDefault(p => p.Address == uniqueAddress);
-        Assert.IsNotNull(createdProjectSummary, $"Could not find the created project with address '{uniqueAddress}'.");
+        Assert.IsNotNull(
+            createdProjectSummary,
+            $"Could not find the created project with address '{uniqueAddress}'."
+        );
 
         // 6. GET the specific project details (using /v2 endpoint for detailed appointments)
-        var getProjectByIdResponse = await httpClient.GetAsync($"{ApiUrl}/api/project/{createdProjectSummary.Id}/v2");
+        var getProjectByIdResponse = await httpClient.GetAsync(
+            $"{ApiUrl}/api/project/{createdProjectSummary.Id}/v2"
+        );
         getProjectByIdResponse.EnsureSuccessStatusCode();
-        var createdProjectDetails = await getProjectByIdResponse.Content.ReadFromJsonAsync<ProjectSummarySingle>();
+        var createdProjectDetails =
+            await getProjectByIdResponse.Content.ReadFromJsonAsync<ProjectSummarySingle>();
         Assert.IsNotNull(createdProjectDetails, "Could not fetch created project details.");
-        Assert.IsNotNull(createdProjectDetails.Appointments, "Project details should have appointments.");
-        Assert.IsTrue(createdProjectDetails.Appointments.Any(), "Project should have at least one appointment.");
+        Assert.IsNotNull(
+            createdProjectDetails.Appointments,
+            "Project details should have appointments."
+        );
+        Assert.IsTrue(
+            createdProjectDetails.Appointments.Any(),
+            "Project should have at least one appointment."
+        );
 
         var firstAppointment = createdProjectDetails.Appointments.First();
         return (createdProjectDetails.Id, firstAppointment.Id);
@@ -81,25 +112,30 @@ public class ReportsTest
     {
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
         var (_, firstAppointmentId) = await CreateProjectAndGetFirstAppointmentIdAsync(httpClient);
 
         // Act: Get the complete report
-        var reportResponse = await httpClient.GetAsync($"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport");
+        var reportResponse = await httpClient.GetAsync(
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport"
+        );
 
         // Assert
         if (reportResponse.StatusCode != HttpStatusCode.OK)
         {
             var errorContent = await reportResponse.Content.ReadAsStringAsync();
-            Assert.Fail($"Failed to get complete report. Status: {reportResponse.StatusCode}. Content: {errorContent}");
+            Assert.Fail(
+                $"Failed to get complete report. Status: {reportResponse.StatusCode}. Content: {errorContent}"
+            );
         }
         Assert.AreEqual(HttpStatusCode.OK, reportResponse.StatusCode);
 
         var reportDto = await reportResponse.Content.ReadFromJsonAsync<CompleteReportDTO>();
         Assert.IsNotNull(reportDto, "CompleteReportDTO should not be null.");
         Assert.AreNotEqual(Guid.Empty, reportDto.Id, "Report Id should not be empty.");
-        
+
         // Assuming an "empty" or "default" report has null SigningDate and null/empty Content
         // This depends on the backend logic for initializing CompleteReport
         Assert.IsNull(reportDto.SigningDate, "SigningDate should be null for a new report.");
@@ -110,39 +146,49 @@ public class ReportsTest
     {
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
         var (_, firstAppointmentId) = await CreateProjectAndGetFirstAppointmentIdAsync(httpClient);
 
         var testContentString = "This is the updated report text area content.";
-        var updateDto = new UpdateCompleteReportDTO 
+        var updateDto = new UpdateCompleteReportDTO
         {
-            SigningDate = DateTime.UtcNow.Date, 
-            Content = new List<ContentSection> 
+            SigningDate = DateTime.UtcNow.Date,
+            Content = new List<ContentSection>
             {
-                new TextArea { Content = testContentString } // Using concrete type TextArea
-            }
+                new TextArea { Content = testContentString }, // Using concrete type TextArea
+            },
         };
 
         // Act: Update the complete report
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport", updateDto);
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport",
+            updateDto
+        );
 
         // Assert: Patch was successful
         if (patchResponse.StatusCode != HttpStatusCode.NoContent)
         {
             var errorContent = await patchResponse.Content.ReadAsStringAsync();
-            Assert.Fail($"Failed to update complete report. Status: {patchResponse.StatusCode}. Content: {errorContent}");
+            Assert.Fail(
+                $"Failed to update complete report. Status: {patchResponse.StatusCode}. Content: {errorContent}"
+            );
         }
         Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode);
 
         // Act: Get the updated report to verify changes
-        var getResponse = await httpClient.GetAsync($"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport");
+        var getResponse = await httpClient.GetAsync(
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/CompleteReport"
+        );
 
         // Assert: Get was successful
         if (getResponse.StatusCode != HttpStatusCode.OK)
         {
             var errorContent = await getResponse.Content.ReadAsStringAsync();
-            Assert.Fail($"Failed to get complete report after update. Status: {getResponse.StatusCode}. Content: {errorContent}");
+            Assert.Fail(
+                $"Failed to get complete report after update. Status: {getResponse.StatusCode}. Content: {errorContent}"
+            );
         }
         Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
 
@@ -151,14 +197,26 @@ public class ReportsTest
 
         // Assert: Fields were updated
         Assert.IsNotNull(updatedReportDto.SigningDate, "Updated SigningDate should not be null.");
-        Assert.AreEqual(updateDto.SigningDate.Value.Date, updatedReportDto.SigningDate.Value.Date, "SigningDate was not updated correctly.");
-        
+        Assert.AreEqual(
+            updateDto.SigningDate.Value.Date,
+            updatedReportDto.SigningDate.Value.Date,
+            "SigningDate was not updated correctly."
+        );
+
         Assert.IsNotNull(updatedReportDto.Content, "Updated Content list should not be null.");
         Assert.IsTrue(updatedReportDto.Content.Any(), "Updated Content list should not be empty.");
-        
+
         var firstSection = updatedReportDto.Content.First();
-        Assert.IsInstanceOfType(firstSection, typeof(TextArea), "First content section should be a TextArea.");
+        Assert.IsInstanceOfType(
+            firstSection,
+            typeof(TextArea),
+            "First content section should be a TextArea."
+        );
         var textAreaSection = (TextArea)firstSection;
-        Assert.AreEqual(testContentString, textAreaSection.Content, "TextArea content was not updated correctly.");
+        Assert.AreEqual(
+            testContentString,
+            textAreaSection.Content,
+            "TextArea content was not updated correctly."
+        );
     }
 }

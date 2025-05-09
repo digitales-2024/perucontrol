@@ -17,7 +17,8 @@ builder.Logging.AddConsole();
 builder.Services.AddControllers();
 
 // Configure Npgsql data source with JSON support
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new Exception("DB connection string not found");
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.EnableDynamicJson();
