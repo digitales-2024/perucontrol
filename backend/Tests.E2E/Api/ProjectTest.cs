@@ -24,7 +24,7 @@ public class ProjectTest
         // 2. Get an existing Service
         var services = await ServiceTest.GetAllServicesAsync(); // Using ServiceTest as shown in QuotationTest.cs
         Assert.IsNotNull(services, "Service list should not be null");
-        Assert.IsTrue(services.Any(), "Should have at least one service configured for tests");
+        Assert.IsTrue(services.Count != 0, "Should have at least one service configured for tests");
         var service = services.First();
         Assert.IsNotNull(service, "Service should be fetched");
 
