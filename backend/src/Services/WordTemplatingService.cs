@@ -300,7 +300,7 @@ public class WordTemplateService
                 // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
                 .Select(tp => new Dictionary<string, string>
                 {
-                    { "{service_date}", "today" }, // Hardcoded as per requirement
+                    { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") }, // Changed from "today"
                     { "{service_hour}", tp.AppliedTime ?? "-" },
                     {
                         "{treatment_type}",
@@ -321,7 +321,11 @@ public class WordTemplateService
 
         // Try to replace a placeholder called "{section_5}" with rich content
         // Make sure your template has this placeholder somewhere
-        ReplacePlaceholderWithContent(wordDoc, "{section_5}", [.. appointment.CompleteReport.Content]);
+        ReplacePlaceholderWithContent(
+            wordDoc,
+            "{section_5}",
+            [.. appointment.CompleteReport.Content]
+        );
 
         wordDoc.Save();
         return ms.ToArray();

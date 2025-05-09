@@ -10,10 +10,8 @@ namespace PeruControl.Controllers.Reports;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class ReportsController(
-    DatabaseContext db,
-    WordTemplateService wordTemplateService
-) : ControllerBase
+public class ReportsController(DatabaseContext db, WordTemplateService wordTemplateService)
+    : ControllerBase
 {
     private readonly WordTemplateService _wordTemplateService = wordTemplateService;
 
@@ -71,14 +69,14 @@ public class ReportsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DownloadCompleteReportDocx(Guid appointmentid)
     {
-        var appointment = await db.ProjectAppointments
+        var appointment = await db
+            .ProjectAppointments.Include(a => a.TreatmentProducts)
+            .ThenInclude(tp => tp.Product)
             .Include(a => a.TreatmentProducts)
-                .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts) 
-                .ThenInclude(tp => tp.ProductAmountSolvent)
+            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-                .ThenInclude(ta => ta.TreatmentProducts)
-                    .ThenInclude(tp => tp.Product)
+            .ThenInclude(ta => ta.TreatmentProducts)
+            .ThenInclude(tp => tp.Product)
             .Include(a => a.CompleteReport)
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == appointmentid);
