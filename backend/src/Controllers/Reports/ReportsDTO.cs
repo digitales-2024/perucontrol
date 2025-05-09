@@ -8,3 +8,9 @@ public class CompleteReportDTO
     public DateTime? SigningDate { get; set; }
     public required List<ContentSection> Content { get; set; }
 }
+
+public class UpdateCompleteReportDTO
+{
+    public DateTime? SigningDate { get; set; }
+    public List<ContentSection>? Content { get; set; }
+}

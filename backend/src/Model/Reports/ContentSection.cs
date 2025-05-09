@@ -1,5 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace PeruControl.Model.Reports;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(TextBlock), "textBlock")]
+[JsonDerivedType(typeof(TextArea), "textArea")]
 public abstract class ContentSection { }
 
 public sealed class TextBlock : ContentSection
