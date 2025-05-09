@@ -490,7 +490,143 @@ public class OdsTemplateService
 
         return (outputMs.ToArray(), null);
     }
+
+    public (
+        byte[]?,
+        string?
+    ) GenerateOdsWithRepeatedRows(
+        Dictionary<string, string> globalPlaceholders,
+        List<Dictionary<string, string>> rowDataList,
+        string templatePath,
+        int templateRowIndex, // 0-indexed
+        List<string> rowPlaceholdersToClear // placeholders in the template row that need to be set
+    )
+    {
+        using var ms = new MemoryStream();
+
+        try
+        {
+            using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+            {
+                fs.CopyTo(ms);
+            }
+            ms.Position = 0;
+        }
+        catch (Exception ex)
+        {
+            return (null, $"Error reading template file: {ex.Message}");
+        }
+
+        using var outputMs = new MemoryStream();
+
+        using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "content.xml")
+                {
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else
+                {
+                    var contentEntry = outputArchive.CreateEntry("content.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+                    XNamespace officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+
+                    // 1. Replace global placeholders
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, globalPlaceholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, globalPlaceholders);
+                    }
+
+                    // 2. Find the first table and process rows
+                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                    if (table != null)
+                    {
+                        var rows = table.Elements(tablens + "table-row").ToList();
+
+                        if (rows.Count > templateRowIndex)
+                        {
+                            var originalTemplateRow = rows[templateRowIndex];
+                            var clonedTemplateRow = new XElement(originalTemplateRow); // Clone for multiple uses
+
+                            XElement lastInsertedElement = originalTemplateRow;
+
+                            foreach (var rowSpecificData in rowDataList)
+                            {
+                                var newRow = new XElement(clonedTemplateRow); // Clone the template for each new row
+
+                                // Replace placeholders within this new row
+                                foreach (
+                                    var cellP in newRow.Descendants(textns + "p")
+                                )
+                                {
+                                    string currentText = cellP.Value;
+                                    foreach (var placeholder in rowSpecificData)
+                                    {
+                                        currentText = currentText.Replace(
+                                            placeholder.Key,
+                                            placeholder.Value
+                                        );
+                                    }
+                                    // Clear any template placeholders not filled by this row's specific data
+                                    foreach (var toClear in rowPlaceholdersToClear)
+                                    {
+                                        if (!rowSpecificData.ContainsKey(toClear)) // only clear if not set
+                                        {
+                                             //This is a bit naive, assumes the placeholder is the entire cell content
+                                             // or part of it. If it's not found, it does nothing.
+                                            currentText = currentText.Replace(toClear, "");
+                                        }
+                                    }
+                                    cellP.Value = currentText;
+                                }
+                                lastInsertedElement.AddAfterSelf(newRow);
+                                lastInsertedElement = newRow;
+                            }
+                            originalTemplateRow.Remove(); // Remove the original template row
+                        }
+                        else
+                        {
+                            return (
+                                null,
+                                $"Template row index {templateRowIndex} is out of bounds. Table has {rows.Count} rows."
+                            );
+                        }
+                    }
+                    else
+                    {
+                        return (null, "No table found in content.xml.");
+                    }
+
+                    using var newEntryStream = contentEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8)
+                    {
+                        Formatting = Formatting.None
+                    };
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+        return (outputMs.ToArray(), null);
+    }
 }
+
+public record RowData(Dictionary<string, string> Placeholders);
 
 public record Schedule2Data(
     string MonthName,

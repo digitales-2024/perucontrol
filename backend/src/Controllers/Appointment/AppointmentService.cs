@@ -33,7 +33,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         var business = await db.Businesses.FirstOrDefaultAsync();
         if (business == null)
         {
-            return ([], ("Datos de la empresa no encontrados."));
+            return ([], "Datos de la empresa no encontrados.");
         }
 
         var appointment = await db.Set<ProjectAppointment>()
@@ -45,7 +45,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
 
         if (appointment == null)
         {
-            return ([], ("No se encontró la fecha."));
+            return ([], "No se encontró la fecha.");
         }
 
         var project = appointment.Project;
@@ -65,78 +65,95 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             { "{fecha}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
         };
 
-        List<string> areasplaceholders =
-        [
-            "area_",
-            "tr_",
-            "quinc",
-            "mensual",
-            "trimes",
-            "semes",
-            "parcial",
-            "total",
-            "deterio",
-            "sincons",
-            "activa",
-            "inactiva",
-            "roed",
-            "otros",
-            "fungi",
-            "cebo",
-            "trampa",
-            "jaula",
-            "principia",
-            "dosis",
-        ];
-
-        // Fill Areas, up to 12
-        for (var i = 1; i <= 12; i += 1)
+        // Define the placeholders that are present in the template row (row 12)
+        // These will be filled for each rodent area.
+        // IMPORTANT: User needs to confirm these are the exact placeholders in their ODS template's 12th row.
+        var rodentRowPlaceholders = new List<string>
         {
-            foreach (var placeh in areasplaceholders)
-            {
-                placeholders[$"{{{placeh}{i}}}"] = "";
-            }
-        }
+            "{area_name}",
+            "{cebadero_trampa_count}",
+            "{product_active_principle}",
+            "{product_dose}",
+            "{freq_quincenal}",
+            "{freq_mensual}",
+            "{freq_trimestral}",
+            "{freq_semestral}",
+            "{consumo_parcial}",
+            "{consumo_total}",
+            "{consumo_deterioro}",
+            "{consumo_sin}",
+            "{resultado_activa}",
+            "{resultado_inactiva}",
+            "{resultado_roedores_vistos}",
+            "{resultado_otros}",
+            "{material_fungicida}",
+            "{material_cebo}",
+            "{material_trampa_pegante}",
+            "{material_jaula}",
+        };
 
-        var idx = 0;
+        var rowDataList = new List<Dictionary<string, string>>();
         foreach (var area in rodentRegister.RodentAreas)
         {
-            idx += 1;
+            var (q1, q2, _, q3, q4) = area.Frequency.GetFrequencyMarkers(); // Assuming GetFrequencyMarkers returns markers for quinc, mensual, _, trimes, semes
+            var (r1, r2, r3, r4) = area.RodentConsumption.ToCheckbox(); // Assuming ToCheckbox returns markers for parcial, total, deterioro, sincons
+            var (rr1, rr2, rr3, rr4) = area.RodentResult.GetResultMarkers(); // Assuming GetResultMarkers returns for activa, inactiva, roed, otros
+            var (m1, m2, m3, m4) = area.RodentMaterials.GetMaterialMarkers(); // Assuming GetMaterialMarkers returns for fungi, cebo, trampa, jaula
 
-            placeholders[$"{{area_{idx}}}"] = area.Name;
-            placeholders[$"{{tr_{idx}}}"] = area.CebaderoTrampa.ToString();
-            placeholders[$"{{principia{idx}}}"] = area.ProductName;
-            placeholders[$"{{dosis{idx}}}"] = area.ProductDose;
-            var (q1, q2, _, q3, q4) = area.Frequency.GetFrequencyMarkers();
-            var (r1, r2, r3, r4) = area.RodentConsumption.ToCheckbox();
-            var (rr1, rr2, rr3, rr4) = area.RodentResult.GetResultMarkers();
-            var (m1, m2, m3, m4) = area.RodentMaterials.GetMaterialMarkers();
-
-            placeholders[$"{{quinc{idx}}}"] = q1;
-            placeholders[$"{{mensual{idx}}}"] = q2;
-            placeholders[$"{{trimes{idx}}}"] = q3;
-            placeholders[$"{{semes{idx}}}"] = q4;
-
-            placeholders[$"{{parcial{idx}}}"] = r1;
-            placeholders[$"{{total{idx}}}"] = r2;
-            placeholders[$"{{deterio{idx}}}"] = r3;
-            placeholders[$"{{sincons{idx}}}"] = r4;
-
-            placeholders[$"{{activa{idx}}}"] = rr1;
-            placeholders[$"{{inactiva{idx}}}"] = rr2;
-            placeholders[$"{{roed{idx}}}"] = rr3;
-            placeholders[$"{{otros{idx}}}"] = rr4;
-
-            placeholders[$"{{fungi{idx}}}"] = m1;
-            placeholders[$"{{cebo{idx}}}"] = m2;
-            placeholders[$"{{trampa{idx}}}"] = m3;
-            placeholders[$"{{jaula{idx}}}"] = m4;
+            var areaData = new Dictionary<string, string>
+            {
+                { "{area_name}", area.Name },
+                { "{cebadero_trampa_count}", area.CebaderoTrampa.ToString() },
+                { "{product_active_principle}", area.ProductName },
+                { "{product_dose}", area.ProductDose },
+                { "{freq_quincenal}", q1 },
+                { "{freq_mensual}", q2 },
+                { "{freq_trimestral}", q3 },
+                { "{freq_semestral}", q4 },
+                { "{consumo_parcial}", r1 },
+                { "{consumo_total}", r2 },
+                { "{consumo_deterioro}", r3 },
+                { "{consumo_sin}", r4 },
+                { "{resultado_activa}", rr1 },
+                { "{resultado_inactiva}", rr2 },
+                { "{resultado_roedores_vistos}", rr3 },
+                { "{resultado_otros}", rr4 },
+                { "{material_fungicida}", m1 },
+                { "{material_cebo}", m2 },
+                { "{material_trampa_pegante}", m3 },
+                { "{material_jaula}", m4 },
+            };
+            rowDataList.Add(areaData);
         }
 
-        var odsBytes = odsTemplate.GenerateOdsFromTemplate(
+        // Ensure there are at least 10 rows for rodent areas, padding with empty data if necessary
+        int desiredMinimumRows = 10;
+        while (rowDataList.Count < desiredMinimumRows)
+        {
+            var emptyRowData = new Dictionary<string, string>();
+            foreach (var key in rodentRowPlaceholders) // rodentRowPlaceholders is already defined
+            {
+                emptyRowData[key] = ""; // Fill with empty strings
+            }
+            rowDataList.Add(emptyRowData);
+        }
+
+        var (odsBytes, error) = odsTemplate.GenerateOdsWithRepeatedRows(
             placeholders,
-            "Templates/roedores_plantilla.ods"
+            rowDataList,
+            "Templates/roedores_plantilla_2.ods",
+            11, // 0-indexed for row 12
+            rodentRowPlaceholders
         );
+
+        if (error != null)
+        {
+            return ([], error);
+        }
+        if (odsBytes == null)
+        {
+            return ([], "Failed to generate ODS file for an unknown reason.");
+        }
 
         return (odsBytes, null);
     }
