@@ -141,7 +141,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         var (odsBytes, error) = odsTemplate.GenerateOdsWithRepeatedRows(
             placeholders,
             rowDataList,
-            "Templates/roedores_plantilla_2.ods",
+            "Templates/roedores_plantilla.ods",
             11, // 0-indexed for row 12
             rodentRowPlaceholders
         );

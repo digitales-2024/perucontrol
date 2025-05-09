@@ -565,28 +565,34 @@ public class OdsTemplateService
                             var clonedTemplateRow = new XElement(originalTemplateRow); // Clone for multiple uses
 
                             XElement lastInsertedElement = originalTemplateRow;
+                            var newRowElements = new List<XElement>(); // To keep track of added rows for vertical spanning
 
+                            int currentRowNumber = 1; // For {idx} placeholder, 1-based
                             foreach (var rowSpecificData in rowDataList)
                             {
                                 var newRow = new XElement(clonedTemplateRow); // Clone the template for each new row
 
-                                // Replace placeholders within this new row
+                                // Inject or update {idx} for the current row
+                                var processingData = new Dictionary<string, string>(rowSpecificData);
+                                processingData["{idx}"] = currentRowNumber.ToString();
+
+                                // Replace placeholders within this new row using processingData
                                 foreach (
                                     var cellP in newRow.Descendants(textns + "p")
                                 )
                                 {
                                     string currentText = cellP.Value;
-                                    foreach (var placeholder in rowSpecificData)
+                                    foreach (var placeholder in processingData) // Use processingData which includes {idx}
                                     {
                                         currentText = currentText.Replace(
                                             placeholder.Key,
                                             placeholder.Value
                                         );
                                     }
-                                    // Clear any template placeholders not filled by this row's specific data
+                                    // Clear any template placeholders not filled by this row's specific data (original rowSpecificData)
                                     foreach (var toClear in rowPlaceholdersToClear)
                                     {
-                                        if (!rowSpecificData.ContainsKey(toClear)) // only clear if not set
+                                        if (!rowSpecificData.ContainsKey(toClear) && toClear != "{idx}") // Don't clear {idx} if it was in template, it's always set now
                                         {
                                              //This is a bit naive, assumes the placeholder is the entire cell content
                                              // or part of it. If it's not found, it does nothing.
@@ -595,10 +601,30 @@ public class OdsTemplateService
                                     }
                                     cellP.Value = currentText;
                                 }
+                                newRowElements.Add(newRow);
                                 lastInsertedElement.AddAfterSelf(newRow);
                                 lastInsertedElement = newRow;
+                                currentRowNumber++; // Increment for the next row
                             }
-                            originalTemplateRow.Remove(); // Remove the original template row
+                            originalTemplateRow.Remove(); // Remove the original template row (original row 12)
+
+                            // Now, delete the row that was originally row 13.
+                            // Its current index is templateRowIndex + newRowElements.Count
+                            // because originalTemplateRow (at templateRowIndex) was removed, shifting subsequent rows up,
+                            // and newRowElements were inserted starting at templateRowIndex.
+                            var currentTableRows = table.Elements(tablens + "table-row").ToList();
+                            int indexOfRowToDelete = templateRowIndex + newRowElements.Count;
+
+                            if (newRowElements.Count != 0 || templateRowIndex < currentTableRows.Count) // Check if there were rows to operate on around templateRowIndex
+                            {
+                                if (indexOfRowToDelete < currentTableRows.Count)
+                                {
+                                    currentTableRows[indexOfRowToDelete].Remove();
+                                }
+                                // else: The calculated row to delete is out of bounds. This might happen if rowDataList was empty
+                                // and original row 13 didn't exist or templateRowIndex was the last row.
+                                // For now, proceed without error if it's out of bounds.
+                            }
                         }
                         else
                         {
