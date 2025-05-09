@@ -490,7 +490,256 @@ public class OdsTemplateService
 
         return (outputMs.ToArray(), null);
     }
+
+    public (byte[]?, string?) GenerateOdsWithRepeatedRows(
+        Dictionary<string, string> globalPlaceholders,
+        List<Dictionary<string, string>> rowDataList,
+        string templatePath,
+        int templateRowIndex, // 0-indexed
+        List<string> rowPlaceholdersToClear // placeholders in the template row that need to be set
+    )
+    {
+        using var ms = new MemoryStream();
+
+        try
+        {
+            using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+            {
+                fs.CopyTo(ms);
+            }
+            ms.Position = 0;
+        }
+        catch (Exception ex)
+        {
+            return (null, $"Error reading template file: {ex.Message}");
+        }
+
+        using var outputMs = new MemoryStream();
+
+        using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "content.xml")
+                {
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else
+                {
+                    var contentEntry = outputArchive.CreateEntry("content.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+                    XNamespace officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+
+                    // 1. Replace global placeholders
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, globalPlaceholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, globalPlaceholders);
+                    }
+
+                    // 2. Find the first table and process rows
+                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                    if (table != null)
+                    {
+                        var allRowsInTable = table.Elements(tablens + "table-row").ToList();
+
+                        if (allRowsInTable.Count > templateRowIndex)
+                        {
+                            var originalTemplateRow = allRowsInTable[templateRowIndex];
+                            var clonedTemplateRowForStructure = new XElement(originalTemplateRow);
+
+                            // --- Pre-computation: Map placeholders to column indices from original row 12 template ---
+                            var placeholderToColumnIndexMap = new Dictionary<string, int>();
+                            var templateCells = clonedTemplateRowForStructure
+                                .Elements(tablens + "table-cell")
+                                .ToList();
+                            foreach (var placeholderKey in rowPlaceholdersToClear) // rowPlaceholdersToClear is passed from AppointmentService
+                            {
+                                for (int colIdx = 0; colIdx < templateCells.Count; colIdx++)
+                                {
+                                    var cell = templateCells[colIdx];
+                                    bool cellContainsPlaceholder = cell.Descendants(textns + "p")
+                                        .Any(p => p.Value.Contains(placeholderKey));
+                                    if (cellContainsPlaceholder)
+                                    {
+                                        if (
+                                            !placeholderToColumnIndexMap.ContainsKey(placeholderKey)
+                                        )
+                                        {
+                                            placeholderToColumnIndexMap[placeholderKey] = colIdx;
+                                            break; // Found column for this placeholder, move to next placeholder
+                                        }
+                                    }
+                                }
+                            }
+
+                            // --- Pre-computation: Extract styles from style palette row (original row 13) ---
+                            var stylePaletteColumnToStyleNameMap = new Dictionary<int, string>();
+                            int stylePaletteRowActualIndex = templateRowIndex + 1;
+                            if (stylePaletteRowActualIndex < allRowsInTable.Count)
+                            {
+                                var stylePaletteRowElement = allRowsInTable[
+                                    stylePaletteRowActualIndex
+                                ];
+                                var stylePaletteCells = stylePaletteRowElement
+                                    .Elements(tablens + "table-cell")
+                                    .ToList();
+                                for (int colIdx = 0; colIdx < stylePaletteCells.Count; colIdx++)
+                                {
+                                    string? styleName = stylePaletteCells[colIdx]
+                                        .Attribute(tablens + "style-name")
+                                        ?.Value;
+                                    if (!string.IsNullOrEmpty(styleName))
+                                    {
+                                        stylePaletteColumnToStyleNameMap[colIdx] = styleName;
+                                    }
+                                }
+                            }
+                            // Else: style palette row not found, styling won't be applied. Consider logging.
+
+
+                            XElement lastInsertedElement = originalTemplateRow;
+                            var newRowElements = new List<XElement>();
+                            int currentRowNumber = 1; // For {idx} placeholder, 1-based
+
+                            foreach (var rowSpecificData in rowDataList)
+                            {
+                                var newRow = new XElement(clonedTemplateRowForStructure); // Clone the structure of original row 12
+                                var processingData = new Dictionary<string, string>(
+                                    rowSpecificData
+                                );
+                                processingData["{idx}"] = currentRowNumber.ToString();
+
+                                var cellsInNewRow = newRow
+                                    .Elements(tablens + "table-cell")
+                                    .ToList();
+
+                                // --- Apply conditional styling based on "x" value and style palette ---
+                                foreach (var mapEntry in placeholderToColumnIndexMap)
+                                {
+                                    string placeholderKey = mapEntry.Key;
+                                    int columnIndexInRow = mapEntry.Value;
+
+                                    bool isStylablePlaceholder =
+                                        placeholderKey.StartsWith("{freq_")
+                                        || placeholderKey.StartsWith("{consumo_")
+                                        || placeholderKey.StartsWith("{resultado_")
+                                        || placeholderKey.StartsWith("{material_");
+
+                                    if (isStylablePlaceholder)
+                                    {
+                                        if (
+                                            processingData.TryGetValue(
+                                                placeholderKey,
+                                                out string? placeholderActualValue
+                                            )
+                                            && placeholderActualValue == "x"
+                                        )
+                                        {
+                                            if (
+                                                columnIndexInRow < cellsInNewRow.Count
+                                                && stylePaletteColumnToStyleNameMap.TryGetValue(
+                                                    columnIndexInRow,
+                                                    out string? styleNameToApply
+                                                )
+                                            )
+                                            {
+                                                cellsInNewRow[columnIndexInRow]
+                                                    .SetAttributeValue(
+                                                        tablens + "style-name",
+                                                        styleNameToApply
+                                                    );
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // --- Standard placeholder replacement for cell text content ---
+                                foreach (var cellP in newRow.Descendants(textns + "p"))
+                                {
+                                    string currentText = cellP.Value;
+                                    foreach (var placeholder in processingData) // Use processingData which includes {idx}
+                                    {
+                                        currentText = currentText.Replace(
+                                            placeholder.Key,
+                                            placeholder.Value
+                                        );
+                                    }
+                                    // Clear any template placeholders not filled by this row's specific data (original rowSpecificData)
+                                    foreach (var toClear in rowPlaceholdersToClear)
+                                    {
+                                        if (
+                                            !rowSpecificData.ContainsKey(toClear)
+                                            && toClear != "{idx}"
+                                        ) // Don't clear {idx} if it was in template, it's always set now
+                                        {
+                                            //This is a bit naive, assumes the placeholder is the entire cell content
+                                            // or part of it. If it's not found, it does nothing.
+                                            currentText = currentText.Replace(toClear, "");
+                                        }
+                                    }
+                                    cellP.Value = currentText;
+                                }
+                                newRowElements.Add(newRow);
+                                lastInsertedElement.AddAfterSelf(newRow);
+                                lastInsertedElement = newRow;
+                                currentRowNumber++; // Increment for the next row
+                            }
+                            originalTemplateRow.Remove();
+
+                            // Now, delete the row that was originally row 13.
+                            var currentTableRowsAfterFirstDelete = table
+                                .Elements(tablens + "table-row")
+                                .ToList();
+                            // Its new index is templateRowIndex (original position of row 12) + newRowElements.Count
+                            int indexOfOriginalRow13Now = templateRowIndex + newRowElements.Count;
+
+                            if (indexOfOriginalRow13Now < currentTableRowsAfterFirstDelete.Count)
+                            {
+                                currentTableRowsAfterFirstDelete[indexOfOriginalRow13Now].Remove();
+                            }
+                            // else: The calculated row to delete (original row 13) is out of bounds.
+                        }
+                        else
+                        {
+                            return (
+                                null,
+                                $"Template row index {templateRowIndex} is out of bounds. Table has {allRowsInTable.Count} rows."
+                            );
+                        }
+                    }
+                    else
+                    {
+                        return (null, "No table found in content.xml.");
+                    }
+
+                    using var newEntryStream = contentEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8)
+                    {
+                        Formatting = Formatting.None,
+                    };
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+        return (outputMs.ToArray(), null);
+    }
 }
+
+public record RowData(Dictionary<string, string> Placeholders);
 
 public record Schedule2Data(
     string MonthName,

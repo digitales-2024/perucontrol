@@ -9,13 +9,13 @@ export default function Error()
     return (
         <>
             <HeaderPage
-                title="Cotizaciones" description="Gestiona las cotizaciones de la empresa"
+                title="Gestión de Servicios"
                 breadcrumbs={(
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/cotizaciones">
-                                    Todas las cotizaciones
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         </BreadcrumbList>
