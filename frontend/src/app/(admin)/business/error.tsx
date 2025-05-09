@@ -14,8 +14,8 @@ export default function Error()
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/business"> 
-                                    Información de la empresa 
+                                <BreadcrumbLink href="/business">
+                                    Información de la empresa
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         </BreadcrumbList>

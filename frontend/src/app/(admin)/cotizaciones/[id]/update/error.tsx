@@ -20,7 +20,9 @@ export default function Error()
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/cotizaciones"> {/* Simplified href as ID is not available */}
+                                <BreadcrumbLink href="/cotizaciones">
+                                    {" "}
+                                    {/* Simplified href as ID is not available */}
                                     Detalle de cotización
                                 </BreadcrumbLink>
                             </BreadcrumbItem>

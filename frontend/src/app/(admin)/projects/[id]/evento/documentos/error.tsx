@@ -21,7 +21,7 @@ export default function Error()
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={`/projects`}>
+                                <BreadcrumbLink href={"/projects"}>
                                     Detalle del servicio
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
