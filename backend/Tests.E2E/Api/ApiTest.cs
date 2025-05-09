@@ -6,8 +6,13 @@ namespace Tests.E2E.Api;
 [TestClass]
 public sealed class ApiTest1
 {
-    public readonly string ApiUrl = Environment.GetEnvironmentVariable("API_URL") ?? throw new InvalidOperationException("BASE_URL envvar is not set. It is needed to run the tests.");
-    public static readonly string ReportsDirectory = Environment.GetEnvironmentVariable("REPORT_DIR") ?? "reports";
+    public readonly string ApiUrl =
+        Environment.GetEnvironmentVariable("API_URL")
+        ?? throw new InvalidOperationException(
+            "BASE_URL envvar is not set. It is needed to run the tests."
+        );
+    public static readonly string ReportsDirectory =
+        Environment.GetEnvironmentVariable("REPORT_DIR") ?? "reports";
 
     [TestMethod]
     public async Task TestLogin()

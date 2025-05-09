@@ -1,15 +1,19 @@
 using System.Net;
 using System.Net.Http.Json;
+using PeruControl.Controllers;
 using PeruControl.Model;
 using Tests.E2E.Api;
-using PeruControl.Controllers;
 
 namespace Tests.E2E.Api;
 
 [TestClass]
 public class QuotationTest
 {
-    private static readonly string ApiUrl = Environment.GetEnvironmentVariable("API_URL") ?? throw new InvalidOperationException("BASE_URL envvar is not set. It is needed to run the tests.");
+    private static readonly string ApiUrl =
+        Environment.GetEnvironmentVariable("API_URL")
+        ?? throw new InvalidOperationException(
+            "BASE_URL envvar is not set. It is needed to run the tests."
+        );
 
     // Reusable helper to create a quotation and return the created Quotation object
     public static async Task<Quotation> CreateQuotationAsync()
@@ -23,7 +27,7 @@ public class QuotationTest
             Amount = 1,
             NameDescription = service.Name,
             Price = 100m,
-            Accesories = "N/A"
+            Accesories = "N/A",
         };
 
         var quotationDto = new QuotationCreateDTO
@@ -39,22 +43,27 @@ public class QuotationTest
             Others = "Ninguno",
             Availability = "Inmediata",
             QuotationServices = [quotationService],
-            TermsAndConditions = ["Pago contra entrega", "Garantía 1 año"]
+            TermsAndConditions = ["Pago contra entrega", "Garantía 1 año"],
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await httpClient.PostAsJsonAsync($"{ApiUrl}/api/quotation", quotationDto);
 
         if (response.StatusCode != HttpStatusCode.Created)
         {
             var errorMsg = await response.Content.ReadAsStringAsync();
-            throw new InvalidOperationException($"Expected 201 Created but got {(int)response.StatusCode}: {response.StatusCode}. Response: {errorMsg}");
+            throw new InvalidOperationException(
+                $"Expected 201 Created but got {(int)response.StatusCode}: {response.StatusCode}. Response: {errorMsg}"
+            );
         }
 
-        var createdQuotation = await response.Content.ReadFromJsonAsync<Quotation>() ?? throw new InvalidOperationException("Created quotation should not be null");
+        var createdQuotation =
+            await response.Content.ReadFromJsonAsync<Quotation>()
+            ?? throw new InvalidOperationException("Created quotation should not be null");
         return createdQuotation;
     }
 
@@ -64,7 +73,10 @@ public class QuotationTest
         var createdQuotation = await CreateQuotationAsync();
         Assert.IsNotNull(createdQuotation, "Created quotation should not be null");
         Assert.IsNotNull(createdQuotation.Client, "Quotation client should not be null");
-        Assert.IsFalse(createdQuotation.Client.Id == Guid.Empty, "Quotation client Id should not be empty");
+        Assert.IsFalse(
+            createdQuotation.Client.Id == Guid.Empty,
+            "Quotation client Id should not be empty"
+        );
     }
 
     [TestMethod]
@@ -80,9 +92,10 @@ public class QuotationTest
         var newPaymentMethod = "Transferencia";
         var newServiceAddress = "Nueva dirección de servicio";
         var newHasTaxes = !createdQuotation.HasTaxes;
-        var newFrequency = createdQuotation.Frequency == QuotationFrequency.Bimonthly
-            ? QuotationFrequency.Monthly
-            : QuotationFrequency.Bimonthly;
+        var newFrequency =
+            createdQuotation.Frequency == QuotationFrequency.Bimonthly
+                ? QuotationFrequency.Monthly
+                : QuotationFrequency.Bimonthly;
         var newCreationDate = createdQuotation.CreationDate.AddDays(-1);
         var newExpirationDate = createdQuotation.ExpirationDate.AddDays(10);
 
@@ -95,18 +108,26 @@ public class QuotationTest
             HasTaxes = newHasTaxes,
             Frequency = newFrequency,
             CreationDate = newCreationDate,
-            ExpirationDate = newExpirationDate
+            ExpirationDate = newExpirationDate,
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
         // Act: patch the quotation
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/quotation/{quotationId}", patchDto);
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/quotation/{quotationId}",
+            patchDto
+        );
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.OK, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         var updatedQuotation = await patchResponse.Content.ReadFromJsonAsync<Quotation>();
         Assert.IsNotNull(updatedQuotation);
@@ -117,8 +138,14 @@ public class QuotationTest
         Assert.AreEqual(newServiceAddress, updatedQuotation.ServiceAddress);
         Assert.AreEqual(newHasTaxes, updatedQuotation.HasTaxes);
         Assert.AreEqual(newFrequency, updatedQuotation.Frequency);
-        Assert.AreEqual(newCreationDate.ToUniversalTime(), updatedQuotation.CreationDate.ToUniversalTime());
-        Assert.AreEqual(newExpirationDate.ToUniversalTime(), updatedQuotation.ExpirationDate.ToUniversalTime());
+        Assert.AreEqual(
+            newCreationDate.ToUniversalTime(),
+            updatedQuotation.CreationDate.ToUniversalTime()
+        );
+        Assert.AreEqual(
+            newExpirationDate.ToUniversalTime(),
+            updatedQuotation.ExpirationDate.ToUniversalTime()
+        );
     }
 
     [TestMethod]
@@ -135,7 +162,7 @@ public class QuotationTest
             Amount = 2,
             NameDescription = "Servicio adicional",
             Price = 200m,
-            Accesories = "Accesorio X"
+            Accesories = "Accesorio X",
         };
 
         var patchDto = new QuotationPatchDTO
@@ -147,23 +174,33 @@ public class QuotationTest
                     Amount = qs.Amount,
                     NameDescription = qs.NameDescription,
                     Price = qs.Price,
-                    Accesories = qs.Accesories
+                    Accesories = qs.Accesories,
                 })
                 .Append(newService)
-                .ToList()
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/quotation/{quotationId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.OK, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/quotation/{quotationId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         var updatedQuotation = await patchResponse.Content.ReadFromJsonAsync<Quotation>();
         Assert.IsNotNull(updatedQuotation);
         Assert.AreEqual(originalServices.Count + 1, updatedQuotation.QuotationServices.Count);
-        Assert.IsTrue(updatedQuotation.QuotationServices.Any(qs => qs.NameDescription == "Servicio adicional"));
+        Assert.IsTrue(
+            updatedQuotation.QuotationServices.Any(qs => qs.NameDescription == "Servicio adicional")
+        );
     }
 
     [TestMethod]
@@ -186,22 +223,32 @@ public class QuotationTest
                     Amount = qs.Amount,
                     NameDescription = qs.NameDescription,
                     Price = qs.Price,
-                    Accesories = qs.Accesories
+                    Accesories = qs.Accesories,
                 })
-                .ToList()
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/quotation/{quotationId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.OK, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/quotation/{quotationId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         var updatedQuotation = await patchResponse.Content.ReadFromJsonAsync<Quotation>();
         Assert.IsNotNull(updatedQuotation);
         Assert.AreEqual(originalServices.Count - 1, updatedQuotation.QuotationServices.Count);
-        Assert.IsFalse(updatedQuotation.QuotationServices.Any(qs => qs.Id == originalServices[0].Id));
+        Assert.IsFalse(
+            updatedQuotation.QuotationServices.Any(qs => qs.Id == originalServices[0].Id)
+        );
     }
 
     [TestMethod]
@@ -220,36 +267,49 @@ public class QuotationTest
             Amount = originalServices[0].Amount + 5,
             NameDescription = originalServices[0].NameDescription + " (editado)",
             Price = (originalServices[0].Price ?? 0) + 50,
-            Accesories = "Accesorio editado"
+            Accesories = "Accesorio editado",
         };
 
         var patchDto = new QuotationPatchDTO
         {
             QuotationServices = originalServices
-                .Select((qs, idx) => idx == 0
-                    ? editedService
-                    : new QuotationServicePatchDTO
-                    {
-                        Id = qs.Id,
-                        Amount = qs.Amount,
-                        NameDescription = qs.NameDescription,
-                        Price = qs.Price,
-                        Accesories = qs.Accesories
-                    })
-                .ToList()
+                .Select(
+                    (qs, idx) =>
+                        idx == 0
+                            ? editedService
+                            : new QuotationServicePatchDTO
+                            {
+                                Id = qs.Id,
+                                Amount = qs.Amount,
+                                NameDescription = qs.NameDescription,
+                                Price = qs.Price,
+                                Accesories = qs.Accesories,
+                            }
+                )
+                .ToList(),
         };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/quotation/{quotationId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.OK, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/quotation/{quotationId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         var updatedQuotation = await patchResponse.Content.ReadFromJsonAsync<Quotation>();
         Assert.IsNotNull(updatedQuotation);
 
-        var updatedService = updatedQuotation.QuotationServices.First(qs => qs.Id == editedService.Id);
+        var updatedService = updatedQuotation.QuotationServices.First(qs =>
+            qs.Id == editedService.Id
+        );
         Assert.AreEqual(editedService.Amount, updatedService.Amount);
         Assert.AreEqual(editedService.NameDescription, updatedService.NameDescription);
         Assert.AreEqual(editedService.Price, updatedService.Price);
@@ -269,16 +329,17 @@ public class QuotationTest
         // Remove the first, edit the second (if exists), add a new one
         var servicesToKeep = originalServices.Skip(1).ToList();
 
-        var editedService = servicesToKeep.Count > 0
-            ? new
-            {
-                Id = servicesToKeep[0].Id,
-                Amount = servicesToKeep[0].Amount + 10,
-                NameDescription = servicesToKeep[0].NameDescription + " (modificado)",
-                Price = (servicesToKeep[0].Price ?? 0) + 100,
-                Accesories = "Accesorio modificado"
-            }
-            : null;
+        var editedService =
+            servicesToKeep.Count > 0
+                ? new
+                {
+                    Id = servicesToKeep[0].Id,
+                    Amount = servicesToKeep[0].Amount + 10,
+                    NameDescription = servicesToKeep[0].NameDescription + " (modificado)",
+                    Price = (servicesToKeep[0].Price ?? 0) + 100,
+                    Accesories = "Accesorio modificado",
+                }
+                : null;
 
         var newService = new
         {
@@ -286,7 +347,7 @@ public class QuotationTest
             Amount = 3,
             NameDescription = "Nuevo servicio combinado",
             Price = 300m,
-            Accesories = "Accesorio nuevo"
+            Accesories = "Accesorio nuevo",
         };
 
         var patchServices = new List<object>();
@@ -294,17 +355,22 @@ public class QuotationTest
             patchServices.Add(editedService);
         patchServices.Add(newService);
 
-        var patchDto = new
-        {
-            QuotationServices = patchServices
-        };
+        var patchDto = new { QuotationServices = patchServices };
 
         var accessToken = await AuthTest.GetAccessTokenAsync();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchResponse = await httpClient.PatchAsJsonAsync($"{ApiUrl}/api/quotation/{quotationId}", patchDto);
-        Assert.AreEqual(HttpStatusCode.OK, patchResponse.StatusCode, $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}");
+        var patchResponse = await httpClient.PatchAsJsonAsync(
+            $"{ApiUrl}/api/quotation/{quotationId}",
+            patchDto
+        );
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            patchResponse.StatusCode,
+            $"Patch failed: {await patchResponse.Content.ReadAsStringAsync()}"
+        );
 
         var updatedQuotation = await patchResponse.Content.ReadFromJsonAsync<Quotation>();
         Assert.IsNotNull(updatedQuotation);
@@ -315,12 +381,21 @@ public class QuotationTest
 
         if (editedService != null)
         {
-            var updatedService = updatedQuotation.QuotationServices.First(qs => qs.Id == ((dynamic)editedService).Id);
+            var updatedService = updatedQuotation.QuotationServices.First(qs =>
+                qs.Id == ((dynamic)editedService).Id
+            );
             Assert.AreEqual(((dynamic)editedService).Amount, updatedService.Amount);
-            Assert.AreEqual(((dynamic)editedService).NameDescription, updatedService.NameDescription);
+            Assert.AreEqual(
+                ((dynamic)editedService).NameDescription,
+                updatedService.NameDescription
+            );
             Assert.AreEqual(((dynamic)editedService).Price, updatedService.Price);
             Assert.AreEqual(((dynamic)editedService).Accesories, updatedService.Accesories);
         }
-        Assert.IsTrue(updatedQuotation.QuotationServices.Any(qs => qs.NameDescription == "Nuevo servicio combinado"));
+        Assert.IsTrue(
+            updatedQuotation.QuotationServices.Any(qs =>
+                qs.NameDescription == "Nuevo servicio combinado"
+            )
+        );
     }
 }

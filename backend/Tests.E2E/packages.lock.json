@@ -131,8 +131,8 @@
       },
       "Microsoft.AspNetCore.OpenApi": {
         "type": "Transitive",
-        "resolved": "9.0.1",
-        "contentHash": "xRJe8UrLnOGs6hOBrT/4r74q97626H0mABb/DV0smlReIx6uQCENAe+TUqF6hD3NtT4sB+qrvWhAej6kxPxgew==",
+        "resolved": "9.0.4",
+        "contentHash": "GfZWPbZz1aAtEO3wGCkpeyRc0gzr/+VRHnUgY/YjqVPDlHbeKWCXw3IxKarQdo9myC2O1QBf652Mo50QqbXYRg==",
         "dependencies": {
           "Microsoft.OpenApi": "1.6.17"
         }
@@ -1423,7 +1423,7 @@
           "HtmlAgilityPack": "[1.11.72, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.1, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.1, )",
-          "Microsoft.AspNetCore.OpenApi": "[9.0.1, )",
+          "Microsoft.AspNetCore.OpenApi": "[9.0.4, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )",
           "Scalar.AspNetCore": "[2.0.*, )"
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Model;
@@ -13,9 +14,11 @@ using PeruControl.Model.Reports;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250508213838_CompleteReportChanges1")]
+    partial class CompleteReportChanges1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -883,7 +886,23 @@ namespace PeruControl.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<List<ContentSection>>("Content")
+                    b.Property<List<ContentSection>>("ContentSection5")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<List<ContentSection>>("ContentSection6")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<List<ContentSection>>("ContentSection7")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<List<ContentSection>>("ContentSection8")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<List<ContentSection>>("ContentSection9")
                         .IsRequired()
                         .HasColumnType("jsonb");
 

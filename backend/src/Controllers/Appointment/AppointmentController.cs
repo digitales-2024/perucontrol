@@ -905,6 +905,7 @@ public class AppointmentController(
 
         var fileBytes = wordTemplateService.GenerateReport01(appointment);
 
+        // return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "reporte_01.docx");
         var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(fileBytes, "docx");
         if (pdfErr != "")
         {
