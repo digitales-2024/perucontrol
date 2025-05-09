@@ -1,18 +1,12 @@
 namespace PeruControl.Utils;
 
-public class GlobalExceptionHandlerMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
-
-    public GlobalExceptionHandlerMiddleware(
-        RequestDelegate next,
-        ILogger<GlobalExceptionHandlerMiddleware> logger
+public class GlobalExceptionHandlerMiddleware(
+    RequestDelegate next,
+    ILogger<GlobalExceptionHandlerMiddleware> logger
     )
-    {
-        _next = next;
-        _logger = logger;
-    }
+{
+    private readonly RequestDelegate _next = next;
+    private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger = logger;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -47,7 +41,6 @@ public class GlobalExceptionHandlerMiddleware
     }
 }
 
-// Extension method to make it look "cleaner" (as if that's possible in C#)
 public static class GlobalExceptionHandlerMiddlewareExtensions
 {
     public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder app) =>

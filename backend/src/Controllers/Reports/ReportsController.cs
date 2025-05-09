@@ -22,9 +22,6 @@ public class ReportsController(DatabaseContext db) : ControllerBase
         if (appointment == null)
             return NotFound("Appointment not found");
 
-        if (appointment.CompleteReport == null)
-            return NotFound("CompleteReport not found for this appointment");
-
         var result = new CompleteReportDTO
         {
             Id = appointment.CompleteReport.Id,
@@ -48,9 +45,6 @@ public class ReportsController(DatabaseContext db) : ControllerBase
 
         if (appointment == null)
             return NotFound("Appointment not found");
-
-        if (appointment.CompleteReport == null)
-            return NotFound("CompleteReport not found for this appointment");
 
         // Update fields if provided
         if (updateDto.SigningDate.HasValue)
