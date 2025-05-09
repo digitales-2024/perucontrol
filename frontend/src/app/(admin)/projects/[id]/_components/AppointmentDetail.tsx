@@ -13,6 +13,7 @@ import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes } from "../../actions";
 import { MurinoMapSection } from "./MurinoMapSection";
 import { TreatmentSummary } from "./TreatmentSummary";
+import { ReportsList } from "./ReportsList";
 
 interface AppointmentDetailsProps {
     projectId: string;
@@ -257,13 +258,13 @@ export function AppointmentDetails({
 
             {/* Servicios */}
             <div className="space-y-2">
-                <h3 className="text-sm font-medium">
+                <h3 className="text-base font-medium">
                     Servicios programados
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className="flex flex-col justify-center gap-2 p-2 bg-gray-50 rounded">
                         {appointment.servicesIds.map((id) => (
-                            <Badge key={id} variant="outline" className="text-xs bg-blue-50 mr-1 mb-1">
+                            <Badge key={id} variant="outline" className="text-xs md:text-sm bg-blue-50 mr-1 mb-1">
                                 {servicesMap.get(id) ?? "-"}
                             </Badge>
                         ))}
@@ -278,6 +279,12 @@ export function AppointmentDetails({
                 treatmentProducts={appointment.treatmentProducts ?? []}
             />
 
+            {/* Lista de Informes */}
+            <ReportsList
+                appointmentId={appointment.id!}
+                projectId={projectId}
+            />
+
             {/* Nueva sección: Mapa Murino */}
             <MurinoMapSection
                 murinoMapBase64={murinoMapBase64}
@@ -286,20 +293,6 @@ export function AppointmentDetails({
 
             {/* Acciones */}
             <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 pt-4 border-t">
-                <DocumentButton
-                    href={`/projects/${projectId}/evento/${appointment.id}/treatment-areas`}
-                    disabled={actionsDisabled}
-                    disabledTitle={actionsDisabled ? "No se puede ver el registro de áreas tratadas" : ""}
-                >
-                    Áreas de Tratamiento
-                </DocumentButton>
-                <DocumentButton
-                    href={`/projects/${projectId}/evento/${appointment.id}/products`}
-                    disabled={actionsDisabled}
-                    disabledTitle={actionsDisabled ? "No se puede ver el registro de productos" : ""}
-                >
-                    Productos
-                </DocumentButton>
                 <DocumentButton
                     href={`/projects/${projectId}/evento/${appointment.id}/roedores`}
                     disabled={actionsDisabled}

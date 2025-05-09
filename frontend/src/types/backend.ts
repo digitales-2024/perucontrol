@@ -130,7 +130,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 export async function DownloadFile(
     url: string,
     method: RequestInit["method"],
-    body: RequestInit["body"],
+    body?: RequestInit["body"],
 ): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();

@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 interface ClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
-    quotations: Array<components["schemas"]["Quotation3"]>
+    quotations: Array<components["schemas"]["Quotation2"]>
     onServicesChange: (services: Array<string>) => void;
 }
 

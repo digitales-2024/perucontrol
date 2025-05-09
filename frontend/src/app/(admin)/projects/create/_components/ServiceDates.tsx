@@ -334,32 +334,6 @@ export function ServiceDates({
                 </div>
 
                 <div className="space-y-4">
-                    {/*
-                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                        <div className="flex-1">
-                            <Label htmlFor="add-date" className="block mb-2 font-medium">
-                                Agregar fecha
-                            </Label>
-                            <DatePicker
-                                value={newDate}
-                                onChange={setNewDate}
-                                placeholder="Seleccione fecha"
-                                className="w-full"
-                                iconColor="text-blue-500"
-                            />
-                        </div>
-                        <Button
-                            onClick={handleAddDate}
-                            size="icon"
-                            className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                            disabled={!newDate || selectedServiceIds.length === 0}
-                            type="button"
-                        >
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    </div>
-                    */}
-
                     <AppointmentList
                         appointments={appointments}
                         onEditDate={handleEditDate}

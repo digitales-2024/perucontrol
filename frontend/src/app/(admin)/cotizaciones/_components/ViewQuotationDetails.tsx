@@ -30,7 +30,7 @@ import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
 // import { CreateQuotationSchema2 } from "../schemas";
 import { components } from "@/types/api";
 
-export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation3"] })
+export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation2"] })
 {
     const { id: quotationId } = useParams();
     const router = useRouter();
