@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { ReportForm } from "../_components/ReportForm";
+import { backend, wrapper } from "@/types/backend";
 
 interface Props {
     params: Promise<{
@@ -21,6 +22,21 @@ const reportTitles: Record<string, string> = {
 export default async function ReportPage({ params }: Props)
 {
     const { id: projectId, app_id: appointmentId, report_id: reportId } = await params;
+
+    const [report, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/CompleteReport", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error getting report:", error);
+        return null;
+    }
 
     return (
         <>
@@ -59,6 +75,7 @@ export default async function ReportPage({ params }: Props)
                     appointmentId={appointmentId}
                     reportId={reportId}
                     reportTitle={reportTitles[reportId] || "Informe"}
+                    report={report}
                 />
             </div>
         </>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,14 +8,20 @@ import { Save } from "lucide-react";
 import DatePicker from "@/components/ui/date-time-picker";
 import ReportBuilder from "@/components/common/ReportBuilder";
 import { toastWrapper } from "@/types/toasts";
-import { Generate } from "@/app/(admin)/projects/actions";
+import { GenerateCompleteReportWord } from "@/app/(admin)/projects/actions";
 import { useRouter } from "next/navigation";
+import { components } from "@/types/api";
+import { UpdateReport } from "../../../../actions";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { reportFormSchema, type ReportFormData, type TextBlock, type TextArea } from "../schemas";
 
 interface ReportFormProps {
     projectId: string;
     appointmentId: string;
     reportId: string;
     reportTitle: string;
+    report: components["schemas"]["CompleteReportDTO"];
 }
 
 const reportEndpoints: Record<string, string> = {
@@ -39,18 +45,83 @@ export function ReportForm({
     appointmentId,
     reportId,
     reportTitle,
+    report,
 }: ReportFormProps)
 {
     const router = useRouter();
-    const [emissionDate, setEmissionDate] = useState<Date | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) =>
+    const defaultContent: Array<TextBlock | TextArea> = [
+        {
+            $type: "textBlock" as const,
+            title: "",
+            numbering: "1",
+            level: 0,
+            sections: [] as Array<TextBlock | TextArea>,
+        },
+    ];
+
+    const formMethods = useForm<ReportFormData>({
+        resolver: zodResolver(reportFormSchema),
+        defaultValues: {
+            id: report.id,
+            signingDate: report.signingDate ?? null,
+            content: report.content?.length > 0 ? (report.content as Array<TextBlock | TextArea>) : defaultContent,
+        },
+    });
+
+    const { handleSubmit, watch, setValue } = formMethods;
+    const signingDate = watch("signingDate");
+
+    // Efecto para mantener sincronizada la fecha de firma
+    useEffect(() =>
     {
-        e.preventDefault();
+        if (report.signingDate)
+        {
+            setValue("signingDate", report.signingDate);
+        }
+    }, [report.signingDate, setValue]);
+
+    const handleUpdateReport = async(data: ReportFormData) =>
+    {
+        if (!data.signingDate)
+        {
+            toastWrapper(
+                Promise.reject(new Error("Por favor seleccione una fecha de emisión")),
+                {
+                    loading: "Guardando datos...",
+                    success: "Datos guardados correctamente",
+                    error: () => "Debe seleccionar una fecha de emisión",
+                },
+            );
+            return;
+        }
+
+        // UpdateReport
+        const [, error] = await toastWrapper(
+            UpdateReport(appointmentId, {
+                ...data,
+                id: report.id,
+            }),
+            {
+                loading: "Guardando datos...",
+                success: "Datos guardados correctamente",
+                error: (e) => `Error al guardar los datos: ${e.message}`,
+            },
+        );
+
+        if (error)
+        {
+            console.error("Error al guardar los datos:", error);
+            return;
+        }
+    };
+
+    const onSubmit = async(data: ReportFormData) =>
+    {
         setIsSubmitting(true);
 
-        if (!emissionDate)
+        if (!data.signingDate)
         {
             toastWrapper(
                 Promise.reject(new Error("Por favor seleccione una fecha de emisión")),
@@ -67,17 +138,12 @@ export function ReportForm({
         try
         {
             // Formatear la fecha para el servidor
-            const dateObj = new Date(emissionDate);
-            const day = dateObj.getDate().toString()
-                .padStart(2, "0");
-            const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-            const year = dateObj.getFullYear().toString();
-
             const endpoint = reportEndpoints[reportId];
+            console.log(endpoint);
             const filename = reportFilenames[reportId];
 
             const [blob, err] = await toastWrapper(
-                Generate(projectId, endpoint, day, month, year),
+                GenerateCompleteReportWord(appointmentId),
                 {
                     loading: "Generando documento...",
                     success: "Documento generado con éxito",
@@ -100,7 +166,7 @@ export function ReportForm({
             URL.revokeObjectURL(url);
 
             // Redirigir de vuelta a la página de la cita
-            router.push(`/projects/${projectId}/evento/${appointmentId}`);
+            router.push(`/projects/${projectId}/${appointmentId}`);
         }
         catch (error)
         {
@@ -128,43 +194,56 @@ export function ReportForm({
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Fecha de emisión */}
-                    <div className="space-y-2">
-                        <Label htmlFor="emission-date">
-                            Fecha de emisión
-                        </Label>
-                        <DatePicker
-                            value={emissionDate}
-                            onChange={setEmissionDate}
-                            placeholder="Seleccione una fecha de emisión"
-                            className="w-full"
-                        />
-                        <p className="text-sm text-muted-foreground">
-                            Seleccione la fecha que aparecerá en el documento generado
-                        </p>
-                    </div>
+                <FormProvider {...formMethods}>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Fecha de emisión */}
+                        <div className="space-y-2">
+                            <Label htmlFor="emission-date">
+                                Fecha de emisión
+                            </Label>
+                            <DatePicker
+                                value={signingDate ? new Date(signingDate) : undefined}
+                                onChange={(date) => setValue("signingDate", date?.toISOString() ?? null)}
+                                placeholder="Seleccione una fecha de emisión"
+                                className="w-full"
+                            />
+                            <p className="text-sm text-muted-foreground">
+                                Seleccione la fecha que aparecerá en el documento generado
+                            </p>
+                        </div>
 
-                    {/* Constructor de informe */}
-                    <div className="space-y-2">
-                        <Label>
-                            Contenido del Informe
-                        </Label>
-                        <ReportBuilder />
-                    </div>
+                        {/* Constructor de informe */}
+                        <div className="space-y-2">
+                            <Label>
+                                Contenido del Informe
+                            </Label>
+                            <ReportBuilder />
+                        </div>
 
-                    {/* Botón de guardar */}
-                    <div className="flex justify-end">
-                        <Button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700"
-                            disabled={isSubmitting}
-                        >
-                            <Save className="mr-2 h-4 w-4" />
-                            {isSubmitting ? "Generando..." : "Generar Informe"}
-                        </Button>
-                    </div>
-                </form>
+                        {/* Botón de guardar */}
+                        <div className="flex flex-wrap gap-2 justify-end">
+                            <Button
+                                type="button"
+                                onClick={async() =>
+                                {
+                                    await formMethods.handleSubmit(handleUpdateReport)();
+                                }}
+                                className="flex items-center gap-2"
+                            >
+                                <Save className="h-4 w-4" />
+                                Guardar
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700"
+                                disabled={isSubmitting}
+                            >
+                                <Save className="mr-2 h-4 w-4" />
+                                {isSubmitting ? "Generando..." : "Generar Informe"}
+                            </Button>
+                        </div>
+                    </form>
+                </FormProvider>
             </CardContent>
         </Card>
     );
