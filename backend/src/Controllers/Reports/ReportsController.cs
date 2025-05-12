@@ -78,6 +78,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
             .ThenInclude(ta => ta.TreatmentProducts)
             .ThenInclude(tp => tp.Product)
             .Include(a => a.CompleteReport)
+            .Include(a => a.Project)
+            .ThenInclude(p => p.Client)
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == appointmentid);
 

@@ -231,6 +231,9 @@ public class WordTemplateService
         // Replace placeholders on main document
         var placeholders = new Dictionary<string, string> {
             {"{sign_date}", appointment.CompleteReport.SigningDate?.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-PE")) ?? ""},
+            {"{client_name}", appointment.Project.Client.RazonSocial ?? appointment.Project.Client.Name},
+            {"{client_address}", appointment.Project.Address},
+            {"{client_supervisor}", "-"},
         };
         foreach (var text in body.Descendants<Text>())
         {
