@@ -183,4 +183,47 @@ public class ProductController(DatabaseContext context, ProductService productSe
             );
         }
     }
+
+    [EndpointSummary("Delete a product")]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var product = await context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        // Verificar si el producto está siendo utilizado en algún tratamiento de alguna cita
+        var isProductInUse = await context.TreatmentProducts
+            .AnyAsync(tp => tp.Product.Id == id && tp.IsActive);
+
+        if (isProductInUse)
+        {
+            return BadRequest("No se puede eliminar el producto porque está siendo utilizado en tratamientos activos.");
+        }
+
+        product.IsActive = false;
+        await context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [EndpointSummary("Reactivate a product")]
+    [HttpPatch("{id}/reactivate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Reactivate(Guid id)
+    {
+        var product = await context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        product.IsActive = true;
+        await context.SaveChangesAsync();
+        return NoContent();
+    }
 }

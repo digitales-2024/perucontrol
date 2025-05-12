@@ -52,7 +52,7 @@ export const CreateProductSheet = ({ open, onOpenChange }: CreateProductSheetPro
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent className="sm:max-w-[540px] bg-white rounded-l-lg shadow-xl">
+            <SheetContent className="w-full sm:max-w-[540px] bg-white rounded-l-lg shadow-xl">
                 <SheetHeader className="border-b border-gray-100 pb-4">
                     <SheetTitle className="text-xl font-semibold text-gray-800">
                         Nuevo Producto

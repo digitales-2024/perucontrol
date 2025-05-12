@@ -4,10 +4,12 @@ import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTableExpanded } from "@/app/(admin)/projects/_components/DataTableExpanded";
 import { Button } from "@/components/ui/button";
-import { Package, ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { Package, ChevronDown, ChevronRight, Pencil, Trash2, CheckCheck } from "lucide-react";
 import { components } from "@/types/api";
 import { CreateProductSheet } from "./CreateProductSheet";
 import { UpdateProductSheet } from "./UpdateProductSheet";
+import { DeleteProduct } from "./DeleteProduct";
+import { ReactivateProduct } from "./ReactivateProduct";
 
 type Product = components["schemas"]["ProductGetAllOutputDTO"];
 
@@ -17,6 +19,8 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
     const [showCreateProduct, setShowCreateProduct] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [showUpdateProduct, setShowUpdateProduct] = useState(false);
+    const [showDeleteProduct, setShowDeleteProduct] = useState(false);
+    const [showReactivateProduct, setShowReactivateProduct] = useState(false);
 
     const columns: Array<ColumnDef<Product>> = [
         {
@@ -80,10 +84,23 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
                             className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                             onClick={() =>
                             {
-                                // TODO: Implementar eliminación
+                                setSelectedProduct(product);
+                                setShowDeleteProduct(true);
                             }}
                         >
                             <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-red-50"
+                            onClick={() =>
+                            {
+                                setSelectedProduct(product);
+                                setShowReactivateProduct(true);
+                            }}
+                        >
+                            <CheckCheck className="h-4 w-4" />
                         </Button>
                     </div>
                 );
@@ -144,11 +161,25 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
                 onOpenChange={setShowCreateProduct}
             />
             {selectedProduct && (
-                <UpdateProductSheet
-                    open={showUpdateProduct}
-                    onOpenChange={setShowUpdateProduct}
-                    product={selectedProduct}
-                />
+                <>
+                    <UpdateProductSheet
+                        open={showUpdateProduct}
+                        onOpenChange={setShowUpdateProduct}
+                        product={selectedProduct}
+                    />
+                    <DeleteProduct
+                        open={showDeleteProduct}
+                        onOpenChange={setShowDeleteProduct}
+                        product={selectedProduct}
+                        showTrigger={false}
+                    />
+                    <ReactivateProduct
+                        open={showReactivateProduct}
+                        onOpenChange={setShowReactivateProduct}
+                        product={selectedProduct}
+                        showTrigger={false}
+                    />
+                </>
             )}
         </>
     );
