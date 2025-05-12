@@ -577,72 +577,47 @@ public class WordTemplateService
 
         if (section is TextBlock textBlock)
         {
-            Paragraph titleParagraph = new();
+            Paragraph plainTextParagraph = new();
 
-            // Apply paragraph style but preserve heading level if any
+            // Apply paragraph style from the original placeholder, if any.
+            // No longer setting Heading styles based on textBlock.Level.
             if (styleParaProps != null)
             {
-                ParagraphProperties? newProps =
-                    styleParaProps.CloneNode(true) as ParagraphProperties;
-
-                // If the TextBlock has a level, we need to set the appropriate heading style
-                if (textBlock.Level >= 0)
-                {
-                    newProps!.ParagraphStyleId = new ParagraphStyleId
-                    {
-                        Val = $"Heading{textBlock.Level + 1}",
-                    };
-                }
-
-                // Make sure we're properly preserving indentation settings
-                // The indentation is preserved because we've cloned the entire ParagraphProperties
-
-                titleParagraph.ParagraphProperties = newProps;
+                plainTextParagraph.ParagraphProperties = styleParaProps.CloneNode(true) as ParagraphProperties;
             }
-            else if (textBlock.Level >= 0)
-            {
-                // No styling from original paragraph, but still need to set heading style
-                ParagraphProperties newProps = new();
-                newProps.ParagraphStyleId = new ParagraphStyleId
-                {
-                    Val = $"Heading{textBlock.Level + 1}",
-                };
+            // If styleParaProps is null, the paragraph gets default properties.
+            // textBlock.Level is now ignored for styling purposes here.
 
-                // If there's no original styling, we might still want to set a reasonable indentation
-                // Uncomment if needed:
-                // newProps.Indentation = new Indentation() { Left = "720" }; // 720 twips = 0.5 inch
-
-                titleParagraph.ParagraphProperties = newProps;
-            }
-
-            // Create the title run with formatting
-            string fullTitle =
-                (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + " " : "")
+            // Combine Numbering (if any) and Title for the text content.
+            string combinedText =
+                (!string.IsNullOrEmpty(textBlock.Numbering) ? textBlock.Numbering + ".- " : "")
                 + textBlock.Title;
-            Run titleRun = new Run(new Text(fullTitle));
+            Run textRun = new Run(new Text(combinedText));
 
-            // Apply the run style to maintain formatting
+            // Apply run style from the original placeholder, if any.
             if (styleRunProps != null)
             {
-                titleRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
+                textRun.RunProperties = styleRunProps.CloneNode(true) as RunProperties;
             }
-            else
+            // No more forced bolding. If the placeholder's style was bold, it will be inherited.
+
+            // Ensure RunProperties exist before setting Bold
+            if (textRun.RunProperties == null)
             {
-                titleRun.RunProperties = new RunProperties();
+                textRun.RunProperties = new RunProperties();
             }
+            textRun.RunProperties.Bold = new Bold(); // Make the combined text bold
 
-            // Make sure the title is bold
-            titleRun.RunProperties!.Bold = new Bold();
+            plainTextParagraph.Append(textRun);
+            elements.Add(plainTextParagraph);
 
-            titleParagraph.Append(titleRun);
-            elements.Add(titleParagraph);
-
-            // Process any subsections
+            // Process any subsections, passing along the original inherited styles.
             if (textBlock.Sections != null)
             {
                 foreach (var subSection in textBlock.Sections)
                 {
-                    // When processing subsections, preserve the indentation by passing along the same parent paragraph properties
+                    // Subsections will also be rendered as plain text paragraphs,
+                    // inheriting the same placeholder styles.
                     elements.AddRange(
                         GenerateElementsForSectionWithStyle(
                             subSection,
