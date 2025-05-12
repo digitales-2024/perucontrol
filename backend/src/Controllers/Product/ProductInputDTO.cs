@@ -12,7 +12,6 @@ public class ProductCreateInputDTO
     [MaxLength(100)]
     public required string ActiveIngredient { get; set; }
 
-    [MinLength(1)]
     public required IList<string> Solvents { get; set; }
 }
 
@@ -35,6 +34,5 @@ public class ProductUpdateInputDTO
     [MaxLength(100)]
     public string? ActiveIngredient { get; set; }
 
-    [MinLength(0)] // Allow sending an empty list to delete all solvents
     public IList<ProductAmountSolventUpdateDTO>? Solvents { get; set; }
 }
