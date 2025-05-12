@@ -37,7 +37,6 @@ public class WordTemplateService
             throw new InvalidOperationException("The template is not valid. No body found.");
         }
 
-        // Replace text in the main document
         foreach (var text in body.Descendants<Text>())
         {
             foreach (var placeholder in placeholders)
@@ -49,7 +48,6 @@ public class WordTemplateService
             }
         }
 
-        // Also check headers because Microsoft loves complexity
         if (mainPart.HeaderParts != null)
         {
             foreach (var headerPart in mainPart.HeaderParts)
@@ -67,7 +65,6 @@ public class WordTemplateService
             }
         }
 
-        // And footers, because why make it simple?
         if (mainPart.FooterParts != null)
         {
             foreach (var footerPart in mainPart.FooterParts)
@@ -230,7 +227,45 @@ public class WordTemplateService
 
         var body = mainPart.Document.Body;
 
-        // Data for Table 2 - Replaces mockDataForTable2
+
+        // Replace placeholders on main document
+        var placeholders = new Dictionary<string, string> {
+            {"{sign_date}", appointment.CompleteReport.SigningDate?.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-PE")) ?? ""},
+        };
+        foreach (var text in body.Descendants<Text>())
+        {
+            foreach (var placeholder in placeholders)
+            {
+                if (text.Text.Contains(placeholder.Key))
+                {
+                    text.Text = text.Text.Replace(placeholder.Key, placeholder.Value);
+                }
+            }
+        }
+
+        var dataForTable1 = new List<Dictionary<string, string>>();
+        if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
+        {
+            dataForTable1 =
+            [
+                .. appointment.TreatmentProducts
+                // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
+                .Select(tp => new Dictionary<string, string>
+                {
+                    { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") }, // Changed from "today"
+                    { "{service_hour}", tp.AppliedTime ?? "-" },
+                    {
+                        "{treatment_type}",
+                        $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
+                    },
+                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" }, // Assuming Product and ProductAmountSolvent are non-null based on schema
+                    { "{performed_by}", "Sr. William Moreyra Auris" },
+                    // FIXME:
+                    { "{supervisor}", "-" },
+                }),
+            ];
+        }
+
         var dataForTable2 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any()) // Assuming TreatmentAreas exists on ProjectAppointment
         {
@@ -246,9 +281,7 @@ public class WordTemplateService
                     }),
             ];
         }
-        // If TreatmentAreas is null or empty, dataForTable2 will remain empty, and no rows will be added for this table.
 
-        // Data for Table 3 - Replaces mockDataForTable3
         var dataForTable3 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any())
         {
@@ -274,7 +307,6 @@ public class WordTemplateService
             ];
         }
 
-        // Prepare data for Table 4 (products)
         var productsToInsert = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
@@ -290,28 +322,6 @@ public class WordTemplateService
             ];
         }
 
-        // Data for Table 1 - Replaces mockDataForTable1
-        var dataForTable1 = new List<Dictionary<string, string>>();
-        if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
-        {
-            dataForTable1 =
-            [
-                .. appointment.TreatmentProducts
-                // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
-                .Select(tp => new Dictionary<string, string>
-                {
-                    { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") }, // Changed from "today"
-                    { "{service_hour}", tp.AppliedTime ?? "-" },
-                    {
-                        "{treatment_type}",
-                        $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
-                    },
-                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" }, // Assuming Product and ProductAmountSolvent are non-null based on schema
-                    { "{performed_by}", "me" }, // Hardcoded
-                    { "{supervisor}", "them" }, // Hardcoded
-                }),
-            ];
-        }
 
         // Process Tables in Order
         ProcessTable(body, 0, "{service_date}", dataForTable1);
