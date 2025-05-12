@@ -51,9 +51,6 @@ export function ReportForm({
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log("I receive from my parent");
-    console.log(JSON.stringify(report, null, 4));
-
     const defaultContent: Array<TextBlock | TextArea> = [
         {
             $type: "textBlock" as const,

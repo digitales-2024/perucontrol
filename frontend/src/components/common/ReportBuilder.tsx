@@ -199,13 +199,18 @@ export default function ReportBuilder()
                     {
                         if (child.type === "textArea" && child.id === id)
                         {
-                            return { ...child, text };
-                        } if (child.type === "textBlock")
-                        {
-                            return {
-                                ...child,
-                                children: update([child]).flatMap((s) => s.children),
+                            const returnValue: TextContent = {
+                                ...child, text,
                             };
+                            return returnValue;
+                        }
+                        if (child.type === "textBlock")
+                        {
+                            const returnValue: Section = {
+                                ...child,
+                                children: update([child]).flatMap((s) => (s.type === "textArea" ? s : s.children)),
+                            };
+                            return returnValue;
                         }
                         return child;
                     }),
@@ -246,80 +251,108 @@ export default function ReportBuilder()
         setReport((prev) => removeById(prev) as Array<Section>);
     };
 
-    const renderSection = (section: LocalContentSection) => (
-        <div key={section.id} className="mb-4 pl-4 border-l-2">
-            <div className="flex items-center gap-2 mb-2">
-                <Input
-                    value={`${section.title}`}
-                    onChange={(e) => updateSectionTitle(section.id, e.target.value)}
-                    placeholder={`${section.numbering}. Título`}
-                    className="flex-1"
-                />
-                <div className="flex gap-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addSubsection(section.id, section.level)}
-                    >
-                        <PlusCircle className="h-4 w-4" />
-                        {" "}
-                        Subsección
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addContent(section.id)}
-                    >
-                        <PlusCircle className="h-4 w-4" />
-                        {" "}
-                        Contenido
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteItem(section.id)}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
+    const renderSection = (section: LocalContentSection) =>
+    {
+        if (section.type === "textArea")
+        {
+            return (
+                <div key={section.id} className="mb-2">
+                    <Textarea
+                        value={section.text}
+                        onChange={(e) => updateContent(section.id, e.target.value)}
+                        rows={8}
+                        placeholder="Contenido"
+                        className="w-full"
+                    />
+                    <div className="flex justify-end mt-2">
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteItem(section.id)}
+                        >
+                            Eliminar contenido
+                        </Button>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div key={section.id} className="mb-4 pl-4 border-l-2">
+                <div className="flex items-center gap-2 mb-2">
+                    <Input
+                        value={`${section.title}`}
+                        onChange={(e) => updateSectionTitle(section.id, e.target.value)}
+                        placeholder={`${section.numbering}. Título`}
+                        className="flex-1"
+                    />
+                    <div className="flex gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addSubsection(section.id, section.level)}
+                        >
+                            <PlusCircle className="h-4 w-4" />
+                            {" "}
+                            Subsección
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addContent(section.id)}
+                        >
+                            <PlusCircle className="h-4 w-4" />
+                            {" "}
+                            Contenido
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteItem(section.id)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="pl-4">
+                    {" "}
+                    {section.children.map((child) =>
+                    {
+                        if (child.type === "textBlock")
+                        {
+                            return renderSection(child);
+                        }
+                        return (
+                            <div key={child.id} className="mb-2">
+                                <Textarea
+                                    value={child.text}
+                                    onChange={(e) => updateContent(child.id, e.target.value)}
+                                    rows={8}
+                                    placeholder="Contenido"
+                                    className="w-full"
+                                />
+                                <div className="flex justify-end mt-2">
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => deleteItem(child.id)}
+                                    >
+                                        Eliminar contenido
+                                    </Button>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
-
-            <div className="pl-4">
-                {" "}
-                {section.children.map((child) =>
-                {
-                    if (child.type === "textBlock")
-                    {
-                        return renderSection(child);
-                    }
-                    return (
-                        <div key={child.id} className="mb-2">
-                            <Textarea
-                                value={child.text}
-                                onChange={(e) => updateContent(child.id, e.target.value)}
-                                rows={8}
-                                placeholder="Contenido"
-                                className="w-full"
-                            />
-                            <div className="flex justify-end mt-2">
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => deleteItem(child.id)}
-                                >
-                                    Eliminar contenido
-                                </Button>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="p-4 border rounded-lg">
