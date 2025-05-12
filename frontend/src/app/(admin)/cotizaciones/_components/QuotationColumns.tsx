@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { Calendar1, CalendarX, CircleUserRound, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type Quotation = components["schemas"]["Quotation3"]
+export type Quotation = components["schemas"]["Quotation2"]
 
 export const columns: Array<ColumnDef<Quotation>> = [
     {

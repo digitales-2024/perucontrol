@@ -1,5 +1,3 @@
-"use client";
-
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,11 +15,12 @@ import { components } from "@/types/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { toastWrapper } from "@/types/toasts";
 
 interface RejectQuotationProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation3"],
+  quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
   disabled?: boolean;
 }
@@ -36,11 +35,19 @@ export function AlertDialogRejectQuotation({
 {
     const isMobile = useIsMobile();
 
-    const handleUpdateStatus = () =>
+    const handleUpdateStatus = async() =>
     {
         if (quotation)
         {
-            UpdateStatus(quotation.id!, "Rejected");
+            const [, error] = await toastWrapper(UpdateStatus(quotation.id!, "Rejected"), {
+                loading: "Rechazando cotización...",
+                success: "Cotización rechazada exitosamente!",
+            });
+            if (error !== null)
+            {
+                return;
+            }
+
         }
         onOpenChange(false);
     };

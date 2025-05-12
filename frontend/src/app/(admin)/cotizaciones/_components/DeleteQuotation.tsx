@@ -20,7 +20,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    quotation: components["schemas"]["Quotation3"],
+    quotation: components["schemas"]["Quotation2"],
     showTrigger?: boolean;
 }
 

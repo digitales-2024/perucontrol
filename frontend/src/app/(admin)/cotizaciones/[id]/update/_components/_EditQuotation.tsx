@@ -33,7 +33,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
     LimpiezaDeTanque: <ShieldCheck className="h-3 w-3" />,
 };
 
-type Quotation = components["schemas"]["Quotation3"];
+type Quotation = components["schemas"]["Quotation2"];
 type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]
 type Terms = components["schemas"]["TermsAndConditions"];
