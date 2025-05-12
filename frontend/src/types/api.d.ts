@@ -920,57 +920,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Appointment/{id}/report-01/word": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Download Report 01 Word */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -4703,6 +4652,163 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Product/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a product */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update a product and its solvents */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductUpdateInputDTO"];
+                    "text/json": components["schemas"]["ProductUpdateInputDTO"];
+                    "application/*+json": components["schemas"]["ProductUpdateInputDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SuccessResult"];
+                        "application/json": components["schemas"]["SuccessResult"];
+                        "text/json": components["schemas"]["SuccessResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotFoundResult"];
+                        "application/json": components["schemas"]["NotFoundResult"];
+                        "text/json": components["schemas"]["NotFoundResult"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ErrorResult"];
+                        "application/json": components["schemas"]["ErrorResult"];
+                        "text/json": components["schemas"]["ErrorResult"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ErrorResult"];
+                        "application/json": components["schemas"]["ErrorResult"];
+                        "text/json": components["schemas"]["ErrorResult"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Product/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactivate a product */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4980,6 +5086,16 @@ export interface components {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
         } | null;
+        Error: {
+            code?: string | null;
+            details?: string | null;
+        };
+        ErrorResult: {
+            message?: string | null;
+            errors?: Array<components["schemas"]["Error"]> | null;
+            success?: boolean;
+            failure?: boolean;
+        };
         FileContentResult: {
             /** Format: byte */
             fileContents?: string;
@@ -5012,6 +5128,12 @@ export interface components {
             /** Format: int32 */
             refreshExpiresIn: number;
         };
+        NotFoundResult: {
+            message?: string | null;
+            errors?: Array<components["schemas"]["Error"]> | null;
+            success?: boolean;
+            failure?: boolean;
+        };
         /** @enum {unknown|null} */
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
@@ -5027,6 +5149,11 @@ export interface components {
         ProductAmountSolventOutputDTO: {
             /** Format: uuid */
             id: string;
+            amountAndSolvent: string;
+        };
+        ProductAmountSolventUpdateDTO: {
+            /** Format: uuid */
+            id?: string | null;
             amountAndSolvent: string;
         };
         ProductCreateInputDTO: {
@@ -5047,6 +5174,11 @@ export interface components {
             activeIngredient: string;
             isActive: boolean;
             productAmountSolvents: Array<components["schemas"]["ProductAmountSolventOutputDTO"]>;
+        };
+        ProductUpdateInputDTO: {
+            name?: string | null;
+            activeIngredient?: string | null;
+            solvents?: Array<components["schemas"]["ProductAmountSolventUpdateDTO"]> | null;
         };
         Project: {
             /** Format: int32 */
@@ -5619,6 +5751,10 @@ export interface components {
             length?: number;
             value?: string | null;
             hasValue?: boolean;
+        };
+        SuccessResult: {
+            success?: boolean;
+            failure?: boolean;
         };
         SunatQueryResponse: {
             razonSocial?: string | null;

@@ -24,20 +24,20 @@ interface ReportFormProps {
     report: components["schemas"]["CompleteReportDTO"];
 }
 
-const reportEndpoints: Record<string, string> = {
-    "desinsectacion-desratizacion-desinfeccion": "disinfection/report/word",
-    "desinfeccion-desinsectacion": "disinsection/report/word",
-    "desratizacion": "ratextermination/report/word",
-    "sostenimiento-desratizacion": "sustainability/desratization/report/word",
-    "sostenimiento-desinsectacion-desratizacion": "desinsecticides/desratization/sustainment/report/word",
-};
-
 const reportFilenames: Record<string, string> = {
     "desinsectacion-desratizacion-desinfeccion": "Informe_Desinfección_Desratización_Desinsectación.docx",
     "desinfeccion-desinsectacion": "Informe_Desinfección_Desinsectación.docx",
     "desratizacion": "Informe_Desratización.docx",
     "sostenimiento-desratizacion": "Informe_Sostenimiento_Desratización.docx",
     "sostenimiento-desinsectacion-desratizacion": "Informe_Sostenimiento_Desinsectación_Desratización.docx",
+};
+
+const reportNumberings: Record<string, string> = {
+    "desinsectacion-desratizacion-desinfeccion": "5",
+    "desinfeccion-desinsectacion": "1",
+    "desratizacion": "1",
+    "sostenimiento-desratizacion": "1",
+    "sostenimiento-desinsectacion-desratizacion": "1",
 };
 
 export function ReportForm({
@@ -50,6 +50,9 @@ export function ReportForm({
 {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Obtener el número de inicio del informe
+    const startNumbering = reportNumberings[reportId];
 
     const defaultContent: Array<TextBlock | TextArea> = [
         {
@@ -137,10 +140,29 @@ export function ReportForm({
 
         try
         {
-            // Formatear la fecha para el servidor
-            const endpoint = reportEndpoints[reportId];
-            console.log(endpoint);
+            // Primero guardamos los datos
+            const [, updateError] = await toastWrapper(
+                UpdateReport(appointmentId, {
+                    ...data,
+                    id: report.id,
+                }),
+                {
+                    loading: "Guardando datos...",
+                    success: "Datos guardados correctamente",
+                    error: (e) => `Error al guardar los datos: ${e.message}`,
+                },
+            );
+
+            if (updateError)
+            {
+                console.error("Error al guardar los datos:", updateError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Luego generamos el informe
             const filename = reportFilenames[reportId];
+            console.log("Generando informe para cita:", appointmentId);
 
             const [blob, err] = await toastWrapper(
                 GenerateCompleteReportWord(appointmentId),
@@ -153,6 +175,22 @@ export function ReportForm({
 
             if (err)
             {
+                console.error("Error al generar el documento:", err);
+                setIsSubmitting(false);
+                return;
+            }
+
+            if (!blob)
+            {
+                console.error("No se recibió el documento");
+                toastWrapper(
+                    Promise.reject(new Error("No se pudo generar el documento")),
+                    {
+                        loading: "Generando documento...",
+                        success: "Documento generado con éxito",
+                        error: () => "No se pudo generar el documento",
+                    },
+                );
                 setIsSubmitting(false);
                 return;
             }
@@ -217,7 +255,7 @@ export function ReportForm({
                             <Label>
                                 Contenido del Informe
                             </Label>
-                            <ReportBuilder />
+                            <ReportBuilder startNumbering={startNumbering} />
                         </div>
 
                         {/* Botón de guardar */}
