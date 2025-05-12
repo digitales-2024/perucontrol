@@ -7,22 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useFormContext } from "react-hook-form";
-import { type CompleteReportDTO, type TextBlock, type TextArea } from "@/app/(admin)/projects/[id]/evento/[app_id]/informes/schemas";
+import { type CompleteReportDTO, type TextBlock, type TextArea, ContentSection } from "@/app/(admin)/projects/[id]/evento/[app_id]/informes/schemas";
 
+type LocalContentSection = TextContent | Section;
 type TextContent = {
-    type: "content";
+    type: "textArea";
     id: string;
     text: string;
     parentNumbering: string;
 };
 
 type Section = {
-    type: "section";
+    type: "textBlock";
     id: string;
     title: string;
     numbering: string;
     level: number;
-    children: Array<Section | TextContent>;
+    children: Array<LocalContentSection>;
 };
 
 export default function ReportBuilder()
@@ -36,7 +37,7 @@ export default function ReportBuilder()
 
     const [report, setReport] = useState<Array<Section>>([
         {
-            type: "section",
+            type: "textBlock",
             id: "1",
             title: "",
             numbering: "1",
@@ -62,7 +63,7 @@ export default function ReportBuilder()
                 {
                     const textBlock = section as TextBlock;
                     const newSection: Section = {
-                        type: "section",
+                        type: "textBlock",
                         id: generateId(),
                         title: textBlock.title,
                         numbering: textBlock.numbering,
@@ -72,7 +73,7 @@ export default function ReportBuilder()
                             if (subsection.$type === "textBlock")
                             {
                                 return {
-                                    type: "section",
+                                    type: "textBlock",
                                     id: generateId(),
                                     title: subsection.title,
                                     numbering: subsection.numbering,
@@ -82,14 +83,14 @@ export default function ReportBuilder()
                                         if (content.$type === "textBlock")
                                         {
                                             return {
-                                                type: "content",
+                                                type: "textArea",
                                                 id: generateId(),
                                                 text: content.title,
                                                 parentNumbering: subsection.numbering,
                                             };
                                         }
                                         return {
-                                            type: "content",
+                                            type: "textArea",
                                             id: generateId(),
                                             text: "",
                                             parentNumbering: subsection.numbering,
@@ -98,7 +99,7 @@ export default function ReportBuilder()
                                 };
                             }
                             return {
-                                type: "section",
+                                type: "textBlock",
                                 id: generateId(),
                                 title: "",
                                 numbering: textBlock.numbering,
@@ -112,13 +113,13 @@ export default function ReportBuilder()
                 // Si es un TextArea, lo convertimos en un contenido
                 const textArea = section as TextArea;
                 const newContent: TextContent = {
-                    type: "content",
+                    type: "textArea",
                     id: generateId(),
                     text: textArea.content,
                     parentNumbering: "1",
                 };
                 return newContent;
-            }).filter((item): item is Section => item.type === "section");
+            }).filter((item): item is Section => item.type === "textBlock");
 
             setReport(transformedContent);
         }
@@ -127,75 +128,26 @@ export default function ReportBuilder()
     // Efecto para actualizar el formulario cuando cambia el reporte
     useEffect(() =>
     {
+        console.log("im updating (form?)");
+        console.log(JSON.stringify(report, null, 4));
+
         if (isUpdatingRef.current) return;
 
         isUpdatingRef.current = true;
-        const transformedContent: Array<TextBlock> = report.map((section) => ({
-            $type: "textBlock" as const,
-            title: section.title,
-            numbering: section.numbering,
-            level: section.level,
-            sections: section.children.map((child): TextBlock =>
-            {
-                if (child.type === "section")
-                {
-                    const sectionChild = child as Section;
-                    return {
-                        $type: "textBlock" as const,
-                        title: sectionChild.title,
-                        numbering: sectionChild.numbering,
-                        level: sectionChild.level,
-                        sections: sectionChild.children.map((content): TextBlock =>
-                        {
-                            if (content.type === "content")
-                            {
-                                const contentChild = content as TextContent;
-                                return {
-                                    $type: "textBlock" as const,
-                                    title: contentChild.text,
-                                    numbering: contentChild.parentNumbering,
-                                    level: sectionChild.level + 1,
-                                    sections: [],
-                                };
-                            }
-                            const sectionContent = content as Section;
-                            return {
-                                $type: "textBlock" as const,
-                                title: sectionContent.title,
-                                numbering: sectionContent.numbering,
-                                level: sectionChild.level + 1,
-                                sections: [],
-                            };
-                        }),
-                    };
-                }
-                if (child.type === "content")
-                {
-                    const contentChild = child as TextContent;
-                    return {
-                        $type: "textBlock" as const,
-                        title: contentChild.text,
-                        numbering: section.numbering,
-                        level: section.level + 1,
-                        sections: [],
-                    };
-                }
-                return {
-                    $type: "textBlock" as const,
-                    title: "",
-                    numbering: section.numbering,
-                    level: section.level + 1,
-                    sections: [],
-                };
-            }),
-        }));
+
+        // Map the local type to the expected type
+        const transformedContent: Array<ContentSection> = report.map(mapLocalToTarget);
+
+        console.log("i map, therefore i set");
+        console.log(JSON.stringify(transformedContent, null, 4));
+
         setValue("content", transformedContent);
     }, [report, setValue]);
 
     const addMainSection = () =>
     {
         const newSection: Section = {
-            type: "section",
+            type: "textBlock",
             id: generateId(),
             title: "",
             numbering: `${report.length + 1}`,
@@ -209,14 +161,14 @@ export default function ReportBuilder()
     {
         const updateSections = (nodes: Array<Section | TextContent>): Array<Section | TextContent> => nodes.map((node) =>
         {
-            if (node.type === "section")
+            if (node.type === "textBlock")
             {
                 if (node.id === parentId)
                 {
-                    const siblingSections = node.children.filter((child) => child.type === "section").length;
+                    const siblingSections = node.children.filter((child) => child.type === "textBlock").length;
 
                     const newSection: Section = {
-                        type: "section",
+                        type: "textBlock",
                         id: generateId(),
                         title: "",
                         numbering: `${node.numbering}.${siblingSections + 1}`,
@@ -244,12 +196,12 @@ export default function ReportBuilder()
     {
         const updateSections = (nodes: Array<Section | TextContent>): Array<Section | TextContent> => nodes.map((node) =>
         {
-            if (node.type === "section")
+            if (node.type === "textBlock")
             {
                 if (node.id === parentId)
                 {
                     const newContent: TextContent = {
-                        type: "content",
+                        type: "textArea",
                         id: generateId(),
                         text: "",
                         parentNumbering: node.numbering,
@@ -284,7 +236,7 @@ export default function ReportBuilder()
             // Si no es la sección que buscamos, actualizamos sus hijos
             const updatedChildren = section.children.map((child) =>
             {
-                if (child.type === "section")
+                if (child.type === "textBlock")
                 {
                     // Si es una sección, actualizamos recursivamente
                     const updatedSection = update([child])[0];
@@ -310,11 +262,11 @@ export default function ReportBuilder()
             ...section,
             children: section.children.map((child) =>
             {
-                if (child.type === "content" && child.id === id)
+                if (child.type === "textArea" && child.id === id)
                 {
                     return { ...child, text };
                 }
-                if (child.type === "section")
+                if (child.type === "textBlock")
                 {
                     return {
                         ...child,
@@ -342,7 +294,7 @@ export default function ReportBuilder()
             .filter((node) => node.id !== id)
             .map((node) =>
             {
-                if (node.type === "section")
+                if (node.type === "textBlock")
                 {
                     return {
                         ...node,
@@ -402,7 +354,7 @@ export default function ReportBuilder()
             <div className="pl-4">
                 {section.children.map((child) =>
                 {
-                    if (child.type === "section")
+                    if (child.type === "textBlock")
                     {
                         return renderSection(child);
                     }
@@ -447,4 +399,27 @@ export default function ReportBuilder()
             </div>
         </div>
     );
+}
+
+function mapLocalToTarget(input: LocalContentSection): ContentSection
+{
+    if (input.type === "textBlock")
+    {
+        const returnValue: TextBlock = {
+            $type: "textBlock",
+            title: input.title,
+            numbering: input.numbering,
+            level: input.level,
+            sections: input.children.map(mapLocalToTarget),
+        };
+        return returnValue;
+    }
+    else
+    {
+        const returnValue: TextArea = {
+            $type: "textArea",
+            content: input.text,
+        };
+        return returnValue;
+    }
 }
