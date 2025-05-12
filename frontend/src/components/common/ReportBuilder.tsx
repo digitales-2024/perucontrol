@@ -26,25 +26,16 @@ type Section = {
     children: Array<LocalContentSection>;
 };
 
+const generateId = () => Math.random().toString(36)
+    .substring(2, 9);
+
 export default function ReportBuilder()
 {
     const { setValue, watch } = useFormContext<CompleteReportDTO>();
     const content = watch("content");
     const isUpdatingRef = useRef(false);
 
-    const generateId = () => Math.random().toString(36)
-        .substring(2, 9);
-
-    const [report, setReport] = useState<Array<Section>>([
-        {
-            type: "textBlock",
-            id: "1",
-            title: "",
-            numbering: "1",
-            level: 0,
-            children: [],
-        },
-    ]);
+    const [report, setReport] = useState<Array<LocalContentSection>>(content.map(mapTargetToLocal));
 
     // Efecto para sincronizar el estado local con el formulario
     useEffect(() =>
@@ -57,69 +48,7 @@ export default function ReportBuilder()
 
         if (content && content.length > 0)
         {
-            const transformedContent = content.map((section) =>
-            {
-                if (section.$type === "textBlock")
-                {
-                    const textBlock = section as TextBlock;
-                    const newSection: Section = {
-                        type: "textBlock",
-                        id: generateId(),
-                        title: textBlock.title,
-                        numbering: textBlock.numbering,
-                        level: textBlock.level,
-                        children: textBlock.sections.map((subsection) =>
-                        {
-                            if (subsection.$type === "textBlock")
-                            {
-                                return {
-                                    type: "textBlock",
-                                    id: generateId(),
-                                    title: subsection.title,
-                                    numbering: subsection.numbering,
-                                    level: subsection.level,
-                                    children: subsection.sections.map((content) =>
-                                    {
-                                        if (content.$type === "textBlock")
-                                        {
-                                            return {
-                                                type: "textArea",
-                                                id: generateId(),
-                                                text: content.title,
-                                                parentNumbering: subsection.numbering,
-                                            };
-                                        }
-                                        return {
-                                            type: "textArea",
-                                            id: generateId(),
-                                            text: "",
-                                            parentNumbering: subsection.numbering,
-                                        };
-                                    }),
-                                };
-                            }
-                            return {
-                                type: "textBlock",
-                                id: generateId(),
-                                title: "",
-                                numbering: textBlock.numbering,
-                                level: textBlock.level + 1,
-                                children: [],
-                            };
-                        }),
-                    };
-                    return newSection;
-                }
-                // Si es un TextArea, lo convertimos en un contenido
-                const textArea = section as TextArea;
-                const newContent: TextContent = {
-                    type: "textArea",
-                    id: generateId(),
-                    text: textArea.content,
-                    parentNumbering: "1",
-                };
-                return newContent;
-            }).filter((item): item is Section => item.type === "textBlock");
+            const transformedContent = content.map(mapTargetToLocal);
 
             setReport(transformedContent);
         }
@@ -128,18 +57,12 @@ export default function ReportBuilder()
     // Efecto para actualizar el formulario cuando cambia el reporte
     useEffect(() =>
     {
-        console.log("im updating (form?)");
-        console.log(JSON.stringify(report, null, 4));
-
         if (isUpdatingRef.current) return;
 
         isUpdatingRef.current = true;
 
         // Map the local type to the expected type
         const transformedContent: Array<ContentSection> = report.map(mapLocalToTarget);
-
-        console.log("i map, therefore i set");
-        console.log(JSON.stringify(transformedContent, null, 4));
 
         setValue("content", transformedContent);
     }, [report, setValue]);
@@ -225,7 +148,7 @@ export default function ReportBuilder()
 
     const updateSectionTitle = (id: string, title: string) =>
     {
-        const update = (sections: Array<Section>): Array<Section> => sections.map((section) =>
+        const update = (sections: Array<LocalContentSection>): Array<LocalContentSection> => sections.map((section) =>
         {
             // Si encontramos la sección que queremos actualizar
             if (section.id === id)
@@ -234,6 +157,11 @@ export default function ReportBuilder()
             }
 
             // Si no es la sección que buscamos, actualizamos sus hijos
+            if (section.type === "textArea")
+            {
+                return section;
+            }
+
             const updatedChildren = section.children.map((child) =>
             {
                 if (child.type === "textBlock")
@@ -258,24 +186,32 @@ export default function ReportBuilder()
 
     const updateContent = (id: string, text: string) =>
     {
-        const update = (sections: Array<Section>): Array<Section> => sections.map((section) => ({
-            ...section,
-            children: section.children.map((child) =>
+        const update = (sections: Array<LocalContentSection>): Array<LocalContentSection> => sections.map((section) =>
+        {
+            if (section.type === "textArea")
             {
-                if (child.type === "textArea" && child.id === id)
-                {
-                    return { ...child, text };
-                }
-                if (child.type === "textBlock")
-                {
-                    return {
-                        ...child,
-                        children: update([child]).flatMap((s) => s.children),
-                    };
-                }
-                return child;
-            }),
-        }));
+                return section;
+            }
+            else
+            {
+                return {
+                    ...section, children: section.children.map((child) =>
+                    {
+                        if (child.type === "textArea" && child.id === id)
+                        {
+                            return { ...child, text };
+                        } if (child.type === "textBlock")
+                        {
+                            return {
+                                ...child,
+                                children: update([child]).flatMap((s) => s.children),
+                            };
+                        }
+                        return child;
+                    }),
+                };
+            }
+        });
 
         setReport((prev) => update(prev));
     };
@@ -310,7 +246,7 @@ export default function ReportBuilder()
         setReport((prev) => removeById(prev) as Array<Section>);
     };
 
-    const renderSection = (section: Section) => (
+    const renderSection = (section: LocalContentSection) => (
         <div key={section.id} className="mb-4 pl-4 border-l-2">
             <div className="flex items-center gap-2 mb-2">
                 <Input
@@ -352,6 +288,7 @@ export default function ReportBuilder()
             </div>
 
             <div className="pl-4">
+                {" "}
                 {section.children.map((child) =>
                 {
                     if (child.type === "textBlock")
@@ -419,6 +356,31 @@ function mapLocalToTarget(input: LocalContentSection): ContentSection
         const returnValue: TextArea = {
             $type: "textArea",
             content: input.text,
+        };
+        return returnValue;
+    }
+}
+function mapTargetToLocal(input: ContentSection): LocalContentSection
+{
+    if (input.$type === "textBlock")
+    {
+        const returnValue: Section = {
+            type: "textBlock",
+            id: generateId(),
+            title: input.title,
+            numbering: input.numbering,
+            level: input.level,
+            children: input.sections.map(mapTargetToLocal),
+        };
+        return returnValue;
+    }
+    else
+    {
+        const returnValue: TextContent = {
+            type: "textArea",
+            id: generateId(),
+            text: input.content,
+            parentNumbering: "", // You need to provide this somehow, it's missing in target
         };
         return returnValue;
     }
