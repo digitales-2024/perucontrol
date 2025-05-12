@@ -253,10 +253,14 @@ public class QuotationController(
         // Validar si la cotización está asociada a un proyecto cuando se intenta rechazar
         if (patchDto.Status == QuotationStatus.Rejected)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Quotation != null && p.Quotation.Id == id);
+            var project = await _context.Projects.FirstOrDefaultAsync(p =>
+                p.Quotation != null && p.Quotation.Id == id
+            );
             if (project != null)
             {
-                return BadRequest("No se puede rechazar una cotización que está asociada a un proyecto");
+                return BadRequest(
+                    "No se puede rechazar una cotización que está asociada a un proyecto"
+                );
             }
         }
 
@@ -316,7 +320,7 @@ public class QuotationController(
         var quotation = _dbSet
             .Include(q => q.QuotationServices)
             .Include(q => q.Client)
-            .Include(q => q.Services) 
+            .Include(q => q.Services)
             .FirstOrDefault(q => q.Id == id);
 
         if (quotation == null)

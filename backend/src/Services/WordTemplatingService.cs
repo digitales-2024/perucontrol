@@ -227,13 +227,22 @@ public class WordTemplateService
 
         var body = mainPart.Document.Body;
 
-
         // Replace placeholders on main document
-        var placeholders = new Dictionary<string, string> {
-            {"{sign_date}", appointment.CompleteReport.SigningDate?.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-PE")) ?? ""},
-            {"{client_name}", appointment.Project.Client.RazonSocial ?? appointment.Project.Client.Name},
-            {"{client_address}", appointment.Project.Address},
-            {"{client_supervisor}", "-"},
+        var placeholders = new Dictionary<string, string>
+        {
+            {
+                "{sign_date}",
+                appointment.CompleteReport.SigningDate?.ToString(
+                    "dd 'de' MMMM 'de' yyyy",
+                    new System.Globalization.CultureInfo("es-PE")
+                ) ?? ""
+            },
+            {
+                "{client_name}",
+                appointment.Project.Client.RazonSocial ?? appointment.Project.Client.Name
+            },
+            { "{client_address}", appointment.Project.Address },
+            { "{client_supervisor}", "-" },
         };
         foreach (var text in body.Descendants<Text>())
         {
@@ -324,7 +333,6 @@ public class WordTemplateService
                 }),
             ];
         }
-
 
         // Process Tables in Order
         ProcessTable(body, 0, "{service_date}", dataForTable1);
@@ -596,7 +604,8 @@ public class WordTemplateService
             // No longer setting Heading styles based on textBlock.Level.
             if (styleParaProps != null)
             {
-                plainTextParagraph.ParagraphProperties = styleParaProps.CloneNode(true) as ParagraphProperties;
+                plainTextParagraph.ParagraphProperties =
+                    styleParaProps.CloneNode(true) as ParagraphProperties;
             }
             // If styleParaProps is null, the paragraph gets default properties.
             // textBlock.Level is now ignored for styling purposes here.

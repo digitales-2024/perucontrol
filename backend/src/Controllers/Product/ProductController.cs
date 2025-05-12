@@ -197,12 +197,15 @@ public class ProductController(DatabaseContext context, ProductService productSe
         }
 
         // Verificar si el producto está siendo utilizado en algún tratamiento de alguna cita
-        var isProductInUse = await context.TreatmentProducts
-            .AnyAsync(tp => tp.Product.Id == id && tp.IsActive);
+        var isProductInUse = await context.TreatmentProducts.AnyAsync(tp =>
+            tp.Product.Id == id && tp.IsActive
+        );
 
         if (isProductInUse)
         {
-            return BadRequest("No se puede eliminar el producto porque está siendo utilizado en tratamientos activos.");
+            return BadRequest(
+                "No se puede eliminar el producto porque está siendo utilizado en tratamientos activos."
+            );
         }
 
         product.IsActive = false;
