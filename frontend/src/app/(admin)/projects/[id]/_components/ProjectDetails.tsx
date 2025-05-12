@@ -294,7 +294,7 @@ export function ProjectDetails({
                 {/* Tarjeta principal de información */}
                 <Card>
                     <CardHeader className="pb-2">
-                        <div className="grid grid-cols-[auto_5rem_5rem] sm:items-center gap-4">
+                        <div className="grid grid-cols-[auto_5rem] sm:items-center gap-4">
                             <div>
                                 <div className="flex flex-wrap items-center gap-4">
                                     <CardTitle className="text-xl md:text-2xl">
@@ -319,13 +319,6 @@ export function ProjectDetails({
                                     Editar
                                 </Button>
                             )}
-                            <Button
-                                type="button"
-                                onClick={() => router.push(`/projects/${projectId}/evento/documentos`)}
-                            >
-                                <Download className="h-4 w-4" />
-                                Informes
-                            </Button>
                         </div>
                     </CardHeader>
 
