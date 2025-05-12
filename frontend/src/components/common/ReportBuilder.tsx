@@ -13,19 +13,19 @@ type TextContent = {
     type: "content";
     id: string;
     text: string;
-    parentNumbering: string;
+    visualNumbering: string;
 };
 
 type Section = {
     type: "section";
     id: string;
     title: string;
-    numbering: string;
+    visualNumbering: string;
     level: number;
     children: Array<Section | TextContent>;
 };
 
-export default function ReportBuilder()
+export default function ReportBuilder({startNumbering}: {startNumbering: string})
 {
     const { setValue, watch } = useFormContext<CompleteReportDTO>();
     const content = watch("content");
@@ -39,7 +39,7 @@ export default function ReportBuilder()
             type: "section",
             id: "1",
             title: "",
-            numbering: "1",
+            visualNumbering: startNumbering ?? "1",
             level: 0,
             children: [],
         },
@@ -56,18 +56,20 @@ export default function ReportBuilder()
 
         if (content && content.length > 0)
         {
-            const transformedContent = content.map((section) =>
+            const baseNumber = parseInt(startNumbering, 10);
+            const transformedContent = content.map((section, index) =>
             {
                 if (section.$type === "textBlock")
                 {
                     const textBlock = section as TextBlock;
+                    const sectionNumber = baseNumber + index;
                     const newSection: Section = {
                         type: "section",
                         id: generateId(),
                         title: textBlock.title,
-                        numbering: textBlock.numbering,
+                        visualNumbering: `${sectionNumber}`,
                         level: textBlock.level,
-                        children: textBlock.sections.map((subsection) =>
+                        children: textBlock.sections.map((subsection, subIndex) =>
                         {
                             if (subsection.$type === "textBlock")
                             {
@@ -75,9 +77,9 @@ export default function ReportBuilder()
                                     type: "section",
                                     id: generateId(),
                                     title: subsection.title,
-                                    numbering: subsection.numbering,
+                                    visualNumbering: `${sectionNumber}.${subIndex + 1}`,
                                     level: subsection.level,
-                                    children: subsection.sections.map((content) =>
+                                    children: subsection.sections.map((content, contentIndex) =>
                                     {
                                         if (content.$type === "textBlock")
                                         {
@@ -85,14 +87,14 @@ export default function ReportBuilder()
                                                 type: "content",
                                                 id: generateId(),
                                                 text: content.title,
-                                                parentNumbering: subsection.numbering,
+                                                visualNumbering: `${sectionNumber}.${subIndex + 1}.${contentIndex + 1}`,
                                             };
                                         }
                                         return {
                                             type: "content",
                                             id: generateId(),
                                             text: "",
-                                            parentNumbering: subsection.numbering,
+                                            visualNumbering: `${sectionNumber}.${subIndex + 1}.${contentIndex + 1}`,
                                         };
                                     }),
                                 };
@@ -101,7 +103,7 @@ export default function ReportBuilder()
                                 type: "section",
                                 id: generateId(),
                                 title: "",
-                                numbering: textBlock.numbering,
+                                visualNumbering: `${sectionNumber}.${subIndex + 1}`,
                                 level: textBlock.level + 1,
                                 children: [],
                             };
@@ -109,20 +111,19 @@ export default function ReportBuilder()
                     };
                     return newSection;
                 }
-                // Si es un TextArea, lo convertimos en un contenido
                 const textArea = section as TextArea;
                 const newContent: TextContent = {
                     type: "content",
                     id: generateId(),
                     text: textArea.content,
-                    parentNumbering: "1",
+                    visualNumbering: startNumbering,
                 };
                 return newContent;
             }).filter((item): item is Section => item.type === "section");
 
             setReport(transformedContent);
         }
-    }, [content]);
+    }, [content, startNumbering]);
 
     // Efecto para actualizar el formulario cuando cambia el reporte
     useEffect(() =>
@@ -133,7 +134,7 @@ export default function ReportBuilder()
         const transformedContent: Array<TextBlock> = report.map((section) => ({
             $type: "textBlock" as const,
             title: section.title,
-            numbering: section.numbering,
+            numbering: "1", // Siempre enviamos "1" al backend
             level: section.level,
             sections: section.children.map((child): TextBlock =>
             {
@@ -143,7 +144,7 @@ export default function ReportBuilder()
                     return {
                         $type: "textBlock" as const,
                         title: sectionChild.title,
-                        numbering: sectionChild.numbering,
+                        numbering: "1", // Siempre enviamos "1" al backend
                         level: sectionChild.level,
                         sections: sectionChild.children.map((content): TextBlock =>
                         {
@@ -153,7 +154,7 @@ export default function ReportBuilder()
                                 return {
                                     $type: "textBlock" as const,
                                     title: contentChild.text,
-                                    numbering: contentChild.parentNumbering,
+                                    numbering: "1", // Siempre enviamos "1" al backend
                                     level: sectionChild.level + 1,
                                     sections: [],
                                 };
@@ -162,7 +163,7 @@ export default function ReportBuilder()
                             return {
                                 $type: "textBlock" as const,
                                 title: sectionContent.title,
-                                numbering: sectionContent.numbering,
+                                numbering: "1", // Siempre enviamos "1" al backend
                                 level: sectionChild.level + 1,
                                 sections: [],
                             };
@@ -175,7 +176,7 @@ export default function ReportBuilder()
                     return {
                         $type: "textBlock" as const,
                         title: contentChild.text,
-                        numbering: section.numbering,
+                        numbering: "1", // Siempre enviamos "1" al backend
                         level: section.level + 1,
                         sections: [],
                     };
@@ -183,7 +184,7 @@ export default function ReportBuilder()
                 return {
                     $type: "textBlock" as const,
                     title: "",
-                    numbering: section.numbering,
+                    numbering: "1", // Siempre enviamos "1" al backend
                     level: section.level + 1,
                     sections: [],
                 };
@@ -194,11 +195,12 @@ export default function ReportBuilder()
 
     const addMainSection = () =>
     {
+        const baseNumber = parseInt(startNumbering, 10);
         const newSection: Section = {
             type: "section",
             id: generateId(),
             title: "",
-            numbering: `${report.length + 1}`,
+            visualNumbering: `${baseNumber + report.length}`,
             level: 0,
             children: [],
         };
@@ -219,7 +221,7 @@ export default function ReportBuilder()
                         type: "section",
                         id: generateId(),
                         title: "",
-                        numbering: `${node.numbering}.${siblingSections + 1}`,
+                        visualNumbering: `${node.visualNumbering}.${siblingSections + 1}`,
                         level: parentLevel + 1,
                         children: [],
                     };
@@ -252,7 +254,7 @@ export default function ReportBuilder()
                         type: "content",
                         id: generateId(),
                         text: "",
-                        parentNumbering: node.numbering,
+                        visualNumbering: node.visualNumbering,
                     };
 
                     return {
@@ -275,26 +277,21 @@ export default function ReportBuilder()
     {
         const update = (sections: Array<Section>): Array<Section> => sections.map((section) =>
         {
-            // Si encontramos la sección que queremos actualizar
             if (section.id === id)
             {
                 return { ...section, title };
             }
 
-            // Si no es la sección que buscamos, actualizamos sus hijos
             const updatedChildren = section.children.map((child) =>
             {
                 if (child.type === "section")
                 {
-                    // Si es una sección, actualizamos recursivamente
                     const updatedSection = update([child])[0];
                     return updatedSection;
                 }
-                // Si es contenido, lo dejamos igual
                 return child;
             });
 
-            // Retornamos la sección con sus hijos actualizados
             return {
                 ...section,
                 children: updatedChildren,
@@ -330,7 +327,6 @@ export default function ReportBuilder()
 
     const deleteItem = (id: string) =>
     {
-        // Verificar si es una sección principal y si es la única
         const isMainSection = report.some((section) => section.id === id);
         if (isMainSection && report.length === 1)
         {
@@ -349,25 +345,152 @@ export default function ReportBuilder()
                         children: removeById(node.children),
                     };
                 }
-                else
-                {
-                    return node;
-                }
+                return node;
             });
 
         setReport((prev) => removeById(prev) as Array<Section>);
     };
 
     const renderSection = (section: Section) => (
+        <div key={section.id} className="mb-6 pl-6 border-l-2 border-gray-200 hover:border-blue-400 transition-colors">
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+                <div className="flex-1 flex items-center gap-2">
+                    <span className="flex items-center justify-center text-sm font-semibold bg-slate-100 text-slate-700 rounded-md h-7 min-w-[2.5rem] px-2">
+                        {section.visualNumbering}
+                    </span>
+                    <Input
+                        value={section.title}
+                        onChange={(e) => updateSectionTitle(section.id, e.target.value)}
+                        onKeyDown={(e) =>
+                        {
+                            if (e.key === "Enter")
+                            {
+                                e.preventDefault();
+                            }
+                        }}
+                        placeholder="Título de la sección"
+                        className="flex-1 border-slate-300 focus-visible:ring-slate-400 shadow-sm"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addSubsection(section.id, section.level)}
+                        className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
+                    >
+                        <PlusCircle className="h-4 w-4 mr-1 text-slate-500" />
+                        Subsección
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addContent(section.id)}
+                        className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
+                    >
+                        <PlusCircle className="h-4 w-4 mr-1 text-slate-500" />
+                        Contenido
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteItem(section.id)}
+                        className="hover:bg-red-600"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+
+            <div className="pl-5">
+                {section.children.map((child) =>
+                {
+                    if (child.type === "section")
+                    {
+                        return renderSection(child);
+                    }
+                    return (
+                        <div key={child.id} className="mb-4 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                            <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center">
+                                <span className="text-sm font-medium text-slate-600 flex-1">
+                                    Contenido de texto
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => deleteItem(child.id)}
+                                    className="h-8 px-3"
+                                >
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Eliminar
+                                </Button>
+                            </div>
+                            <div className="p-3">
+                                <Textarea
+                                    value={child.text}
+                                    onChange={(e) => updateContent(child.id, e.target.value)}
+                                    onKeyDown={(e) =>
+                                    {
+                                        if (e.key === "Enter" && !e.shiftKey)
+                                        {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    rows={6}
+                                    placeholder="Escribe el contenido aquí..."
+                                    className="w-full border-slate-200 focus-visible:ring-slate-400 resize-y min-h-[150px]"
+                                />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="p-6 border border-slate-200 rounded-lg bg-white shadow-sm">
+            <div className="mb-4">
+                <h3 className="text-lg font-medium text-slate-800 mb-1">
+                    Estructura del informe
+                </h3>
+                <p className="text-sm text-slate-500">
+                    Crea y organiza las secciones y contenidos de tu informe
+                </p>
+            </div>
+            <div className="space-y-4 divide-y divide-slate-100">
+                {report.map(renderSection)}
+            </div>
+            <Button
+                type="button"
+                onClick={addMainSection}
+                className="mt-6 bg-slate-800 hover:bg-slate-700 text-white"
+            >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Agregar Sección Principal
+            </Button>
+        </div>
+    );
+
+    /* const renderSection = (section: Section) => (
         <div key={section.id} className="mb-4 pl-4 border-l-2">
-            <div className="flex items-center gap-2 mb-2">
-                <Input
-                    value={`${section.title}`}
-                    onChange={(e) => updateSectionTitle(section.id, e.target.value)}
-                    placeholder={`${section.numbering}. Título`}
-                    className="flex-1"
-                />
-                <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="flex-1 flex items-center">
+                    <span className="text-sm text-center font-medium text-gray-500 min-w-[2rem]">
+                        {section.visualNumbering}
+                    </span>
+                    <Input
+                        value={section.title}
+                        onChange={(e) => updateSectionTitle(section.id, e.target.value)}
+                        placeholder="Título"
+                        className="flex-1"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-2">
                     <Button
                         type="button"
                         variant="outline"
@@ -408,13 +531,15 @@ export default function ReportBuilder()
                     }
                     return (
                         <div key={child.id} className="mb-2">
-                            <Textarea
-                                value={child.text}
-                                onChange={(e) => updateContent(child.id, e.target.value)}
-                                rows={8}
-                                placeholder="Contenido"
-                                className="w-full"
-                            />
+                            <div className="flex items-start gap-2">
+                                <Textarea
+                                    value={child.text}
+                                    onChange={(e) => updateContent(child.id, e.target.value)}
+                                    rows={6}
+                                    placeholder="Contenido"
+                                    className="flex-1"
+                                />
+                            </div>
                             <div className="flex justify-end mt-2">
                                 <Button
                                     type="button"
@@ -446,5 +571,5 @@ export default function ReportBuilder()
                 </Button>
             </div>
         </div>
-    );
+    ); */
 }
