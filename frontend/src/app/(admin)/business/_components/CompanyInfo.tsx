@@ -16,7 +16,6 @@ import { companyInfoSchema, CompanyInfoSchema } from "../schemas";
 import { toastWrapper } from "@/types/toasts";
 import { UpdateBusiness } from "../actions";
 import { components } from "@/types/api";
-import ReportBuilder from "@/components/common/ReportBuilder";
 
 export function CompanyInfoForm({ businessInfo }: { businessInfo: components["schemas"]["Business"] })
 {
@@ -723,11 +722,6 @@ export function CompanyInfoForm({ businessInfo }: { businessInfo: components["sc
                         Guardar cambios
                     </Button>
                 </CardFooter>
-            </Card>
-            <Card className="w-full max-w-4xl bg-transparent">
-                <CardContent>
-                    <ReportBuilder />
-                </CardContent>
             </Card>
         </div>
     );

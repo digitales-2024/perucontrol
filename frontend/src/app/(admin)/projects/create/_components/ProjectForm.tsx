@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 interface ProjectFormProps {
     clients: Array<components["schemas"]["Client"]>;
     services: Array<components["schemas"]["Service"]>;
-    quotations: Array<components["schemas"]["Quotation3"]>;
+    quotations: Array<components["schemas"]["Quotation2"]>;
 }
 
 export function ProjectForm({ clients, services, quotations }: ProjectFormProps)

@@ -3317,9 +3317,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Quotation3"]>;
-                        "application/json": Array<components["schemas"]["Quotation3"]>;
-                        "text/json": Array<components["schemas"]["Quotation3"]>;
+                        "text/plain": Array<components["schemas"]["Quotation2"]>;
+                        "application/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/json": Array<components["schemas"]["Quotation2"]>;
                     };
                 };
             };
@@ -3347,9 +3347,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Quotation3"];
-                        "application/json": components["schemas"]["Quotation3"];
-                        "text/json": components["schemas"]["Quotation3"];
+                        "text/plain": components["schemas"]["Quotation2"];
+                        "application/json": components["schemas"]["Quotation2"];
+                        "text/json": components["schemas"]["Quotation2"];
                     };
                 };
                 /** @description Bad Request */
@@ -3396,9 +3396,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Quotation3"];
-                        "application/json": components["schemas"]["Quotation3"];
-                        "text/json": components["schemas"]["Quotation3"];
+                        "text/plain": components["schemas"]["Quotation2"];
+                        "application/json": components["schemas"]["Quotation2"];
+                        "text/json": components["schemas"]["Quotation2"];
                     };
                 };
                 /** @description Not Found */
@@ -3742,9 +3742,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Quotation3"]>;
-                        "application/json": Array<components["schemas"]["Quotation3"]>;
-                        "text/json": Array<components["schemas"]["Quotation3"]>;
+                        "text/plain": Array<components["schemas"]["Quotation2"]>;
+                        "application/json": Array<components["schemas"]["Quotation2"]>;
+                        "text/json": Array<components["schemas"]["Quotation2"]>;
                     };
                 };
             };
@@ -4513,6 +4513,134 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/CompleteReport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get CompleteReport of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CompleteReportDTO"];
+                        "application/json": components["schemas"]["CompleteReportDTO"];
+                        "text/json": components["schemas"]["CompleteReportDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update CompleteReport of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateCompleteReportDTO"];
+                    "text/json": components["schemas"]["UpdateCompleteReportDTO"];
+                    "application/*+json": components["schemas"]["UpdateCompleteReportDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/CompleteReport/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Complete Report as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Product": {
         parameters: {
             query?: never;
@@ -4777,48 +4905,6 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        Client2: {
-            /** Format: int32 */
-            clientNumber: number;
-            typeDocument: string;
-            typeDocumentValue: string;
-            razonSocial?: string | null;
-            businessType?: string | null;
-            name: string;
-            fiscalAddress: string;
-            email: string;
-            clientLocations: components["schemas"];
-            phoneNumber: string;
-            contactName?: string | null;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        Client3: {
-            /** Format: int32 */
-            clientNumber: number;
-            typeDocument: string;
-            typeDocumentValue: string;
-            razonSocial?: string | null;
-            businessType?: string | null;
-            name: string;
-            fiscalAddress: string;
-            email: string;
-            clientLocations: components["schemas"];
-            phoneNumber: string;
-            contactName?: string | null;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
         ClientCreateDTO: {
             typeDocument: string;
             typeDocumentValue: string;
@@ -4855,6 +4941,40 @@ export interface components {
             phoneNumber?: string | null;
             contactName?: string | null;
             clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
+        };
+        CompleteReport: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        CompleteReportDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content: Array<components["schemas"]["ContentSection"]>;
+        };
+        ContentSection: components["schemas"]["ContentSectionTextBlock"] | components["schemas"]["ContentSectionTextArea"];
+        ContentSectionTextArea: {
+            /** @enum {string} */
+            $type?: "textArea";
+            content: string;
+        };
+        ContentSectionTextBlock: {
+            /** @enum {string} */
+            $type?: "textBlock";
+            title: string;
+            numbering: string;
+            /** Format: int32 */
+            level: number;
+            sections: Array<unknown>;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
@@ -4962,6 +5082,7 @@ export interface components {
             cancelled?: boolean;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
+            completeReport?: components["schemas"]["CompleteReport"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -5189,7 +5310,7 @@ export interface components {
         ProjectSummarySingle: {
             client: components["schemas"]["Client"];
             services: Array<components["schemas"]["Service"]>;
-            quotation?: components["schemas"]["Quotation2"];
+            quotation?: components["schemas"]["Quotation"];
             /** Format: int32 */
             projectNumber: number;
             address: string;
@@ -5213,7 +5334,7 @@ export interface components {
         ProjectSummarySingle2: {
             client: components["schemas"]["Client"];
             services: Array<components["schemas"]["Service"]>;
-            quotation?: components["schemas"]["Quotation2"];
+            quotation?: components["schemas"]["Quotation"];
             /** Format: int32 */
             projectNumber: number;
             address: string;
@@ -5236,8 +5357,8 @@ export interface components {
         Quotation: {
             /** Format: int32 */
             quotationNumber: number;
-            client: components["schemas"]["Client2"];
-            services?: Array<components["schemas"]>;
+            client: components["schemas"]["Client"];
+            services?: Array<unknown>;
             status: components["schemas"]["QuotationStatus"];
             frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
@@ -5266,38 +5387,6 @@ export interface components {
             modifiedAt?: string;
         } | null;
         Quotation2: {
-            /** Format: int32 */
-            quotationNumber: number;
-            client: components["schemas"]["Client3"];
-            services?: Array<components["schemas"]>;
-            status: components["schemas"]["QuotationStatus"];
-            frequency: components["schemas"]["QuotationFrequency"];
-            hasTaxes: boolean;
-            /** Format: date-time */
-            creationDate: string;
-            /** Format: date-time */
-            expirationDate: string;
-            serviceAddress: string;
-            paymentMethod: string;
-            others: string;
-            availability: string;
-            quotationServices: Array<components["schemas"]["QuotationService"]>;
-            /** @description Name and description of the Desinsectant to use */
-            desinsectant?: string | null;
-            /** @description Name and description of the Rodenticide to use */
-            derodent?: string | null;
-            /** @description Name and description of the Disinfectant to use */
-            disinfectant?: string | null;
-            termsAndConditions?: Array<string>;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        Quotation3: {
             /** Format: int32 */
             quotationNumber: number;
             client: components["schemas"]["Client"];
@@ -5612,6 +5701,11 @@ export interface components {
         UpdateAppointmentTimesDto: {
             enterTime?: string | null;
             leaveTime?: string | null;
+        };
+        UpdateCompleteReportDTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
         };
         UserReturn: {
             name: string;

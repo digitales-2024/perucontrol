@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 import { revalidatePath } from "next/cache";
 import { ok, err, Result } from "@/utils/result";
-import { FetchError } from "@/types/backend";
+import { backend, FetchError, wrapper } from "@/types/backend";
+import { components } from "@/types/api";
 
 export async function UploadMurinoMap(appointmentId: string, formData: FormData): Promise<Result<null, FetchError>>
 {
@@ -54,4 +55,26 @@ export async function UploadMurinoMap(appointmentId: string, formData: FormData)
             error: e,
         });
     }
+}
+
+export async function UpdateReport(
+    appointmentId: string,
+    body: components["schemas"]["CompleteReportDTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/CompleteReport", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
 }

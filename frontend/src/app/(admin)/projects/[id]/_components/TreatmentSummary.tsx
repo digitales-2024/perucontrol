@@ -22,7 +22,7 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
             {/* Tarjeta de Productos */}
             <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3 border-b">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                         <div className="flex items-center gap-3">
                             <div className="bg-blue-100 p-2 rounded-lg">
                                 <Package className="h-6 w-6 text-blue-600" />
@@ -121,7 +121,7 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
             {/* Tarjeta de Áreas */}
             <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3 border-b">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                         <div className="flex items-center gap-3">
                             <div className="bg-green-100 p-2 rounded-lg">
                                 <MapPin className="h-6 w-6 text-green-600" />

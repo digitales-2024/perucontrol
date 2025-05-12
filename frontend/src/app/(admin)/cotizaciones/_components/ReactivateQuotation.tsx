@@ -20,7 +20,7 @@ import { ReactivatedQuotation } from "../actions";
 interface ReactivateQuotationProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation3"],
+  quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
 }
 
