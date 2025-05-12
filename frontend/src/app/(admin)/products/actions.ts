@@ -19,20 +19,20 @@ export async function RegisterProduct(product: components["schemas"]["ProductCre
     return ok(null);
 }
 
-/* export async function UpdateProduct(id: string, newProduct: components["schemas"]["Product"]): Promise<Result<null, FetchError>>
-{
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Product/{id}", {
-        ...auth,
-        body: newProduct,
-        params: {
-            id,
-        },
-    }));
+// export async function UpdateProduct(id: string, newProduct: components["schemas"]["Product"]): Promise<Result<null, FetchError>>
+// {
+//     const [, error] = await wrapper((auth) => backend.PATCH("/api/Product/{id}", {
+//         ...auth,
+//         body: newProduct,
+//         params: {
+//             id,
+//         },
+//     }));
 
-    if (error)
-    {
-        console.log("Error updating product:", error);
-        return err(error);
-    }
-    return ok(null);
-} */
+//     if (error)
+//     {
+//         console.log("Error updating product:", error);
+//         return err(error);
+//     }
+//     return ok(null);
+// }

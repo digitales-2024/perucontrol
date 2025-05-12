@@ -4,14 +4,19 @@ import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTableExpanded } from "@/app/(admin)/projects/_components/DataTableExpanded";
 import { Button } from "@/components/ui/button";
-import { Package, ChevronDown, ChevronRight } from "lucide-react";
+import { Package, ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { components } from "@/types/api";
+import { CreateProductSheet } from "./CreateProductSheet";
+import { UpdateProductSheet } from "./UpdateProductSheet";
 
 type Product = components["schemas"]["ProductGetAllOutputDTO"];
 
 export function ProductsDataTable({ data }: { data: Array<Product> })
 {
     const [globalFilter, setGlobalFilter] = useState("");
+    const [showCreateProduct, setShowCreateProduct] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [showUpdateProduct, setShowUpdateProduct] = useState(false);
 
     const columns: Array<ColumnDef<Product>> = [
         {
@@ -49,11 +54,51 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
                 </span>
             ),
         },
+        {
+            id: "actions",
+            header: "Acciones",
+            cell: ({ row }) =>
+            {
+                const product = row.original;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            onClick={() =>
+                            {
+                                setSelectedProduct(product);
+                                setShowUpdateProduct(true);
+                            }}
+                        >
+                            <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() =>
+                            {
+                                // TODO: Implementar eliminación
+                            }}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                );
+            },
+        },
     ];
 
     // Acciones de la barra de herramientas
     const toolbarActions = (
-        <Button variant="default" size="sm" className="ml-auto">
+        <Button
+            variant="default"
+            size="sm"
+            className="ml-auto"
+            onClick={() => setShowCreateProduct(true)}
+        >
             <Package className="h-4 w-4 mr-2" />
             Nuevo producto
         </Button>
@@ -85,13 +130,26 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
     );
 
     return (
-        <DataTableExpanded
-            columns={columns}
-            data={data}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            toolbarActions={toolbarActions}
-            renderExpandedContent={renderExpandedContent}
-        />
+        <>
+            <DataTableExpanded
+                columns={columns}
+                data={data}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                toolbarActions={toolbarActions}
+                renderExpandedContent={renderExpandedContent}
+            />
+            <CreateProductSheet
+                open={showCreateProduct}
+                onOpenChange={setShowCreateProduct}
+            />
+            {selectedProduct && (
+                <UpdateProductSheet
+                    open={showUpdateProduct}
+                    onOpenChange={setShowUpdateProduct}
+                    product={selectedProduct}
+                />
+            )}
+        </>
     );
 }
