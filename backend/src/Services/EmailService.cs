@@ -2,16 +2,17 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using PeruControl.Configuration;
 
 namespace PeruControl.Services;
 
 public class EmailService
 {
-    private readonly Configuration.EmailConfiguration _settings;
+    private readonly EmailConfiguration _settings;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
-        IOptions<Configuration.EmailConfiguration> settings,
+        IOptions<EmailConfiguration> settings,
         ILogger<EmailService> logger
     )
     {
