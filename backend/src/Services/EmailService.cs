@@ -1,19 +1,22 @@
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace PeruControl.Services;
 
 public class EmailService
 {
     private readonly Configuration.EmailConfiguration _settings;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IOptions<Configuration.EmailConfiguration> settings)
+    public EmailService(IOptions<Configuration.EmailConfiguration> settings, ILogger<EmailService> logger)
     {
         _settings = settings.Value;
+        _logger = logger;
     }
 
-    public async Task SendEmailAsync(string to, string subject, string htmlBody, string textBody, List<EmailAttachment> attachments)
+    public async Task<(bool Success, string? ErrorMessage)> SendEmailAsync(string to, string subject, string htmlBody, string? textBody, List<EmailAttachment> attachments)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
@@ -51,10 +54,40 @@ public class EmailService
             await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.UseSsl);
             await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword);
             await client.SendAsync(message);
+            return (Success: true, ErrorMessage: null);
+        }
+        catch (AuthenticationException ex)
+        {
+            _logger.LogError(ex, "Authentication failed while sending email.");
+            return (Success: false, ErrorMessage: $"Error autenticando con el servidor de correo");
+        }
+        catch (SmtpCommandException ex)
+        {
+            _logger.LogError(ex, "SMTP command error while sending email.");
+            return (Success: false, ErrorMessage: $"Error SMTP: {ex.Message} (código {ex.StatusCode})");
+        }
+        catch (SmtpProtocolException ex)
+        {
+            _logger.LogError(ex, "SMTP protocol error while sending email.");
+            return (Success: false, ErrorMessage: $"Error de protocolo SMTP");
+        }
+        catch (IOException ex)
+        {
+            _logger.LogError(ex, "Network error while sending email.");
+            return (Success: false, ErrorMessage: $"Error de red al enviar correo");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while sending email.");
+            return (Success: false, ErrorMessage: $"Error al enviar correo. Contacte a soporte");
         }
         finally
         {
-            await client.DisconnectAsync(true);
+            // Disconnect even if sending failed
+            if (client.IsConnected)
+            {
+                await client.DisconnectAsync(true);
+            }
         }
     }
 }

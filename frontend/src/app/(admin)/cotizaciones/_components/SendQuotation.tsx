@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Mail, PhoneCall, Send } from "lucide-react";
+import { Mail, OctagonAlert, PhoneCall, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GeneratePdf, SendQuotationPdfViaMail } from "../actions";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ export function SendQuotation({ id, startingEmail }: { id: string, startingEmail
 {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState(startingEmail);
+    const [error, setError] = useState("");
+    const [sending, setSending] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     useEffect(() =>
@@ -30,7 +32,7 @@ export function SendQuotation({ id, startingEmail }: { id: string, startingEmail
             const [pdfBlob, error] = await GeneratePdf(id);
             if (!!error)
             {
-                alert("error");
+                setError("Error cargando PDF");
                 return;
             }
 
@@ -49,7 +51,10 @@ export function SendQuotation({ id, startingEmail }: { id: string, startingEmail
 
     const sendEmail = async() =>
     {
+        setSending(true);
         const [, error] = await SendQuotationPdfViaMail(id, email);
+        setSending(false);
+
         if (!!error)
         {
             alert("error :c");
@@ -107,7 +112,10 @@ export function SendQuotation({ id, startingEmail }: { id: string, startingEmail
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="correo@ejemplo.com"
                         />
-                        <Button onClick={sendEmail}>
+                        <Button
+                            onClick={sendEmail}
+                            disabled={sending}
+                        >
                             <Mail />
                             Enviar
                         </Button>
@@ -118,11 +126,22 @@ export function SendQuotation({ id, startingEmail }: { id: string, startingEmail
                             Enviar por WhatsApp a:
                         </span>
                         <Input />
-                        <Button className="bg-green-600 text-white">
+                        <Button
+                            className="bg-green-600 text-white"
+                            disabled={sending || true}
+                        >
                             <PhoneCall />
                             Enviar
                         </Button>
                     </div>
+                    {error && (
+                        <div className="text-red-500 flex items-center gap-2">
+                            <OctagonAlert />
+                            Error:
+                            {" "}
+                            {error}
+                        </div>
+                    )}
                 </DialogHeader>
             </DialogContent>
         </Dialog>

@@ -348,7 +348,7 @@ public class QuotationController(
         }
 
         // send email
-        await emailService.SendEmailAsync(
+        var (ok, error) = await emailService.SendEmailAsync(
                 to: email,
                 subject: "Cotización PDF",
                 htmlBody: "",
@@ -363,8 +363,10 @@ public class QuotationController(
                 ]
         );
 
-        // send
-        // return File(pdfBytes, "application/pdf", "quotation.pdf");
+        if (!ok)
+        {
+            return StatusCode(500, error ?? "Error enviando el correo");
+        }
 
         return Ok();
     }
