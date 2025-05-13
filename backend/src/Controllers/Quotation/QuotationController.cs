@@ -377,7 +377,7 @@ public class QuotationController(
     }
 
 
-    [EndpointSummary("Send Quotation PDF via Email")]
+    [EndpointSummary("Send Quotation PDF via WhatsApp")]
     [HttpGet("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id
@@ -414,11 +414,10 @@ public class QuotationController(
         }
 
         await whatsappService.SendWhatsappServiceMessageAsync(
-            pdfBytes,
-            "",
-            "quotation.pdf",
-            "+51960954763",
-            "Hola, aquí está tu cotización"
+            fileBytes: pdfBytes,
+            contentSid: "HX7f995665c216252bce0294383e33dca9",
+            fileName: "quotation.pdf",
+            phoneNumber: "+51960954763"
         );
         return Ok();
     }

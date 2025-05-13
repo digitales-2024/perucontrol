@@ -16,6 +16,11 @@ export async function GET(request: NextRequest)
             return new NextResponse("Missing required parameters", { status: 400 });
         }
 
+        console.log("receiving GET on images...");
+        console.log(imageName);
+        console.log(bucketName);
+        console.log(mime);
+
         try
         {
             const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Business/image/${imageName}/${bucketName}?expectedMime=${mime}`);
