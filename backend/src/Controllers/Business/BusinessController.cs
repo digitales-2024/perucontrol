@@ -65,6 +65,7 @@ public class BusinessController(DatabaseContext db, ImageService imageService, S
         }
     }
 
+    [AllowAnonymous]
     [EndpointSummary("Get public R2 file")]
     [HttpGet("image/{key}/{bucketName}")]
     public async Task<ActionResult> GetPublicR2File(string key, string bucketName, [FromQuery] string expectedMime = "application/octet-stream")
