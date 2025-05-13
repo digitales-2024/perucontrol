@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,8 @@ namespace PeruControl.Controllers;
 public class QuotationController(
     DatabaseContext db,
     OdsTemplateService odsTemplateService,
-    LibreOfficeConverterService pDFConverterService
+    LibreOfficeConverterService pDFConverterService,
+    EmailService emailService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -309,6 +311,68 @@ public class QuotationController(
 
         // send
         return File(pdfBytes, "application/pdf", "quotation.pdf");
+    }
+
+    [EndpointSummary("Send Quotation PDF via Email")]
+    [HttpPost("{id}/email-pdf")]
+    public async Task<ActionResult> SendPDFViaEmail(
+        Guid id,
+        [FromQuery] [Required] [EmailAddress] string email
+    )
+    {
+        var quotation = await _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send email
+        var (ok, error) = await emailService.SendEmailAsync(
+            to: email,
+            subject: "Cotización PDF",
+            htmlBody: "",
+            textBody: "",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "cotizacion_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, error ?? "Error enviando el correo");
+        }
+
+        return Ok();
     }
 
     [EndpointSummary("Generate Excel")]

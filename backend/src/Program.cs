@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using PeruControl.Configuration;
 using PeruControl.Controllers;
 using PeruControl.Model;
 using PeruControl.Services;
@@ -129,7 +130,11 @@ builder.Services.AddScoped<SvgTemplateService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<S3Service>();
 builder.Services.AddScoped<WhatsappService>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.Configure<R2Config>(builder.Configuration.GetSection("R2Config"));
+builder.Services.Configure<EmailConfiguration>(
+    builder.Configuration.GetSection("EmailConfiguration")
+);
 
 var app = builder.Build();
 

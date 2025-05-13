@@ -26,6 +26,7 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 COPY PeruControl.csproj .
 RUN HUSKY=0 dotnet restore --locked-mode
 
+COPY Configuration ./Configuration
 COPY Controllers ./Controllers
 COPY Images ./Images
 COPY Migrations ./Migrations

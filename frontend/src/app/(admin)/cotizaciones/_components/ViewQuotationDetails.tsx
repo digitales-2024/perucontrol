@@ -27,8 +27,8 @@ import {
     Copy,
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
-// import { CreateQuotationSchema2 } from "../schemas";
 import { components } from "@/types/api";
+import { SendQuotation } from "./SendQuotation";
 
 export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation2"] })
 {
@@ -122,6 +122,8 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         <div className="flex flex-wrap items-center justify-evenly space-x-2 gap-1">
                             {quotation.isActive && (
                                 <>
+                                    <SendQuotation id={quotation.id!} startingEmail={quotation.client.email} />
+
                                     <div>
                                         {/* Botón para pantallas pequeñas */}
                                         <Button

@@ -271,3 +271,29 @@ export async function GeneratePdf(id: string): Promise<Result<Blob, FetchError>>
         });
     }
 }
+
+export async function SendQuotationPdfViaMail(id: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Quotation/{id}/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
