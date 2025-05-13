@@ -4,7 +4,7 @@ public class EmailConfiguration
 {
     public required string SmtpServer { get; set; }
     public required int SmtpPort { get; set; }
-    public required bool UseSsl { get; set; }
+    public bool UseSsl { get; set; } = true;
     public required string SenderName { get; set; }
     public required string SenderEmail { get; set; }
     public required string SmtpUsername { get; set; }
