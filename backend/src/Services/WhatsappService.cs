@@ -51,10 +51,10 @@ public class WhatsappService
 
     public async Task SendWhatsappServiceMessageAsync(
             byte[] fileBytes,
+            /// ID of the Twilio message template
             string contentSid,
             string fileName,
-            string phoneNumber,
-            string message
+            string phoneNumber
             )
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
@@ -65,14 +65,10 @@ public class WhatsappService
 
         // Upload the file to S3/R2 and get a public URL
         var uploadResult = await _s3Service.UploadAsync("tmp-my-file.pdf", new MemoryStream(fileBytes), "application/pdf");
-        var mediaUrl = uploadResult.Url;
 
-        // assert the url starts with the required url
-        if (!mediaUrl.StartsWith(_twilio.FileUrlStart))
-            throw new Exception("Invalid URL: Not starting with the required domain");
-
-        // trim
-        var trimmedUrl = mediaUrl.Substring(_twilio.FileUrlStart.Length);
+        var uploadKey = System.Net.WebUtility.UrlEncode(uploadResult.Key);
+        var mime = System.Net.WebUtility.UrlEncode("application/pdf");
+        var trimmedUrl = $"images?name={uploadKey}&bucket=perucontrol&mime={mime}";
 
         TwilioClient.Init(_twilio.AccountSid, _twilio.AuthToken);
 
@@ -83,8 +79,7 @@ public class WhatsappService
         {
             From = from,
             ContentSid = contentSid,
-            ContentVariables = $"{{\"name\":\"Josue\",\"id\":\"bd659322\",\"document_path\": \"{trimmedUrl}\"}}",
-            // ContentVariables = """{"name":"Josue","id":"bd659322","document_path": "images/6/6c/Rickroll.jpg"}""",
+            ContentVariables = $"{{\"name\":\"Josue\",\"id\":\"bd659322\",\"url_path\": \"{trimmedUrl}\"}}",
         };
 
         var twilioMessage = await MessageResource.CreateAsync(messageOptions);
