@@ -40,10 +40,31 @@ public class WhatsappService
         {
             From = from,
             ContentSid = "HX350d429d32e64a552466cafecbe95f3c",
-            ContentVariables = """{"1":"May the 5th","2":"noon"}""",
+            ContentVariables = """{"1":"May the 5th","2":"noon (que bendicion)"}""",
             // Body = message
         };
         // messageOptions.MediaUrl.Add(new Uri(mediaUrl));
+
+        var twilioMessage = await MessageResource.CreateAsync(messageOptions);
+        Console.WriteLine(twilioMessage.Body);
+    }
+
+    public async Task SendWhatsappServiceMessageAsync(byte[] fileBytes, string fileName, string phoneNumber, string message)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            throw new ArgumentException("Phone number is required.", nameof(phoneNumber));
+
+        TwilioClient.Init(_twilio.AccountSid, _twilio.AuthToken);
+
+        var to = new PhoneNumber($"whatsapp:{phoneNumber}");
+        var from = new PhoneNumber($"whatsapp:{_twilio.FromNumber}");
+
+        var messageOptions = new CreateMessageOptions(to)
+        {
+            From = from,
+            ContentSid = "HX8b471d4012e57f35a097b14295cb7a98",
+            ContentVariables = """{"name":"Josue","id":"bd659322 (que bendicion)","document_path": "images/6/6c/Rickroll.jpg"}""",
+        };
 
         var twilioMessage = await MessageResource.CreateAsync(messageOptions);
         Console.WriteLine(twilioMessage.Body);

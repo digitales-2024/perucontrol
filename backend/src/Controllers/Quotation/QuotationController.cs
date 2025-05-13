@@ -383,7 +383,7 @@ public class QuotationController(
         Guid id
     )
     {
-        await whatsappService.SendWhatsappMessageAsync(
+        await whatsappService.SendWhatsappServiceMessageAsync(
             [],
             "quotation.pdf",
             "+51960954763",
