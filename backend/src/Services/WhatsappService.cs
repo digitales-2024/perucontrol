@@ -49,10 +49,30 @@ public class WhatsappService
         Console.WriteLine(twilioMessage.Body);
     }
 
-    public async Task SendWhatsappServiceMessageAsync(byte[] fileBytes, string fileName, string phoneNumber, string message)
+    public async Task SendWhatsappServiceMessageAsync(
+            byte[] fileBytes,
+            string contentSid,
+            string fileName,
+            string phoneNumber,
+            string message
+            )
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
             throw new ArgumentException("Phone number is required.", nameof(phoneNumber));
+
+        if (fileBytes == null || fileBytes.Length == 0)
+            throw new ArgumentException("File is required.", nameof(fileBytes));
+
+        // Upload the file to S3/R2 and get a public URL
+        var uploadResult = await _s3Service.UploadAsync("tmp-my-file.pdf", new MemoryStream(fileBytes), "application/pdf");
+        var mediaUrl = uploadResult.Url;
+
+        // assert the url starts with the required url
+        if (!mediaUrl.StartsWith(_twilio.FileUrlStart))
+            throw new Exception("Invalid URL: Not starting with the required domain");
+
+        // trim
+        var trimmedUrl = mediaUrl.Substring(_twilio.FileUrlStart.Length);
 
         TwilioClient.Init(_twilio.AccountSid, _twilio.AuthToken);
 
@@ -62,8 +82,9 @@ public class WhatsappService
         var messageOptions = new CreateMessageOptions(to)
         {
             From = from,
-            ContentSid = "HX8b471d4012e57f35a097b14295cb7a98",
-            ContentVariables = """{"name":"Josue","id":"bd659322 (que bendicion)","document_path": "images/6/6c/Rickroll.jpg"}""",
+            ContentSid = contentSid,
+            ContentVariables = $"{{\"name\":\"Josue\",\"id\":\"bd659322\",\"document_path\": \"{trimmedUrl}\"}}",
+            // ContentVariables = """{"name":"Josue","id":"bd659322","document_path": "images/6/6c/Rickroll.jpg"}""",
         };
 
         var twilioMessage = await MessageResource.CreateAsync(messageOptions);

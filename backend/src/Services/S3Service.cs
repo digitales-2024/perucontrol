@@ -51,8 +51,8 @@ public class S3Service
     /// </summary>
     /// <param name="bucketName">The name of the bucket where the image will be stored.</param>
     /// <param name="key">The key (file path/name) for the uploaded image.</param>
-    /// <param name="imageStream">The stream containing the image data to upload.</param>
-    /// <param name="contentType">The MIME type of the image, defaults to "image/jpeg".</param>
+    /// <param name="fileStream">The stream containing the image data to upload.</param>
+    /// <param name="contentType">The MIME type of the image, defaults to "image/png".</param>
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains an
     /// <see cref="S3UploadResult"/> with details about the uploaded file.
@@ -61,10 +61,10 @@ public class S3Service
     /// <exception cref="ArgumentNullException">Thrown when imageStream is null.</exception>
     /// <exception cref="AmazonS3Exception">Thrown when an S3-specific error occurs.</exception>
     /// <exception cref="Exception">Thrown when an unexpected error occurs.</exception>
-    public async Task<S3UploadResult> UploadImageAsync(
+    public async Task<S3UploadResult> UploadAsync(
         string key,
-        Stream imageStream,
-        string contentType
+        Stream fileStream,
+        string contentType = "image/png"
     )
     {
         var bucketName = "perucontrol";
@@ -76,8 +76,8 @@ public class S3Service
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("Object key cannot be null or empty", nameof(key));
 
-        if (imageStream == null)
-            throw new ArgumentNullException(nameof(imageStream));
+        if (fileStream == null)
+            throw new ArgumentNullException(nameof(fileStream));
 
         try
         {
@@ -90,7 +90,7 @@ public class S3Service
             {
                 BucketName = bucketName,
                 Key = key,
-                InputStream = imageStream,
+                InputStream = fileStream,
                 ContentType = contentType,
                 // This is crucial for R2 compatibility
                 DisablePayloadSigning = true,
@@ -104,7 +104,7 @@ public class S3Service
             {
                 BucketName = bucketName,
                 Key = key,
-                // 10 years is excessive, but whatever
+                Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddYears(10),
             };
 

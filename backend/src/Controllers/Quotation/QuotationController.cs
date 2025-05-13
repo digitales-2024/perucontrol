@@ -383,8 +383,39 @@ public class QuotationController(
         Guid id
     )
     {
+        var quotation = await _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
         await whatsappService.SendWhatsappServiceMessageAsync(
-            [],
+            pdfBytes,
+            "",
             "quotation.pdf",
             "+51960954763",
             "Hola, aquí está tu cotización"

@@ -820,7 +820,7 @@ public class AppointmentController(
             }
 
             // Subir el nuevo archivo
-            var result = await s3Service.UploadImageAsync(key, file.OpenReadStream(), contentType);
+            var result = await s3Service.UploadAsync(key, file.OpenReadStream(), contentType);
 
             // Actualizar el proyecto
             projectAppointment.MurinoMapKey = result.Key;

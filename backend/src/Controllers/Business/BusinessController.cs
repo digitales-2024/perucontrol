@@ -6,7 +6,7 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class BusinessController(DatabaseContext db, ImageService imageService)
+public class BusinessController(DatabaseContext db, ImageService imageService, S3Service s3Service)
     : AbstractCrudController<Business, BusinessCreateDTO, BusinessPatchDTO>(db)
 {
     private readonly ImageService _imageService = imageService;
@@ -58,6 +58,30 @@ public class BusinessController(DatabaseContext db, ImageService imageService)
                 return NotFound("Image not found.");
 
             return File(stream, "image/png");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [EndpointSummary("Get public R2 file")]
+    [HttpGet("image/{key}/{bucketName}")]
+    public async Task<ActionResult> GetPublicR2File(string key, string bucketName, [FromQuery] string expectedMime = "application/octet-stream")
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return BadRequest("Key is required.");
+        if (string.IsNullOrWhiteSpace(bucketName))
+            return BadRequest("Key is required.");
+
+        try
+        {
+            var stream = await s3Service.DownloadImageAsync(key, bucketName);
+            if (stream is null)
+            {
+                return BadRequest("Imagen no encontrada");
+            }
+            return File(stream, expectedMime);
         }
         catch (Exception ex)
         {
