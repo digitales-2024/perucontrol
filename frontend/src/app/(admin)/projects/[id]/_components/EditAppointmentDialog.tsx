@@ -7,10 +7,11 @@ interface EditAppointmentDialogProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (newDate: Date) => void;
+    text: string,
     initialDate?: Date;
 }
 
-export function EditAppointmentDialog({ isOpen, onClose, onSave, initialDate }: EditAppointmentDialogProps)
+export function EditAppointmentDialog({ isOpen, onClose, onSave, initialDate, text }: EditAppointmentDialogProps)
 {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
 
@@ -32,7 +33,7 @@ export function EditAppointmentDialog({ isOpen, onClose, onSave, initialDate }: 
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Editar Fecha Programada
+                        {text}
                     </AlertDialogTitle>
                 </AlertDialogHeader>
                 <div className="space-y-4">

@@ -34,20 +34,66 @@ const data = {
             title: "Clientes",
             url: "/clients",
             icon: Users,
+            items: [
+                {
+                    title: "Todos los clientes",
+                    url: "/clients",
+                },
+                {
+                    title: "Nuevo cliente",
+                    url: "/clients/nuevo",
+                },
+            ],
         },
         {
             title: "Cotizaciones",
             url: "/cotizaciones",
             icon: HandCoins,
+            items: [
+                {
+                    title: "Todas las cotizaciones",
+                    url: "/cotizaciones",
+                },
+                {
+                    title: "Nueva cotización",
+                    url: "/cotizaciones/nuevo",
+                },
+            ],
         },
         {
             title: "Servicios",
             url: "/projects",
             icon: BugOff,
+            items: [
+                {
+                    title: "Todos los servicios",
+                    url: "/projects",
+                },
+                {
+                    title: "Nuevo servicio",
+                    url: "/projects/create",
+                },
+                {
+                    title: "Fichas de operacion",
+                    url: "/projects/ver/ficha",
+                },
+                {
+                    title: "Certificados",
+                    url: "/projects/ver/certificado",
+                },
+                {
+                    title: "Cronograma anual",
+                    url: "#",
+                },
+                {
+                    title: "Informes",
+                    url: "#",
+                },
+            ],
         },
         {
             title: "Ajustes",
-            url: "#",
+            url: "/business",
             icon: Settings2,
             items: [
                 {
@@ -55,12 +101,8 @@ const data = {
                     url: "/business",
                 },
                 {
-                    title: "Cuenta",
-                    url: "#",
-                },
-                {
-                    title: "Exportar datos",
-                    url: "#",
+                    title: "Productos",
+                    url: "/products",
                 },
             ],
         },
@@ -80,8 +122,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
                             <div className="text-center w-full">
                                 <Image
                                     className="inline-block"
-                                    src="/logo.png"
                                     alt="Logo"
+                                    src="/logo_perucontrol_com.svg"
                                     width={160}
                                     height={160}
                                 />

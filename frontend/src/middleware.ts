@@ -66,7 +66,6 @@ export async function middleware(request: NextRequest)
         return response;
     }
 
-    devlog("no cookie refresh performed, just continue");
     return NextResponse.next();
 }
 
@@ -162,7 +161,7 @@ async function refresh(refreshToken: string): Promise<Result<Array<string>, stri
 
 function devlog(message: string)
 {
-    if (process.env.NODE_ENV === "development")
+    if (false || process.env.NODE_ENV === "development")
     {
         console.log(`\tDEBUG: ${message}`);
     }
@@ -170,7 +169,7 @@ function devlog(message: string)
 
 export const config = {
     matcher: [
-        "/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml|portada.webp).*)",
+        "/((?!api|_next|_static|_vercel|favicon\\.ico|sitemap\\.xml|.*\\.(?:png|jpe?g|gif|svg|webp|bmp|ico|otf|ttf|tiff?)(?:$|\\?)).*)",
     ],
 };
 

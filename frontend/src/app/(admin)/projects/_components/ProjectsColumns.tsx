@@ -1,41 +1,52 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
+import { Calendar1, CircleUserRound, Hash, LandPlot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import { useState } from "react";
-import { DeleteProject } from "./DeleteProject";
 import { components } from "@/types/api";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type ProjectSummary = components["schemas"]["ProjectSummary"]
 
 export const columns: Array<ColumnDef<ProjectSummary>> = [
+    {
+        accessorKey: "createdAt",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                FECHA DE EMISIÓN
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            const formattedDate = row.original.createdAt
+                ? format(new Date(row.original.createdAt), "yyyy-MM-dd")
+                : "N/A";
+            return (
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <Calendar1 className="mr-1" />
+                    {formattedDate}
+                </span>
+            );
+        },
+    },
     {
         accessorKey: "orderNumber",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm text-center w-full"
             >
-                # Servicio
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                # SERVICIO
             </Button>
         ),
         cell: ({ row }) =>
@@ -45,6 +56,7 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <Hash className="mr-1" />
                     {row.original.projectNumber}
                 </span>
             );
@@ -56,16 +68,9 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Cliente
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                CLIENTE
             </Button>
         ),
         cell: ({ row }) =>
@@ -75,51 +80,8 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <CircleUserRound className="mr-1" />
                     {row.original.client?.name === "-" ? row.original.client.razonSocial : row.original.client?.name}
-                </span>
-            );
-        },
-    },
-    {
-        accessorKey: "state",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
-            >
-                Estado
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) =>
-        {
-            const isActive = row.original.isActive;
-
-            return (
-                <span
-                    className={`items-center text-center flex justify-center text-xs md:text-sm ${!isActive ? "text-red-500" : ""
-                    }`}
-                >
-                    {row.original?.status === "Pending" ? (
-                        <Badge variant={!isActive ? "deleted" : "default"}>
-                            Pendiente
-                        </Badge>
-                    ) : row.original?.status === "Completed" ? (
-                        <Badge variant={!isActive ? "deleted" : "approved"}>
-                            Aprobado
-                        </Badge>
-                    ) : (
-                        <Badge variant={!isActive ? "deleted" : "destructive"}>
-                            Rechazado
-                        </Badge>
-                    )}
                 </span>
             );
         },
@@ -130,23 +92,19 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Área m2
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                ÁREA m2
             </Button>
         ),
         cell: ({ row }) =>
         {
             const isActive = row.original.isActive;
             return (
-                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}>
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <LandPlot className="mr-1" />
                     {row.original.area}
                 </span>
             );
@@ -158,16 +116,9 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Nro. de Ambientes
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                NRO. DE AMBIENTES
             </Button>
         ),
         cell: ({ row }) =>
@@ -177,91 +128,86 @@ export const columns: Array<ColumnDef<ProjectSummary>> = [
                 <span
                     className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
                 >
+                    <Hash className="mr-1" />
                     {row.original.spacesCount}
                 </span>
             );
         },
     },
     {
-        accessorKey: "address",
+        accessorKey: "price",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent text-sm md:text-base"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Dirección
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                PRECIO
             </Button>
         ),
         cell: ({ row }) =>
         {
-            const isActive = row.original.isActive;
+            const isActive = row.original?.isActive;
             return (
-                <span
-                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                <span className={`flex justify-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""
+                }`}
                 >
-                    {row.original.address}
+                    {row.original?.price.toLocaleString("es-PE", {
+                        style: "currency",
+                        currency: "PEN",
+                    })}
                 </span>
             );
         },
     },
     {
-        id: "acciones",
-        header: "Acciones",
-        cell: function Cell({ row })
+        accessorKey: "status",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                ESTADO
+            </Button>
+        ),
+        cell: ({ row }) =>
         {
-            const isActive = row.original?.isActive;
-            const [showDeleteProject, setShowDeleteProject] = useState(false);
+            const isActive = row.original.isActive;
 
-            const projectId = row.original.id;
             return (
-                <div onClick={(e) => e.stopPropagation()}>
-                    <div>
-                        {/* Eliminar un proyecto */}
-                        <DeleteProject
-                            open={showDeleteProject}
-                            onOpenChange={setShowDeleteProject}
-                            project={row?.original}
-                            showTrigger={false}
-                        />
-                    </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
-                                <Ellipsis className="size-4" aria-hidden="true" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                Acciones
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <Link href={`/projects/${projectId}`}>
-                                <DropdownMenuItem disabled={!isActive}>
-                                    Ver Detalles
-                                </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuSeparator />
-                            <Link href={`/projects/${projectId}/update/`}>
-                                <DropdownMenuItem disabled={!isActive}>
-                                    Editar
-                                </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem onSelect={() => setShowDeleteProject(true)} disabled={!isActive}>
-                                Eliminar
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+                row.original?.status === "Pending" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "default"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-blue-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Pendiente
+                    </Badge>
+                ) : row.original?.status === "Completed" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "approved"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-green-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Completado
+                    </Badge>
+                ) : (
+                    <Badge
+                        variant={!isActive ? "deleted" : "destructive"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-red-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Rechazado
+                    </Badge>
+                )
             );
         },
     },
 ];
-

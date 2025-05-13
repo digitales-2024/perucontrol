@@ -4,8 +4,6 @@ import { components } from "@/types/api";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { ACCESS_TOKEN_KEY } from "@/variables";
 
 export async function CreateProject(body: components["schemas"]["ProjectCreateDTO"]): Promise<Result<null, FetchError>>
 {
@@ -66,6 +64,27 @@ export async function RemoveProject(id: string): Promise<Result<null, FetchError
     return ok(null);
 }
 
+export async function ReactivatedProject(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/projects", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating project:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
 type StatesQuotation = "Pending" | "Approved" | "Rejected";
 
 export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>
@@ -80,53 +99,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
 
 export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-    if (!jwt)
-    {
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
-    }
-
-    try
-    {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Appointment/${id}/gen-operations-sheet/excel`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt.value}`,
-            },
-        });
-
-        if (!response.ok)
-        {
-            // attempt to get data
-            const body = await response.text();
-            console.error("Error generando excel:");
-            console.error(body);
-
-            return err({
-                statusCode: response.status,
-                message: "Error generando excel",
-                error: null,
-            });
-        }
-
-        const blob = await response.blob();
-        return ok(blob);
-    }
-    catch (e)
-    {
-        console.error(e);
-        return err({
-            statusCode: 503,
-            message: "Error conectando al servidor",
-            error: null,
-        });
-    }
+    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
 }
 
 export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
@@ -175,11 +148,14 @@ export async function GetProjectOperationSheet(projectId: string)
     return ok(data);
 }
 
-export async function AddAppointment(id: string, dueDate: string): Promise<Result<null, FetchError>>
+export async function AddAppointment(id: string, dueDate: string, serviceIds?: Array<string>): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/appointment", {
         ...auth,
-        body: { dueDate },
+        body: {
+            dueDate,
+            serviceIds: serviceIds ?? [],
+        },
         params: {
             path: {
                 id,
@@ -220,14 +196,77 @@ export async function EditAppointment(
         },
     }));
 
-    // Revalidar la página para obtener los datos actualizados
-    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
-
     if (error)
     {
         console.error("Error updating appointment project:", error);
+        console.error(projId, appId);
         return err(error);
     }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
+
+    return ok(null);
+}
+
+export async function CancelAppointment(
+    projId: string,
+    appId: string,
+    cancelled: boolean, // <- true para cancelar, false para reactivar
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{proj_id}/cancel/{app_id}", {
+        ...auth,
+        body: {
+            cancelled,
+        },
+        params: {
+            path: {
+                proj_id: projId,
+                app_id: appId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error cancelling/reactivating appointment:", error);
+        return err(error);
+    }
+
+    // Revalidar la página para obtener los datos actualizados
+    revalidatePath(`/(admin)/projects/[${projId}]`, "page");
+
+    return ok(null);
+}
+
+export async function UpdateAppointmentTimes(
+    id: string,
+    enterTime: string | null,
+    leaveTime: string | null,
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Project/{id}/times", {
+        ...auth,
+        body: {
+            enterTime,
+            leaveTime,
+        },
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error updating appointment times:", error);
+        return err(error);
+    }
+
+    // Revalidar para obtener los datos nuevos
+    revalidatePath(`/(admin)/projects/[${id}]`, "page");
 
     return ok(null);
 }
@@ -258,5 +297,181 @@ export async function DesactivateAppointment(
         return err(error);
     }
 
+    return ok(null);
+}
+
+export async function SaveCertificateData(
+    id: string,
+    body: components["schemas"]["Certificate"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: body.projectAppointmentId!,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
+}
+
+export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodents/pdf`, "POST", "");
+}
+
+export async function GenerateRodentExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/rodents/excel`, "POST", "");
+}
+
+export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/certificate", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
+}
+
+export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
+}
+
+export async function SaveRodentData(
+    id: string,
+    body: components["schemas"]["RodentRegisterUpdateDTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentId}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentId: id,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function GetRodentOfAppointmentById(id: string): Promise<Result<components["schemas"]["RodentRegisterUpdateDTO"], FetchError>>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/rodent", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: id,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching certificate client:", error);
+        return err(error);
+    }
+    return ok(data);
+}
+
+export async function GenerateSchedulePDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/pdf`, "POST", "");
+}
+
+export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
+}
+
+export async function Generate(
+    id: string,
+    endpoint: string,
+    day: string,
+    month: string,
+    year: string,
+): Promise<Result<Blob, FetchError>>
+{
+    const requestBody = {
+        day,
+        month,
+        year,
+    };
+
+    return DownloadFile(
+        `/api/Project/${id}/${endpoint}`,
+        "POST",
+        JSON.stringify(requestBody),
+    );
+}
+
+export async function GenerateCompleteReportWord(appointmentid: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${appointmentid}/CompleteReport/docx`, "GET");
+}
+
+export async function CreateTreatmentProduct(appointmentId: string, body: Array<components["schemas"]["TreatmentProductInDTO"]>): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/TreatmentProduct", {
+        ...auth,
+        body: body,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function CreateTreatmentArea(appointmentId: string, body: Array<components["schemas"]["TreatmentAreaInDTO"]>): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/TreatmentArea", {
+        ...auth,
+        body,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
     return ok(null);
 }

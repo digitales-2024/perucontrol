@@ -2,6 +2,46 @@
 @plugin 'tailwindcss-animate';
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Swiss 721 Condensed';
+  src: url('/fonts/swiss_721_condensed_regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Swiss 721 Condensed';
+  src: url('/fonts/swiss_721_condensed_bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Swiss 721 Condensed';
+  src: url('/fonts/swiss_721_condensed_black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GeoSlab703';
+  src: url('/fonts/geoslab_703_bold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GeoSlab703';
+  src: url('/fonts/geoslab_703_medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -35,7 +75,7 @@ html, body {
     --secondary-foreground: hsl(222.2 47.4% 11.2%);
     --muted: hsl(210 40% 96.1%);
     --muted-foreground: hsl(215.4 16.3% 46.9%);
-    --accent: hsl(210 40% 96.1%);
+    --accent: hsl(202.68, 100%, 83.92%);
     --accent-foreground: hsl(222.2 47.4% 11.2%);
     --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: hsl(210 40% 98%);
@@ -149,7 +189,7 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-geist-sans);
+  font-family: 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
 }
 
 /*---break---*/

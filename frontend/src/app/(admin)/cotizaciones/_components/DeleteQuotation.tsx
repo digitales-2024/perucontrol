@@ -20,7 +20,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    quotation: components["schemas"]["Quotation3"],
+    quotation: components["schemas"]["Quotation2"],
     showTrigger?: boolean;
 }
 
@@ -46,7 +46,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
             {showTrigger ? (
                 <DrawerTrigger asChild>
                     <Button variant="outline">
-                  Eliminar
+                        Eliminar
                     </Button>
                 </DrawerTrigger>
             ) : null}
@@ -57,7 +57,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
                             ¿Esta absolutamente seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente los datos de la cotización.
+                            Esta acción eliminará los datos de la cotización.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -68,7 +68,7 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
                             aria-label="Delete selected rows"
                             onClick={onDeleteQuotationHandler}
                         >
-                      Continuar
+                            Continuar
                         </Button>
                     </DrawerFooter>
                 </DrawerContent>
@@ -86,10 +86,10 @@ export function DeleteQuotation({ open, onOpenChange, quotation, showTrigger = t
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        ¿Esta absolutamente seguro?
+                        ¿Esta seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos de la cotización.
+                        Esta acción eliminará los datos de la cotización.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -1,56 +1,152 @@
-"use client";
-
-import { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon, Plus, Trash2, Edit } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format, addMonths } from "date-fns";
-import { es } from "date-fns/locale";
 import DatePicker from "@/components/ui/date-time-picker";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useFormContext } from "react-hook-form";
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { useFormContext, useWatch } from "react-hook-form";
+import { components } from "@/types/api";
 
-type FrequencyType = "Bimonthly" | "Quarterly" | "Semiannual"
+import { ServiceSelector } from "./ServiceSelector";
+import { EditDateDialog } from "./EditDateDialog";
+import { AppointmentList } from "./AppointmentList";
 
-export function ServiceDates()
+type AppointmentWithServices = {
+    dueDate: string;
+    services: Array<string>;
+};
+
+type FrequencyType = "Bimonthly" | "Quarterly" | "Semiannual" | "Monthly" | "Fortnightly"
+
+export function ServiceDates({
+    services,
+    enabledServices,
+}: {
+    services: Array<components["schemas"]["Service"]>
+    enabledServices: Array<string>;
+})
 {
     const { setValue, watch } = useFormContext();
-    const appointments = watch("appointments") ?? []; // Ahora será un array de strings ISO
+    const appointments: Array<AppointmentWithServices> = useWatch({ name: "appointments" }) ?? [];
     const serviceDate = watch("serviceDate");
     const frequency = watch("frequency");
-    const [newDate, setNewDate] = useState<Date | undefined>(undefined);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const isMobile = useIsMobile();
+    const [selectedServiceIds, setSelectedServiceIds] = useState<Array<string>>([]);
+    const [availableServices, setAvailableServices] = useState<Array<components["schemas"]["Service"]>>([]);
 
-    // Función para generar fechas basadas en la frecuencia
-    const generateDates = (startDate: Date, frequency: FrequencyType): Array<string> =>
+    // Memoize this function so it doesn't change on every render
+    const getServiceName = useCallback((serviceId: string) =>
     {
-        const dates: Array<string> = [];
-        let currentDate = new Date(startDate);
-        const currentYear = new Date().getFullYear();
+        const service = services.find((s) => s.id === serviceId);
+        return service ? service.name : "Servicio desconocido";
+    }, [services]);
 
-        while (currentDate.getFullYear() <= currentYear)
+    const updateAvailableServices = useCallback(() =>
+    {
+        const assignedServiceIds = appointments.flatMap((appointment) => appointment.services);
+        const updatedServices = services.filter((service) => enabledServices.includes(service.id!) &&
+            !assignedServiceIds.includes(service.id!));
+        setAvailableServices(updatedServices);
+    }, [appointments, services, enabledServices]);
+
+    useEffect(() =>
+    {
+        updateAvailableServices();
+    }, [updateAvailableServices]);
+
+    // Update when enabled services change
+    useEffect(() =>
+    {
+        const filteredServices = services.filter((service) => enabledServices.includes(service.id!));
+        setAvailableServices(filteredServices);
+    }, [enabledServices, services]);
+
+    const generateDates = useCallback((
+        startDate: Date,
+        frequency: FrequencyType,
+    ): Array<AppointmentWithServices> =>
+    {
+        if (selectedServiceIds.length === 0)
         {
-            dates.push(currentDate.toISOString());
+            toast.error("Debe seleccionar al menos un servicio");
+            return [];
+        }
 
-            // Determinar cuántos meses agregar según la frecuencia
-            const monthsToAdd = frequency === "Bimonthly" ? 2 : frequency === "Quarterly" ? 3 : 6;
-            currentDate = addMonths(currentDate, monthsToAdd);
+        const dates: Array<AppointmentWithServices> = [];
+        const endDate = addMonths(startDate, 12); // Límite = 1 año desde el inicio
+        let currentDate = new Date(startDate); // hacemos una copia para no modificar el original
+
+        if (frequency === "Fortnightly")
+        {
+            // Obtener el día inicial y calcular el segundo día del mes (día inicial + 14)
+            const firstDay = startDate.getDate();
+            const secondDay = Math.min(firstDay + 14, 28); // Limite de 28 para evitar el desvordamiento mensual
+
+            while (currentDate < endDate)
+            {
+            // Añadir la primera fecha del mes
+                dates.push({
+                    dueDate: new Date(currentDate).toISOString(),
+                    services: [...selectedServiceIds],
+                });
+
+                // Calcular la segunda fecha del mes
+                const secondDate = new Date(currentDate);
+                secondDate.setDate(secondDay);
+
+                // Añadir la segunda fecha sólo si está dentro de la fecha final
+                if (secondDate < endDate)
+                {
+                    dates.push({
+                        dueDate: secondDate.toISOString(),
+                        services: [...selectedServiceIds],
+                    });
+                }
+
+                // Pasar a la primera fecha del mes siguiente
+                currentDate = addMonths(currentDate, 1);
+                currentDate.setDate(firstDay);
+            }
+        }
+        else
+        {
+            while (currentDate < endDate)
+            {
+                dates.push({
+                    dueDate: new Date(currentDate).toISOString(),
+                    services: [...selectedServiceIds],
+                });
+
+                switch (frequency)
+                {
+                case "Monthly":
+                    currentDate = addMonths(currentDate, 1);
+                    break;
+                case "Bimonthly":
+                    currentDate = addMonths(currentDate, 2);
+                    break;
+                case "Quarterly":
+                    currentDate = addMonths(currentDate, 3);
+                    break;
+                case "Semiannual":
+                    currentDate = addMonths(currentDate, 6);
+                    break;
+                }
+            }
         }
 
         return dates;
-    };
+    }, [selectedServiceIds]);
 
-    const handleProgramService = () =>
+    const handleProgramService = useCallback(() =>
     {
-        if (!serviceDate)
+        if (!serviceDate || !frequency)
         {
             toast.error("Por favor seleccione una fecha de servicio");
             return;
@@ -63,48 +159,46 @@ export function ServiceDates()
         }
 
         const generatedDates = generateDates(serviceDate, frequency as FrequencyType);
-        setValue("appointments", generatedDates);
+        setValue("appointments", [...appointments, ...generatedDates]);
+        setSelectedServiceIds([]); // Limpiar los servicios seleccionados después de programar
         toast.success("Fechas generadas correctamente");
-    };
+    }, [serviceDate, frequency, generateDates, setValue, appointments]);
 
-    const handleAddDate = () =>
+    const handleDeleteDate = useCallback((index: number) =>
     {
-        if (!newDate)
-        {
-            toast.error("Por favor seleccione una fecha para agregar");
-            return;
-        }
-
-        const newDateISO = newDate.toISOString();
-
-        // Verificar si la fecha ya existe
-        const dateExists = appointments.some((dateISO: string) => format(new Date(dateISO), "yyyy-MM-dd") === format(newDate, "yyyy-MM-dd"));
-
-        if (dateExists)
-        {
-            toast.error("Esta fecha ya está programada");
-            return;
-        }
-
-        setValue("appointments", [...appointments, newDateISO]);
-        setNewDate(undefined);
-        toast.success("Fecha agregada correctamente");
-    };
-
-    const handleDeleteDate = (index: number) =>
-    {
-        const updatedDates = appointments.filter((_: string, i: number) => i !== index);
+        const removedAppointment = appointments[index];
+        const updatedDates = appointments.filter((_, i) => i !== index);
         setValue("appointments", updatedDates);
-        toast.success("Fecha eliminada correctamente");
-    };
 
-    const handleEditDate = (index: number) =>
+        // Agregar los servicios de la fecha eliminada de vuelta a la lista de servicios disponibles
+        const updatedServices = [
+            ...availableServices,
+            ...services.filter((service) => removedAppointment.services.includes(service.id!)),
+        ];
+
+        // Eliminar duplicados
+        const uniqueServices = Array.from(new Set(updatedServices.map((s) => s.id))).map((id) => updatedServices.find((s) => s.id === id));
+
+        setAvailableServices(uniqueServices.filter((service): service is NonNullable<typeof service> => service !== undefined));
+        toast.success("Fecha eliminada correctamente");
+    }, [appointments, setValue, availableServices, services]);
+
+    const handleEditDate = useCallback((index: number) =>
     {
         setEditingIndex(index);
+        const appointment = appointments[index];
+        setSelectedServiceIds(appointment.services); // Establecer los servicios de la cita en el estado
         setIsEditDialogOpen(true);
-    };
+    }, [appointments]);
 
-    const handleSaveEdit = (updatedDate: Date | undefined) =>
+    const handleServiceSelection = useCallback((serviceId: string) =>
+    {
+        setSelectedServiceIds((prev) => (prev.includes(serviceId)
+            ? prev.filter((id) => id !== serviceId)
+            : [...prev, serviceId]));
+    }, []);
+
+    const handleSaveEdit = useCallback((updatedDate: Date | undefined) =>
     {
         if (!updatedDate || editingIndex === null)
         {
@@ -112,11 +206,20 @@ export function ServiceDates()
             return;
         }
 
+        // Validar que los servicios seleccionados estén habilitados
+        const invalidServices = selectedServiceIds.filter((id) => !enabledServices.includes(id));
+
+        if (invalidServices.length > 0)
+        {
+            toast.error("Algunos servicios seleccionados no están habilitados");
+            return;
+        }
+
         const updatedDateISO = updatedDate.toISOString();
 
         // Verificar si la fecha ya existe (excepto la que estamos editando)
-        const dateExists = appointments.some((dateISO: string, index: number) => index !== editingIndex &&
-            format(new Date(dateISO), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
+        const dateExists = appointments.some((appointment, index) => index !== editingIndex &&
+            format(new Date(appointment.dueDate), "yyyy-MM-dd") === format(updatedDate, "yyyy-MM-dd"));
 
         if (dateExists)
         {
@@ -125,97 +228,57 @@ export function ServiceDates()
         }
 
         const updatedDates = [...appointments];
-        updatedDates[editingIndex] = updatedDateISO;
+        updatedDates[editingIndex] = {
+            dueDate: updatedDateISO,
+            services: [...selectedServiceIds], // Ensure services are updated as well
+        };
         setValue("appointments", updatedDates);
 
         setIsEditDialogOpen(false);
         setEditingIndex(null);
+        setSelectedServiceIds([]);
         toast.success("Fecha actualizada correctamente");
-    };
+    }, [editingIndex, selectedServiceIds, enabledServices, appointments, setValue]);
 
-    const formatDate = (dateISO: string) => format(new Date(dateISO), "d 'de' MMMM, yyyy", { locale: es });
-
-    const EditDateDialog = () =>
+    // Calculate available services for the edit dialog
+    const dialogServices = React.useMemo(() =>
     {
-        const initialDate = editingIndex !== null ? new Date(appointments[editingIndex]) : undefined;
-        const [tempDate, setTempDate] = useState<Date | undefined>(initialDate);
+        if (editingIndex === null) return services.filter((s) => enabledServices.includes(s.id!));
 
-        if (isMobile)
-        {
-            return (
-                <Drawer open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                    <DrawerContent>
-                        <DrawerHeader>
-                            <DrawerTitle>
-                                Editar fecha
-                            </DrawerTitle>
-                        </DrawerHeader>
-                        <div className="px-4 py-2">
-                            <DatePicker
-                                value={tempDate}
-                                onChange={setTempDate}
-                                placeholder="Seleccione nueva fecha"
-                                className="w-full"
-                            />
-                        </div>
-                        <DrawerFooter className="flex-row gap-3 pt-2">
-                            <Button variant="outline" className="flex-1" onClick={() => setIsEditDialogOpen(false)} type="button">
-                                Cancelar
-                            </Button>
-                            <Button
-                                className="flex-1 bg-blue-600 hover:bg-blue-700"
-                                onClick={() => handleSaveEdit(tempDate)}
-                                type="button"
-                            >
-                                Guardar
-                            </Button>
-                        </DrawerFooter>
-                    </DrawerContent>
-                </Drawer>
-            );
-        }
+        // Get the current appointment's services
+        const currentAppointmentServices = appointments[editingIndex]?.services || [];
 
-        return (
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>
-                            Editar fecha
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <DatePicker
-                            value={tempDate}
-                            onChange={setTempDate}
-                            placeholder="Seleccione nueva fecha"
-                            className="w-full"
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} type="button">
-                            Cancelar
-                        </Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleSaveEdit(tempDate)} type="button">
-                            Guardar
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        );
-    };
+        // Return all enabled services plus any services that are already selected in this appointment
+        return services.filter((s) => enabledServices.includes(s.id!) ||
+            currentAppointmentServices.includes(s.id!));
+    }, [services, enabledServices, editingIndex, appointments]);
+
+    const handleCancelEdit = useCallback(() =>
+    {
+        setIsEditDialogOpen(false);
+        setSelectedServiceIds([]);
+    }, []);
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle className="text-xl">
-                    Cronograma
+        <Card className="w-full bg-transparent">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-xl flex items-center">
+                    <CalendarIcon className="h-5 w-5 mr-2 text-blue-500" />
+                    Cronograma de Servicios
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+                <ServiceSelector
+                    availableServices={availableServices}
+                    selectedServiceIds={selectedServiceIds}
+                    onServiceSelection={handleServiceSelection}
+                    getServiceName={getServiceName}
+                />
+
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div className="flex-1">
-                            <Label htmlFor="service-date" className="block mb-2">
+                            <Label htmlFor="service-date" className="block mb-2 font-medium">
                                 Fecha Inicial
                             </Label>
                             <DatePicker
@@ -223,17 +286,27 @@ export function ServiceDates()
                                 onChange={(date) => setValue("serviceDate", date)}
                                 placeholder="Seleccione fecha"
                                 className="w-full"
+                                iconColor="text-blue-500"
                             />
                         </div>
                         <div>
-                            <Label htmlFor="frequency" className="block mb-2">
+                            <Label htmlFor="frequency" className="block mb-2 font-medium">
                                 Frecuencia
                             </Label>
-                            <Select value={frequency} onValueChange={(value) => setValue("frequency", value as FrequencyType)}>
+                            <Select
+                                value={frequency}
+                                onValueChange={(value) => setValue("frequency", value as FrequencyType)}
+                            >
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder="Frecuencia" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem value="Fortnightly">
+                                        Quincenal
+                                    </SelectItem>
+                                    <SelectItem value="Monthly">
+                                        Mensual
+                                    </SelectItem>
                                     <SelectItem value="Bimonthly">
                                         Bimestral
                                     </SelectItem>
@@ -253,7 +326,7 @@ export function ServiceDates()
                             type="button"
                             onClick={handleProgramService}
                             className="bg-blue-600 hover:bg-blue-700"
-                            disabled={!serviceDate || !frequency}
+                            disabled={!serviceDate || !frequency || selectedServiceIds.length === 0}
                         >
                             Programar Servicio
                         </Button>
@@ -261,81 +334,28 @@ export function ServiceDates()
                 </div>
 
                 <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                        <div className="flex-1">
-                            <Label htmlFor="add-date" className="block mb-2">
-                                Agregar fecha
-                            </Label>
-                            <DatePicker value={newDate} onChange={setNewDate} placeholder="Seleccione fecha" className="w-full" />
-                        </div>
-                        <Button
-                            onClick={handleAddDate}
-                            size="icon"
-                            className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700"
-                            disabled={!newDate}
-                            type="button"
-                        >
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <div>
-                        <Label className="block mb-2">
-                            Fechas programadas
-                        </Label>
-                        <Card className="border border-gray-200">
-                            <ScrollArea className={isMobile ? "h-[200px]" : "h-[300px]"}>
-                                <div className="p-2">
-                                    {appointments.length === 0 ? (
-                                        <p className="text-center text-muted-foreground py-4">
-                                            No hay fechas programadas
-                                        </p>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            {appointments
-                                                .map((dateISO: string, index: number) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center justify-between p-2 border rounded-md"
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <CalendarIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                                            <span>
-                                                                {formatDate(dateISO)}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center space-x-1">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                type="button"
-                                                                onClick={() => handleEditDate(index)}
-                                                                className="h-8 w-8 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                                                            >
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                type="button"
-                                                                onClick={() => handleDeleteDate(index)}
-                                                                className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </ScrollArea>
-                        </Card>
-                    </div>
+                    <AppointmentList
+                        appointments={appointments}
+                        onEditDate={handleEditDate}
+                        onDeleteDate={handleDeleteDate}
+                        getServiceName={getServiceName}
+                        isMobile={isMobile}
+                    />
                 </div>
             </CardContent>
 
-            <EditDateDialog />
+            <EditDateDialog
+                isOpen={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+                initialDate={editingIndex !== null ? new Date(appointments[editingIndex]?.dueDate) : undefined}
+                selectedServiceIds={selectedServiceIds}
+                onServiceSelection={handleServiceSelection}
+                onSave={handleSaveEdit}
+                onCancel={handleCancelEdit}
+                services={dialogServices}
+                isMobile={isMobile}
+                getServiceName={getServiceName}
+            />
         </Card>
     );
 }

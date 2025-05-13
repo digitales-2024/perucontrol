@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, CalendarClock, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
 import { parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -13,12 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel, GeneratePDF, GetProjectOperationSheet, SaveProjectOperationSheetData } from "../actions";
-import { useEffect } from "react";
+import { GenerateExcel, GeneratePDF, SaveProjectOperationSheetData } from "../actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -28,13 +28,6 @@ const infestationLevels = [
     { id: "Moderate", label: "Moderado" },
     { id: "Low", label: "Bajo" },
     { id: "Negligible", label: "Insignificante" },
-];
-
-const rodentConsumptionLevels = [
-    { id: "Partial", label: "Parcial" },
-    { id: "Total", label: "Total" },
-    { id: "Deteriorated", label: "Deteriorado" },
-    { id: "NoConsumption", label: "Sin Consumo" },
 ];
 
 export function DownloadProjectForm({
@@ -51,51 +44,61 @@ export function DownloadProjectForm({
 {
     const router = useRouter();
     const serviceNames = project.services.map((service) => service.name);
+    // const serviceNames = appointment.servicesIds.map((service) => service);
+    const operationSheet = appointment.projectOperationSheet;
+
+    const servicesMap = useMemo(() =>
+    {
+        const map = new Map<string, string>();
+        project.services.forEach((service) => map.set(service.id!, service.name));
+        return map;
+    }, [project]);
 
     const form = useForm<DownloadProjectSchema>({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
-            projectAppointmentId: project.id,
-            operationDate: appointment.actualDate!,
-            enterTime: "",
-            leaveTime: "",
+            projectAppointmentId: appointment.id!,
+            operationDate: operationSheet.operationDate ?? appointment.actualDate!,
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
             businessType: client.businessType ?? "",
-            treatedAreas: "",
+            treatedAreas: operationSheet.treatedAreas ?? "",
             service: serviceNames,
-            certificateNumber: "",
-            insects: "",
-            rodents: "",
-            rodentConsumption: "Partial",
-            otherPlagues: "",
-            insecticide: "",
-            insecticide2: "",
-            rodenticide: "",
-            desinfectant: "",
-            otherProducts: "",
-            insecticideAmount: "",
-            insecticideAmount2: "",
-            rodenticideAmount: "",
-            desinfectantAmount: "",
-            otherProductsAmount: "",
-            staff1: "",
-            staff2: "",
-            staff3: "",
-            staff4: "",
-            aspersionManual: false,
-            aspersionMotor: false,
-            nebulizacionFrio: false,
-            nebulizacionCaliente: false,
-            colocacionCebosCebaderos: "",
-            numeroCeboTotal: "",
-            numeroCeboRepuestos: "",
-            nroPlanchasPegantes: "",
-            nroJaulasTomahawk: "",
-            degreeInsectInfectivity: "Moderate",
-            degreeRodentInfectivity: "Moderate",
-            observations: "",
-            recommendations: "",
+            certificateNumber: appointment.certificateNumber !== null ? String(appointment.certificateNumber) : "",
+            insects: operationSheet.insects ?? "",
+            rodents: operationSheet.rodents ?? "",
+            rodentConsumptionPartial: operationSheet.rodentConsumptionPartial ?? "",
+            rodentConsumptionTotal: operationSheet.rodentConsumptionTotal ?? "",
+            rodentConsumptionDeteriorated: operationSheet.rodentConsumptionDeteriorated ?? "",
+            rodentConsumptionNone: operationSheet.rodentConsumptionNone ?? "",
+            otherPlagues: operationSheet.otherPlagues ?? "",
+            insecticide: operationSheet.insecticide ?? "",
+            insecticide2: operationSheet.insecticide2 ?? "",
+            rodenticide: operationSheet.rodenticide ?? "",
+            desinfectant: operationSheet.desinfectant ?? "",
+            otherProducts: operationSheet.otherProducts ?? "",
+            insecticideAmount: operationSheet.insecticideAmount ?? "0",
+            insecticideAmount2: operationSheet.insecticideAmount2 ?? "0",
+            rodenticideAmount: operationSheet.rodenticideAmount ?? "0",
+            desinfectantAmount: operationSheet.desinfectantAmount ?? "0",
+            otherProductsAmount: operationSheet.otherProductsAmount ?? "0",
+            staff1: operationSheet.staff1 ?? "",
+            staff2: operationSheet.staff2 ?? "",
+            staff3: operationSheet.staff3 ?? "",
+            staff4: operationSheet.staff4 ?? "",
+            aspersionManual: operationSheet.aspersionManual ?? false,
+            aspercionMotor: operationSheet.aspercionMotor ?? false,
+            nebulizacionFrio: operationSheet.nebulizacionFrio ?? false,
+            nebulizacionCaliente: operationSheet.nebulizacionCaliente ?? false,
+            colocacionCebosCebaderos: operationSheet.colocacionCebosCebaderos ?? "",
+            numeroCeboTotal: operationSheet.numeroCeboTotal ?? "0",
+            numeroCeboRepuestos: operationSheet.numeroCeboRepuestos ?? "0",
+            nroPlanchasPegantes: operationSheet.nroPlanchasPegantes ?? "0",
+            nroJaulasTomahawk: operationSheet.nroJaulasTomahawk ?? "0",
+            degreeInsectInfectivity: operationSheet.degreeInsectInfectivity ?? "Moderate",
+            degreeRodentInfectivity: operationSheet.degreeRodentInfectivity ?? "Moderate",
+            observations: operationSheet.observations ?? "",
+            recommendations: operationSheet.recommendations ?? "",
         },
     });
 
@@ -107,7 +110,7 @@ export function DownloadProjectForm({
     const saveData = async(body: DownloadProjectSchema) =>
     {
         const [, saveError] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id!, body),
+            SaveProjectOperationSheetData(appointment.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -124,7 +127,6 @@ export function DownloadProjectForm({
 
     const downloadExcel = async() =>
     {
-        console.log(appointment);
         // Genera el Excel
         const [blob, err] = await toastWrapper(GenerateExcel(appointment.id!), {
             loading: "Generando archivo",
@@ -151,7 +153,7 @@ export function DownloadProjectForm({
     {
         const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
             loading: "Generando archivo",
-            success: "PDF generado",
+            success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
         });
 
@@ -173,7 +175,7 @@ export function DownloadProjectForm({
     const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
     {
         const [result, error] = await toastWrapper(
-            SaveProjectOperationSheetData(project.id!, input), // Cambia a `true` si es una actualización
+            SaveProjectOperationSheetData(appointment.id!, input),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -196,57 +198,11 @@ export function DownloadProjectForm({
         router.back();
     };
 
-    useEffect(() =>
-    {
-        const loadOperationSheet = async() =>
-        {
-            const [data, error] = await GetProjectOperationSheet(project.id!);
-
-            if (error)
-            {
-                console.error("Error cargando la ficha operativa:", error);
-                return;
-            }
-
-            if (!data)
-            {
-                console.warn("No se encontró una ficha operativa");
-                return;
-            }
-
-            // Obtener los valores actuales del formulario (que incluyen los datos del proyecto)
-            const currentValues = form.getValues();
-
-            // Fusionar datos: si el dato de la ficha operativa es null/undefined, mantener el del proyecto
-            const mergedData = {
-                ...currentValues, // Datos actuales (proyecto)
-                ...data, // Datos de la ficha operativa
-                rodentConsumption: data.rodentConsumption ?? undefined, // Convertir null a undefined
-                /* operationDate: new Date(appointment.actualDate?.split("T")[0] ?? data.operationDate?.split("T")[0] ?? currentValues.operationDate).toISOString(), // Convertir a UTC en formato ISO 8601 */
-                /* operationDate: appointment.actualDate?.split("T")[0] ??
-               data.operationDate?.split("T")[0] ??
-               currentValues.operationDate?.split("T")[0], */
-                operationDate: appointment.actualDate
-                    ? new Date(appointment.actualDate).toISOString()
-                    : data.operationDate
-                        ? new Date(data.operationDate).toISOString()
-                        : currentValues.operationDate,
-                degreeInsectInfectivity: data.degreeInsectInfectivity ?? undefined, // Convertir null a undefined
-                degreeRodentInfectivity: data.degreeRodentInfectivity ?? undefined, // Convertir null a undefined
-            };
-
-            // Establecer los valores en el formulario sin perder los del proyecto
-            form.reset(mergedData);
-        };
-
-        loadOperationSheet();
-    }, [project.id, form, appointment.actualDate]);
-
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-auto">
                 <Tabs defaultValue="general" className="w-full">
-                    <div className="px-6">
+                    <div className="px-6 mt-5">
                         <TabsList className="w-full h-auto bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 p-1.5 rounded-xl flex flex-wrap gap-1 border border-blue-200 dark:border-blue-800">
                             <TabsTrigger value="general" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
                                 <ClipboardList className="h-4 w-4 mr-2" />
@@ -279,7 +235,7 @@ export function DownloadProjectForm({
                                         </CardHeader>
                                         <Separator />
                                         <CardContent className="pt-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 gap-6">
                                                 <FormField
                                                     control={form.control}
                                                     name="operationDate"
@@ -296,12 +252,8 @@ export function DownloadProjectForm({
                                                                     {
                                                                         if (date)
                                                                         {
-                                                                            const utcDate = new Date(Date.UTC(
-                                                                                date.getFullYear(),
-                                                                                date.getMonth(),
-                                                                                date.getDate(),
-                                                                            ));
-                                                                            field.onChange(utcDate.toISOString());
+                                                                            const localDate = new Date(date);
+                                                                            field.onChange(localDate.toISOString());
                                                                         }
                                                                         else
                                                                         {
@@ -314,41 +266,6 @@ export function DownloadProjectForm({
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="enterTime"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                                    <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                    Hora de Ingreso
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="09:30" {...field} className="border-gray-300" />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="leaveTime"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                                    <CalendarClock className="h-4 w-4 text-blue-500" />
-                                                                    Hora de Salida
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="15:30" {...field} className="border-gray-300" />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -404,14 +321,14 @@ export function DownloadProjectForm({
                                                                 Servicios Realizados
                                                             </FormLabel>
                                                             <div className="space-y-2">
-                                                                {project.services?.map((service) => (
+                                                                {appointment.servicesIds?.map((service) => (
                                                                     <FormItem
-                                                                        key={service.id}
+                                                                        key={service}
                                                                         className="flex flex-row items-start space-x-3 space-y-0"
                                                                     >
                                                                         <FormLabel className="text-sm font-normal">
                                                                             {"- "}
-                                                                            {service.name}
+                                                                            {servicesMap.get(service) ?? "-"}
                                                                         </FormLabel>
                                                                     </FormItem>
                                                                 ))}
@@ -472,28 +389,66 @@ export function DownloadProjectForm({
                                                     <MilkOff className="h-4 w-4 text-blue-500" />
                                                     Consumo de roedores
                                                 </FormLabel>
-                                                <div className="space-y-2">
-                                                    {rodentConsumptionLevels.map((level) => (
-                                                        <FormField
-                                                            key={level.id}
-                                                            control={form.control}
-                                                            name="rodentConsumption"
-                                                            render={({ field }) => (
-                                                                <FormItem className="flex items-start space-x-3 space-y-0">
-                                                                    <FormControl>
-                                                                        <Checkbox
-                                                                            checked={field.value === level.id}
-                                                                            onCheckedChange={(checked) => (checked ? field.onChange(level.id) : field.onChange(undefined))
-                                                                            }
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormLabel className="text-sm font-normal">
-                                                                        {level.label}
-                                                                    </FormLabel>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    ))}
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Parcial
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionPartial"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Parcial" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Consumo Total
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionTotal"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Total" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Deteriorado
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionDeteriorated"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Deteriorado" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                                        Sin Consumo
+                                                    </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="rodentConsumptionNone"
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex flex-col items-center space-x-3 space-y-0">
+                                                                <FormControl>
+                                                                    <Input placeholder="Sin Consumo" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
                                                 </div>
 
                                                 <FormLabel className="flex items-center gap-2 font-medium">
@@ -527,7 +482,7 @@ export function DownloadProjectForm({
                                                 <div className="border rounded-lg p-4 bg-gray-50 dark:bg-background">
                                                     <div className="grid grid-cols-3 gap-4">
                                                         {/* Columna de categorías */}
-                                                        <div className="space-y-8">
+                                                        <div className="space-y-9">
                                                             <div className="pt-1">
                                                                 <h3 className="text-sm font-semibold flex items-center">
                                                                     <SprayCanIcon className="h-4 w-4 text-blue-500 mr-2" />
@@ -686,7 +641,7 @@ export function DownloadProjectForm({
                                                         <div className="space-y-8">
                                                             <FormField
                                                                 control={form.control}
-                                                                name="aspersionMotor"
+                                                                name="aspercionMotor"
                                                                 render={({ field }) => (
                                                                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                                                         <FormControl>
@@ -973,12 +928,12 @@ export function DownloadProjectForm({
 
                                                 <FormField
                                                     control={form.control}
-                                                    name="insecticideAmount2"
+                                                    name="rodenticideAmount"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="flex items-center gap-2 font-medium">
                                                                 <Hash className="h-4 w-4 text-blue-500" />
-                                                                Cantidad de Insecticida 2
+                                                                Cantidad de Rodenticida
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input
@@ -1151,7 +1106,7 @@ export function DownloadProjectForm({
                         className="flex items-center gap-2"
                     >
                         <X className="h-4 w-4" />
-                        Cancelar
+                        Volver
                     </Button>
                     <Button
                         type="button"
@@ -1164,14 +1119,15 @@ export function DownloadProjectForm({
                         <Save className="h-4 w-4" />
                         Guardar
                     </Button>
-                    <Button type="button"
+                    <Button
+                        type="button"
                         onClick={async() =>
                         {
                             await form.handleSubmit(handleSubmit)();
                             downloadExcel();
                         }}
                         form="projectForm"
-                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                        className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Excel
@@ -1183,7 +1139,8 @@ export function DownloadProjectForm({
                             await form.handleSubmit(handleSubmit)();
                             downloadPDF();
                         }}
-                        form="projectForm" className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                        form="projectForm"
+                        className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
                         Generar Pdf

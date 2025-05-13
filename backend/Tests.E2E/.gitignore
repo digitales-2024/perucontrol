@@ -35,3 +35,6 @@ out
 
 # migration bundle
 efbundle
+
+# env
+.env

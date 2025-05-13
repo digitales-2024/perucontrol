@@ -21,6 +21,14 @@ const badgeVariants = cva(
           "border-transparent bg-green-500 text-white [a&]:hover:bg-green-600 focus-visible:ring-green-300 dark:focus-visible:ring-green-700",
                 deleted:
           "border-transparent bg-gray-500 text-white [a&]:hover:bg-gray-600 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-700",
+                excel:
+          "border-transparent bg-green-600 text-white [a&]:hover:bg-green-600 focus-visible:ring-green-300 dark:focus-visible:ring-green-700",
+                pdf:
+          "border-transparent bg-red-600 text-white [a&]:hover:bg-red-600 focus-visible:ring-red-300 dark:focus-visible:ring-red-700",
+                word:
+          "border-transparent bg-blue-600 text-white [a&]:hover:bg-blue-600 focus-visible:ring-blue-300 dark:focus-visible:ring-blue-700",
+                ambient:
+          "border-transparent bg-green-500 text-primary-foreground [a&]:hover:bg-green/90",
             },
         },
         defaultVariants: {

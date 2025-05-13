@@ -1,7 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { ViewQuotationDetails } from "../_components/ViewQuotationDetails";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -30,9 +30,29 @@ export default async function QuotationDetail({ params }: Props)
     }
 
     return (
-        <Shell>
-            <HeaderPage title={"Cotizacion"} description="Detalle de la cotización" />
+        <>
+            <HeaderPage
+                title="Detalle de cotización"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/cotizaciones">
+                                    Todas las cotizaciones
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Cotización #
+                                    {quotation.quotationNumber}
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ViewQuotationDetails quotation={quotation} />
-        </Shell>
+        </>
     );
 }

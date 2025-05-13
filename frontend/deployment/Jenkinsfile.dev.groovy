@@ -1,27 +1,21 @@
 pipeline {
     agent any
     environment {
-        // Credentials for jenkins to access private github repos
-        GITHUB_CREDENTIALS = "8d51209e-434f-4761-bb3d-1f9e3974d0b1"
-
-        //
-        // VPS setup
-        //
-        REMOTE_USER = "ansible"
-        REMOTE_IP = credentials("acide-elastika-01")
-        // Folder where docker-compose and .env files are placed
-        REMOTE_FOLDER = "/home/${REMOTE_USER}/docker/perucontrol-develop/"
-
         //
         // Build config
         //
         // prefix of the image to build, config triplet
-        //  <project>-<service>-<stage>
-        //  perucontrol-frontend-develop
         PROJECT_NAME = "perucontrol"
         PROJECT_SERVICE = "frontend"
         PROJECT_STAGE = "develop"
         PROJECT_TRIPLET = "${PROJECT_NAME}-${PROJECT_SERVICE}-${PROJECT_STAGE}"
+
+        //
+        // VPS setup
+        //
+        REMOTE_USER = "fernando"
+        REMOTE_IP = credentials("fernando-hetzner-hel-01-ip")
+        REMOTE_FOLDER = "/home/fernando/services/acide/perucontrol/"
 
         //
         // Docker registry setup
@@ -30,12 +24,8 @@ pipeline {
         REGISTRY_URL = "docker.io"
         REGISTRY_USER = "digitalesacide"
         REGISTRY_REPO = "${PROJECT_TRIPLET}"
-        // docker.io/digitalesacide/perucontrol-frontend-develop
         FULL_REGISTRY_URL = "${REGISTRY_URL}/${REGISTRY_USER}/${REGISTRY_REPO}"
         ESCAPED_REGISTRY_URL = "${REGISTRY_URL}\\/${REGISTRY_USER}\\/${REGISTRY_REPO}"
-
-        // Docker buid arguments
-        INTERNAL_BACKEND_URL = "http://perucontrol-backend-develop:8080"
 
         // SSH command
         SSH_COM = "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
@@ -45,25 +35,72 @@ pipeline {
         stage("Build & push image") {
             steps {
                 dir("frontend") {
-                    sh "cp deployment/Dockerfile ."
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}")
+                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deployment/Dockerfile .")
                             image.push()
+                            image.push("latest")
                         }
                     }
-                    sh "rm Dockerfile || true"
                 }
             }
         }
         stage("Restart frontend service") {
             steps {
-                sshagent(['ssh-deploy']) {
-                    // Replace docker image version
-                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && sed -i -E \"s/image: ${ESCAPED_REGISTRY_URL}:.+\$/image: ${ESCAPED_REGISTRY_URL}:${BUILD_NUMBER}/\" docker-compose.yml'"
-                    sh "${SSH_COM} 'cd ${REMOTE_FOLDER} && docker compose up -d --no-deps ${PROJECT_TRIPLET}'"
+                script {
+                    def config = readYaml file: 'frontend/deployment/env.yaml'
+                    def env = config.develop.frontend
+
+                    def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
+                    def sensitiveVars = env.sensitive
+
+                    def credentialsList = sensitiveVars.collect {
+                        string(credentialsId: it, variable: it)
+                    }
+
+                    withCredentials(credentialsList) {
+                        sshagent(['hetzner-helsink-01']) {
+                            // Create a temporary script that will create the .env file
+                            // This enables us to use shell variables to properly handle 
+                            // the credentials without using binding.getVariable()
+                            sh """
+                                cat > ${WORKSPACE}/create_env.sh << 'EOL'
+#!/bin/bash
+cat << EOF
+# Non-sensitive variables
+PERUCONTROL_FRONTEND_VERSION=${BUILD_NUMBER}
+${nonSensitiveVars.join('\n')}
+
+# Sensitive variables
+${sensitiveVars.collect { varName -> "${varName}=\${${varName}}" }.join('\n')}
+EOF
+EOL
+                                chmod +x ${WORKSPACE}/create_env.sh
+                            """
+
+                            // Execute the script to generate env content and send it to remote
+                            sh """
+                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env.frontend'
+                            """
+
+                            // populate & restart
+                            sh """
+                                ${SSH_COM} 'cd ${REMOTE_FOLDER} && \
+                                docker pull ${FULL_REGISTRY_URL}:${BUILD_NUMBER} && \
+                                (rm .env || true) && \
+                                touch .env.base && \
+                                touch .env.backend && \
+                                touch .env.frontend && \
+                                cat .env.base >> .env && \
+                                cat .env.backend >> .env && \
+                                cat .env.frontend >> .env && \
+                                docker compose up -d'
+                            """
+                        }
+                    }
                 }
             }
         }
     }
 }
+

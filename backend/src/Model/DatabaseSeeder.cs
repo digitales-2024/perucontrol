@@ -30,6 +30,7 @@ public static class DatabaseSeeder
         {
             adminUser = new User
             {
+                Name = "Administrador",
                 UserName = "Admin",
                 Email = adminEmail,
                 EmailConfirmed = true,
@@ -81,6 +82,29 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {count} default services", defaultServices.Count);
     }
 
+    public static async Task SeedDefaultCertificateNumber(
+        IServiceProvider serviceProvider,
+        ILogger logger
+    )
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.ProjectOrderNumbers.AnyAsync())
+        {
+            logger.LogInformation("Services already seeded");
+            return;
+        }
+
+        var defaultOrderNombre = new ProjectOrderNumber { ProjectOrderNumberValue = 0 };
+
+        await context.ProjectOrderNumbers.AddAsync(defaultOrderNombre);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Seeded initial Certificate Number at " + defaultOrderNombre.ProjectOrderNumberValue
+        );
+    }
+
     public static async Task SeedBusiness(IServiceProvider serviceProvider, ILogger logger)
     {
         using var scope = serviceProvider.CreateScope();
@@ -110,6 +134,12 @@ public static class DatabaseSeeder
             BankAccount = "215-20391810-0-04",
             BankCCI = "002-21500203918100429",
             Deductions = "00-101-385558",
+            ThechnicalDirectorName = "",
+            ThechnicalDirectorPosition = "",
+            ThechnicalDirectorCIP = "",
+            ResponsibleName = "",
+            ResponsiblePosition = "",
+            ResponsibleCIP = "",
         };
         await context.Businesses.AddAsync(business);
         await context.SaveChangesAsync();
@@ -189,55 +219,48 @@ public static class DatabaseSeeder
 
         var defaultQuotations = new List<Quotation>
         {
-            new Quotation
+            new()
             {
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Pending,
                 Frequency = QuotationFrequency.Bimonthly,
-                Area = 420,
-                SpacesCount = 32,
                 HasTaxes = true,
                 CreationDate = DateTime.Now,
                 ExpirationDate = DateTime.Now.AddDays(30),
                 ServiceAddress = "Av. Los Olivos 123, Lima",
                 PaymentMethod = "Transferencia bancaria",
                 Others = "Servicio con garantía de 3 meses",
-                ServiceListText = "Fumigación, Desinfección, Desinsectación",
-                ServiceDescription = "Servicio integral de control de plagas para oficinas",
-                ServiceDetail =
-                    "Incluye fumigación completa de todas las áreas especificadas, con productos de alta calidad y certificados, aplicación de gel insecticida en puntos estratégicos, y colocación de trampas según necesidad.",
-                Price = 1250.00m,
-                RequiredAvailability = "Fines de semana",
-                ServiceTime = "4 horas",
-                CustomField6 = "Garantía extendida",
-                TreatedAreas = "Oficinas, baños, cocina, almacén",
-                Deliverables = "Certificado de fumigación, informe técnico, recomendaciones",
+                Availability = "Inmediata",
+                QuotationServices = new List<QuotationService>
+                {
+                    new()
+                    {
+                        Amount = 1,
+                        NameDescription = "DESINSECTACION",
+                        Price = 150,
+                    },
+                    new()
+                    {
+                        Amount = 1,
+                        NameDescription = "DESRATIZACION",
+                        Price = 150,
+                    },
+                },
             },
-            new Quotation
+            new()
             {
                 Client = client,
                 Services = services.Take(servicesAmount / 2).ToList(),
                 Status = QuotationStatus.Approved,
                 Frequency = QuotationFrequency.Semiannual,
-                Area = 42,
-                SpacesCount = 2,
                 HasTaxes = false,
                 CreationDate = DateTime.Now,
                 ExpirationDate = DateTime.Now.AddDays(30),
                 ServiceAddress = "Jr. Las Palmeras 456, San Isidro",
                 PaymentMethod = "Efectivo",
                 Others = "Incluye certificación DIGESA",
-                ServiceListText = "Desratización, Limpieza de tanque",
-                ServiceDescription = "Control de roedores y limpieza sanitaria",
-                ServiceDetail =
-                    "El servicio incluye instalación de cebaderos para control de roedores en perímetro e interior, uso de rodenticidas de última generación, y limpieza profesional de tanques con productos biodegradables.",
-                Price = 850.00m,
-                RequiredAvailability = "Lunes a viernes",
-                ServiceTime = "2 horas",
-                CustomField6 = "Sin productos con olor",
-                TreatedAreas = "Sótano, perímetro exterior, tanque de agua",
-                Deliverables = "Informe técnico, certificado de salubridad",
+                Availability = "1 semana",
             },
         };
 
@@ -245,5 +268,68 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync();
 
         logger.LogInformation("Seeded {count} quoations", defaultQuotations.Count);
+    }
+
+    public static async Task SeedProductsAsync(IServiceProvider serviceProvider, ILogger logger)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (await context.Products.AnyAsync())
+        {
+            return;
+        }
+
+        var defaultEntities = new List<Product>
+        {
+            new()
+            {
+                Name = "Alfaphos EC",
+                ActiveIngredient = "Temephos 25% + Alfacipermetrina 10%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "240ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                    new() { AmountAndSolvent = "60ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "Glutamonio",
+                ActiveIngredient = "Amonio cuaternario de 5ta generación",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "60ml en 06L de agua" },
+                    new() { AmountAndSolvent = "120ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "S-Delta 50 SC",
+                ActiveIngredient = "Deltametrina 50%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "140ml en 06L de agua" },
+                    new() { AmountAndSolvent = "160ml en 16L de agua" },
+                    new() { AmountAndSolvent = "180ml en 16L de agua" },
+                ],
+            },
+            new()
+            {
+                Name = "Chuspisol 10 WG",
+                ActiveIngredient = "Tiametoxam 10%",
+                ProductAmountSolvents =
+                [
+                    new() { AmountAndSolvent = "50g en 50ml de agua" },
+                    new() { AmountAndSolvent = "45g en 50ml de agua" },
+                    new() { AmountAndSolvent = "40g en 50ml de agua" },
+                ],
+            },
+        };
+
+        await context.Products.AddRangeAsync(defaultEntities);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {count} products", defaultEntities.Count);
     }
 }

@@ -45,6 +45,11 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
 
+    if (process.env.NODE_ENV === "development")
+    {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
     try
     {
         const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
@@ -94,7 +99,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error,
             });
         }
@@ -102,7 +107,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         {
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error!,
             });
         }
@@ -125,7 +130,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 export async function DownloadFile(
     url: string,
     method: RequestInit["method"],
-    body: RequestInit["body"],
+    body?: RequestInit["body"],
 ): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();
@@ -159,7 +164,7 @@ export async function DownloadFile(
 
             return err({
                 statusCode: response.status,
-                message: "Error generando documento",
+                message: body ?? "Error generando documento",
                 error: null,
             });
         }

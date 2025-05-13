@@ -1,13 +1,13 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { ProjectsDataTable } from "./_components/ProjectsDataTable";
 import { columns } from "./_components/ProjectsColumns";
 import { backend, wrapper } from "@/types/backend";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 
 export default async function ProjectsPage()
 {
     // Get all projects
-    const [projects, error] = await wrapper((auth) => backend.GET("/api/Project", auth));
+    const [projects, error] = await wrapper((auth) => backend.GET("/api/Project", { ...auth }));
     if (error)
     {
         console.error(`error ${error.message}`);
@@ -15,9 +15,22 @@ export default async function ProjectsPage()
     }
 
     return (
-        <Shell>
-            <HeaderPage title="Gestión de Servicios" description="Gestiona los servicios de tu empresa" />
+        <>
+            <HeaderPage
+                title="Gestión de Servicios"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ProjectsDataTable columns={columns} data={projects} />
-        </Shell>
+        </>
     );
 }

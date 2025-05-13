@@ -2,6 +2,15 @@
   "version": 1,
   "dependencies": {
     "net9.0": {
+      "AWSSDK.S3": {
+        "type": "Direct",
+        "requested": "[3.7.416.13, )",
+        "resolved": "3.7.416.13",
+        "contentHash": "pt1Muf1j/+dRJw2LzWYR8FtMrw1opi+ISjMqmVVAIALB9+7VND4Pb8Pir095cmNwHUGX5G73vAy7+cnEzKb6UA==",
+        "dependencies": {
+          "AWSSDK.Core": "[3.7.402.43, 4.0.0)"
+        }
+      },
       "DocumentFormat.OpenXml": {
         "type": "Direct",
         "requested": "[3.2.0, )",
@@ -48,9 +57,9 @@
       },
       "Microsoft.AspNetCore.OpenApi": {
         "type": "Direct",
-        "requested": "[9.0.1, )",
-        "resolved": "9.0.1",
-        "contentHash": "xRJe8UrLnOGs6hOBrT/4r74q97626H0mABb/DV0smlReIx6uQCENAe+TUqF6hD3NtT4sB+qrvWhAej6kxPxgew==",
+        "requested": "[9.0.4, )",
+        "resolved": "9.0.4",
+        "contentHash": "GfZWPbZz1aAtEO3wGCkpeyRc0gzr/+VRHnUgY/YjqVPDlHbeKWCXw3IxKarQdo9myC2O1QBf652Mo50QqbXYRg==",
         "dependencies": {
           "Microsoft.OpenApi": "1.6.17"
         }
@@ -92,6 +101,11 @@
         "requested": "[2.0.*, )",
         "resolved": "2.0.36",
         "contentHash": "piAamX1ArrRA3+Vgz8FaO+oeintpD+qD4d5DmGcW+RtKB76H7FIqZifemPzOEl8cJYjhmwYr81gJOPaJF9+5KQ=="
+      },
+      "AWSSDK.Core": {
+        "type": "Transitive",
+        "resolved": "3.7.402.43",
+        "contentHash": "iAo889ehvfXCORxLF+o7BmKnBAtBTWD7aVMTP+P1sPlHlVqvIj4S3MUaDYjR7b1MGUTsE+UBNyj3tu+cj1MBqA=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",

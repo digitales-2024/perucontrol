@@ -40,6 +40,7 @@ const eslintConfig = [
             },
         },
         rules: {
+            "react-hooks/exhaustive-deps": "off",  
             "react/jsx-boolean-value": "error",
             "react/jsx-closing-bracket-location": "error",
             "react/jsx-closing-tag-location": "error",
@@ -48,10 +49,14 @@ const eslintConfig = [
             "react/jsx-no-useless-fragment": "error",
             "react/jsx-tag-spacing": "error",
             "react/self-closing-comp": "error",
+            "react/jsx-first-prop-new-line": ["error", "multiline-multiprop"],
+            "react/jsx-indent": ["warn", 4],
+            "react/jsx-indent-props": ["warn", 4],
         },
     },
     {
         rules: {
+            "@next/next/no-img-element": "off",
             "indent": ["error", 4],
             "brace-style": ["error", "allman"],
             "no-tabs": "off",

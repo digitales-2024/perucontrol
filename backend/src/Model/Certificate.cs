@@ -13,3 +13,13 @@ public class Certificate : BaseModel
 
     public DateTime? ExpirationDate { get; set; } = null;
 }
+
+public class CertificateGet : PeruControl.Model.BaseModel
+{
+    public ProjectAppointment ProjectAppointment { get; set; } = null!;
+    public Guid ProjectAppointmentId { get; set; }
+    public DateTime ExpirationDate { get; set; }
+    public virtual Project Project { get; set; } = null!;
+    public virtual Client Client { get; set; } = null!;
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+}

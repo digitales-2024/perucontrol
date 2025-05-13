@@ -108,11 +108,12 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                             <FormLabel>
                                                 Tipo de documento
                                             </FormLabel>
-                                            <Select disabled value={field.value} onValueChange={(value) =>
-                                            {
-                                                field.onChange(value);
-                                                setTypeDocument(value);
-                                            }}
+                                            <Select
+                                                disabled value={field.value} onValueChange={(value) =>
+                                                {
+                                                    field.onChange(value);
+                                                    setTypeDocument(value);
+                                                }}
                                             >
                                                 <FormControl className="mb-0">
                                                     <SelectTrigger>
@@ -251,22 +252,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                 <Input placeholder="Dirección" {...field} />
                                             </FormControl>
                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Giro del negocio */}
-                                <FormField
-                                    control={form.control}
-                                    name="businessType"
-                                    render={({ field }) => (
-                                        <FormItem className="truncate">
-                                            <FormLabel>
-                                                Giro del Negocio
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Giro del Negocio" {...field} />
-                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />

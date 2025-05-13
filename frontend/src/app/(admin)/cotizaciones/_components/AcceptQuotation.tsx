@@ -21,7 +21,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 interface AcceptQuotationProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quotation: components["schemas"]["Quotation3"],
+  quotation: components["schemas"]["Quotation2"],
   showTrigger?: boolean;
   disabled?: boolean;
 }
@@ -101,13 +101,13 @@ export function AlertDialogAcceptQuotation({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                      Cancelar
+                        Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUpdateStatus}
                         disabled={disabled}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

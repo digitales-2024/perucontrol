@@ -133,8 +133,11 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     )]
     public required decimal Price { get; set; }
 
-    [MinLength(1, ErrorMessage = "Debe haber al menos 1 visita")]
-    public required IList<DateTime> Appointments { get; set; } = null!;
+    [MinLength(1, ErrorMessage = "Debe haber al menos 1 fecha")]
+    public required IList<AppointmentCreateDTOThroughProject> AppointmentCreateDTOs { get; set; } =
+        null!;
+
+    public string[] Ambients { get; set; } = Array.Empty<string>();
 
     public Project MapToEntity()
     {
@@ -142,11 +145,21 @@ public class ProjectCreateDTO : IMapToEntity<Project>
         {
             Address = Address,
             Area = Area,
+            Ambients = Ambients,
             Status = ProjectStatus.Pending,
             Price = Price,
             SpacesCount = SpacesCount,
         };
     }
+}
+
+public class AppointmentCreateDTOThroughProject
+{
+    public required DateTime DueDate { get; set; }
+
+    [Description("Array of Service IDs")]
+    [MinLength(1, ErrorMessage = "La fecha debe tener al menos 1 servicio")]
+    public required IList<Guid> Services { get; set; } = null!;
 }
 
 public class ProjectPatchDTO : IEntityPatcher<Project>
@@ -174,6 +187,8 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
     )]
     public decimal? Price { get; set; }
 
+    public string[]? Ambients { get; set; } = Array.Empty<string>();
+
     public void ApplyPatch(Project entity)
     {
         if (Address != null)
@@ -184,6 +199,8 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
             entity.SpacesCount = SpacesCount.Value;
         if (Price != null)
             entity.Price = Price.Value;
+        if (Ambients != null)
+            entity.Ambients = Ambients;
     }
 }
 
@@ -206,6 +223,7 @@ public class ProjectSummary : BaseModel
     public required uint SpacesCount { get; set; }
 
     public required decimal Price { get; set; }
+    public required string[] Ambients { get; set; } = [];
 
     public required IList<DateTime> Appointments { get; set; } = null!;
 }
@@ -230,7 +248,45 @@ public class ProjectSummarySingle : BaseModel
 
     public required decimal Price { get; set; }
 
-    public required ICollection<ProjectAppointment> Appointments { get; set; } = null!;
+    public required string[] Ambients { get; set; } = [];
+
+    public required ICollection<ProjectAppointmentDTO> Appointments { get; set; }
+}
+
+public class ProjectSummarySingle2 : BaseModel
+{
+    public required Client Client { get; set; } = null!;
+
+    public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    public Quotation? Quotation { get; set; } = null!;
+
+    public required int ProjectNumber { get; set; }
+
+    public required string Address { get; set; }
+
+    public required uint Area { get; set; }
+
+    public required ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+
+    public required uint SpacesCount { get; set; }
+
+    public required decimal Price { get; set; }
+
+    public required IList<DateTime> Appointments { get; set; } = null!;
+}
+
+public class ProjectAppointmentDTO : BaseModel
+{
+    public int? CertificateNumber { get; set; } = null;
+    public required DateTime DueDate { get; set; }
+    public DateTime? ActualDate { get; set; }
+    public int? AppointmentNumber { get; set; } = null;
+    public bool? Cancelled { get; set; } = false;
+    public TimeSpan? EnterTime { get; set; }
+    public TimeSpan? LeaveTime { get; set; }
+    public required ICollection<Guid> ServicesIds { get; set; }
+    public required ProjectOperationSheet ProjectOperationSheet { get; set; }
 }
 
 public class ProjectStatusPatchDTO

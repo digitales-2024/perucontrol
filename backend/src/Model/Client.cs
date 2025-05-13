@@ -86,7 +86,7 @@ public class ClientCreateDTO : IMapToEntity<Client>
     [MaxLength(50, ErrorMessage = "El email debe tener como máximo 50 caracteres")]
     public required string Email { get; set; }
 
-    public required ICollection<ClientLocationDTO> ClientLocations { get; set; }
+    public ICollection<ClientLocationDTO>? ClientLocations { get; set; }
 
     [MinLength(6, ErrorMessage = "El número de teléfono debe tener al menos 6 caracteres")]
     [MaxLength(24, ErrorMessage = "El número de teléfono debe tener como máximo 24 caracteres")]
@@ -109,7 +109,13 @@ public class ClientCreateDTO : IMapToEntity<Client>
             Email = Email,
             PhoneNumber = PhoneNumber,
             ContactName = ContactName,
-            ClientLocations = ClientLocations.Select(c => c.MapToEntity()).ToList(),
+            ClientLocations =
+                ClientLocations != null && ClientLocations.Any()
+                    ? ClientLocations
+                        .Where(c => !string.IsNullOrWhiteSpace(c.Address))
+                        .Select(c => c.MapToEntity())
+                        .ToList()
+                    : new List<ClientLocation>(),
         };
     }
 }
@@ -143,6 +149,8 @@ public class ClientPatchDTO : IEntityPatcher<Client>
     [MinLength(0)]
     [MaxLength(100)]
     public string? ContactName { get; set; }
+
+    public ICollection<ClientLocationDTO>? ClientLocations { get; set; }
 
     public void ApplyPatch(Client entity)
     {

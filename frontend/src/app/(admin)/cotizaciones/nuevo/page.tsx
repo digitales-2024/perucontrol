@@ -1,29 +1,31 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { CreateQuotation } from "./_CreateQuotation";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default async function CotizacionPage()
 {
-    // get all terms and conditions
-    const [terms, termsErr] = await wrapper((auth) => backend.GET("/api/TermsAndConditions", auth));
+    const [
+        [terms, termsErr],
+        [clients, clientsError],
+        [services, servicesError],
+    ] = await Promise.all([
+        wrapper((auth) => backend.GET("/api/TermsAndConditions", auth)),
+        wrapper((auth) => backend.GET("/api/Client", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Service", { ...auth })),
+    ]);
+
     if (termsErr)
     {
         console.error(`error ${termsErr.message}`);
         throw termsErr;
     }
 
-    // get all clients
-    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
-
     if (clientsError)
     {
         console.error("Error getting all clients:", clientsError);
         return null;
     }
-
-    // get all services
-    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
 
     if (servicesError)
     {
@@ -34,9 +36,32 @@ export default async function CotizacionPage()
     const activeTerms = terms.filter((term) => term.isActive);  // Filtrando los terminoss activos
 
     return (
-        <Shell>
-            <HeaderPage title="Crear cotización" description="Crea una nueva cotización" />
-            <CreateQuotation  terms={activeTerms} clients={clients} services={services} />
-        </Shell>
+        <>
+            <HeaderPage
+                title="Crear cotización" description="Crea una nueva cotización"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/cotizaciones">
+                                    Todas las cotizaciones
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Crear cotización
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
+            <CreateQuotation
+                terms={activeTerms}
+                clients={clients}
+                services={services}
+            />
+        </>
     );
 }

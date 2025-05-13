@@ -1,23 +1,40 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { ClientsDataTable } from "./_components/ClientsDataTable";
 import { columns } from "./_components/ClientsColumns";
 import { backend, wrapper } from "@/types/backend";
 
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+} from "@/components/ui/breadcrumb";
+import ErrorPage from "@/components/ErrorPage";
+
 export default async function ClientsPage()
 {
     const [clients, error] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
-
     if (error)
     {
         console.error("Error getting all clients:", error);
         return (
-            <Shell>
-                <HeaderPage title="Gestión de clientes" description="No se pudieron cargar los clientes." />
-                <p className="text-red-500 text-sm">
-                    Ocurrió un error al obtener los clientes.
-                </p>
-            </Shell>
+            <>
+                <HeaderPage
+                    title="Gestión de clientes" description="Gestiona los clientes de tu empresa"
+                    breadcrumbs={(
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href="/clients">
+                                        Todos los clientes
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                    )}
+                />
+                <ErrorPage />
+            </>
         );
     }
 
@@ -32,9 +49,22 @@ export default async function ClientsPage()
     }));
 
     return (
-        <Shell>
-            <HeaderPage title="Gestión de clientes" description="Gestiona los clientes de tu empresa" />
+        <>
+            <HeaderPage
+                title="Gestión de clientes" description="Gestiona los clientes de tu empresa"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/clients">
+                                    Todos los clientes
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ClientsDataTable columns={columns} data={formattedClients} />
-        </Shell>
+        </>
     );
 }

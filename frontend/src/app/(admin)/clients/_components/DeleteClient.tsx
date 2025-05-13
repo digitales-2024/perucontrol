@@ -8,10 +8,10 @@ import { toastWrapper } from "@/types/toasts";
 import { RemoveClient } from "../actions";
 
 interface DeleteClientProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  client: components["schemas"]["Client"];
-  showTrigger?: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    client: components["schemas"]["Client"];
+    showTrigger?: boolean;
 }
 
 export function DeleteClient({ open, onOpenChange, client, showTrigger = true }: DeleteClientProps)
@@ -44,10 +44,10 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                 <DrawerContent>
                     <DrawerHeader>
                         <DrawerTitle>
-                        ¿Esta absolutamente seguro?
+                            ¿Esta absolutamente seguro?
                         </DrawerTitle>
                         <DrawerDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
+                            Se deshabilitara el cliente y no se podrá utilizar en otros procesos.
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -69,7 +69,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
             {showTrigger ? (
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                      Eliminar
+                        Eliminar
                     </Button>
                 </AlertDialogTrigger>
             ) : null}
@@ -79,7 +79,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                         ¿Esta absolutamente seguro?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del cliente.
+                        Se deshabilitara el cliente y no se podrá utilizar en otros procesos.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -90,7 +90,7 @@ export function DeleteClient({ open, onOpenChange, client, showTrigger = true }:
                         aria-label="Delete selected rows"
                         onClick={onDeleteClientsHandler}
                     >
-                      Continuar
+                        Continuar
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

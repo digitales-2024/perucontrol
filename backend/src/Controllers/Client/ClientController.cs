@@ -16,7 +16,10 @@ public class ClientController(
     [HttpGet]
     public override async Task<ActionResult<IEnumerable<Client>>> GetAll()
     {
-        return await _context.Clients.Include(c => c.ClientLocations).ToListAsync();
+        return await _context
+            .Clients.Include(c => c.ClientLocations)
+            .OrderByDescending(c => c.ClientNumber)
+            .ToListAsync();
     }
 
     [EndpointSummary("Get one by ID")]
@@ -54,6 +57,150 @@ public class ClientController(
         _dbSet.Add(entity);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+    }
+
+    [HttpPatch("/update/{id}")]
+    [EndpointSummary("Actualizar cliente por ID")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateClient(Guid id, [FromBody] ClientPatchDTO patchDTO)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            // Load client WITHOUT tracking to avoid concurrency issues
+            var client = await _dbSet
+                .AsNoTracking()
+                .Include(c => c.ClientLocations)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (client == null)
+                return NotFound("Cliente no encontrado");
+
+            // Create a fresh tracked entity with the original values
+            _context.Attach(client);
+
+            // Apply basic client property updates
+            patchDTO.ApplyPatch(client);
+
+            // Handle locations separately
+            if (patchDTO.ClientLocations is not null)
+            {
+                // Get IDs of existing locations
+                var existingLocationIds = client.ClientLocations.Select(l => l.Id).ToHashSet();
+                var processedIds = new HashSet<Guid>();
+
+                foreach (var patchLocation in patchDTO.ClientLocations)
+                {
+                    if (patchLocation.Id is not null)
+                    {
+                        var locationId = patchLocation.Id.Value;
+
+                        if (existingLocationIds.Contains(locationId))
+                        {
+                            // Get the location directly from the database
+                            var existingLocation = await _context
+                                .Set<ClientLocation>()
+                                .FindAsync(locationId);
+
+                            if (existingLocation != null)
+                            {
+                                // Update properties
+                                existingLocation.Address = patchLocation.Address;
+                                processedIds.Add(locationId);
+                            }
+                        }
+                        else
+                        {
+                            // ID provided but not found, create new with client reference
+                            var newLocation = new ClientLocation
+                            {
+                                Id = locationId,
+                                Address = patchLocation.Address,
+                                Client = client,
+                            };
+                            await _context.Set<ClientLocation>().AddAsync(newLocation);
+                            processedIds.Add(locationId);
+                        }
+                    }
+                    else
+                    {
+                        // Create new location without specified ID
+                        var newLocation = new ClientLocation
+                        {
+                            Address = patchLocation.Address,
+                            Client = client,
+                        };
+                        await _context.Set<ClientLocation>().AddAsync(newLocation);
+                    }
+                }
+
+                // Delete any locations not included in the update
+                var locationsToDelete = await _context
+                    .Set<ClientLocation>()
+                    .Where(l => l.Client.Id == id && !processedIds.Contains(l.Id))
+                    .ToListAsync();
+
+                if (locationsToDelete.Any())
+                {
+                    _context.Set<ClientLocation>().RemoveRange(locationsToDelete);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return NoContent();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error de concurrencia al actualizar cliente {Id}", id);
+            return Conflict(
+                "Los datos fueron modificados por otro usuario. Por favor refresque e intente nuevamente."
+            );
+        }
+        catch (DbUpdateException ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error de base de datos al actualizar cliente {Id}", id);
+            return StatusCode(500, "Error al guardar los cambios");
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "Error inesperado al actualizar cliente {Id}", id);
+            return StatusCode(500, "Error interno del servidor");
+        }
+    }
+
+    private async Task ApplyClientChanges(Client client, ClientPatchDTO patchDTO)
+    {
+        // Aplicar cambios a propiedades simples
+        patchDTO.ApplyPatch(client);
+
+        // Manejar ubicaciones si vienen en el DTO
+        if (patchDTO.ClientLocations != null)
+        {
+            // 1. Eliminar ubicaciones existentes (con consulta directa para evitar problemas de tracking)
+            await _context
+                .ClientLocations.Where(cl => cl.Client.Id == client.Id)
+                .ExecuteDeleteAsync();
+
+            // 2. Limpiar colección en memoria
+            client.ClientLocations.Clear();
+
+            // 3. Agregar nuevas ubicaciones con validación
+            foreach (var locationDto in patchDTO.ClientLocations.Where(dto => dto != null))
+            {
+                var newLocation = locationDto.MapToEntity();
+                newLocation.Client.Id = client.Id; // Establecer relación
+                _context.ClientLocations.Add(newLocation);
+            }
+        }
     }
 
     [HttpGet("search-by-ruc/{ruc}")]
@@ -126,6 +273,24 @@ public class ClientController(
         }
 
         entity.IsActive = false;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    // Reactive
+    [EndpointSummary("Reactive client by Id")]
+    [HttpPatch("{id}/reactivate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<IActionResult> Reactivate(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        entity.IsActive = true;
         await _context.SaveChangesAsync();
         return NoContent();
     }

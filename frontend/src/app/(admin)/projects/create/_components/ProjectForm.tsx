@@ -17,12 +17,13 @@ import { useRouter } from "next/navigation";
 interface ProjectFormProps {
     clients: Array<components["schemas"]["Client"]>;
     services: Array<components["schemas"]["Service"]>;
-    quotations: Array<components["schemas"]["Quotation3"]>;
+    quotations: Array<components["schemas"]["Quotation2"]>;
 }
 
 export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
     const r = useRouter();
 
     // Configuración del formulario con validación estricta
@@ -36,6 +37,7 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             area: 1,
             spacesCount: 1,
             price: 0,
+            ambients: [],
             services: [],
             appointments: [],
         },
@@ -43,21 +45,37 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     const {
         handleSubmit,
-        formState: { errors },
+        formState: { /* errors */ },
     } = formMethods;
 
     const onSubmit = async(data: ClientDataSchema) =>
     {
+        // Validar que haya al menos un ambiente
+        if (data.ambients.length === 0)
+        {
+            toast.error("Debe agregar al menos un ambiente.");
+            return; // Detener el envío del formulario
+        }
+
         try
         {
             setIsSubmitting(true);
 
+            // Transformar las citas para asegurarse de que dueDate sea una cadena en formato ISO
+            const transformedAppointments = data.appointments.map((appointment) => ({
+                ...appointment,
+                dueDate: new Date(appointment.dueDate).toISOString(), // Convertir a formato ISO
+            }));
+
             // Validación adicional para asegurar el formato correcto
-            const isValidAppointments = data.appointments.every((dateStr) =>
+            const isValidAppointments = transformedAppointments.every((appointment) =>
             {
                 try
                 {
-                    return !isNaN(new Date(dateStr).getTime());
+                    return (
+                        !isNaN(new Date(appointment.dueDate).getTime()) &&
+                        appointment.services.length > 0
+                    );
                 }
                 catch
                 {
@@ -80,19 +98,11 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 area: data.area,
                 spacesCount: data.spacesCount,
                 price: data.price,
-                appointments: data.appointments.map((date) =>
-                {
-                    // Asegurar formato ISO string
-                    try
-                    {
-                        return new Date(date).toISOString();
-                    }
-                    catch
-                    {
-                        return date; // Si ya está en formato correcto
-                    }
-                }),
+                ambients: data.ambients,
+                appointmentCreateDTOs: transformedAppointments,
             };
+
+            console.log(JSON.stringify(requestData, null, 2));
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",
@@ -121,25 +131,9 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
 
     return (
         <FormProvider {...formMethods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <ClientData clients={clients} services={services} quotations={quotations} />
-                <ServiceDates />
-
-                {/* Mostrar errores generales del formulario */}
-                {Object.keys(errors).length > 0 && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-                        <p className="font-medium">
-                            Por favor corrija los siguientes errores:
-                        </p>
-                        <ul className="mt-2 list-disc list-inside text-sm">
-                            {Object.entries(errors).map(([key, error]) => (
-                                <li key={key}>
-                                    {error.message as string}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-5">
+                <ClientData clients={clients} services={services} quotations={quotations} onServicesChange={setSelectedServices} />
+                <ServiceDates services={services} enabledServices={selectedServices} />
 
                 <Button
                     type="submit"

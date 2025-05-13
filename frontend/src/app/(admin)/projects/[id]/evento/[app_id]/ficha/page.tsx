@@ -1,7 +1,7 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { OperationsSheetForm } from "./_OperationsSheetForm";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {
     params: Promise<{
@@ -15,7 +15,7 @@ export default async function ProjectsPage({ params }: Props)
     const { id, app_id: appId } = await params;
 
     // get project by id
-    const [project, projectError] = await wrapper((auth) => backend.GET("/{id}/v2", {
+    const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}/v2", {
         ...auth,
         params: {
             path: {
@@ -37,9 +37,35 @@ export default async function ProjectsPage({ params }: Props)
     }
 
     return (
-        <Shell>
-            <HeaderPage title="Ficha de Operaciones" description="Llenar, guardar y generar la ficha de operaciones." />
+        <>
+            <HeaderPage
+                title="Ficha de Operaciones"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Ficha de Operaciones
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <OperationsSheetForm project={project} client={project.client} appointment={appointment} />
-        </Shell>
+        </>
     );
 }

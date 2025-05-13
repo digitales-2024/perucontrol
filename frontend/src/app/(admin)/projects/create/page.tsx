@@ -1,12 +1,20 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
 import { backend, wrapper } from "@/types/backend";
 import { ProjectForm } from "./_components/ProjectForm";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default async function ProjectsPage()
 {
-    // get all clients
-    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+    const [
+        [clients, clientsError],
+        [services, servicesError],
+        [quotations, quotationsError],
+
+    ] = await Promise.all([
+        wrapper((auth) => backend.GET("/api/Client", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Service", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", { ...auth })),
+    ]);
 
     if (clientsError)
     {
@@ -14,17 +22,11 @@ export default async function ProjectsPage()
         return null;
     }
 
-    // get all services
-    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
-
     if (servicesError)
     {
         console.error("Error getting all clients:", servicesError);
         return null;
     }
-
-    // get all quotation
-    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation/approved/not-associated", {...auth}));
 
     if (quotationsError)
     {
@@ -33,9 +35,28 @@ export default async function ProjectsPage()
     }
 
     return (
-        <Shell>
-            <HeaderPage title="Nuevo Servicio" description="Registra un nuevo servicio" />
+        <>
+            <HeaderPage
+                title="Nuevo Servicio"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Crear Servicio
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <ProjectForm clients={clients} services={services} quotations={quotations} />
-        </Shell>
+        </>
     );
 }

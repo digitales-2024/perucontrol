@@ -6,7 +6,11 @@ namespace Tests.E2E;
 [TestClass]
 public sealed class Test2 : PageTest
 {
-    public readonly string BaseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? throw new InvalidOperationException("BASE_URL envvar is not set. It is needed to run the tests.");
+    public readonly string BaseUrl =
+        Environment.GetEnvironmentVariable("BASE_URL")
+        ?? throw new InvalidOperationException(
+            "BASE_URL envvar is not set. It is needed to run the tests."
+        );
 
     [TestInitialize]
     public async Task TestInitialize()
@@ -14,7 +18,8 @@ public sealed class Test2 : PageTest
         // do login
 
         await Page.GotoAsync($"{BaseUrl}/login");
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Bienvenido" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Bienvenido" }))
+            .ToBeVisibleAsync();
 
         // fill login form
         await Page.GetByLabel("Correo electrónico").FillAsync("admin@admin.com");
@@ -24,7 +29,8 @@ public sealed class Test2 : PageTest
         // wait for navigation
         await Expect(Page).ToHaveURLAsync($"{BaseUrl}/");
 
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Inicio" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Inicio" }))
+            .ToBeVisibleAsync();
     }
 
     [TestMethod]
@@ -33,6 +39,7 @@ public sealed class Test2 : PageTest
         await Page!.GotoAsync($"{BaseUrl}/clients");
         await Expect(Page).ToHaveURLAsync($"{BaseUrl}/clients");
 
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Gestión de clientes" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Gestión de clientes" }))
+            .ToBeVisibleAsync();
     }
 }
