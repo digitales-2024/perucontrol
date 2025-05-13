@@ -315,7 +315,10 @@ public class QuotationController(
 
     [EndpointSummary("Send Quotation PDF via Email")]
     [HttpPost("{id}/email-pdf")]
-    public async Task<ActionResult> SendPDFViaEmail(Guid id, [FromQuery][Required][EmailAddress] string email)
+    public async Task<ActionResult> SendPDFViaEmail(
+        Guid id,
+        [FromQuery] [Required] [EmailAddress] string email
+    )
     {
         var quotation = await _dbSet
             .Include(q => q.QuotationServices)
@@ -349,18 +352,19 @@ public class QuotationController(
 
         // send email
         var (ok, error) = await emailService.SendEmailAsync(
-                to: email,
-                subject: "Cotización PDF",
-                htmlBody: "",
-                textBody: "",
-                attachments: [
+            to: email,
+            subject: "Cotización PDF",
+            htmlBody: "",
+            textBody: "",
+            attachments:
+            [
                 new()
                 {
                     FileName = "cotizacion_perucontrol.pdf",
                     Content = new MemoryStream(pdfBytes),
                     ContentType = "application/pdf",
-                    }
-                ]
+                },
+            ]
         );
 
         if (!ok)
@@ -370,7 +374,6 @@ public class QuotationController(
 
         return Ok();
     }
-
 
     [EndpointSummary("Generate Excel")]
     [HttpPost("{id}/gen-excel")]

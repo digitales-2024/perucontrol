@@ -132,7 +132,9 @@ builder.Services.AddScoped<S3Service>();
 builder.Services.AddScoped<WhatsappService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.Configure<R2Config>(builder.Configuration.GetSection("R2Config"));
-builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailConfiguration"));
+builder.Services.Configure<EmailConfiguration>(
+    builder.Configuration.GetSection("EmailConfiguration")
+);
 
 var app = builder.Build();
 

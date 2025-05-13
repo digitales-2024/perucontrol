@@ -885,8 +885,7 @@ public class AppointmentController(
     }
 
     [HttpGet("mail")]
-    public async Task<IActionResult> SendEmailTest(
-    )
+    public async Task<IActionResult> SendEmailTest()
     {
         var message = new MimeKit.MimeMessage();
         message.From.Add(new MailboxAddress("Fernando Araoz", "fernando.araozu@gmail.com"));
