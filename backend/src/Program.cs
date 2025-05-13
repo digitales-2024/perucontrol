@@ -135,6 +135,9 @@ builder.Services.Configure<R2Config>(builder.Configuration.GetSection("R2Config"
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration")
 );
+builder.Services.Configure<TwilioConfiguration>(
+    builder.Configuration.GetSection("TwilioConfiguration")
+);
 
 var app = builder.Build();
 

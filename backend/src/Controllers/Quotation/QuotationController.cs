@@ -12,7 +12,8 @@ public class QuotationController(
     DatabaseContext db,
     OdsTemplateService odsTemplateService,
     LibreOfficeConverterService pDFConverterService,
-    EmailService emailService
+    EmailService emailService,
+    WhatsappService whatsappService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -317,7 +318,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery] [Required] [EmailAddress] string email
+        [FromQuery][Required][EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -374,6 +375,54 @@ public class QuotationController(
 
         return Ok();
     }
+
+
+    [EndpointSummary("Send Quotation PDF via Email")]
+    [HttpGet("{id}/whatsapp-pdf")]
+    public async Task<ActionResult> SendPDFViaWhatsapp(
+        Guid id
+    )
+    {
+        var quotation = await _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        await whatsappService.SendWhatsappServiceMessageAsync(
+            pdfBytes,
+            "",
+            "quotation.pdf",
+            "+51960954763",
+            "Hola, aquí está tu cotización"
+        );
+        return Ok();
+    }
+
 
     [EndpointSummary("Generate Excel")]
     [HttpPost("{id}/gen-excel")]
