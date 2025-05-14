@@ -3,12 +3,14 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.Extensions.Options;
+using PeruControl.Model;
 
 namespace PeruControl.Services;
 
 public class S3Service
 {
     private readonly IAmazonS3 _s3Client;
+    private readonly DatabaseContext _dbContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="S3Service"/> class configured to use Cloudflare R2.
@@ -16,7 +18,7 @@ public class S3Service
     /// <param name="r2Config">Configuration containing R2 account details and credentials.</param>
     /// <exception cref="ArgumentNullException">Thrown when r2Config is null.</exception>
     /// <exception cref="ArgumentException">Thrown when required configuration values are missing.</exception>
-    public S3Service(IOptions<R2Config> r2Config)
+    public S3Service(IOptions<R2Config> r2Config, DatabaseContext dbContext)
     {
         if (r2Config == null || r2Config.Value == null)
             throw new ArgumentNullException(nameof(r2Config));
@@ -44,6 +46,7 @@ public class S3Service
         };
 
         _s3Client = new AmazonS3Client(config.AccessKey, config.SecretKey, s3Config);
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     /// <summary>
@@ -131,6 +134,28 @@ public class S3Service
     }
 
     /// <summary>
+    /// Uploads a temp file to the specified bucket with the given key.
+    /// At midnight, a separate service cleansup all files uploaded using this method.
+    /// See UploadAsync for info about parameters
+    /// </summary>
+    public async Task<S3UploadResult> UploadTempAsync(
+        string key,
+        Stream fileStream,
+        string contentType = "image/png"
+    )
+    {
+        var result = await UploadAsync(key, fileStream, contentType);
+
+        // Store the file in temp storage
+        _dbContext.WhatsappTemps.Add(
+            new Model.Whatsapp.WhatsappTemp { FileKey = result.Key, BucketName = result.BucketName }
+        );
+        await _dbContext.SaveChangesAsync();
+
+        return result;
+    }
+
+    /// <summary>
     /// Downloads an image (object) from the specified bucket and key.
     /// </summary>
     /// <param name="key">The key (file path/name) of the object to download.</param>
@@ -194,6 +219,64 @@ public class S3Service
 
             var response = await _s3Client.DeleteObjectAsync(deleteRequest);
             return true; // S3 will return success even if the key doesn't exist
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            // Permission error
+            Console.WriteLine($"Permission denied: {ex.Message}");
+            return false;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            // Other S3-specific errors (bucket doesn't exist, etc.)
+            Console.WriteLine($"S3 error: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            // Unexpected errors
+            Console.WriteLine($"Error: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteBatchAsync(string bucketName, IEnumerable<string> keys)
+    {
+        if (string.IsNullOrEmpty(bucketName))
+            throw new ArgumentException("Bucket name cannot be null or empty", nameof(bucketName));
+
+        if (keys == null || !keys.Any())
+            throw new ArgumentException("Keys collection cannot be null or empty", nameof(keys));
+
+        // Convert the keys to S3 KeyVersion objects
+        var keyObjects = keys.Select(k => new KeyVersion { Key = k }).ToList();
+
+        try
+        {
+            var deleteRequest = new DeleteObjectsRequest
+            {
+                BucketName = bucketName,
+                Objects = keyObjects,
+                // Set this to false if you don't want to get back a list of all deleted objects
+                // Setting it to true will give you confirmation of each deletion
+                Quiet = true,
+            };
+
+            var response = await _s3Client.DeleteObjectsAsync(deleteRequest);
+
+            // If you want, you can check if there were errors in the response
+            if (response.DeleteErrors.Count > 0)
+            {
+                foreach (var error in response.DeleteErrors)
+                {
+                    Console.WriteLine(
+                        $"Error deleting key {error.Key}: {error.Code}, {error.Message}"
+                    );
+                }
+                return response.DeleteErrors.Count == 0;
+            }
+
+            return true;
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
         {

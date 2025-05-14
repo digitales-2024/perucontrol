@@ -8,6 +8,15 @@ services:
         condition: service_started
     env_file:
       - .env.backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.perucontrol-backend-develop.rule=Host(`perucontrol-backend-develop.acide.win`)"
+      - "traefik.http.routers.perucontrol-backend-develop.entrypoints=websecure"
+      - "traefik.http.routers.perucontrol-backend-develop.tls=true"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.perucontrol-backend-develop.loadbalancer.server.port=8080"
     networks:
       - proxy
       - perucontrol-network-develop

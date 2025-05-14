@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model.Reports;
+using PeruControl.Model.Whatsapp;
 
 namespace PeruControl.Model;
 
@@ -26,6 +27,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<TermsAndConditions> TermsAndConditions { get; set; }
     public required DbSet<TreatmentArea> TreatmentAreas { get; set; }
     public required DbSet<TreatmentProduct> TreatmentProducts { get; set; }
+    public required DbSet<WhatsappTemp> WhatsappTemps { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

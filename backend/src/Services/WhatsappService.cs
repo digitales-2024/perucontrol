@@ -17,40 +17,6 @@ public class WhatsappService
         _twilio = settings.Value;
     }
 
-    public async Task SendWhatsappMessageAsync(
-        byte[] fileBytes,
-        string fileName,
-        string phoneNumber,
-        string message
-    )
-    {
-        if (string.IsNullOrWhiteSpace(phoneNumber))
-            throw new ArgumentException("Phone number is required.", nameof(phoneNumber));
-
-        // if (fileBytes == null || fileBytes.Length == 0)
-        //     throw new ArgumentException("File is required.", nameof(fileBytes));
-
-        // Upload the file to S3/R2 and get a public URL
-        // string mediaUrl = await UploadFileAndGetUrlAsync(fileBytes, fileName);
-
-        TwilioClient.Init(_twilio.AccountSid, _twilio.AuthToken);
-
-        var to = new PhoneNumber($"whatsapp:{phoneNumber}");
-        var from = new PhoneNumber($"whatsapp:{_twilio.FromNumber}");
-
-        var messageOptions = new CreateMessageOptions(to)
-        {
-            From = from,
-            ContentSid = "HX350d429d32e64a552466cafecbe95f3c",
-            ContentVariables = """{"1":"May the 5th","2":"noon (que bendicion)"}""",
-            // Body = message
-        };
-        // messageOptions.MediaUrl.Add(new Uri(mediaUrl));
-
-        var twilioMessage = await MessageResource.CreateAsync(messageOptions);
-        Console.WriteLine(twilioMessage.Body);
-    }
-
     public async Task SendWhatsappServiceMessageAsync(
         byte[] fileBytes,
         /// ID of the Twilio message template
@@ -67,7 +33,7 @@ public class WhatsappService
 
         // Upload the file to S3/R2 and get a public URL
         var uniqueid = Guid.NewGuid().ToString();
-        var uploadResult = await _s3Service.UploadAsync(
+        var uploadResult = await _s3Service.UploadTempAsync(
             $"tmp-{uniqueid}.pdf",
             new MemoryStream(fileBytes),
             "application/pdf"
@@ -91,19 +57,5 @@ public class WhatsappService
         };
 
         var twilioMessage = await MessageResource.CreateAsync(messageOptions);
-        Console.WriteLine(twilioMessage.Body);
-    }
-
-    private string GetContentType(string fileName)
-    {
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
-        return ext switch
-        {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".gif" => "image/gif",
-            ".pdf" => "application/pdf",
-            _ => "application/octet-stream",
-        };
     }
 }
