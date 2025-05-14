@@ -18,7 +18,6 @@ public class ProjectController(
     DatabaseContext db,
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
-    // S3Service s3Service,
     WordTemplateService wordTemplateService,
     EmailService emailService,
     WhatsappService whatsappService
@@ -943,7 +942,7 @@ public class ProjectController(
     {
         var (excelBytes, error) = await _projectService.GenerateAppointmentScheduleExcel(
             id,
-            isPdf: true // This parameter seems to indicate the template type for excel, not that it returns PDF
+            isPdf: true
         );
 
         if (error != null)
