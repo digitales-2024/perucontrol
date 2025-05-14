@@ -27,10 +27,12 @@ export async function GET(request: NextRequest)
 
             if (!response.ok)
             {
+                console.log("error fetching, so sad");
                 return new NextResponse("Error fetching image", { status: 400 });
             }
 
             const imageData = await response.arrayBuffer();
+            console.log("response successful :D");
             return new NextResponse(imageData, {
                 headers: {
                     "Content-Type": mime,
