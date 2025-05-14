@@ -58,7 +58,7 @@ public class EmailService
         using var client = new SmtpClient();
         try
         {
-            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.UseSsl);
+            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword);
             await client.SendAsync(message);
             return (Success: true, ErrorMessage: null);
