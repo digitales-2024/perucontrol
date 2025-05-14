@@ -287,9 +287,6 @@ public class ExcelTemplateService
                 workbookPart.SharedStringTablePart
                 ?? throw new Exception("Couldn't load shared string part");
 
-            // TODO:
-            // Fill each month template with data from the month appointments
-
             var placeholders = new Dictionary<string, string>()
             {
                 { "{empresa_contratante}", project.Client.RazonSocial ?? project.Client.Name },

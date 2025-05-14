@@ -414,7 +414,6 @@ public class QuotationController(
             fileBytes: pdfBytes,
             contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
             fileName: "quotation.pdf",
-            // FIXME: use the phone number sent
             phoneNumber: phoneNumber
         );
         return Ok();

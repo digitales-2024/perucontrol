@@ -88,7 +88,7 @@ export function DownloadCertificateForm({
             };
 
             const [, error] = await toastWrapper(
-                SaveCertificateData(project.id!, body),
+                SaveCertificateData(appointment.id!, body),
                 {
                     loading: "Guardando datos...",
                     success: "Datos guardados correctamente",
@@ -167,8 +167,7 @@ export function DownloadCertificateForm({
             expirationDate,
         };
         const [result, error] = await toastWrapper(
-            // SaveCertificateData(project.id!, input), // Cambia a `true` si es una actualización
-            SaveCertificateData(project.id!, body),
+            SaveCertificateData(appointment.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
