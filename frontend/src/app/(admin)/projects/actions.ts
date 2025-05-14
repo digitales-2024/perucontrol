@@ -544,7 +544,7 @@ export async function SendRodentPDFViaEmail(appointmentId: string, email: string
 
 export async function SendRodentPDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/whatsapp-pdf", {
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/whatsapp-pdf" as any, {
         ...auth,
         params: {
             path: {
@@ -559,6 +559,50 @@ export async function SendRodentPDFViaWhatsapp(appointmentId: string, phoneNumbe
     if (error)
     {
         console.error("Error sending rodent PDF via WhatsApp:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendCertificatePDFViaEmail(appointmentId: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/certificate/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending certificate PDF via email:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendCertificatePDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/certificate/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending certificate PDF via WhatsApp:", error);
         return err(error);
     }
     return ok(null);

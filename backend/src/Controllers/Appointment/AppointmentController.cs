@@ -417,7 +417,7 @@ public class AppointmentController(
         return Ok(operationSheet);
     }
 
-    [EndpointSummary("Update a certtificate")]
+    [EndpointSummary("Update a certificate")]
     [HttpPatch("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -523,28 +523,35 @@ public class AppointmentController(
     [HttpPost("{id}/certificate/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificatePdf(Guid id)
+    public async Task<ActionResult> GenerateCertificatePdf(Guid id)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        return File(pdfBytes!, "application/pdf", "certificate.pdf");
+    }
+
+    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateCertificatePdfBytesAsync(Guid id)
     {
         var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
             GetCertificateData(id);
-        if (error != null)
-            return BadRequest(error);
-        if (projectAppointment == null)
-            return NotFound(error);
-        if (business == null)
-            return NotFound(error);
+        if (error != null) return (null, new BadRequestObjectResult(error));
+        if (projectAppointment == null) return (null, new NotFoundObjectResult("Project appointment not found after GetCertificateData check."));
+        if (business == null) return (null, new NotFoundObjectResult("Business data not found after GetCertificateData check."));
 
         var certificate = projectAppointment.Certificate;
         var project = projectAppointment.Project;
         var client = project.Client;
         var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
 
-        // load signatures as base64 strings
         var signature1 = imageService.GetImageAsBase64("signature1.png");
         var signature2 = imageService.GetImageAsBase64("signature2.png");
         if (signature1 is null || signature2 is null)
         {
-            return BadRequest("No se configuraron las firmas de certificado.");
+            return (null, new BadRequestObjectResult("No se configuraron las firmas de certificado."));
         }
 
         var placeholders = new Dictionary<string, string>
@@ -578,17 +585,79 @@ public class AppointmentController(
 
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(svgBytes, "svg");
 
-        if (errorStr != "")
+        if (!string.IsNullOrEmpty(errorStr))
         {
-            return BadRequest(errorStr);
+            return (null, new BadRequestObjectResult(errorStr));
         }
         if (pdfBytes == null)
         {
-            return BadRequest("Error generando PDF");
+            return (null, new BadRequestObjectResult("Error generando PDF desde SVG"));
+        }
+        return (pdfBytes, null);
+    }
+
+    [EndpointSummary("Send Certificate PDF via Email")]
+    [HttpPost("{id}/certificate/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendCertificatePdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
         }
 
-        // send
-        return File(pdfBytes, "application/pdf", "certificate.pdf");
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Certificado de Servicio PDF",
+            htmlBody: "Adjunto encontrará el certificado de servicio.",
+            textBody: "Adjunto encontrará el certificado de servicio.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "certificado_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes!),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo con el certificado.");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Certificate PDF via WhatsApp")]
+    [HttpPost("{id}/certificate/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendCertificatePdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes!,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Using the same SID as others, verify if correct for certs
+            fileName: "certificado.pdf",
+            phoneNumber: phoneNumber
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Get all certificates")]
