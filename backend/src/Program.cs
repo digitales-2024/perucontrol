@@ -139,6 +139,9 @@ builder.Services.Configure<TwilioConfiguration>(
     builder.Configuration.GetSection("TwilioConfiguration")
 );
 
+// Register cleanup service
+builder.Services.AddHostedService<WhatsappCleanupService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
