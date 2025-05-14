@@ -344,26 +344,104 @@ public class AppointmentController(
     [HttpPost("{id}/gen-operations-sheet/pdf")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheetPdf(Guid id)
+    public async Task<ActionResult> GenerateOperationsSheetPdf(Guid id)
     {
-        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
-        if (odsErr != "")
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
         {
-            return BadRequest(odsErr);
+            return errorResult;
+        }
+        return File(pdfBytes!, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateOperationsSheetPdfBytesAsync(Guid id)
+    {
+        var (odsBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
+        if (!string.IsNullOrEmpty(odsErr))
+        {
+            if (odsErr.Contains("no encontrado", StringComparison.OrdinalIgnoreCase) || odsErr.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                return (null, new NotFoundObjectResult(odsErr));
+            return (null, new BadRequestObjectResult(odsErr));
+        }
+        if (odsBytes == null || odsBytes.Length == 0)
+        {
+            return (null, new BadRequestObjectResult("Error generando la plantilla ODS de la ficha de operaciones."));
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(fileBytes, "ods");
-        if (pdfErr != "")
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (!string.IsNullOrEmpty(pdfErr))
         {
-            return BadRequest(pdfErr);
+            return (null, new BadRequestObjectResult(pdfErr));
         }
         if (pdfBytes == null)
         {
-            return BadRequest("Error generando PDF");
+            return (null, new BadRequestObjectResult("Error convirtiendo la ficha de operaciones a PDF."));
+        }
+        return (pdfBytes, null);
+    }
+
+    [EndpointSummary("Send Operations Sheet PDF via Email")]
+    [HttpPost("{id}/gen-operations-sheet/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendOperationsSheetPdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+    {
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
         }
 
-        // send
-        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Ficha de Operaciones PDF",
+            htmlBody: "Adjunto encontrará la Ficha de Operaciones.",
+            textBody: "Adjunto encontrará la Ficha de Operaciones.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "ficha_operaciones_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes!),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, serviceError ?? "Error enviando el correo con la ficha de operaciones.");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Operations Sheet PDF via WhatsApp")]
+    [HttpPost("{id}/gen-operations-sheet/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes!,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
+            fileName: "ficha_operaciones.pdf",
+            phoneNumber: phoneNumber
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Update an operation sheet")]

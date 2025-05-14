@@ -6,17 +6,16 @@ import { components } from "@/types/api";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel, GeneratePDF } from "../../../actions";
+import { GenerateOperationSheetExcel, GenerateOperationSheetPDF } from "../../../actions";
 
 export type OperationSheetProp = components["schemas"]["AppointmentGetDTO2"]
 
-interface OperationRecordsListProps
-{
-  columns: Array<ColumnDef<OperationSheetProp, unknown>>;
-  data: Array<OperationSheetProp>
+interface OperationRecordsListProps {
+    columns: Array<ColumnDef<OperationSheetProp, unknown>>;
+    data: Array<OperationSheetProp>
 }
 
-export default function OperationRecordsList({ columns, data } : OperationRecordsListProps)
+export default function OperationRecordsList({ columns, data }: OperationRecordsListProps)
 {
     // const router = useRouter();
 
@@ -68,7 +67,7 @@ export default function OperationRecordsList({ columns, data } : OperationRecord
                     format: "yyyy-MM-dd",
                 }}
                 emptyMessage="No se encontraron fichas de operación"
-                // onRowClick={(record) => router.push(`/fichas-operacion/${record.id}`)}
+            // onRowClick={(record) => router.push(`/fichas-operacion/${record.id}`)}
             />
         </div>
     );
@@ -76,7 +75,7 @@ export default function OperationRecordsList({ columns, data } : OperationRecord
 
 const downloadExcel = async(id: string) =>
 {
-    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+    const [blob, err] = await toastWrapper(GenerateOperationSheetExcel(id), {
         loading: "Generando archivo",
         success: "Excel generado",
     });
@@ -96,7 +95,7 @@ const downloadExcel = async(id: string) =>
 
 const downloadPdf = async(id: string) =>
 {
-    const [blob, err] = await toastWrapper(GeneratePDF(id), {
+    const [blob, err] = await toastWrapper(GenerateOperationSheetPDF(id), {
         loading: "Generando archivo",
         success: "Excel generado",
     });

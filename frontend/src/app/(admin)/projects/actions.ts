@@ -97,12 +97,12 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     });
 }
 
-export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
+export async function GenerateOperationSheetExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
 }
 
-export async function GeneratePDF(id: string): Promise<Result<Blob, FetchError>>
+export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
 }
@@ -603,6 +603,50 @@ export async function SendCertificatePDFViaWhatsapp(appointmentId: string, phone
     if (error)
     {
         console.error("Error sending certificate PDF via WhatsApp:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendOperationSheetPDFViaEmail(appointmentId: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/gen-operations-sheet/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId, // Ensure this matches the {id} in the path
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending operation sheet PDF via email:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendOperationSheetPDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/gen-operations-sheet/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId, // Ensure this matches the {id} in the path
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending operation sheet PDF via WhatsApp:", error);
         return err(error);
     }
     return ok(null);
