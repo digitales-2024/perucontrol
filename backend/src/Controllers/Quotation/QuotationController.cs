@@ -318,7 +318,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery][Required][EmailAddress] string email
+        [FromQuery] [Required] [EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -376,12 +376,9 @@ public class QuotationController(
         return Ok();
     }
 
-
     [EndpointSummary("Send Quotation PDF via WhatsApp")]
     [HttpGet("{id}/whatsapp-pdf")]
-    public async Task<ActionResult> SendPDFViaWhatsapp(
-        Guid id
-    )
+    public async Task<ActionResult> SendPDFViaWhatsapp(Guid id)
     {
         var quotation = await _dbSet
             .Include(q => q.QuotationServices)
@@ -415,13 +412,12 @@ public class QuotationController(
 
         await whatsappService.SendWhatsappServiceMessageAsync(
             fileBytes: pdfBytes,
-            contentSid: "HX7f995665c216252bce0294383e33dca9",
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
             fileName: "quotation.pdf",
             phoneNumber: "+51960954763"
         );
         return Ok();
     }
-
 
     [EndpointSummary("Generate Excel")]
     [HttpPost("{id}/gen-excel")]

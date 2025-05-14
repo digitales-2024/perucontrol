@@ -11,10 +11,7 @@ public class EmailService
     private readonly EmailConfiguration _settings;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(
-        IOptions<EmailConfiguration> settings,
-        ILogger<EmailService> logger
-    )
+    public EmailService(IOptions<EmailConfiguration> settings, ILogger<EmailService> logger)
     {
         _settings = settings.Value;
         _logger = logger;
