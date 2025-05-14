@@ -18,6 +18,7 @@ import { FetchError } from "@/types/backend";
 import { Result } from "@/utils/result";
 
 type SenderProps = {
+    documentName: string,
     startingEmail: string,
     startingNumber: string,
     pdfLoadAction: () => Promise<Result<Blob, FetchError>>,
@@ -25,7 +26,7 @@ type SenderProps = {
     whatsappSendAction: (number: string) => Promise<Result<null, FetchError>>
 }
 
-export function DocumentSenderDialog({ startingEmail, startingNumber, pdfLoadAction, emailSendAction, whatsappSendAction }: SenderProps)
+export function DocumentSenderDialog({ documentName, startingEmail, startingNumber, pdfLoadAction, emailSendAction, whatsappSendAction }: SenderProps)
 {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState(startingEmail);
@@ -79,8 +80,8 @@ export function DocumentSenderDialog({ startingEmail, startingNumber, pdfLoadAct
     {
         setSending(true);
         const [, error] = await toastWrapper(whatsappSendAction(phoneNumber), {
-            loading: "Enviando correo",
-            success: "Correo enviado con éxito",
+            loading: "Enviando mensaje de whatsapp",
+            success: "Mensaje enviado con éxito",
         });
         setSending(false);
 
@@ -114,10 +115,16 @@ export function DocumentSenderDialog({ startingEmail, startingNumber, pdfLoadAct
             <DialogContent className="w-[90vw] h-[40rem] md:max-w-[60rem]">
                 <DialogHeader>
                     <DialogTitle>
-                        Enviar cotización
+                        Enviar
+                        {" "}
+                        {documentName}
                     </DialogTitle>
                     <DialogDescription>
-                        Enviar la cotización en PDF por Correo o Whatsapp.
+                        Enviar
+                        {" "}
+                        {documentName}
+                        {" "}
+                        en PDF por Correo o Whatsapp.
                     </DialogDescription>
 
                     {!!pdfUrl ? (

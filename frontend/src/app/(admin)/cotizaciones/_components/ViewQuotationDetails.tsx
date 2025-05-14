@@ -28,8 +28,8 @@ import {
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
 import { components } from "@/types/api";
-import { DocumentSenderDialog } from "./SendQuotation";
 import { GeneratePdf, SendQuotationPdfViaMail, SendQuotationPdfViaWhatsapp } from "../actions";
+import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 
 export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation2"] })
 {

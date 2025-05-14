@@ -81,14 +81,6 @@ const data = {
                     title: "Certificados",
                     url: "/projects/ver/certificado",
                 },
-                {
-                    title: "Cronograma anual",
-                    url: "#",
-                },
-                {
-                    title: "Informes",
-                    url: "#",
-                },
             ],
         },
         {

@@ -475,3 +475,47 @@ export async function CreateTreatmentArea(appointmentId: string, body: Array<com
     }
     return ok(null);
 }
+
+export async function SendSchedulePDFViaEmail(id: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/schedule/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending schedule PDF via email:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendSchedulePDFViaWhatsapp(id: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Project/{id}/schedule/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending schedule PDF via WhatsApp:", error);
+        return err(error);
+    }
+    return ok(null);
+}
