@@ -879,7 +879,7 @@ public class ProjectController(
 
         if (pdfBytes == null)
         {
-            if (errorMsg != null && (errorMsg.ToLower().Contains("no encontrado") || errorMsg.ToLower().Contains("not found")))
+            if (errorMsg != null && (errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase) || errorMsg.ToLower().Contains("not found")))
             {
                 return NotFound(errorMsg);
             }

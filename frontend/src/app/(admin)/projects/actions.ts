@@ -519,3 +519,47 @@ export async function SendSchedulePDFViaWhatsapp(id: string, phoneNumber: string
     }
     return ok(null);
 }
+
+export async function SendRodentPDFViaEmail(appointmentId: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending rodent PDF via email:", error);
+        return err(error);
+    }
+    return ok(null);
+}
+
+export async function SendRodentPDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error sending rodent PDF via WhatsApp:", error);
+        return err(error);
+    }
+    return ok(null);
+}

@@ -22,9 +22,14 @@ public class AppointmentController(
     SvgTemplateService svgTemplateService,
     WordTemplateService wordTemplateService,
     ImageService imageService,
-    S3Service s3Service
+    S3Service s3Service,
+    EmailService emailService,
+    WhatsappService whatsappService
 ) : ControllerBase
 {
+    private readonly EmailService _emailService = emailService;
+    private readonly WhatsappService _whatsappService = whatsappService;
+
     /// <summary>
     /// Retrieves appointments within a specified time range.
     /// </summary>
@@ -664,6 +669,98 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "roedores.pdf");
+    }
+
+    [EndpointSummary("Send Rodents PDF via Email")]
+    [HttpPost("{id}/rodents/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendRodentsPdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email
+    )
+    {
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
+
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF de roedores");
+        }
+
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Registro de Control de Roedores PDF",
+            htmlBody: "Adjunto encontrará el registro de control de roedores.",
+            textBody: "Adjunto encontrará el registro de control de roedores.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "registro_roedores_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo con el registro de roedores");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Rodents PDF via WhatsApp")]
+    [HttpPost("{id}/rodents/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendRodentsPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
+
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF de roedores");
+        }
+
+        // Ensure you have a valid ContentSid for WhatsApp document messages if applicable
+        // This SID might be specific to a template or a generic one for documents.
+        // For now, using a placeholder or a known generic SID if available.
+        // Example SID from QuotationController: "HXc9bee467c02d529435b97f7694ad3b87"
+        // This might need adjustment based on actual Twilio setup.
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Placeholder or generic SID
+            fileName: "registro_roedores.pdf",
+            phoneNumber: phoneNumber // Using the provided phone number
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Update Rodent Register")]
