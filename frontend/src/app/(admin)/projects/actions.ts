@@ -116,7 +116,7 @@ export async function SaveProjectOperationSheetData(
         ...auth,
         params: {
             path: {
-                appointmentid: body.projectAppointmentId!,
+                appointmentid: id,
             },
         },
         body,
@@ -309,7 +309,7 @@ export async function SaveCertificateData(
         ...auth,
         params: {
             path: {
-                appointmentid: body.projectAppointmentId!,
+                appointmentid: id,
             },
         },
         body,
@@ -544,7 +544,7 @@ export async function SendRodentPDFViaEmail(appointmentId: string, email: string
 
 export async function SendRodentPDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/whatsapp-pdf" as any, {
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/rodents/whatsapp-pdf", {
         ...auth,
         params: {
             path: {

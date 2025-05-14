@@ -124,6 +124,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                             {quotation.isActive && (
                                 <>
                                     <DocumentSenderDialog
+                                        documentName="Cotización"
                                         startingEmail={quotation.client.email}
                                         startingNumber={quotation.client.phoneNumber}
                                         pdfLoadAction={async() => GeneratePdf(quotation.id!)}

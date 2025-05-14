@@ -27,8 +27,6 @@ import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
 import { GenerateCertificateWord, GenerateCertificatePDF, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
-import { FetchError } from "@/types/backend";
-import { Result } from "@/utils/result";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -520,9 +518,9 @@ export function DownloadCertificateForm({
                         documentName="Certificado"
                         startingEmail={project.client?.email ?? ""}
                         startingNumber={project.client.phoneNumber}
-                        pdfLoadAction={async () => GenerateCertificatePDF(appointment.id!)} 
-                        emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)} 
-                        whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)} 
+                        pdfLoadAction={async() => GenerateCertificatePDF(appointment.id!)}
+                        emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)}
+                        whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)}
                     />
 
                     <Button

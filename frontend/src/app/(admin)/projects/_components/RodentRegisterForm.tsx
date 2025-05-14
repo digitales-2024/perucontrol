@@ -530,10 +530,10 @@ export function RodentControlForm({
                             documentName="Registro de Roedores"
                             startingEmail={project.client?.email ?? ""}
                             startingNumber={project.client?.phoneNumber ?? ""}
-                            pdfLoadAction={async () => GenerateRodentsPDF(appointment.id!)}
-                            emailSendAction={async (email: string) => SendRodentPDFViaEmail(appointment.id!, email)}
-                            whatsappSendAction={async (number: string) => SendRodentPDFViaWhatsapp(appointment.id!, number)}
-                    />
+                            pdfLoadAction={async() => GenerateRodentsPDF(appointment.id!)}
+                            emailSendAction={async(email: string) => SendRodentPDFViaEmail(appointment.id!, email)}
+                            whatsappSendAction={async(number: string) => SendRodentPDFViaWhatsapp(appointment.id!, number)}
+                        />
                         <Button
                             type="button"
                             className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
