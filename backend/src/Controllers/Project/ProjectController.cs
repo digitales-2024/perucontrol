@@ -19,10 +19,16 @@ public class ProjectController(
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
     // S3Service s3Service,
-    WordTemplateService wordTemplateService
+    WordTemplateService wordTemplateService,
+    EmailService emailService,
+    WhatsappService whatsappService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
+    private readonly ProjectService _projectService = projectService;
+    private readonly LibreOfficeConverterService _pdfConverterService = pdfConverterService;
+    private readonly EmailService _emailService = emailService;
+    private readonly WhatsappService _whatsappService = whatsappService;
 
     [EndpointSummary("Create")]
     [HttpPost]
@@ -529,40 +535,19 @@ public class ProjectController(
     [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
     [HttpPost("{id}/schedule/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
-        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(
-            id,
-            isPdf: true
-        );
-        if (error is not null)
-        {
-            return BadRequest(error);
-        }
-        if (excelBytes is null)
-        {
-            return NotFound("Error generando excel");
-        }
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
 
-        var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
-        if (odsErr != "")
-        {
-            return BadRequest(odsErr);
-        }
-        if (odsBytes == null)
-        {
-            return BadRequest("Error generando ODS");
-        }
-
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
-        if (pdfErr != "")
-        {
-            return BadRequest(pdfErr);
-        }
         if (pdfBytes == null)
         {
-            return BadRequest("Error generando PDF");
+            if (errorMsg != null && (errorMsg.ToLower().Contains("no encontrado") || errorMsg.ToLower().Contains("not found")))
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
         }
 
         // send
@@ -877,5 +862,119 @@ public class ProjectController(
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "Informe_Sostenimiento_Desratización.docx"
         );
+    }
+
+    [EndpointSummary("Send Schedule PDF via Email")]
+    [HttpPost("{id}/schedule/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendSchedulePDFViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email
+    )
+    {
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
+
+        if (pdfBytes == null)
+        {
+            if (errorMsg != null && (errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase) || errorMsg.ToLower().Contains("not found")))
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+        }
+
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Cronograma de Proyecto PDF",
+            htmlBody: "",
+            textBody: "",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "cronograma_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Schedule PDF via WhatsApp")]
+    [HttpPost("{id}/schedule/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendSchedulePDFViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
+
+        if (pdfBytes == null)
+        {
+            if (errorMsg != null && (errorMsg.ToLower().Contains("no encontrado") || errorMsg.ToLower().Contains("not found")))
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+        }
+
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Assuming this SID is generic for document sending
+            fileName: "ficha_operaciones.pdf",
+            phoneNumber: phoneNumber
+        );
+
+        return Ok();
+    }
+
+    private async Task<(byte[]? PdfBytes, string? ErrorMessage)> GenerateSchedulePdfBytesAsync(Guid id)
+    {
+        var (excelBytes, error) = await _projectService.GenerateAppointmentScheduleExcel(
+            id,
+            isPdf: true // This parameter seems to indicate the template type for excel, not that it returns PDF
+        );
+
+        if (error != null)
+        {
+            return (null, error);
+        }
+        if (excelBytes == null)
+        {
+            return (null, "Error generando los datos base (Excel) para el cronograma del proyecto.");
+        }
+
+        var (odsBytes, odsErr) = _pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
+        if (!string.IsNullOrEmpty(odsErr))
+        {
+            return (null, $"Error convirtiendo a ODS: {odsErr}");
+        }
+        if (odsBytes == null)
+        {
+            return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
+        }
+
+        var (pdfBytes, pdfErr) = _pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (!string.IsNullOrEmpty(pdfErr))
+        {
+            return (null, $"Error convirtiendo a PDF: {pdfErr}");
+        }
+        if (pdfBytes == null)
+        {
+            return (null, "Error final generando el archivo PDF del cronograma.");
+        }
+
+        return (pdfBytes, null);
     }
 }

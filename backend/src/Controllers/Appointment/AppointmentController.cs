@@ -22,9 +22,14 @@ public class AppointmentController(
     SvgTemplateService svgTemplateService,
     WordTemplateService wordTemplateService,
     ImageService imageService,
-    S3Service s3Service
+    S3Service s3Service,
+    EmailService emailService,
+    WhatsappService whatsappService
 ) : ControllerBase
 {
+    private readonly EmailService _emailService = emailService;
+    private readonly WhatsappService _whatsappService = whatsappService;
+
     /// <summary>
     /// Retrieves appointments within a specified time range.
     /// </summary>
@@ -339,26 +344,104 @@ public class AppointmentController(
     [HttpPost("{id}/gen-operations-sheet/pdf")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheetPdf(Guid id)
+    public async Task<ActionResult> GenerateOperationsSheetPdf(Guid id)
     {
-        var (fileBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
-        if (odsErr != "")
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
         {
-            return BadRequest(odsErr);
+            return errorResult;
+        }
+        return File(pdfBytes!, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateOperationsSheetPdfBytesAsync(Guid id)
+    {
+        var (odsBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
+        if (!string.IsNullOrEmpty(odsErr))
+        {
+            if (odsErr.Contains("no encontrado", StringComparison.OrdinalIgnoreCase) || odsErr.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                return (null, new NotFoundObjectResult(odsErr));
+            return (null, new BadRequestObjectResult(odsErr));
+        }
+        if (odsBytes == null || odsBytes.Length == 0)
+        {
+            return (null, new BadRequestObjectResult("Error generando la plantilla ODS de la ficha de operaciones."));
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(fileBytes, "ods");
-        if (pdfErr != "")
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (!string.IsNullOrEmpty(pdfErr))
         {
-            return BadRequest(pdfErr);
+            return (null, new BadRequestObjectResult(pdfErr));
         }
         if (pdfBytes == null)
         {
-            return BadRequest("Error generando PDF");
+            return (null, new BadRequestObjectResult("Error convirtiendo la ficha de operaciones a PDF."));
+        }
+        return (pdfBytes, null);
+    }
+
+    [EndpointSummary("Send Operations Sheet PDF via Email")]
+    [HttpPost("{id}/gen-operations-sheet/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendOperationsSheetPdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+    {
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
         }
 
-        // send
-        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Ficha de Operaciones PDF",
+            htmlBody: "Adjunto encontrará la Ficha de Operaciones.",
+            textBody: "Adjunto encontrará la Ficha de Operaciones.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "ficha_operaciones_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes!),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, serviceError ?? "Error enviando el correo con la ficha de operaciones.");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Operations Sheet PDF via WhatsApp")]
+    [HttpPost("{id}/gen-operations-sheet/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes!,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
+            fileName: "ficha_operaciones.pdf",
+            phoneNumber: phoneNumber
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Update an operation sheet")]
@@ -412,7 +495,7 @@ public class AppointmentController(
         return Ok(operationSheet);
     }
 
-    [EndpointSummary("Update a certtificate")]
+    [EndpointSummary("Update a certificate")]
     [HttpPatch("{appointmentid}/certificate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -518,28 +601,35 @@ public class AppointmentController(
     [HttpPost("{id}/certificate/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateCertificatePdf(Guid id)
+    public async Task<ActionResult> GenerateCertificatePdf(Guid id)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        return File(pdfBytes!, "application/pdf", "certificate.pdf");
+    }
+
+    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateCertificatePdfBytesAsync(Guid id)
     {
         var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
             GetCertificateData(id);
-        if (error != null)
-            return BadRequest(error);
-        if (projectAppointment == null)
-            return NotFound(error);
-        if (business == null)
-            return NotFound(error);
+        if (error != null) return (null, new BadRequestObjectResult(error));
+        if (projectAppointment == null) return (null, new NotFoundObjectResult("Project appointment not found after GetCertificateData check."));
+        if (business == null) return (null, new NotFoundObjectResult("Business data not found after GetCertificateData check."));
 
         var certificate = projectAppointment.Certificate;
         var project = projectAppointment.Project;
         var client = project.Client;
         var sheetTreatedAreas = projectAppointment.ProjectOperationSheet.TreatedAreas;
 
-        // load signatures as base64 strings
         var signature1 = imageService.GetImageAsBase64("signature1.png");
         var signature2 = imageService.GetImageAsBase64("signature2.png");
         if (signature1 is null || signature2 is null)
         {
-            return BadRequest("No se configuraron las firmas de certificado.");
+            return (null, new BadRequestObjectResult("No se configuraron las firmas de certificado."));
         }
 
         var placeholders = new Dictionary<string, string>
@@ -573,17 +663,79 @@ public class AppointmentController(
 
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(svgBytes, "svg");
 
-        if (errorStr != "")
+        if (!string.IsNullOrEmpty(errorStr))
         {
-            return BadRequest(errorStr);
+            return (null, new BadRequestObjectResult(errorStr));
         }
         if (pdfBytes == null)
         {
-            return BadRequest("Error generando PDF");
+            return (null, new BadRequestObjectResult("Error generando PDF desde SVG"));
+        }
+        return (pdfBytes, null);
+    }
+
+    [EndpointSummary("Send Certificate PDF via Email")]
+    [HttpPost("{id}/certificate/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendCertificatePdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
         }
 
-        // send
-        return File(pdfBytes, "application/pdf", "certificate.pdf");
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Certificado de Servicio PDF",
+            htmlBody: "Adjunto encontrará el certificado de servicio.",
+            textBody: "Adjunto encontrará el certificado de servicio.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "certificado_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes!),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo con el certificado.");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Certificate PDF via WhatsApp")]
+    [HttpPost("{id}/certificate/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendCertificatePdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
+        if (errorResult != null)
+        {
+            return errorResult;
+        }
+
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes!,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Using the same SID as others, verify if correct for certs
+            fileName: "certificado.pdf",
+            phoneNumber: phoneNumber
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Get all certificates")]
@@ -664,6 +816,98 @@ public class AppointmentController(
 
         // send
         return File(pdfBytes, "application/pdf", "roedores.pdf");
+    }
+
+    [EndpointSummary("Send Rodents PDF via Email")]
+    [HttpPost("{id}/rodents/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendRodentsPdfViaEmail(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email
+    )
+    {
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
+
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF de roedores");
+        }
+
+        var (ok, serviceError) = await _emailService.SendEmailAsync(
+            to: email,
+            subject: "Registro de Control de Roedores PDF",
+            htmlBody: "Adjunto encontrará el registro de control de roedores.",
+            textBody: "Adjunto encontrará el registro de control de roedores.",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "registro_roedores_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
+        );
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo con el registro de roedores");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Rodents PDF via WhatsApp")]
+    [HttpPost("{id}/rodents/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendRodentsPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    {
+        var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
+        if (errormsg is not null)
+        {
+            return BadRequest(errormsg);
+        }
+
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF de roedores");
+        }
+
+        // Ensure you have a valid ContentSid for WhatsApp document messages if applicable
+        // This SID might be specific to a template or a generic one for documents.
+        // For now, using a placeholder or a known generic SID if available.
+        // Example SID from QuotationController: "HXc9bee467c02d529435b97f7694ad3b87"
+        // This might need adjustment based on actual Twilio setup.
+        await _whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Placeholder or generic SID
+            fileName: "registro_roedores.pdf",
+            phoneNumber: phoneNumber // Using the provided phone number
+        );
+
+        return Ok();
     }
 
     [EndpointSummary("Update Rodent Register")]

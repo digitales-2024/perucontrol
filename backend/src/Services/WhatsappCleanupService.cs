@@ -33,6 +33,12 @@ public class WhatsappCleanupService(
                     await CleanupWhatsappFiles(dbContext, s3Service, stoppingToken);
                 }
             }
+            catch (TaskCanceledException)
+            {
+                // The task was cancelled, exit the loop
+                logger.LogInformation("Cancellation requested, exiting cleanup service");
+                break;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error in S3 cleanup service");

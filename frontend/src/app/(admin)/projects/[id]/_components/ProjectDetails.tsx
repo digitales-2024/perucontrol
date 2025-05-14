@@ -25,13 +25,14 @@ import {
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF } from "../../actions";
+import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF, SendSchedulePDFViaEmail, SendSchedulePDFViaWhatsapp } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { cn } from "@/lib/utils";
 import { AppointmentsDataTable } from "./AppointmentsDataTable";
 import { columns } from "./AppointmentsColumns";
+import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 
 type ServiceName = "Fumigación" | "Desinsectación" | "Desratización" | "Desinfección" | "Limpieza de tanque";
 
@@ -468,6 +469,14 @@ export function ProjectDetails({
                                         Exportar cronograma
                                     </h4>
                                     <div className="flex flex-wrap gap-4">
+                                        <DocumentSenderDialog
+                                            documentName="Cronograma"
+                                            startingEmail={""}
+                                            startingNumber={""}
+                                            pdfLoadAction={async() => GenerateSchedulePDF(projectId)}
+                                            emailSendAction={async(email) => SendSchedulePDFViaEmail(projectId, email)}
+                                            whatsappSendAction={async(number) => SendSchedulePDFViaWhatsapp(projectId, number)}
+                                        />
                                         <Button
                                             type="button"
                                             onClick={async() =>

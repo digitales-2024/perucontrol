@@ -13,12 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateExcel, GeneratePDF, SaveProjectOperationSheetData } from "../actions";
+import { GenerateOperationSheetExcel, GenerateOperationSheetPDF, SaveProjectOperationSheetData, SendOperationSheetPDFViaEmail, SendOperationSheetPDFViaWhatsapp } from "../actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
 type ProjectAppointment = ProjectSummarySingle["appointments"][number]
@@ -128,7 +129,7 @@ export function DownloadProjectForm({
     const downloadExcel = async() =>
     {
         // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateExcel(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateOperationSheetExcel(appointment.id!), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -151,7 +152,7 @@ export function DownloadProjectForm({
 
     const downloadPDF = async() =>
     {
-        const [blob, err] = await toastWrapper(GeneratePDF(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateOperationSheetPDF(appointment.id!), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -1108,6 +1109,15 @@ export function DownloadProjectForm({
                         <X className="h-4 w-4" />
                         Volver
                     </Button>
+
+                    <DocumentSenderDialog
+                        documentName="Ficha de Operaciones"
+                        startingEmail={project.client.email}
+                        startingNumber={project.client.phoneNumber}
+                        pdfLoadAction={async() => GenerateOperationSheetPDF(appointment.id!)}
+                        emailSendAction={async(d) => SendOperationSheetPDFViaEmail(appointment.id!, d)}
+                        whatsappSendAction={async(d) => SendOperationSheetPDFViaWhatsapp(appointment.id!, d)}
+                    />
                     <Button
                         type="button"
                         onClick={async() =>
