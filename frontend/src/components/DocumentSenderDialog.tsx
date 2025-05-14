@@ -63,6 +63,7 @@ export function DocumentSenderDialog({ documentName, startingEmail, startingNumb
 
     const sendEmail = async() =>
     {
+        setError("");
         setSending(true);
         const [, error] = await toastWrapper(emailSendAction(email), {
             loading: "Enviando correo",
@@ -78,6 +79,7 @@ export function DocumentSenderDialog({ documentName, startingEmail, startingNumb
 
     const sendWhatsapp = async() =>
     {
+        setError("");
         setSending(true);
         const [, error] = await toastWrapper(whatsappSendAction(phoneNumber), {
             loading: "Enviando mensaje de whatsapp",
