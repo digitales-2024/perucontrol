@@ -39,8 +39,8 @@ public class WhatsappService(S3Service s3Service, IOptions<TwilioConfiguration> 
 
         TwilioClient.Init(_twilio.AccountSid, _twilio.AuthToken);
 
-        var to = new PhoneNumber($"whatsapp:{phoneNumber}");
-        var from = new PhoneNumber($"whatsapp:+51{_twilio.FromNumber}");
+        var to = new PhoneNumber($"whatsapp:+51{phoneNumber}");
+        var from = new PhoneNumber($"whatsapp:{_twilio.FromNumber}");
 
         var messageOptions = new CreateMessageOptions(to)
         {
