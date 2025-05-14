@@ -28,7 +28,8 @@ import {
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
 import { components } from "@/types/api";
-import { SendQuotation } from "./SendQuotation";
+import { DocumentSenderDialog } from "./SendQuotation";
+import { GeneratePdf, SendQuotationPdfViaMail, SendQuotationPdfViaWhatsapp } from "../actions";
 
 export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation2"] })
 {
@@ -122,10 +123,12 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         <div className="flex flex-wrap items-center justify-evenly space-x-2 gap-1">
                             {quotation.isActive && (
                                 <>
-                                    <SendQuotation
-                                        id={quotation.id!}
+                                    <DocumentSenderDialog
                                         startingEmail={quotation.client.email}
                                         startingNumber={quotation.client.phoneNumber}
+                                        pdfLoadAction={async() => GeneratePdf(quotation.id!)}
+                                        emailSendAction={async(email) => SendQuotationPdfViaMail(quotation.id!, email)}
+                                        whatsappSendAction={async(number) => SendQuotationPdfViaWhatsapp(quotation.id!, number)}
                                     />
 
                                     <div>

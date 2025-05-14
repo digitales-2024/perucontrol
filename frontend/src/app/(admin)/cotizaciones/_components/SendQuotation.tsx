@@ -11,12 +11,21 @@ import {
 } from "@/components/ui/dialog";
 import { Mail, OctagonAlert, PhoneCall, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { GeneratePdf, SendQuotationPdfViaMail, SendQuotationPdfViaWhatsapp } from "../actions";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastWrapper } from "@/types/toasts";
+import { FetchError } from "@/types/backend";
+import { Result } from "@/utils/result";
 
-export function SendQuotation({ id, startingEmail, startingNumber }: { id: string, startingEmail: string, startingNumber: string })
+type SenderProps = {
+    startingEmail: string,
+    startingNumber: string,
+    pdfLoadAction: () => Promise<Result<Blob, FetchError>>,
+    emailSendAction: (email: string) => Promise<Result<null, FetchError>>
+    whatsappSendAction: (number: string) => Promise<Result<null, FetchError>>
+}
+
+export function DocumentSenderDialog({ startingEmail, startingNumber, pdfLoadAction, emailSendAction, whatsappSendAction }: SenderProps)
 {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState(startingEmail);
@@ -31,7 +40,7 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
 
         (async() =>
         {
-            const [pdfBlob, error] = await GeneratePdf(id);
+            const [pdfBlob, error] = await pdfLoadAction();
             if (!!error)
             {
                 setError("Error cargando PDF");
@@ -54,7 +63,7 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
     const sendEmail = async() =>
     {
         setSending(true);
-        const [, error] = await toastWrapper(SendQuotationPdfViaMail(id, email), {
+        const [, error] = await toastWrapper(emailSendAction(email), {
             loading: "Enviando correo",
             success: "Correo enviado con éxito",
         });
@@ -69,7 +78,7 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
     const sendWhatsapp = async() =>
     {
         setSending(true);
-        const [, error] = await toastWrapper(SendQuotationPdfViaWhatsapp(id, phoneNumber), {
+        const [, error] = await toastWrapper(whatsappSendAction(phoneNumber), {
             loading: "Enviando correo",
             success: "Correo enviado con éxito",
         });
@@ -122,7 +131,14 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
                         <Skeleton className="w-full h-[26rem] rounded" />
                     )}
 
-                    <div className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2">
+                    <form
+                        className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2"
+                        onSubmit={(e) =>
+                        {
+                            e.preventDefault();
+                            sendEmail();
+                        }}
+                    >
                         <Mail />
                         <span>
                             Enviar por correo a:
@@ -133,14 +149,21 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
                             placeholder="correo@ejemplo.com"
                         />
                         <Button
-                            onClick={sendEmail}
+                            type="submit"
                             disabled={sending}
                         >
                             <Mail />
                             Enviar
                         </Button>
-                    </div>
-                    <div className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2">
+                    </form>
+                    <form
+                        className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2"
+                        onSubmit={(e) =>
+                        {
+                            e.preventDefault();
+                            sendWhatsapp();
+                        }}
+                    >
                         <PhoneCall />
                         <span>
                             Enviar por WhatsApp a:
@@ -151,14 +174,14 @@ export function SendQuotation({ id, startingEmail, startingNumber }: { id: strin
                             placeholder="correo@ejemplo.com"
                         />
                         <Button
+                            type="submit"
                             className="bg-green-600 text-white hover:bg-green-500"
-                            onClick={sendWhatsapp}
                             disabled={sending}
                         >
                             <PhoneCall />
                             Enviar
                         </Button>
-                    </div>
+                    </form>
                     {error && (
                         <div className="text-red-500 flex items-center gap-2">
                             <OctagonAlert />
