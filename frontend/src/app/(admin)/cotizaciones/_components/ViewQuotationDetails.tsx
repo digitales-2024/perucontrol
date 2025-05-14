@@ -122,7 +122,11 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         <div className="flex flex-wrap items-center justify-evenly space-x-2 gap-1">
                             {quotation.isActive && (
                                 <>
-                                    <SendQuotation id={quotation.id!} startingEmail={quotation.client.email} />
+                                    <SendQuotation
+                                        id={quotation.id!}
+                                        startingEmail={quotation.client.email}
+                                        startingNumber={quotation.client.phoneNumber}
+                                    />
 
                                     <div>
                                         {/* Botón para pantallas pequeñas */}

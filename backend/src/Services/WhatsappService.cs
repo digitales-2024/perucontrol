@@ -6,16 +6,10 @@ using Twilio.Types;
 
 namespace PeruControl.Services;
 
-public class WhatsappService
+public class WhatsappService(S3Service s3Service, IOptions<TwilioConfiguration> settings)
 {
-    private readonly S3Service _s3Service;
-    private readonly TwilioConfiguration _twilio;
-
-    public WhatsappService(S3Service s3Service, IOptions<TwilioConfiguration> settings)
-    {
-        _s3Service = s3Service;
-        _twilio = settings.Value;
-    }
+    private readonly S3Service _s3Service = s3Service;
+    private readonly TwilioConfiguration _twilio = settings.Value;
 
     public async Task SendWhatsappServiceMessageAsync(
         byte[] fileBytes,

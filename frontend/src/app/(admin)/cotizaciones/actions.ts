@@ -297,3 +297,29 @@ export async function SendQuotationPdfViaMail(id: string, email: string): Promis
     }
     return ok(null);
 }
+
+export async function SendQuotationPdfViaWhatsapp(id: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Quotation/{id}/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
