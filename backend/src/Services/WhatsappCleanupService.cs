@@ -4,8 +4,7 @@ using PeruControl.Model;
 namespace PeruControl.Services;
 
 public class WhatsappCleanupService(
-    DatabaseContext dbContext,
-    S3Service s3Service,
+    IServiceScopeFactory _scopeFactory,
     ILogger<WhatsappCleanupService> logger
 ) : BackgroundService
 {
@@ -24,8 +23,15 @@ public class WhatsappCleanupService(
                 // Wait until midnight
                 await Task.Delay(delay, stoppingToken);
 
-                // Perform cleanup
-                await CleanupWhatsappFiles();
+                // Create a scope for the work that needs the DB context
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+                    var s3Service = scope.ServiceProvider.GetRequiredService<S3Service>();
+
+                    // Now do your cleanup with these scoped services
+                    await CleanupWhatsappFiles(dbContext, s3Service, stoppingToken);
+                }
             }
             catch (Exception ex)
             {
@@ -36,7 +42,11 @@ public class WhatsappCleanupService(
         }
     }
 
-    private async Task CleanupWhatsappFiles()
+    private async Task CleanupWhatsappFiles(
+        DatabaseContext dbContext,
+        S3Service s3Service,
+        CancellationToken cancellationToken
+    )
     {
         // get all registers
         var toDelete = await dbContext.WhatsappTemps.ToListAsync();
