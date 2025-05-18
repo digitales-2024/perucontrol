@@ -205,7 +205,7 @@ public class WordTemplateService
         templateRow.Remove();
     }
 
-    public byte[] GenerateReport01(Model.ProjectAppointment appointment)
+    public byte[] GenerateReportComplete(Model.ProjectAppointment appointment)
     {
         var templatePath = "Templates/nuevos_informes/informe_01.docx";
 
