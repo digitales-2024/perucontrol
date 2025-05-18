@@ -14,6 +14,10 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<CompleteReport> CompleteReports { get; set; }
+    public required DbSet<Report1> Report1s { get; set; }
+    public required DbSet<Report2> Report2s { get; set; }
+    public required DbSet<Report3> Report3s { get; set; }
+    public required DbSet<Report4> Report4s { get; set; }
     public required DbSet<Quotation> Quotations { get; set; }
     public required DbSet<QuotationService> QuotationServices { get; set; }
     public required DbSet<RodentRegister> RodentRegisters { get; set; }
@@ -37,6 +41,10 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Model.ClientLocation.SetUp<ClientLocation>(builder);
         PeruControl.Model.Reports.CompleteReport.SetUp<CompleteReport>(builder);
+        PeruControl.Model.Reports.Report1.SetUp<Report1>(builder);
+        PeruControl.Model.Reports.Report2.SetUp<Report2>(builder);
+        PeruControl.Model.Reports.Report3.SetUp<Report3>(builder);
+        PeruControl.Model.Reports.Report4.SetUp<Report4>(builder);
         PeruControl.Model.Quotation.SetUp<Quotation>(builder);
         PeruControl.Model.QuotationService.SetUp<QuotationService>(builder);
         PeruControl.Model.RodentRegister.SetUp<RodentRegister>(builder);

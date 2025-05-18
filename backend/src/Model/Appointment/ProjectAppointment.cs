@@ -65,4 +65,8 @@ public class ProjectAppointment : BaseModel
     // Reports
     //
     public Reports.CompleteReport CompleteReport { get; set; } = new();
+    public Reports.Report1 Report1 { get; set; } = new();
+    public Reports.Report2 Report2 { get; set; } = new();
+    public Reports.Report3 Report3 { get; set; } = new();
+    public Reports.Report4 Report4 { get; set; } = new();
 }

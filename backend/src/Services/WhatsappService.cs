@@ -46,8 +46,7 @@ public class WhatsappService(S3Service s3Service, IOptions<TwilioConfiguration> 
         {
             From = from,
             ContentSid = contentSid,
-            ContentVariables =
-                $"{{\"name\":\"\",\"id\":\"\",\"url_path\": \"{trimmedUrl}\"}}",
+            ContentVariables = $"{{\"name\":\"\",\"id\":\"\",\"url_path\": \"{trimmedUrl}\"}}",
         };
 
         var twilioMessage = await MessageResource.CreateAsync(messageOptions);

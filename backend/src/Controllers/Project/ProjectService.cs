@@ -99,9 +99,9 @@ public class ProjectService(
                                 RodentResult = Model.RodentResult.Inactive,
                                 RodentMaterials = Model.RodentMaterials.RodenticideOrBait,
                                 ProductName = "",
-                                ProductDose = ""
+                                ProductDose = "",
                             })
-                            .ToList()
+                            .ToList(),
                     },
                     ProjectOperationSheet = new() { OperationDate = app.DueDate },
                     TreatmentAreas = createDTO
