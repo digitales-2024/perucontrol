@@ -86,7 +86,23 @@ public class ProjectService(
                     DueDate = app.DueDate,
                     Services = appointmentServices,
                     Certificate = new(),
-                    RodentRegister = new() { ServiceDate = app.DueDate },
+                    RodentRegister = new()
+                    {
+                        ServiceDate = app.DueDate,
+                        RodentAreas = createDTO
+                            .Ambients.Select(ambientName => new Model.RodentArea
+                            {
+                                Name = ambientName,
+                                CebaderoTrampa = 0,
+                                Frequency = Model.QuotationFrequency.Monthly,
+                                RodentConsumption = Model.RodentConsumption.NoConsumption,
+                                RodentResult = Model.RodentResult.Inactive,
+                                RodentMaterials = Model.RodentMaterials.RodenticideOrBait,
+                                ProductName = "",
+                                ProductDose = ""
+                            })
+                            .ToList()
+                    },
                     ProjectOperationSheet = new() { OperationDate = app.DueDate },
                     TreatmentAreas = createDTO
                         .Ambients.Select(areaName => new Model.TreatmentArea
