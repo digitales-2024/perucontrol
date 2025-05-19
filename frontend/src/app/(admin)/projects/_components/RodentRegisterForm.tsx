@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleUser, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CircleUser, Save } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -62,7 +62,7 @@ export function RodentControlForm({
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields } = useFieldArray({
         control: form.control,
         name: "rodentAreas",
     });
@@ -156,20 +156,6 @@ export function RodentControlForm({
         }
 
         console.log("Datos guardados exitosamente:", result);
-    };
-
-    const addRow = () =>
-    {
-        append({
-            name: "",
-            cebaderoTrampa: 0,
-            frequency: "Fortnightly",
-            rodentConsumption: "Partial",
-            rodentResult: "Active",
-            rodentMaterials: "Fungicide",
-            productName: "",
-            productDose: "",
-        });
     };
 
     return (
