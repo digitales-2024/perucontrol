@@ -199,7 +199,7 @@ public class OdsTemplateService
             {
                 if (entryStream == null)
                 {
-                    return (null, "Could not find content.xml in template");
+                    return ([], "Could not find content.xml in template");
                 }
 
                 var xmlDoc = XDocument.Load(entryStream);

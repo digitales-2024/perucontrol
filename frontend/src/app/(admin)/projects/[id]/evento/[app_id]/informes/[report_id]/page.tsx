@@ -73,7 +73,8 @@ export default async function ReportPage({ params }: Props)
                 <ReportForm
                     projectId={projectId}
                     appointmentId={appointmentId}
-                    reportId={reportId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    reportId={reportId as unknown as any}
                     reportTitle={reportTitles[reportId] || "Informe"}
                     report={report}
                 />

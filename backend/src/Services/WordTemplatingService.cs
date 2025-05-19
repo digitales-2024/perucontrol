@@ -205,10 +205,8 @@ public class WordTemplateService
         templateRow.Remove();
     }
 
-    public byte[] GenerateReportComplete(Model.ProjectAppointment appointment)
+    public byte[] GenerateReportComplete(Model.ProjectAppointment appointment, string templatePath = "Templates/nuevos_informes/informe_01.docx")
     {
-        var templatePath = "Templates/nuevos_informes/informe_01.docx";
-
         using var ms = new MemoryStream();
         using (var fs = File.OpenRead(templatePath))
         {
