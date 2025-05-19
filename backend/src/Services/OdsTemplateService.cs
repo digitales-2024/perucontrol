@@ -181,6 +181,7 @@ public class OdsTemplateService
         using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
         using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
         {
+            // First, copy all entries except content.xml
             foreach (var entry in inputArchive.Entries)
             {
                 if (entry.FullName != "content.xml")
@@ -190,113 +191,118 @@ public class OdsTemplateService
                     using var newEntryStream = newEntry.Open();
                     entryStream.CopyTo(newEntryStream);
                 }
-                else
+            }
+
+            // Now handle content.xml
+            var contentEntry = outputArchive.CreateEntry("content.xml");
+            using (var entryStream = inputArchive.GetEntry("content.xml")?.Open())
+            {
+                if (entryStream == null)
                 {
-                    var contentEntry = outputArchive.CreateEntry("content.xml");
-                    using var entryStream = entry.Open();
-                    var xmlDoc = XDocument.Load(entryStream);
+                    return (null, "Could not find content.xml in template");
+                }
 
-                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
-                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+                var xmlDoc = XDocument.Load(entryStream);
 
-                    // Find the first table in the document
-                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
-                    if (table != null)
+                XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                // Find the first table in the document
+                var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                if (table != null)
+                {
+                    // Get all rows in the table
+                    var rows = table.Elements(tablens + "table-row").ToList();
+
+                    // Ensure there are at least 6 rows
+                    if (rows.Count > 6)
                     {
-                        // Get all rows in the table
-                        var rows = table.Elements(tablens + "table-row").ToList();
+                        var insertAfterRow = rows[5]; // 6th row (index 5)
+                        var templateRow = new XElement(insertAfterRow); // Clone as template
 
-                        // Ensure there are at least 6 rows
-                        if (rows.Count > 6)
+                        XElement lastInserted = insertAfterRow;
+
+                        int i = 0;
+                        while (i < scheduleData.Count)
                         {
-                            var insertAfterRow = rows[5]; // 6th row (index 5)
-                            var templateRow = new XElement(insertAfterRow); // Clone as template
+                            // Find how many consecutive rows share the same MonthName
+                            int spanCount = 1;
+                            while (
+                                i + spanCount < scheduleData.Count
+                                && scheduleData[i + spanCount].MonthName == scheduleData[i].MonthName
+                            )
+                                spanCount++;
 
-                            XElement lastInserted = insertAfterRow;
-
-                            int i = 0;
-                            while (i < scheduleData.Count)
+                            for (int j = 0; j < spanCount; j++)
                             {
-                                // Find how many consecutive rows share the same MonthName
-                                int spanCount = 1;
-                                while (
-                                    i + spanCount < scheduleData.Count
-                                    && scheduleData[i + spanCount].MonthName == scheduleData[i].MonthName
-                                )
-                                    spanCount++;
+                                var data = scheduleData[i + j];
+                                var newRow = new XElement(templateRow);
 
-                                for (int j = 0; j < spanCount; j++)
+                                // Replace placeholders
+                                foreach (var cell in newRow.Descendants(textns + "p"))
                                 {
-                                    var data = scheduleData[i + j];
-                                    var newRow = new XElement(templateRow);
-
-                                    // Replace placeholders
-                                    foreach (var cell in newRow.Descendants(textns + "p"))
-                                    {
-
-                                        var dayName = char.ToUpper(data.ServiceDayName[0]) + data.ServiceDayName.Substring(1);
-                                        cell.Value = cell
-                                            .Value.Replace("{{MONTH}}", data.MonthName.ToUpper())
-                                            .Replace("{{DATE}}", data.Date.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("es-PE")))
-                                            .Replace("{{DAY}}", dayName)
-                                            .Replace("{{SERVICE}}", data.Service)
-                                            .Replace("{{DOCUMENTS}}", data.Documents);
-                                    }
-
-                                    // Handle merging for the first row of the group
-                                    if (j == 0)
-                                    {
-                                        // Set number-rows-spanned on the first cell
-                                        var monthCell = newRow
-                                            .Elements(tablens + "table-cell")
-                                            .FirstOrDefault();
-                                        monthCell?.SetAttributeValue(
-                                            tablens + "number-rows-spanned",
-                                            spanCount
-                                        );
-                                    }
-                                    else
-                                    {
-                                        // Remove the first cell for subsequent rows (merged cell)
-                                        var monthCell = newRow
-                                            .Elements(tablens + "table-cell")
-                                            .FirstOrDefault();
-                                        if (monthCell != null)
-                                        {
-                                            // Replace with a covered cell
-                                            var coveredCell = new XElement(
-                                                tablens + "table-cell",
-                                                new XAttribute(
-                                                    tablens + "number-columns-repeated",
-                                                    1
-                                                ),
-                                                new XAttribute(
-                                                    tablens + "covered-table-cell",
-                                                    "true"
-                                                )
-                                            );
-                                            monthCell.ReplaceWith(coveredCell);
-                                        }
-                                    }
-
-                                    lastInserted.AddAfterSelf(newRow);
-                                    lastInserted = newRow;
+                                    var dayName = char.ToUpper(data.ServiceDayName[0]) + data.ServiceDayName.Substring(1);
+                                    cell.Value = cell
+                                        .Value.Replace("{{MONTH}}", data.MonthName.ToUpper())
+                                        .Replace("{{DATE}}", data.Date.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("es-PE")))
+                                        .Replace("{{DAY}}", dayName)
+                                        .Replace("{{SERVICE}}", data.Service)
+                                        .Replace("{{DOCUMENTS}}", data.Documents);
                                 }
 
-                                i += spanCount;
+                                // Handle merging for the first row of the group
+                                if (j == 0)
+                                {
+                                    // Set number-rows-spanned on the first cell
+                                    var monthCell = newRow
+                                        .Elements(tablens + "table-cell")
+                                        .FirstOrDefault();
+                                    monthCell?.SetAttributeValue(
+                                        tablens + "number-rows-spanned",
+                                        spanCount
+                                    );
+                                }
+                                else
+                                {
+                                    // Remove the first cell for subsequent rows (merged cell)
+                                    var monthCell = newRow
+                                        .Elements(tablens + "table-cell")
+                                        .FirstOrDefault();
+                                    if (monthCell != null)
+                                    {
+                                        // Replace with a covered cell
+                                        var coveredCell = new XElement(
+                                            tablens + "table-cell",
+                                            new XAttribute(
+                                                tablens + "number-columns-repeated",
+                                                1
+                                            ),
+                                            new XAttribute(
+                                                tablens + "covered-table-cell",
+                                                "true"
+                                            )
+                                        );
+                                        monthCell.ReplaceWith(coveredCell);
+                                    }
+                                }
+
+                                lastInserted.AddAfterSelf(newRow);
+                                lastInserted = newRow;
                             }
 
-                            // Remove the original template row (row 6)
-                            insertAfterRow.Remove();
+                            i += spanCount;
                         }
-                    }
 
-                    // Write the modified XML back to the entry
-                    using var newEntryStream = contentEntry.Open();
-                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
-                    writer.Formatting = Formatting.None;
-                    xmlDoc.Save(writer);
+                        // Remove the original template row (row 6)
+                        insertAfterRow.Remove();
+                    }
                 }
+
+                // Write the modified XML back to the entry
+                using var newEntryStream = contentEntry.Open();
+                using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                writer.Formatting = Formatting.None;
+                xmlDoc.Save(writer);
             }
         }
 
