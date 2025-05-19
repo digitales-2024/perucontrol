@@ -542,7 +542,13 @@ public class ProjectController(
 
         if (pdfBytes == null)
         {
-            if (errorMsg != null && (errorMsg.ToLower().Contains("no encontrado") || errorMsg.ToLower().Contains("not found")))
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.ToLower().Contains("no encontrado")
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
             {
                 return NotFound(errorMsg);
             }
@@ -871,14 +877,23 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaEmail(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email
+        [FromQuery]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+            string email
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
 
         if (pdfBytes == null)
         {
-            if (errorMsg != null && (errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase) || errorMsg.ToLower().Contains("not found")))
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase)
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
             {
                 return NotFound(errorMsg);
             }
@@ -915,13 +930,22 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> SendSchedulePDFViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
+        Guid id,
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+    )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
 
         if (pdfBytes == null)
         {
-            if (errorMsg != null && (errorMsg.ToLower().Contains("no encontrado") || errorMsg.ToLower().Contains("not found")))
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.ToLower().Contains("no encontrado")
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
             {
                 return NotFound(errorMsg);
             }
@@ -938,7 +962,9 @@ public class ProjectController(
         return Ok();
     }
 
-    private async Task<(byte[]? PdfBytes, string? ErrorMessage)> GenerateSchedulePdfBytesAsync(Guid id)
+    private async Task<(byte[]? PdfBytes, string? ErrorMessage)> GenerateSchedulePdfBytesAsync(
+        Guid id
+    )
     {
         var (excelBytes, error) = await _projectService.GenerateAppointmentScheduleExcel(
             id,
@@ -951,7 +977,10 @@ public class ProjectController(
         }
         if (excelBytes == null)
         {
-            return (null, "Error generando los datos base (Excel) para el cronograma del proyecto.");
+            return (
+                null,
+                "Error generando los datos base (Excel) para el cronograma del proyecto."
+            );
         }
 
         var (odsBytes, odsErr) = _pdfConverterService.convertTo(excelBytes, "xlsx", "ods");

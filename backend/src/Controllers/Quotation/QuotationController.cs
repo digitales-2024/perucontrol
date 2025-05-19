@@ -318,7 +318,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery][Required][EmailAddress] string email
+        [FromQuery] [Required] [EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -378,7 +378,10 @@ public class QuotationController(
 
     [EndpointSummary("Send Quotation PDF via WhatsApp")]
     [HttpPost("{id}/whatsapp-pdf")]
-    public async Task<ActionResult> SendPDFViaWhatsapp(Guid id, [FromQuery][Required] string phoneNumber)
+    public async Task<ActionResult> SendPDFViaWhatsapp(
+        Guid id,
+        [FromQuery] [Required] string phoneNumber
+    )
     {
         var quotation = await _dbSet
             .Include(q => q.QuotationServices)

@@ -354,18 +354,29 @@ public class AppointmentController(
         return File(pdfBytes!, "application/pdf", "ficha_operaciones.pdf");
     }
 
-    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateOperationsSheetPdfBytesAsync(Guid id)
+    private async Task<(
+        byte[]? PdfBytes,
+        ActionResult? ErrorResult
+    )> GenerateOperationsSheetPdfBytesAsync(Guid id)
     {
         var (odsBytes, odsErr) = OperationSheetSpreadsheetTemplate(id);
         if (!string.IsNullOrEmpty(odsErr))
         {
-            if (odsErr.Contains("no encontrado", StringComparison.OrdinalIgnoreCase) || odsErr.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            if (
+                odsErr.Contains("no encontrado", StringComparison.OrdinalIgnoreCase)
+                || odsErr.Contains("not found", StringComparison.OrdinalIgnoreCase)
+            )
                 return (null, new NotFoundObjectResult(odsErr));
             return (null, new BadRequestObjectResult(odsErr));
         }
         if (odsBytes == null || odsBytes.Length == 0)
         {
-            return (null, new BadRequestObjectResult("Error generando la plantilla ODS de la ficha de operaciones."));
+            return (
+                null,
+                new BadRequestObjectResult(
+                    "Error generando la plantilla ODS de la ficha de operaciones."
+                )
+            );
         }
 
         var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
@@ -375,7 +386,10 @@ public class AppointmentController(
         }
         if (pdfBytes == null)
         {
-            return (null, new BadRequestObjectResult("Error convirtiendo la ficha de operaciones a PDF."));
+            return (
+                null,
+                new BadRequestObjectResult("Error convirtiendo la ficha de operaciones a PDF.")
+            );
         }
         return (pdfBytes, null);
     }
@@ -388,7 +402,11 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaEmail(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+        [FromQuery]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+            string email
+    )
     {
         var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
         if (errorResult != null)
@@ -414,7 +432,10 @@ public class AppointmentController(
 
         if (!ok)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, serviceError ?? "Error enviando el correo con la ficha de operaciones.");
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                serviceError ?? "Error enviando el correo con la ficha de operaciones."
+            );
         }
 
         return Ok();
@@ -426,7 +447,10 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
+        Guid id,
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+    )
     {
         var (pdfBytes, errorResult) = await GenerateOperationsSheetPdfBytesAsync(id);
         if (errorResult != null)
@@ -612,13 +636,27 @@ public class AppointmentController(
         return File(pdfBytes!, "application/pdf", "certificate.pdf");
     }
 
-    private async Task<(byte[]? PdfBytes, ActionResult? ErrorResult)> GenerateCertificatePdfBytesAsync(Guid id)
+    private async Task<(
+        byte[]? PdfBytes,
+        ActionResult? ErrorResult
+    )> GenerateCertificatePdfBytesAsync(Guid id)
     {
         var (projectAppointment, business, error, fum, inse, ratiz, infec, cis1, cis2) =
             GetCertificateData(id);
-        if (error != null) return (null, new BadRequestObjectResult(error));
-        if (projectAppointment == null) return (null, new NotFoundObjectResult("Project appointment not found after GetCertificateData check."));
-        if (business == null) return (null, new NotFoundObjectResult("Business data not found after GetCertificateData check."));
+        if (error != null)
+            return (null, new BadRequestObjectResult(error));
+        if (projectAppointment == null)
+            return (
+                null,
+                new NotFoundObjectResult(
+                    "Project appointment not found after GetCertificateData check."
+                )
+            );
+        if (business == null)
+            return (
+                null,
+                new NotFoundObjectResult("Business data not found after GetCertificateData check.")
+            );
 
         var certificate = projectAppointment.Certificate;
         var project = projectAppointment.Project;
@@ -629,7 +667,10 @@ public class AppointmentController(
         var signature2 = imageService.GetImageAsBase64("signature2.png");
         if (signature1 is null || signature2 is null)
         {
-            return (null, new BadRequestObjectResult("No se configuraron las firmas de certificado."));
+            return (
+                null,
+                new BadRequestObjectResult("No se configuraron las firmas de certificado.")
+            );
         }
 
         var placeholders = new Dictionary<string, string>
@@ -682,7 +723,11 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaEmail(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email)
+        [FromQuery]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+            string email
+    )
     {
         var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
         if (errorResult != null)
@@ -720,7 +765,10 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> SendCertificatePdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
+        Guid id,
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+    )
     {
         var (pdfBytes, errorResult) = await GenerateCertificatePdfBytesAsync(id);
         if (errorResult != null)
@@ -826,7 +874,10 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaEmail(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required][System.ComponentModel.DataAnnotations.EmailAddress] string email
+        [FromQuery]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+            string email
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
@@ -864,7 +915,10 @@ public class AppointmentController(
 
         if (!ok)
         {
-            return StatusCode(500, serviceError ?? "Error enviando el correo con el registro de roedores");
+            return StatusCode(
+                500,
+                serviceError ?? "Error enviando el correo con el registro de roedores"
+            );
         }
 
         return Ok();
@@ -876,7 +930,10 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> SendRodentsPdfViaWhatsapp(Guid id, [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber)
+    public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
+        Guid id,
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+    )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
         if (errormsg is not null)

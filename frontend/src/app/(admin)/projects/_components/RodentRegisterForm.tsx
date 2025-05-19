@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleUser, PlusCircle, Save, Trash2 } from "lucide-react";
+import { CircleUser, Save } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -62,7 +62,7 @@ export function RodentControlForm({
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields } = useFieldArray({
         control: form.control,
         name: "rodentAreas",
     });
@@ -158,20 +158,6 @@ export function RodentControlForm({
         console.log("Datos guardados exitosamente:", result);
     };
 
-    const addRow = () =>
-    {
-        append({
-            name: "",
-            cebaderoTrampa: 0,
-            frequency: "Fortnightly",
-            rodentConsumption: "Partial",
-            rodentResult: "Active",
-            rodentMaterials: "Fungicide",
-            productName: "",
-            productDose: "",
-        });
-    };
-
     return (
         <div className="container mx-auto py-6">
             <Card className="border shadow-sm mt-5">
@@ -219,30 +205,6 @@ export function RodentControlForm({
                                             Área #
                                             {index + 1}
                                         </CardTitle>
-                                        <div className="flex flex-wrap items-center">
-                                            <Button
-                                                type="button"
-                                                onClick={addRow}
-                                                variant="outline"
-                                                className="flex items-center gap-2 border-blue-300 text-blue-600"
-                                            >
-                                                <PlusCircle className="h-4 w-4" />
-                                                Agregar Área
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-8 w-8 p-0 text-red-500"
-                                                onClick={() => fields.length > 1 && remove(index)}
-                                                disabled={fields.length <= 1}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Eliminar
-                                                </span>
-                                            </Button>
-                                        </div>
                                     </CardHeader>
                                     <CardContent className="p-4">
                                         <Tabs defaultValue="general" className="w-full">
