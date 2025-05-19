@@ -208,7 +208,7 @@ public class ProjectService(
                 a.DueDate,
                 a.DueDate.ToString("dddd", new System.Globalization.CultureInfo("es-PE")),
                 string.Join(",", a.Services.Select(s => s.Name.Trim()).OrderBy(n => n)),
-                "Documentos"
+                ""
             ))
             .ToList();
 

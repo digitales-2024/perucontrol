@@ -25,7 +25,7 @@ import {
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { DesactivateAppointment, EditAppointment, GenerateScheduleExcel, GenerateSchedulePDF, SendSchedulePDFViaEmail, SendSchedulePDFViaWhatsapp } from "../../actions";
+import { DesactivateAppointment, EditAppointment, GenerateSchedule2Excel, GenerateSchedule2PDF, GenerateScheduleExcel, GenerateSchedulePDF, SendSchedulePDFViaEmail, SendSchedulePDFViaWhatsapp } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
@@ -287,6 +287,51 @@ export function ProjectDetails({
         URL.revokeObjectURL(url);
     };
 
+    const downloadExcel2 = async() =>
+    {
+        // Genera el Excel
+        const [blob, err] = await toastWrapper(GenerateSchedule2Excel(projectId), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `cronograma-${projectId.substring(0, 4)}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const downloadPDF2 = async() =>
+    {
+        const [blob, err] = await toastWrapper(GenerateSchedule2PDF(projectId), {
+            loading: "Generando archivo",
+            success: "Excel generado",
+            error: (e) => `Error al generar el Excel: ${e.message}`,
+        });
+
+        if (err)
+        {
+            console.error("Error al generar el Excel:", err);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `cronograma_${projectId.substring(0, 4)}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="container mx-auto md:p-4 p-1 space-y-6">
             <div className="flex flex-col space-y-6">
@@ -466,7 +511,7 @@ export function ProjectDetails({
                                 {/* Botones de descarga Excel/PDF */}
                                 <div className="bg-gray-50 dark:bg-background p-4 rounded-lg flex flex-col gap-2 md:col-span-2">
                                     <h4 className="font-medium text-sm text-muted-foreground mb-2">
-                                        Exportar cronograma
+                                        Exportar cronograma estándar
                                     </h4>
                                     <div className="flex flex-wrap gap-4">
                                         <DocumentSenderDialog
@@ -493,6 +538,44 @@ export function ProjectDetails({
                                             onClick={async() =>
                                             {
                                                 downloadPDF();
+                                            }}
+                                            className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            Descargar PDF
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-background p-4 rounded-lg flex flex-col gap-2 md:col-span-2">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                                        Exportar cronograma especial
+                                    </h4>
+                                    <div className="flex flex-wrap gap-4">
+                                        <DocumentSenderDialog
+                                            documentName="Cronograma"
+                                            startingEmail={""}
+                                            startingNumber={""}
+                                            pdfLoadAction={async() => GenerateSchedulePDF(projectId)}
+                                            emailSendAction={async(email) => SendSchedulePDFViaEmail(projectId, email)}
+                                            whatsappSendAction={async(number) => SendSchedulePDFViaWhatsapp(projectId, number)}
+                                        />
+                                        <Button
+                                            type="button"
+                                            onClick={async() =>
+                                            {
+                                                downloadExcel2();
+                                            }}
+                                            className="bg-green-700 hover:bg-green-800 flex items-center gap-2 px-6 py-2"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            Descargar Excel
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={async() =>
+                                            {
+                                                downloadPDF2();
                                             }}
                                             className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
                                         >

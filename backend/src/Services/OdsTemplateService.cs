@@ -167,7 +167,7 @@ public class OdsTemplateService
         }
     }
 
-    public (byte[], string?) GenerateSchedule2(List<Schedule2Data> mockData)
+    public (byte[], string?) GenerateSchedule2(List<Schedule2Data> scheduleData)
     {
         var templatePath = "Templates/cronograma_plantilla_2.ods";
         using var ms = new MemoryStream();
@@ -215,30 +215,32 @@ public class OdsTemplateService
                             XElement lastInserted = insertAfterRow;
 
                             int i = 0;
-                            while (i < mockData.Count)
+                            while (i < scheduleData.Count)
                             {
                                 // Find how many consecutive rows share the same MonthName
                                 int spanCount = 1;
                                 while (
-                                    i + spanCount < mockData.Count
-                                    && mockData[i + spanCount].MonthName == mockData[i].MonthName
+                                    i + spanCount < scheduleData.Count
+                                    && scheduleData[i + spanCount].MonthName == scheduleData[i].MonthName
                                 )
                                     spanCount++;
 
                                 for (int j = 0; j < spanCount; j++)
                                 {
-                                    var data = mockData[i + j];
+                                    var data = scheduleData[i + j];
                                     var newRow = new XElement(templateRow);
 
                                     // Replace placeholders
                                     foreach (var cell in newRow.Descendants(textns + "p"))
                                     {
+
+                                        var dayName = char.ToUpper(data.ServiceDayName[0]) + data.ServiceDayName.Substring(1);
                                         cell.Value = cell
-                                            .Value.Replace("{{MONTH}}", data.MonthName)
-                                            .Replace("{{DATE}}", data.Date.ToString("yyyy-MM-dd"))
-                                            .Replace("{{DAY}}", data.ServiceDayName)
+                                            .Value.Replace("{{MONTH}}", data.MonthName.ToUpper())
+                                            .Replace("{{DATE}}", data.Date.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("es-PE")))
+                                            .Replace("{{DAY}}", dayName)
                                             .Replace("{{SERVICE}}", data.Service)
-                                            .Replace("{{DOCUMENTS}}", data.Doucuments);
+                                            .Replace("{{DOCUMENTS}}", data.Documents);
                                     }
 
                                     // Handle merging for the first row of the group
@@ -746,5 +748,6 @@ public record Schedule2Data(
     DateTime Date,
     string ServiceDayName,
     string Service,
-    string Doucuments
-) { }
+    string Documents
+)
+{ }
