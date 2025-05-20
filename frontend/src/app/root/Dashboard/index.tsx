@@ -5,6 +5,7 @@ import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Activity, Calendar, DollarSign, Users } from "lucide-react";
 import { Bar, BarChart } from "recharts";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
+import { ServiceChartLine } from "./_ServiceChartLine";
 
 const chartConfig = {
     desktop: {
@@ -166,11 +167,12 @@ function Graphics2() {
                     Últimos seis meses
                 </p>
 
+                <ServiceChartLine />
             </Card>
 
             <Card className="p-4">
                 <h3>
-                    Servicios mas demandados
+                    Servicios más demandados
                 </h3>
                 <p className="text-muted-foreground text-xs">
                     Último mes

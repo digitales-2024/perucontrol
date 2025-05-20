@@ -7,13 +7,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-
-type ServiceName =
-    | "desratizacion"
-    | "desinsectacion"
-    | "fumigacion"
-    | "desinfeccion"
-    | "limpieza_tanque"
+import { ServiceName } from "./types";
 
 export type ServiceChartCircleInput = {
     service: ServiceName;
