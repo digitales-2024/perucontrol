@@ -6,17 +6,31 @@ using PeruControl.Model;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class StatsController(DatabaseContext db)
-    : ControllerBase
+public class StatsController(DatabaseContext db) : ControllerBase
 {
     [HttpGet]
     [EndpointSummary("Get statistics for dashboard")]
-    public async Task<ActionResult<StatsGet>> GetStatistics()
+    public async Task<ActionResult<StatsGet>> GetStatistics(
+        [FromQuery] DateTime? start,
+        [FromQuery] DateTime? end
+    )
     {
-        var monthlyProjects = await db.Projects
-            .Include(p => p.Appointments)
+        if (start is null)
+        {
+            start = DateTime.UtcNow.AddMonths(-6);
+        }
+        if (end is null)
+        {
+            end = DateTime.UtcNow;
+        }
+
+        var monthlyProjects = await db
+            .Projects.Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
-            .Where(s => s.Appointments.OrderBy(a => a.DueDate).First().DueDate >= DateTime.UtcNow.AddMonths(-6))
+            .Where(s =>
+                s.Appointments.OrderBy(a => a.DueDate).First().DueDate >= start
+                && s.Appointments.OrderBy(a => a.DueDate).First().DueDate <= end
+            )
             .ToListAsync();
 
         // Collect individual service count
@@ -48,7 +62,10 @@ public class StatsController(DatabaseContext db)
         foreach (var project in monthlyProjects)
         {
             var project_time = project.Appointments.OrderBy(a => a.DueDate).First().DueDate;
-            var project_time_str = project_time.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+            var project_time_str = project_time.ToString(
+                "MMMM yyyy",
+                new System.Globalization.CultureInfo("es-PE")
+            );
 
             //
             // Projects count
@@ -75,12 +92,14 @@ public class StatsController(DatabaseContext db)
             }
         }
 
-        return Ok(new StatsGet
-        {
-            MonthlyServiceCount = projectsDictionaryCount,
-            ServiceCount = servicesDictCount,
-            MonthlyProfit = monthlyProfit,
-        });
+        return Ok(
+            new StatsGet
+            {
+                MonthlyServiceCount = projectsDictionaryCount,
+                ServiceCount = servicesDictCount,
+                MonthlyProfit = monthlyProfit,
+            }
+        );
     }
 }
 
