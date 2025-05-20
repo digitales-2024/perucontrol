@@ -86,6 +86,7 @@ public class ProjectService(
                     DueDate = app.DueDate,
                     Services = appointmentServices,
                     Certificate = new(),
+                    CompanyRepresentative = createDTO.CompanyRepresentative,
                     RodentRegister = new()
                     {
                         ServiceDate = app.DueDate,

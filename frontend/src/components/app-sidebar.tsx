@@ -115,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
                                 <Image
                                     className="inline-block"
                                     alt="Logo"
-                                    src="/logo_perucontrol_com.svg"
+                                    src="/logo_perucontrol_com_fondo.plain.svg"
                                     width={160}
                                     height={160}
                                 />

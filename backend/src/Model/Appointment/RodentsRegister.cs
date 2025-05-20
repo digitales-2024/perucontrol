@@ -18,9 +18,6 @@ public class RodentRegister : BaseModel
 
     /// Medidas correctivas
     public string? CorrectiveMeasures { get; set; }
-
-    /// Representante de la empresa
-    public string? CompanyRepresentative { get; set; }
 }
 
 public class RodentArea : BaseModel
@@ -158,8 +155,5 @@ public class RodentRegisterUpdateDTO : IEntityPatcher<RodentRegister>
 
         if (CorrectiveMeasures != null)
             entity.CorrectiveMeasures = CorrectiveMeasures;
-
-        if (CompanyRepresentative != null)
-            entity.CompanyRepresentative = CompanyRepresentative;
     }
 }

@@ -42,6 +42,9 @@ public class ProjectAppointment : BaseModel
     /// Represents that the appointment was not performed
     public bool Cancelled { get; set; } = false;
 
+    /// Representante de la empresa
+    public string? CompanyRepresentative { get; set; } = null;
+
     /// Services performed on this appointment
     [JsonIgnore]
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();

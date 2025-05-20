@@ -229,7 +229,8 @@ public class OdsTemplateService
                             int spanCount = 1;
                             while (
                                 i + spanCount < scheduleData.Count
-                                && scheduleData[i + spanCount].MonthName == scheduleData[i].MonthName
+                                && scheduleData[i + spanCount].MonthName
+                                    == scheduleData[i].MonthName
                             )
                                 spanCount++;
 
@@ -241,10 +242,18 @@ public class OdsTemplateService
                                 // Replace placeholders
                                 foreach (var cell in newRow.Descendants(textns + "p"))
                                 {
-                                    var dayName = char.ToUpper(data.ServiceDayName[0]) + data.ServiceDayName.Substring(1);
+                                    var dayName =
+                                        char.ToUpper(data.ServiceDayName[0])
+                                        + data.ServiceDayName.Substring(1);
                                     cell.Value = cell
                                         .Value.Replace("{{MONTH}}", data.MonthName.ToUpper())
-                                        .Replace("{{DATE}}", data.Date.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("es-PE")))
+                                        .Replace(
+                                            "{{DATE}}",
+                                            data.Date.ToString(
+                                                "dd/MM/yyyy",
+                                                new System.Globalization.CultureInfo("es-PE")
+                                            )
+                                        )
                                         .Replace("{{DAY}}", dayName)
                                         .Replace("{{SERVICE}}", data.Service)
                                         .Replace("{{DOCUMENTS}}", data.Documents);
@@ -273,14 +282,8 @@ public class OdsTemplateService
                                         // Replace with a covered cell
                                         var coveredCell = new XElement(
                                             tablens + "table-cell",
-                                            new XAttribute(
-                                                tablens + "number-columns-repeated",
-                                                1
-                                            ),
-                                            new XAttribute(
-                                                tablens + "covered-table-cell",
-                                                "true"
-                                            )
+                                            new XAttribute(tablens + "number-columns-repeated", 1),
+                                            new XAttribute(tablens + "covered-table-cell", "true")
                                         );
                                         monthCell.ReplaceWith(coveredCell);
                                     }
@@ -755,5 +758,4 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Documents
-)
-{ }
+) { }

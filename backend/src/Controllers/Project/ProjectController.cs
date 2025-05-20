@@ -20,7 +20,8 @@ public class ProjectController(
     LibreOfficeConverterService pdfConverterService,
     WordTemplateService wordTemplateService,
     EmailService emailService,
-    WhatsappService whatsappService
+    WhatsappService whatsappService,
+    ILogger<ProjectController> logger
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
@@ -36,6 +37,10 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
+        logger.LogInformation(
+            "Creating project with representative: " + createDTO.CompanyRepresentative + "|"
+        );
+
         var (status, msg) = await projectService.CreateProject(createDTO);
         return status switch
         {

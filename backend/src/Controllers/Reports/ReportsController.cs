@@ -91,7 +91,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment, "Templates/nuevos_informes/informe_01.docx");
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_01.docx"
+            );
         }
         catch (Exception ex)
         {
@@ -182,7 +185,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         try
         {
             // Still calls GenerateReportComplete as per instruction
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment, "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx");
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
+            );
         }
         catch (Exception ex)
         {
@@ -446,7 +452,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment, "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx");
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx"
+            );
         }
         catch (Exception ex)
         {

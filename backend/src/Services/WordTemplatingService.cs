@@ -205,7 +205,10 @@ public class WordTemplateService
         templateRow.Remove();
     }
 
-    public byte[] GenerateReportComplete(Model.ProjectAppointment appointment, string templatePath = "Templates/nuevos_informes/informe_01.docx")
+    public byte[] GenerateReportComplete(
+        Model.ProjectAppointment appointment,
+        string templatePath = "Templates/nuevos_informes/informe_01.docx"
+    )
     {
         using var ms = new MemoryStream();
         using (var fs = File.OpenRead(templatePath))
@@ -241,6 +244,7 @@ public class WordTemplateService
             },
             { "{client_address}", appointment.Project.Address },
             { "{client_supervisor}", "-" },
+            { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") },
         };
         foreach (var text in body.Descendants<Text>())
         {
