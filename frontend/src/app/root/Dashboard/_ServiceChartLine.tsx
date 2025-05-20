@@ -28,7 +28,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function ServiceChartLine()
+export function ServiceChartLine({ chartData }: { chartData: Array<ServiceChartLineInput> })
 {
     return (
         <ChartContainer config={chartConfig}>

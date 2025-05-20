@@ -4,6 +4,44 @@
  */
 
 export interface paths {
+    "/api/Stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get statistics for dashboard */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StatsGet"];
+                        "application/json": components["schemas"]["StatsGet"];
+                        "text/json": components["schemas"]["StatsGet"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Appointment": {
         parameters: {
             query?: never;
@@ -7030,6 +7068,11 @@ export interface components {
         };
         ServicePatchDTO: {
             name?: string | null;
+        };
+        StatsGet: {
+            monthlyServiceCount: {
+                [key: string]: number;
+            };
         };
         StringSegment: {
             buffer?: string | null;

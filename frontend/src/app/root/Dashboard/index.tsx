@@ -5,7 +5,10 @@ import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Activity, Calendar, DollarSign, Users } from "lucide-react";
 import { Bar, BarChart } from "recharts";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
-import { ServiceChartLine } from "./_ServiceChartLine";
+import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
+import { components } from "@/types/api";
+
+type StatsData = components["schemas"]["StatsGet"]
 
 const chartConfig = {
     desktop: {
@@ -27,15 +30,21 @@ const chartData = [
     { month: "June", desktop: 214, mobile: 140 },
 ];
 
-export function Dashboard()
+export function Dashboard({ data }: { data: StatsData })
 {
+    const mappedData = Object.entries(data.monthlyServiceCount)
+        .map(([month, value]): ServiceChartLineInput => ({
+            month,
+            value,
+        }));
+
     return (
         <div>
             Dashboard
 
             <TopMetrics />
             <Graphics1 />
-            <Graphics2 />
+            <Graphics2 chartData={mappedData} />
 
             <hr />
         </div>
@@ -151,9 +160,9 @@ function Graphics1()
     );
 }
 
-function Graphics2()
+function Graphics2({ chartData }: { chartData: Array<ServiceChartLineInput> })
 {
-    const chartData: Array<ServiceChartCircleInput> = [
+    const chartDataCircle: Array<ServiceChartCircleInput> = [
         { service: "desratizacion", value: 275 },
         { service: "desinsectacion", value: 200 },
         { service: "fumigacion", value: 187 },
@@ -171,7 +180,7 @@ function Graphics2()
                     Últimos seis meses
                 </p>
 
-                <ServiceChartLine />
+                <ServiceChartLine chartData={chartData} />
             </Card>
 
             <Card className="p-4">
@@ -182,7 +191,7 @@ function Graphics2()
                     Último mes
                 </p>
 
-                <ServiceChartCircle data={chartData} />
+                <ServiceChartCircle data={chartDataCircle} />
             </Card>
         </div>
     );
