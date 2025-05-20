@@ -119,7 +119,7 @@ public class Report1Test
 
         // Act: Get Report1
         var reportResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report1"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Disinfection-Desinsect"
         );
 
         // Assert
@@ -159,7 +159,7 @@ public class Report1Test
 
         // Act: Update Report1
         var patchResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report1",
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Disinfection-Desinsect",
             updateDto
         );
 
@@ -175,7 +175,7 @@ public class Report1Test
 
         // Act: Get the updated report to verify changes
         var getResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report1"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Disinfection-Desinsect"
         );
 
         // Assert: Get was successful

@@ -1,10 +1,7 @@
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PeruControl.Controllers;
 using PeruControl.Controllers.Reports; // For Report4DTO, UpdateReport4DTO
-using PeruControl.Model;
 using PeruControl.Model.Reports; // For ContentSection, TextArea
 
 namespace Tests.E2E.Api;
@@ -112,7 +109,7 @@ public class Report4Test
         var (_, firstAppointmentId) = await CreateProjectAndGetFirstAppointmentIdAsync(httpClient);
 
         var reportResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report4"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RatExterminationSubst"
         );
 
         if (reportResponse.StatusCode != HttpStatusCode.OK)
@@ -150,7 +147,7 @@ public class Report4Test
         };
 
         var patchResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report4",
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RatExterminationSubst",
             updateDto
         );
 
@@ -164,7 +161,7 @@ public class Report4Test
         Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode);
 
         var getResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report4"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RatExterminationSubst"
         );
 
         if (getResponse.StatusCode != HttpStatusCode.OK)
