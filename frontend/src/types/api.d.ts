@@ -7073,6 +7073,9 @@ export interface components {
             monthlyServiceCount: {
                 [key: string]: number;
             };
+            serviceCount: {
+                [key: string]: number;
+            };
         };
         StringSegment: {
             buffer?: string | null;

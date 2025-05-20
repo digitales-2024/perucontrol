@@ -7,6 +7,7 @@ import { Bar, BarChart } from "recharts";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
 import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
 import { components } from "@/types/api";
+import { serviceLabelToServiceName } from "./types";
 
 type StatsData = components["schemas"]["StatsGet"]
 
@@ -38,13 +39,16 @@ export function Dashboard({ data }: { data: StatsData })
             value,
         }));
 
+    const pieChartData = Object.entries(data.serviceCount).map(([service, value]): ServiceChartCircleInput => ({
+        service: serviceLabelToServiceName(service),
+        value,
+    }));
+
     return (
         <div>
-            Dashboard
-
             <TopMetrics />
             <Graphics1 />
-            <Graphics2 chartData={mappedData} />
+            <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
 
             <hr />
         </div>
@@ -160,16 +164,8 @@ function Graphics1()
     );
 }
 
-function Graphics2({ chartData }: { chartData: Array<ServiceChartLineInput> })
+function Graphics2({ chartData, pieChartData }: { chartData: Array<ServiceChartLineInput>, pieChartData: Array<ServiceChartCircleInput> })
 {
-    const chartDataCircle: Array<ServiceChartCircleInput> = [
-        { service: "desratizacion", value: 275 },
-        { service: "desinsectacion", value: 200 },
-        { service: "fumigacion", value: 187 },
-        { service: "desinfeccion", value: 90 },
-        { service: "limpieza_tanque", value: 173 },
-    ];
-
     return (
         <div className="grid grid-cols-[2fr_1fr] gap-2 my-2">
             <Card className="p-4">
@@ -191,7 +187,7 @@ function Graphics2({ chartData }: { chartData: Array<ServiceChartLineInput> })
                     Último mes
                 </p>
 
-                <ServiceChartCircle data={chartDataCircle} />
+                <ServiceChartCircle data={pieChartData} />
             </Card>
         </div>
     );

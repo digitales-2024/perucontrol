@@ -15,29 +15,53 @@ public class StatsController(DatabaseContext db)
     {
         var monthlyProjects = await db.Projects
             .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
             .Where(s => s.Appointments.OrderBy(a => a.DueDate).First().DueDate >= DateTime.UtcNow.AddMonths(-6))
             .ToListAsync();
 
-        var projectsDictionaryCount = new Dictionary<DateTime, int>();
+        // Collect individual service count
+        var servicesDictCount = new Dictionary<string, int>();
+        foreach (var project in monthlyProjects)
+        {
+            foreach (var appointment in project.Appointments)
+            {
+                var services = appointment.Services;
+                foreach (var service in services)
+                {
+                    var serviceName = service.Name;
+                    if (servicesDictCount.ContainsKey(serviceName))
+                    {
+                        servicesDictCount[serviceName]++;
+                    }
+                    else
+                    {
+                        servicesDictCount[serviceName] = 1;
+                    }
+                }
+            }
+        }
+
+        // Collect monthly project count
+        var projectsDictionaryCount = new Dictionary<string, int>();
         foreach (var project in monthlyProjects)
         {
             var project_time = project.Appointments.OrderBy(a => a.DueDate).First().DueDate;
-            if (projectsDictionaryCount.ContainsKey(project_time))
+            var project_time_str = project_time.ToString("yyyy MM", new System.Globalization.CultureInfo("es-PE"));
+
+            if (projectsDictionaryCount.ContainsKey(project_time_str))
             {
-                projectsDictionaryCount[project_time]++;
+                projectsDictionaryCount[project_time_str]++;
             }
             else
             {
-                projectsDictionaryCount[project_time] = 1;
+                projectsDictionaryCount[project_time_str] = 1;
             }
         }
-        var projectsDateCount = projectsDictionaryCount
-            .OrderBy(x => x.Key)
-            .ToDictionary(x => x.Key.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE")), x => x.Value);
 
         return Ok(new StatsGet
         {
-            monthlyServiceCount = projectsDateCount,
+            monthlyServiceCount = projectsDictionaryCount,
+            serviceCount = servicesDictCount,
         });
     }
 }
@@ -45,4 +69,5 @@ public class StatsController(DatabaseContext db)
 public class StatsGet
 {
     public required Dictionary<string, int> monthlyServiceCount { get; set; }
+    public required Dictionary<string, int> serviceCount { get; set; }
 }

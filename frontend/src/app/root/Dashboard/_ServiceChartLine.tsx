@@ -12,15 +12,6 @@ export type ServiceChartLineInput = & {
     value: number;
 }
 
-const chartData: Array<ServiceChartLineInput> = [
-    { month: "Enero", value: 50 },
-    { month: "Febrero", value: 60 },
-    { month: "Marzo", value: 40 },
-    { month: "Abril", value: 120 },
-    { month: "Mayo", value: 20 },
-    { month: "Junio", value: 50 },
-];
-
 const chartConfig = {
     value: {
         label: "Desratización",
