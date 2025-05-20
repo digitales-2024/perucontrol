@@ -27,7 +27,8 @@ const chartData = [
     { month: "June", desktop: 214, mobile: 140 },
 ];
 
-export function Dashboard() {
+export function Dashboard()
+{
     return (
         <div>
             Dashboard
@@ -41,7 +42,8 @@ export function Dashboard() {
     );
 }
 
-function TopMetrics() {
+function TopMetrics()
+{
     return (
         <div className="grid grid-cols-4 gap-2">
             <Card className="p-4">
@@ -104,7 +106,8 @@ function TopMetrics() {
     );
 }
 
-function Graphics1() {
+function Graphics1()
+{
     return (
         <div className="grid grid-cols-2 gap-2 my-2">
             <Card className="p-4">
@@ -148,7 +151,8 @@ function Graphics1() {
     );
 }
 
-function Graphics2() {
+function Graphics2()
+{
     const chartData: Array<ServiceChartCircleInput> = [
         { service: "desratizacion", value: 275 },
         { service: "desinsectacion", value: 200 },
