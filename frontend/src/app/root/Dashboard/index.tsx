@@ -184,7 +184,7 @@ function Graphics2({ chartData, pieChartData }: { chartData: Array<ServiceChartL
                     Servicios más demandados
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Último mes
+                    Últimos seis meses
                 </p>
 
                 <ServiceChartCircle data={pieChartData} />

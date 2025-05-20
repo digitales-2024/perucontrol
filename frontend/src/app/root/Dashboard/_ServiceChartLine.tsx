@@ -14,7 +14,7 @@ export type ServiceChartLineInput = & {
 
 const chartConfig = {
     value: {
-        label: "Desratización",
+        label: "Cantidad",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig;

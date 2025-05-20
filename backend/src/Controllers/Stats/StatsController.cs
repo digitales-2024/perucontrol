@@ -43,11 +43,16 @@ public class StatsController(DatabaseContext db)
 
         // Collect monthly project count
         var projectsDictionaryCount = new Dictionary<string, int>();
+        var monthlyProfit = new Dictionary<string, decimal>();
+
         foreach (var project in monthlyProjects)
         {
             var project_time = project.Appointments.OrderBy(a => a.DueDate).First().DueDate;
-            var project_time_str = project_time.ToString("yyyy MM", new System.Globalization.CultureInfo("es-PE"));
+            var project_time_str = project_time.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 
+            //
+            // Projects count
+            //
             if (projectsDictionaryCount.ContainsKey(project_time_str))
             {
                 projectsDictionaryCount[project_time_str]++;
@@ -56,18 +61,32 @@ public class StatsController(DatabaseContext db)
             {
                 projectsDictionaryCount[project_time_str] = 1;
             }
+
+            //
+            // Monthly profit
+            //
+            if (monthlyProfit.ContainsKey(project_time_str))
+            {
+                monthlyProfit[project_time_str] += project.Price;
+            }
+            else
+            {
+                monthlyProfit[project_time_str] = project.Price;
+            }
         }
 
         return Ok(new StatsGet
         {
-            monthlyServiceCount = projectsDictionaryCount,
-            serviceCount = servicesDictCount,
+            MonthlyServiceCount = projectsDictionaryCount,
+            ServiceCount = servicesDictCount,
+            MonthlyProfit = monthlyProfit,
         });
     }
 }
 
 public class StatsGet
 {
-    public required Dictionary<string, int> monthlyServiceCount { get; set; }
-    public required Dictionary<string, int> serviceCount { get; set; }
+    public required Dictionary<string, int> MonthlyServiceCount { get; set; }
+    public required Dictionary<string, int> ServiceCount { get; set; }
+    public required Dictionary<string, decimal> MonthlyProfit { get; set; }
 }
