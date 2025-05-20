@@ -243,7 +243,7 @@ public class WordTemplateService
                 appointment.Project.Client.RazonSocial ?? appointment.Project.Client.Name
             },
             { "{client_address}", appointment.Project.Address },
-            { "{client_supervisor}", "-" },
+            { "{client_supervisor}", appointment.CompanyRepresentative ?? "" },
             { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") },
         };
         foreach (var text in body.Descendants<Text>())
@@ -266,22 +266,21 @@ public class WordTemplateService
                 // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
                 .Select(tp => new Dictionary<string, string>
                 {
-                    { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") }, // Changed from "today"
+                    { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
                     { "{service_hour}", tp.AppliedTime ?? "-" },
                     {
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
                     },
-                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" }, // Assuming Product and ProductAmountSolvent are non-null based on schema
+                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" },
                     { "{performed_by}", "Sr. William Moreyra Auris" },
-                    // FIXME:
-                    { "{supervisor}", "-" },
+                    { "{supervisor}", appointment.CompanyRepresentative ?? "-" },
                 }),
             ];
         }
 
         var dataForTable2 = new List<Dictionary<string, string>>();
-        if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any()) // Assuming TreatmentAreas exists on ProjectAppointment
+        if (appointment.TreatmentAreas != null && appointment.TreatmentAreas.Any())
         {
             dataForTable2 =
             [
@@ -337,7 +336,7 @@ public class WordTemplateService
         }
 
         // Process Tables in Order
-        ProcessTable(body, 0, "{service_date}", dataForTable1);
+        ProcessTable(body, 0, "{service_hour}", dataForTable1);
         ProcessTable(body, 1, "{area}", dataForTable2);
         ProcessTable(body, 2, "{treated_area}", dataForTable3);
         ProcessTable(body, 3, "{product.name}", productsToInsert);

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
-using PeruControl.Model.Reports;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers.Reports;
