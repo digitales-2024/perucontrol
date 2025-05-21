@@ -12,18 +12,46 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { format, subMonths } from "date-fns";
+import { es } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
+import { LoadDashboardData } from "../actions";
+import { toast } from "sonner";
 
 type StatsData = components["schemas"]["StatsGet"]
 
-export function Dashboard({ data }: { data: StatsData })
+export function Dashboard({ data: initialData }: { data: StatsData })
 {
+    const [data, setData] = useState<StatsData>(initialData);
+    const [loading, setLoading] = useState(false);
+
     const [date, setDate] = useState<DateRange | undefined>({
         from: subMonths(new Date(), 3),
         to: new Date(),
     });
+
+    // load data date range change
+    useEffect(() =>
+    {
+        (async() =>
+        {
+            if (!date || !date.from || !date.to)
+            {
+                return;
+            }
+
+            setLoading(true);
+            const [data, err] = await LoadDashboardData(date.from, date.to!);
+            if (err)
+            {
+                console.log(err);
+                toast.error("Error cargando estadística");
+            }
+            setData(data);
+            setLoading(false);
+        })();
+    }, [date]);
 
     const mappedData = Object.entries(data.monthlyServiceCount)
         .map(([month, value]): ServiceChartLineInput => ({
@@ -53,14 +81,24 @@ export function Dashboard({ data }: { data: StatsData })
                             {date?.from ? (
                                 date.to ? (
                                     <>
-                                        {format(date.from, "LLL dd, y")}
+                                        <span className="capitalize">
+                                            {format(date.from, "LLL dd, y", {
+                                                locale: es,
+                                            })}
+                                        </span>
                                         {" "}
                                         -
                                         {" "}
-                                        {format(date.to, "LLL dd, y")}
+                                        <span className="capitalize">
+                                            {format(date.to, "LLL dd, y", {
+                                                locale: es,
+                                            })}
+                                        </span>
                                     </>
                                 ) : (
-                                    format(date.from, "LLL dd, y")
+                                    format(date.from, "LLL dd, y", {
+                                        locale: es,
+                                    })
                                 )
                             ) : (
                                 <span>
@@ -82,9 +120,11 @@ export function Dashboard({ data }: { data: StatsData })
                 </PopoverContent>
             </Popover>
 
-            <TopMetrics />
-            <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
-            <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
+            <div className={loading ? "animate-pulse" : ""}>
+                <TopMetrics />
+                <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
+                <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
+            </div>
 
             <hr />
         </div>
