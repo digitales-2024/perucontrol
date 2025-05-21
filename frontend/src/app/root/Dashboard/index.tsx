@@ -1,18 +1,30 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Activity, Calendar, DollarSign, Users } from "lucide-react";
+import { Activity, Calendar as CalendarIcon, DollarSign, Users } from "lucide-react";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
 import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
 import { components } from "@/types/api";
 import { serviceLabelToServiceName } from "./types";
 import { ProfitChart, ProfitChartInput } from "./_ProfitChart";
 import { QuotationChart, QuotationChartData } from "./_QuotationChart";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { format, subMonths } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 type StatsData = components["schemas"]["StatsGet"]
 
 export function Dashboard({ data }: { data: StatsData })
 {
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: subMonths(new Date(), 3),
+        to: new Date(),
+    });
+
     const mappedData = Object.entries(data.monthlyServiceCount)
         .map(([month, value]): ServiceChartLineInput => ({
             month,
@@ -26,6 +38,50 @@ export function Dashboard({ data }: { data: StatsData })
 
     return (
         <div>
+            <Popover>
+                <div className="text-right">
+                    <PopoverTrigger asChild>
+                        <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                                "w-[300px] justify-start text-left font-normal",
+                                !date && "text-muted-foreground",
+                            )}
+                        >
+                            <CalendarIcon />
+                            {date?.from ? (
+                                date.to ? (
+                                    <>
+                                        {format(date.from, "LLL dd, y")}
+                                        {" "}
+                                        -
+                                        {" "}
+                                        {format(date.to, "LLL dd, y")}
+                                    </>
+                                ) : (
+                                    format(date.from, "LLL dd, y")
+                                )
+                            ) : (
+                                <span>
+                                    Pick a date
+                                </span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                </div>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={setDate}
+                        numberOfMonths={2}
+                    />
+                </PopoverContent>
+            </Popover>
+
             <TopMetrics />
             <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
             <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
@@ -38,7 +94,7 @@ export function Dashboard({ data }: { data: StatsData })
 function TopMetrics()
 {
     return (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 my-2">
             <Card className="p-4">
                 <h3>
                     Total de ingresos
@@ -71,7 +127,7 @@ function TopMetrics()
                 <h3>
                     Servicios completados
                     <span className="float-right">
-                        <Calendar />
+                        <CalendarIcon />
                     </span>
                 </h3>
                 <p className="text-xl font-bold">
