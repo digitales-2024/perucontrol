@@ -412,6 +412,16 @@ export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, Fe
     return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
 }
 
+export async function GenerateSchedule2PDF(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule2/pdf`, "POST", "");
+}
+
+export async function GenerateSchedule2Excel(id: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Project/${id}/schedule2/excel`, "POST", "");
+}
+
 export async function Generate(
     id: string,
     endpoint: string,

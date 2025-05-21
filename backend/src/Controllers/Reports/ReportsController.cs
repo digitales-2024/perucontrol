@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
-using PeruControl.Model.Reports;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers.Reports;
@@ -91,7 +90,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment);
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_01.docx"
+            );
         }
         catch (Exception ex)
         {
@@ -111,8 +113,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     }
 
     // Report 1 Endpoints
-    [EndpointSummary("Get Report1 of an Appointment")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report1")]
+    [EndpointSummary("Get Disinfection-Desinsect of an Appointment")]
+    [HttpGet("/api/Appointment/{appointmentid}/Disinfection-Desinsect")]
     public async Task<ActionResult<Report1DTO>> GetReport1(Guid appointmentid)
     {
         var appointment = await db
@@ -132,8 +134,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return Ok(result);
     }
 
-    [EndpointSummary("Update Report1 of an Appointment")]
-    [HttpPatch("/api/Appointment/{appointmentid}/Report1")]
+    [EndpointSummary("Update Disinfection-Desinsect of an Appointment")]
+    [HttpPatch("/api/Appointment/{appointmentid}/Disinfection-Desinsect")]
     public async Task<ActionResult> UpdateReport1(Guid appointmentid, UpdateReport1DTO updateDto)
     {
         var appointment = await db
@@ -154,8 +156,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return NoContent();
     }
 
-    [EndpointSummary("Download Report1 as DOCX")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report1/docx")]
+    [EndpointSummary("Download Disinfection-Desinsect as DOCX")]
+    [HttpGet("/api/Appointment/{appointmentid}/Disinfection-Desinsect/docx")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -182,7 +184,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         try
         {
             // Still calls GenerateReportComplete as per instruction
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment);
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
+            );
         }
         catch (Exception ex)
         {
@@ -376,8 +381,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     }
 
     // Report 4 Endpoints
-    [EndpointSummary("Get Report4 of an Appointment")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report4")]
+    [EndpointSummary("Get RatExterminationSubst of an Appointment")]
+    [HttpGet("/api/Appointment/{appointmentid}/RatExterminationSubst")]
     public async Task<ActionResult<Report4DTO>> GetReport4(Guid appointmentid)
     {
         var appointment = await db
@@ -397,8 +402,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return Ok(result);
     }
 
-    [EndpointSummary("Update Report4 of an Appointment")]
-    [HttpPatch("/api/Appointment/{appointmentid}/Report4")]
+    [EndpointSummary("Update RatExterminationSubst of an Appointment")]
+    [HttpPatch("/api/Appointment/{appointmentid}/RatExterminationSubst")]
     public async Task<ActionResult> UpdateReport4(Guid appointmentid, UpdateReport4DTO updateDto)
     {
         var appointment = await db
@@ -419,8 +424,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return NoContent();
     }
 
-    [EndpointSummary("Download Report4 as DOCX")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report4/docx")]
+    [EndpointSummary("Download RatExterminationSubst as DOCX")]
+    [HttpGet("/api/Appointment/{appointmentid}/RatExterminationSubst/docx")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -446,7 +451,10 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment);
+            fileBytes = _wordTemplateService.GenerateReportComplete(
+                appointment,
+                "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx"
+            );
         }
         catch (Exception ex)
         {

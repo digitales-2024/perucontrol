@@ -28,7 +28,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
 };
 
 // Máximo número de ambientes permitidos
-const MAX_ENVIRONMENTS = 8;
+const MAX_ENVIRONMENTS = 20;
 
 export function ClientData({ clients, services, quotations, onServicesChange }: ClientDataProps)
 {
@@ -345,6 +345,25 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                                     placeholder="S/."
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    name="representative"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Personal para atención
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder="Ing. Juan Pérez"
+                                    {...field}
+                                    onChange={(e) => field.onChange(e.target.value)}
                                 />
                             </FormControl>
                             <FormMessage />

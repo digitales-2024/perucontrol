@@ -126,6 +126,9 @@ public class ProjectCreateDTO : IMapToEntity<Project>
     [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
     public required uint SpacesCount { get; set; }
 
+    /// Representante de la empresa
+    public string? CompanyRepresentative { get; set; }
+
     [Range(
         0,
         9999999.99,

@@ -16,21 +16,13 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reportFormSchema, type ReportFormData, type TextBlock, type TextArea } from "../schemas";
 
-interface ReportFormProps {
-    projectId: string;
-    appointmentId: string;
-    reportId: string;
-    reportTitle: string;
-    report: components["schemas"]["CompleteReportDTO"];
-}
-
-const reportFilenames: Record<string, string> = {
+const reportFilenames = {
     "desinsectacion-desratizacion-desinfeccion": "Informe_Desinfección_Desratización_Desinsectación.docx",
     "desinfeccion-desinsectacion": "Informe_Desinfección_Desinsectación.docx",
     "desratizacion": "Informe_Desratización.docx",
     "sostenimiento-desratizacion": "Informe_Sostenimiento_Desratización.docx",
     "sostenimiento-desinsectacion-desratizacion": "Informe_Sostenimiento_Desinsectación_Desratización.docx",
-};
+} as const;
 
 const reportNumberings: Record<string, string> = {
     "desinsectacion-desratizacion-desinfeccion": "5",
@@ -38,7 +30,15 @@ const reportNumberings: Record<string, string> = {
     "desratizacion": "1",
     "sostenimiento-desratizacion": "1",
     "sostenimiento-desinsectacion-desratizacion": "1",
-};
+} as const;
+
+interface ReportFormProps {
+    projectId: string;
+    appointmentId: string;
+    reportId: keyof typeof reportFilenames;
+    reportTitle: string;
+    report: components["schemas"]["CompleteReportDTO"];
+}
 
 export function ReportForm({
     projectId,

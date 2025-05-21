@@ -5,13 +5,16 @@ export const clientDataSchema = z.object({
     quotationId: z.union([z.string().uuid(), z.null()]).optional(),
     services: z.array(z.string().min(1, "El servicio es requerido"))
         .nonempty("Los servicios son obligatorios y no pueden estar vacío"),
-    price: z.number({message: "El precio es requerido"})
+    price: z.number({ message: "El precio es requerido" })
         .int("La cantidad debe ser un número entero")
         .min(1, "Debe ser mayor a 0"),
     ambients: z.array(z.string()),
 
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
+    representative: z.string().min(1, "El nombre del personal para atención es requerido")
+        .max(100, "Máximo 100 caracteres")
+        .optional(),
     area: z.preprocess(
         (val) => Number(val),
         z
@@ -32,7 +35,7 @@ export const clientDataSchema = z.object({
         dueDate: z.string().min(1, "La fecha es requerida"), // Fecha en formato ISO
         services: z.array(z.string().min(1, "Debe seleccionar al menos un servicio")), // IDs de los servicios
     })),
-    frequency: z.enum(["Fortnightly","Monthly","Bimonthly", "Quarterly", "Semiannual"]).optional(),
+    frequency: z.enum(["Fortnightly", "Monthly", "Bimonthly", "Quarterly", "Semiannual"]).optional(),
 });
 
 export type ClientDataSchema = z.infer<typeof clientDataSchema>;
@@ -66,13 +69,13 @@ export type ProjectDataSchema = z.infer<typeof projectDataSchema>;
 
 // Add a type helper for the form fields
 export type ProjectFormFields = {
-  clientId: string;
-  quotationId?: string | null;
-  services: Array<string>;
-  address: string;
-  area: number;
-  spacesCount: number;
-  ambients: Array<string>;
+    clientId: string;
+    quotationId?: string | null;
+    services: Array<string>;
+    address: string;
+    area: number;
+    spacesCount: number;
+    ambients: Array<string>;
 };
 
 export const downloadProjectSchema = z.object({

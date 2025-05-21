@@ -90,19 +90,18 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
             }
 
             // Estructura exacta que espera el endpoint
-            const requestData = {
+            const requestData: components["schemas"]["ProjectCreateDTO"] = {
                 clientId: data.clientId,
                 quotationId: data.quotationId,
                 services: data.services,
                 address: data.address,
                 area: data.area,
+                companyRepresentative: data.representative,
                 spacesCount: data.spacesCount,
                 price: data.price,
                 ambients: data.ambients,
                 appointmentCreateDTOs: transformedAppointments,
             };
-
-            console.log(JSON.stringify(requestData, null, 2));
 
             const [, error] = await toastWrapper(CreateProject(requestData), {
                 loading: "Registrando proyecto...",

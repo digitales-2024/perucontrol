@@ -4,6 +4,47 @@
  */
 
 export interface paths {
+    "/api/Stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get statistics for dashboard */
+        get: {
+            parameters: {
+                query?: {
+                    start?: string;
+                    end?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StatsGet"];
+                        "application/json": components["schemas"]["StatsGet"];
+                        "text/json": components["schemas"]["StatsGet"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Appointment": {
         parameters: {
             query?: never;
@@ -5285,6 +5326,518 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/Disinfection-Desinsect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Disinfection-Desinsect of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report1DTO"];
+                        "application/json": components["schemas"]["Report1DTO"];
+                        "text/json": components["schemas"]["Report1DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Disinfection-Desinsect of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport1DTO"];
+                    "text/json": components["schemas"]["UpdateReport1DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport1DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Disinfection-Desinsect/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Disinfection-Desinsect as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report2": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report2 of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report2DTO"];
+                        "application/json": components["schemas"]["Report2DTO"];
+                        "text/json": components["schemas"]["Report2DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Report2 of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport2DTO"];
+                    "text/json": components["schemas"]["UpdateReport2DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport2DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report2/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Report2 as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report3 of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report3DTO"];
+                        "application/json": components["schemas"]["Report3DTO"];
+                        "text/json": components["schemas"]["Report3DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Report3 of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport3DTO"];
+                    "text/json": components["schemas"]["UpdateReport3DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport3DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report3/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Report3 as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RatExterminationSubst": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get RatExterminationSubst of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report4DTO"];
+                        "application/json": components["schemas"]["Report4DTO"];
+                        "text/json": components["schemas"]["Report4DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update RatExterminationSubst of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport4DTO"];
+                    "text/json": components["schemas"]["UpdateReport4DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport4DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RatExterminationSubst/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download RatExterminationSubst as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Product": {
         parameters: {
             query?: never;
@@ -5907,9 +6460,14 @@ export interface components {
             /** Format: date-time */
             actualDate?: string | null;
             cancelled?: boolean;
+            companyRepresentative?: string | null;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
             completeReport?: components["schemas"]["CompleteReport"];
+            report1?: components["schemas"]["Report1"];
+            report2?: components["schemas"]["Report2"];
+            report3?: components["schemas"]["Report3"];
+            report4?: components["schemas"]["Report4"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -5961,6 +6519,7 @@ export interface components {
             area: number;
             /** Format: uint32 */
             spacesCount: number;
+            companyRepresentative?: string | null;
             /** Format: double */
             price: number;
             appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
@@ -6268,6 +6827,12 @@ export interface components {
             disinfectant?: string | null;
             termsAndConditions?: Array<string>;
         };
+        QuotationData: {
+            /** Format: int32 */
+            accepted?: number;
+            /** Format: int32 */
+            rejected?: number;
+        };
         /** @enum {unknown} */
         QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
@@ -6355,6 +6920,82 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        Report1: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report1DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report2: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report2DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report3: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report3DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report4: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report4DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
         ReportGenerationRequest: {
             day: string;
             month: string;
@@ -6403,7 +7044,6 @@ export interface components {
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
             incidents?: string | null;
             correctiveMeasures?: string | null;
-            companyRepresentative?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -6437,6 +7077,20 @@ export interface components {
         };
         ServicePatchDTO: {
             name?: string | null;
+        };
+        StatsGet: {
+            monthlyServiceCount: {
+                [key: string]: number;
+            };
+            serviceCount: {
+                [key: string]: number;
+            };
+            monthlyProfit: {
+                [key: string]: number;
+            };
+            monthlyQuotations: {
+                [key: string]: components["schemas"]["QuotationData"];
+            };
         };
         StringSegment: {
             buffer?: string | null;
@@ -6534,6 +7188,26 @@ export interface components {
             leaveTime?: string | null;
         };
         UpdateCompleteReportDTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport1DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport2DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport3DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport4DTO: {
             /** Format: date-time */
             signingDate?: string | null;
             content?: Array<components["schemas"]["ContentSection"]> | null;
