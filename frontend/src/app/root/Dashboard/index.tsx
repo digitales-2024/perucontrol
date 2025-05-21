@@ -43,13 +43,15 @@ export function Dashboard({ data: initialData }: { data: StatsData })
 
             setLoading(true);
             const [data, err] = await LoadDashboardData(date.from, date.to!);
+            setLoading(false);
+
             if (err)
             {
                 console.log(err);
                 toast.error("Error cargando estadística");
+                return;
             }
             setData(data);
-            setLoading(false);
         })();
     }, [date]);
 
