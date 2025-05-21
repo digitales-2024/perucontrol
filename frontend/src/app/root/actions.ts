@@ -7,6 +7,7 @@ import { formatRFC3339 } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 type Appointment = components["schemas"]["AppointmentGetDTO"];
+type StatsData = components["schemas"]["StatsGet"]
 
 type UserUpdateDTO = {
     name: string;
@@ -51,3 +52,15 @@ export async function UpdateUserProfile(data: UserUpdateDTO): Promise<Result<nul
     return ok(null);
 }
 
+export async function LoadDashboardData(start: Date, end: Date): Promise<Result<StatsData, FetchError>>
+{
+    return await wrapper((auth) => backend.GET("/api/Stats", {
+        ...auth,
+        params: {
+            query: {
+                start: formatRFC3339(start),
+                end: formatRFC3339(end),
+            },
+        },
+    }));
+}

@@ -1,18 +1,60 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Activity, Calendar, DollarSign, Users } from "lucide-react";
+import { Activity, Calendar as CalendarIcon, DollarSign, Users } from "lucide-react";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
 import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
 import { components } from "@/types/api";
 import { serviceLabelToServiceName } from "./types";
 import { ProfitChart, ProfitChartInput } from "./_ProfitChart";
 import { QuotationChart, QuotationChartData } from "./_QuotationChart";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { format, subMonths } from "date-fns";
+import { es } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { LoadDashboardData } from "../actions";
+import { toast } from "sonner";
 
 type StatsData = components["schemas"]["StatsGet"]
 
-export function Dashboard({ data }: { data: StatsData })
+export function Dashboard({ data: initialData }: { data: StatsData })
 {
+    const [data, setData] = useState<StatsData>(initialData);
+    const [loading, setLoading] = useState(false);
+
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: subMonths(new Date(), 3),
+        to: new Date(),
+    });
+
+    // load data date range change
+    useEffect(() =>
+    {
+        (async() =>
+        {
+            if (!date || !date.from || !date.to)
+            {
+                return;
+            }
+
+            setLoading(true);
+            const [data, err] = await LoadDashboardData(date.from, date.to!);
+            setLoading(false);
+
+            if (err)
+            {
+                console.log(err);
+                toast.error("Error cargando estadística");
+                return;
+            }
+            setData(data);
+        })();
+    }, [date]);
+
     const mappedData = Object.entries(data.monthlyServiceCount)
         .map(([month, value]): ServiceChartLineInput => ({
             month,
@@ -26,9 +68,65 @@ export function Dashboard({ data }: { data: StatsData })
 
     return (
         <div>
-            <TopMetrics />
-            <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
-            <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
+            <Popover>
+                <div className="text-right">
+                    <PopoverTrigger asChild>
+                        <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                                "w-[300px] justify-start text-left font-normal",
+                                !date && "text-muted-foreground",
+                            )}
+                        >
+                            <CalendarIcon />
+                            {date?.from ? (
+                                date.to ? (
+                                    <>
+                                        <span className="capitalize">
+                                            {format(date.from, "LLL dd, y", {
+                                                locale: es,
+                                            })}
+                                        </span>
+                                        {" "}
+                                        -
+                                        {" "}
+                                        <span className="capitalize">
+                                            {format(date.to, "LLL dd, y", {
+                                                locale: es,
+                                            })}
+                                        </span>
+                                    </>
+                                ) : (
+                                    format(date.from, "LLL dd, y", {
+                                        locale: es,
+                                    })
+                                )
+                            ) : (
+                                <span>
+                                    Pick a date
+                                </span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                </div>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={setDate}
+                        numberOfMonths={2}
+                    />
+                </PopoverContent>
+            </Popover>
+
+            <div className={loading ? "animate-pulse" : ""}>
+                <TopMetrics />
+                <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
+                <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
+            </div>
 
             <hr />
         </div>
@@ -38,7 +136,7 @@ export function Dashboard({ data }: { data: StatsData })
 function TopMetrics()
 {
     return (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 my-2">
             <Card className="p-4">
                 <h3>
                     Total de ingresos
@@ -71,7 +169,7 @@ function TopMetrics()
                 <h3>
                     Servicios completados
                     <span className="float-right">
-                        <Calendar />
+                        <CalendarIcon />
                     </span>
                 </h3>
                 <p className="text-xl font-bold">

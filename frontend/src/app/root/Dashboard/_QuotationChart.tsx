@@ -28,6 +28,16 @@ const chartConfig = {
 
 export function QuotationChart({ chartData }: { chartData: Array<QuotationChartData> })
 {
+    if (!chartData || chartData.length === 0)
+    {
+        return (
+            <div className="flex items-center justify-center h-52">
+                <p className="text-muted-foreground">
+                    No hay datos disponibles
+                </p>
+            </div>
+        );
+    }
     return (
         <ChartContainer config={chartConfig}>
             <BarChart accessibilityLayer data={chartData}>
