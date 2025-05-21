@@ -27,7 +27,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
     const [loading, setLoading] = useState(false);
 
     const [date, setDate] = useState<DateRange | undefined>({
-        from: subMonths(new Date(), 3),
+        from: subMonths(new Date(), 6),
         to: new Date(),
     });
 
@@ -104,7 +104,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
                                 )
                             ) : (
                                 <span>
-                                    Pick a date
+                                    Selecciona una fecha
                                 </span>
                             )}
                         </Button>
@@ -136,7 +136,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
 function TopMetrics()
 {
     return (
-        <div className="grid grid-cols-4 gap-2 my-2">
+        <div className="grid xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 my-2">
             <Card className="p-4">
                 <h3>
                     Total de ingresos
@@ -176,7 +176,7 @@ function TopMetrics()
                     12
                 </p>
                 <p className="text-muted-foreground text-xs">
-                    Servicios que se han realizado este mes
+                    Servicios que se han realizado en el periodo
                 </p>
             </Card>
             <Card className="p-4">
@@ -190,7 +190,7 @@ function TopMetrics()
                     5
                 </p>
                 <p className="text-muted-foreground text-xs">
-                    Servicios por realizar este mes
+                    Servicios por realizar en el periodo
                 </p>
             </Card>
         </div>
@@ -211,7 +211,7 @@ function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthly
     }));
 
     return (
-        <div className="grid grid-cols-2 gap-2 my-2">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-2 my-2">
             <Card className="p-4">
                 <h3>
                     Ingresos por mes
@@ -220,7 +220,7 @@ function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthly
                     </span>
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Total de ingresos por cada mes
+                    Total de ingresos por mes
                 </p>
 
                 <ProfitChart data={profitData} />
@@ -231,7 +231,7 @@ function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthly
                     Cotizaciones Aceptadas vs Rechazadas
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Comparación de la cantidad de cotizaciones aceptadas y rechazadas
+                    Comparación de la cantidad de cotizaciones aceptadas y rechazadas por mes
                 </p>
 
                 <QuotationChart chartData={quotationDataMapped} />
@@ -243,13 +243,13 @@ function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthly
 function Graphics2({ chartData, pieChartData }: { chartData: Array<ServiceChartLineInput>, pieChartData: Array<ServiceChartCircleInput> })
 {
     return (
-        <div className="grid grid-cols-[2fr_1fr] gap-2 my-2">
+        <div className="grid md:grid-cols-[2fr_1fr] grid-cols-1 gap-2 my-2">
             <Card className="p-4">
                 <h3>
                     Servicios realizados por mes
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Últimos seis meses
+                    En el periodo seleccionado
                 </p>
 
                 <ServiceChartLine chartData={chartData} />
@@ -260,7 +260,7 @@ function Graphics2({ chartData, pieChartData }: { chartData: Array<ServiceChartL
                     Servicios más demandados
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Últimos seis meses
+                    En el periodo seleccionado
                 </p>
 
                 <ServiceChartCircle data={pieChartData} />
