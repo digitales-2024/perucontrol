@@ -26,7 +26,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function QuotationChart({ chartData }: { chartData: Array<ChartData> })
+export function QuotationChart({ chartData }: { chartData: Array<QuotationChartData> })
 {
     return (
         <ChartContainer config={chartConfig}>
