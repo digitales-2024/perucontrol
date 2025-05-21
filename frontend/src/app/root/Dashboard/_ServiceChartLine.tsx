@@ -21,10 +21,13 @@ const chartConfig = {
 
 export function ServiceChartLine({ chartData }: { chartData: Array<ServiceChartLineInput> })
 {
-    if (!chartData || chartData.length === 0) {
+    if (!chartData || chartData.length === 0)
+    {
         return (
             <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">No hay datos disponibles</p>
+                <p className="text-muted-foreground">
+                    No hay datos disponibles
+                </p>
             </div>
         );
     }

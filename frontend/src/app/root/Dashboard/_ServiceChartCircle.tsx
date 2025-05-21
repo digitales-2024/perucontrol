@@ -45,10 +45,13 @@ export function ServiceChartCircle({ data }: { data: Array<ServiceChartCircleInp
 {
     const tabledata: Array<TableData> = data.map((i) => ({ ...i, fill: `var(--color-${i.service})` }));
 
-    if (!data || data.length === 0) {
+    if (!data || data.length === 0)
+    {
         return (
             <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">No hay datos disponibles</p>
+                <p className="text-muted-foreground">
+                    No hay datos disponibles
+                </p>
             </div>
         );
     }

@@ -20,10 +20,13 @@ export type ProfitChartInput = Array<{ month: string; value: number }>
 
 export function ProfitChart({ data }: { data: ProfitChartInput })
 {
-    if (!data || data.length === 0) {
+    if (!data || data.length === 0)
+    {
         return (
             <div className="flex items-center justify-center h-52">
-                <p className="text-muted-foreground">No hay datos disponibles</p>
+                <p className="text-muted-foreground">
+                    No hay datos disponibles
+                </p>
             </div>
         );
     }
