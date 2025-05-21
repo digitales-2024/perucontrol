@@ -24,6 +24,10 @@ public class StatsController(DatabaseContext db) : ControllerBase
             end = DateTime.UtcNow;
         }
 
+        var monthlyQuotations = await db
+            .Quotations.Where(q => q.CreationDate >= start && q.CreationDate <= end)
+            .ToListAsync();
+
         var monthlyProjects = await db
             .Projects.Include(p => p.Appointments)
             .ThenInclude(a => a.Services)
@@ -92,12 +96,43 @@ public class StatsController(DatabaseContext db) : ControllerBase
             }
         }
 
+        // Collect quotation data
+        var monthlyQuotationsDict = new Dictionary<string, QuotationData>();
+        foreach (var quotation in monthlyQuotations)
+        {
+            var project_time_str = quotation.CreationDate.ToString(
+                "MMMM yyyy",
+                new System.Globalization.CultureInfo("es-PE")
+            );
+
+            QuotationData qdata;
+            if (monthlyQuotationsDict.ContainsKey(project_time_str))
+            {
+                qdata = monthlyQuotationsDict[project_time_str];
+            }
+            else
+            {
+                qdata = new QuotationData() { Accepted = 0, Rejected = 0 };
+                monthlyQuotationsDict[project_time_str] = qdata;
+            }
+
+            if (quotation.Status == QuotationStatus.Approved)
+            {
+                qdata.Accepted += 1;
+            }
+            else if (quotation.Status == QuotationStatus.Rejected)
+            {
+                qdata.Rejected += 1;
+            }
+        }
+
         return Ok(
             new StatsGet
             {
                 MonthlyServiceCount = projectsDictionaryCount,
                 ServiceCount = servicesDictCount,
                 MonthlyProfit = monthlyProfit,
+                MonthlyQuotations = monthlyQuotationsDict,
             }
         );
     }
@@ -108,4 +143,11 @@ public class StatsGet
     public required Dictionary<string, int> MonthlyServiceCount { get; set; }
     public required Dictionary<string, int> ServiceCount { get; set; }
     public required Dictionary<string, decimal> MonthlyProfit { get; set; }
+    public required Dictionary<string, QuotationData> MonthlyQuotations { get; set; }
+}
+
+public class QuotationData
+{
+    public required int Accepted { get; set; }
+    public required int Rejected { get; set; }
 }

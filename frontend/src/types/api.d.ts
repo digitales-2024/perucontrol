@@ -14,7 +14,10 @@ export interface paths {
         /** Get statistics for dashboard */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    start?: string;
+                    end?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -6824,6 +6827,12 @@ export interface components {
             disinfectant?: string | null;
             termsAndConditions?: Array<string>;
         };
+        QuotationData: {
+            /** Format: int32 */
+            accepted?: number;
+            /** Format: int32 */
+            rejected?: number;
+        };
         /** @enum {unknown} */
         QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
@@ -7075,6 +7084,12 @@ export interface components {
             };
             serviceCount: {
                 [key: string]: number;
+            };
+            monthlyProfit: {
+                [key: string]: number;
+            };
+            monthlyQuotations: {
+                [key: string]: components["schemas"]["QuotationData"];
             };
         };
         StringSegment: {

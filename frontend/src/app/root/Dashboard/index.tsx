@@ -1,35 +1,15 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Activity, Calendar, DollarSign, Users } from "lucide-react";
-import { Bar, BarChart } from "recharts";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
 import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
 import { components } from "@/types/api";
 import { serviceLabelToServiceName } from "./types";
+import { ProfitChart, ProfitChartInput } from "./_ProfitChart";
+import { QuotationChart, QuotationChartData } from "./_QuotationChart";
 
 type StatsData = components["schemas"]["StatsGet"]
-
-const chartConfig = {
-    desktop: {
-        label: "Desktop",
-        color: "#2563eb",
-    },
-    mobile: {
-        label: "Mobile",
-        color: "#60a5fa",
-    },
-} satisfies ChartConfig;
-
-const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
-];
 
 export function Dashboard({ data }: { data: StatsData })
 {
@@ -47,7 +27,7 @@ export function Dashboard({ data }: { data: StatsData })
     return (
         <div>
             <TopMetrics />
-            <Graphics1 />
+            <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
             <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
 
             <hr />
@@ -119,8 +99,19 @@ function TopMetrics()
     );
 }
 
-function Graphics1()
+function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthlyProfit"], quotationData: StatsData["monthlyQuotations"] })
 {
+    const profitData: ProfitChartInput = Object.entries(chartData).map(([month, value]) => ({
+        month,
+        value,
+    }));
+
+    const quotationDataMapped = Object.entries(quotationData).map(([month, { accepted, rejected }]): QuotationChartData => ({
+        month,
+        accepted: accepted!,
+        rejected: rejected!,
+    }));
+
     return (
         <div className="grid grid-cols-2 gap-2 my-2">
             <Card className="p-4">
@@ -134,31 +125,18 @@ function Graphics1()
                     Total de ingresos por cada mes
                 </p>
 
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={chartData}>
-                        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
+                <ProfitChart data={profitData} />
             </Card>
 
             <Card className="p-4">
                 <h3>
-                    Ingresos por mes
-                    <span className="float-right">
-                        <DollarSign />
-                    </span>
+                    Cotizaciones Aceptadas vs Rechazadas
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                    Total de ingresos por cada mes
+                    Comparación de la cantidad de cotizaciones aceptadas y rechazadas
                 </p>
 
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={chartData}>
-                        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
+                <QuotationChart chartData={quotationDataMapped} />
             </Card>
         </div>
     );
