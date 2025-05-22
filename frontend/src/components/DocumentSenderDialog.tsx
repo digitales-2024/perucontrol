@@ -7,17 +7,20 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
-import { Mail, OctagonAlert, PhoneCall, Send } from "lucide-react";
+import { Mail, OctagonAlert, PhoneCall } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastWrapper } from "@/types/toasts";
 import { FetchError } from "@/types/backend";
 import { Result } from "@/utils/result";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 
 type SenderProps = {
+    open: boolean,
+    setOpen: (open: boolean) => void,
     documentName: string,
     startingEmail: string,
     startingNumber: string,
@@ -26,14 +29,14 @@ type SenderProps = {
     whatsappSendAction: (number: string) => Promise<Result<null, FetchError>>
 }
 
-export function DocumentSenderDialog({ documentName, startingEmail, startingNumber, pdfLoadAction, emailSendAction, whatsappSendAction }: SenderProps)
+export function DocumentSenderDialog({ open, setOpen, documentName, startingEmail, startingNumber, pdfLoadAction, emailSendAction, whatsappSendAction }: SenderProps)
 {
-    const [open, setOpen] = useState(false);
     const [email, setEmail] = useState(startingEmail);
     const [phoneNumber, setPhoneNumber] = useState(startingNumber);
     const [error, setError] = useState("");
     const [sending, setSending] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const isMobile = useIsMobile();
 
     useEffect(() =>
     {
@@ -93,27 +96,13 @@ export function DocumentSenderDialog({ documentName, startingEmail, startingNumb
         }
     };
 
-    return (
-        <Dialog onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <div>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="sm:hidden"
-                    >
-                        <Send className="h-4 w-4" />
-                    </Button>
+    if (isMobile)
+    {
+        return <SenderContentMobile open={open} setOpen={setOpen} pdfUrl={pdfUrl} />;
+    }
 
-                    <Button
-                        variant="outline"
-                        className="hidden sm:flex items-center gap-2"
-                    >
-                        <Send className="h-4 w-4" />
-                        Enviar
-                    </Button>
-                </div>
-            </DialogTrigger>
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="w-[90vw] h-[40rem] md:max-w-[60rem]">
                 <DialogHeader>
                     <DialogTitle>
@@ -202,6 +191,43 @@ export function DocumentSenderDialog({ documentName, startingEmail, startingNumb
                 </DialogHeader>
             </DialogContent>
         </Dialog>
+    );
+}
+
+function SenderContentMobile({ open, setOpen, pdfUrl }: { open: boolean, setOpen: (open: boolean) => void, pdfUrl: string | null })
+{
+    return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent>
+                <DrawerHeader className="py-1 px-2 md:p-4">
+                    <DrawerTitle>
+                        Enviar cotización
+                    </DrawerTitle>
+                </DrawerHeader>
+                <div className="grid grid-cols-3 px-2 gap-2">
+                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                        <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
+                    </button>
+                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                        <img className="h-6" src="/icons/gmail.png" alt="Gmail" />
+                    </button>
+                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                        <img className="h-6" src="/icons/printer.png" alt="Imprimir" />
+                    </button>
+                </div>
+
+                {!!pdfUrl ? (
+                    <iframe
+                        src={pdfUrl}
+                        width="100%"
+                        title="PDF Preview"
+                        className="h-[26rem] pdf-viewer"
+                    />
+                ) : (
+                    <Skeleton className="w-full h-[26rem] rounded" />
+                )}
+            </DrawerContent>
+        </Drawer>
     );
 }
 
