@@ -55,7 +55,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
     const isActiveBasedOnParentUrl = pathname === item.url ||
         (pathname.startsWith(item.url) && item.url !== "/");
 
-    const isActiveBasedOnChildUrl = item.items?.some(subItem => subItem.url === pathname) ?? false;
+    const isActiveBasedOnChildUrl = item.items?.some((subItem) => subItem.url === pathname) ?? false;
 
     const isItemActive = isActiveBasedOnParentUrl || isActiveBasedOnChildUrl;
 
@@ -63,7 +63,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
 
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <SidebarMenuButton
                     asChild
                     tooltip={item.title}
