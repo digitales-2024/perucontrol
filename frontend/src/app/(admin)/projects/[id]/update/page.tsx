@@ -1,4 +1,5 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { UpdateClientData } from "./_components/UpdateData";
 
@@ -50,7 +51,33 @@ export default async function ProjectsPage({ params }: Props)
 
     return (
         <>
-            <HeaderPage title="Editar Servicio" description="Editar información general del servicio" />
+            <HeaderPage
+                title="Editar Servicio" description="Editar información general del servicio"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${project.id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Editar Servicio
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
             <UpdateClientData clients={clients} services={services} project={project} />
         </>
     );

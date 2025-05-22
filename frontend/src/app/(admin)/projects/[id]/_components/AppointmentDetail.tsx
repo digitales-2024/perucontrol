@@ -320,6 +320,7 @@ export function AppointmentDetails({
                     Ficha de Operaciones
                 </DocumentButton>
 
+                {/*
                 <Button
                     onClick={() => setDeactivateOpen(true)}
                     variant="destructive"
@@ -327,6 +328,7 @@ export function AppointmentDetails({
                 >
                     Eliminar
                 </Button>
+                */}
             </div>
 
             {/* Diálogos */}

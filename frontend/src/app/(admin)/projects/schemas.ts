@@ -12,9 +12,6 @@ export const clientDataSchema = z.object({
 
     address: z.string().min(1, "La dirección es requerida")
         .max(100, "Máximo 100 caracteres"),
-    representative: z.string().min(1, "El nombre del personal para atención es requerido")
-        .max(100, "Máximo 100 caracteres")
-        .optional(),
     area: z.preprocess(
         (val) => Number(val),
         z
@@ -186,7 +183,6 @@ export const RodentControlFormSchema = z.object({
     correctiveMeasures: z.string().nullable()
         .optional(),
     rodentAreas: z.array(RodentAreaSchema).min(1, "Debe agregar al menos un área"),
-    companyRepresentative: z.string().nullable(),
 });
 
 // Exporta el type de React Hook Form

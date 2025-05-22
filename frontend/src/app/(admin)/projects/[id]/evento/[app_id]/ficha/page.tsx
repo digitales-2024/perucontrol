@@ -23,7 +23,16 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
-    if (projectError)
+    const [appointmentCrumb, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: appId,
+            },
+        },
+    }));
+
+    if (projectError || appointmentError)
     {
         console.error("Error getting project:", projectError);
         return null;
@@ -50,9 +59,16 @@ export default async function ProjectsPage({ params }: Props)
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={`/projects/${id}`}>
+                                <BreadcrumbLink href={`/projects/${appointmentCrumb.project.id}`}>
                                     Servicio #
-                                    {project.projectNumber}
+                                    {appointmentCrumb.project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${appointmentCrumb.project.id}/${appId}`}>
+                                    Fecha #
+                                    {appointment.appointmentNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />

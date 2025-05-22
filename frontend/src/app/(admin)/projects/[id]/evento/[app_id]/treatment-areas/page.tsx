@@ -1,12 +1,12 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { TreatmentAreasForm } from "./_components/TreatmentAreas";
 
 interface Props {
-  params: Promise<{
-      app_id: string
-  }>
+    params: Promise<{
+        app_id: string
+    }>
 }
 
 export default async function ProjectsPage({ params }: Props)
@@ -21,8 +21,22 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
+    const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+        },
+    }));
+    const [treatmentProducts, errorTreatmentProducts] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/TreatmentProduct", {
+        ...auth,
+        params: {
+            path: { appointmentid: appointmentId },
+        },
+    }));
 
-    if (error)
+    if (error || appointmentError)
     {
         console.error("Error getting all products:", error);
         return (
@@ -31,14 +45,6 @@ export default async function ProjectsPage({ params }: Props)
             </div>
         );
     }
-
-    const [treatmentProducts, errorTreatmentProducts] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/TreatmentProduct", {
-        ...auth,
-        params: {
-            path: { appointmentid: appointmentId },
-        },
-    }));
-
     if (errorTreatmentProducts)
     {
         console.error("Error getting treatment products:", errorTreatmentProducts);
@@ -58,8 +64,28 @@ export default async function ProjectsPage({ params }: Props)
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href="/projects">
-                                    Todas las áreas de tratamiento
+                                    Todos los servicios
                                 </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${appointment.project.id}`}>
+                                    Servicio #
+                                    {appointment.project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${appointment.project.id}/${appointmentId}`}>
+                                    Fecha #
+                                    {appointment.appointmentNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Áreas
+                                </BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>

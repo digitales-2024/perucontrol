@@ -62,6 +62,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
             { "{incidencias_encontradas}", rodentRegister.Incidents ?? "" },
             { "{medidas_correctivas}", rodentRegister.CorrectiveMeasures ?? "" },
+            { "{contacto_empresa}", appointment.CompanyRepresentative ?? "" },
             { "{fecha}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
         };
 

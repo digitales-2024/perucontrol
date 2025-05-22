@@ -20,15 +20,10 @@ public class ProjectController(
     LibreOfficeConverterService pdfConverterService,
     WordTemplateService wordTemplateService,
     EmailService emailService,
-    WhatsappService whatsappService,
-    ILogger<ProjectController> logger
+    WhatsappService whatsappService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
-    private readonly ProjectService _projectService = projectService;
-    private readonly LibreOfficeConverterService _pdfConverterService = pdfConverterService;
-    private readonly EmailService _emailService = emailService;
-    private readonly WhatsappService _whatsappService = whatsappService;
 
     [EndpointSummary("Create")]
     [HttpPost]
@@ -37,10 +32,6 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
-        logger.LogInformation(
-            "Creating project with representative: " + createDTO.CompanyRepresentative + "|"
-        );
-
         var (status, msg) = await projectService.CreateProject(createDTO);
         return status switch
         {
@@ -905,7 +896,7 @@ public class ProjectController(
             return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
         }
 
-        var (ok, serviceError) = await _emailService.SendEmailAsync(
+        var (ok, serviceError) = await emailService.SendEmailAsync(
             to: email,
             subject: "Cronograma de Proyecto PDF",
             htmlBody: "",
@@ -937,7 +928,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
@@ -957,7 +948,7 @@ public class ProjectController(
             return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
         }
 
-        await _whatsappService.SendWhatsappServiceMessageAsync(
+        await whatsappService.SendWhatsappServiceMessageAsync(
             fileBytes: pdfBytes,
             contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Assuming this SID is generic for document sending
             fileName: "ficha_operaciones.pdf",
@@ -971,7 +962,7 @@ public class ProjectController(
         Guid id
     )
     {
-        var (excelBytes, error) = await _projectService.GenerateAppointmentScheduleExcel(
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(
             id,
             isPdf: true
         );
@@ -988,7 +979,7 @@ public class ProjectController(
             );
         }
 
-        var (odsBytes, odsErr) = _pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
+        var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
         if (!string.IsNullOrEmpty(odsErr))
         {
             return (null, $"Error convirtiendo a ODS: {odsErr}");
@@ -998,7 +989,7 @@ public class ProjectController(
             return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
         }
 
-        var (pdfBytes, pdfErr) = _pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, $"Error convirtiendo a PDF: {pdfErr}");

@@ -1,6 +1,3 @@
-/* Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
 @import 'tailwindcss';
 @plugin 'tailwindcss-animate';
 @custom-variant dark (&:is(.dark *));
@@ -192,7 +189,7 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter_', 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
+  font-family: 'GeoSlab703_', 'Swiss 721 Condensed', sans-serif;
 }
 
 /*---break---*/
