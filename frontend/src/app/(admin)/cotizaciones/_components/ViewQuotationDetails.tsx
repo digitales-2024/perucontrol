@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-    ArrowLeft,
     Calendar,
     CheckCircle2,
     Clock,
@@ -25,6 +24,7 @@ import {
     Check,
     X,
     Copy,
+    Send,
 } from "lucide-react";
 import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
 import { components } from "@/types/api";
@@ -36,6 +36,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
     const { id: quotationId } = useParams();
     const router = useRouter();
     const [showClientDetails, setShowClientDetails] = useState(false);
+    const [sendOpen, setSendOpen] = useState(false);
 
     const getStatusBadge = (status: string) =>
     {
@@ -90,13 +91,8 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
         }
     };
 
-    const handleGoBack = () =>
-    {
-        router.back();
-    };
-
     return (
-        <div className="container mx-auto p-4 space-y-6">
+        <div className="container mx-auto md:p-4 p-0 space-y-6">
 
             {/* Tarjeta principal de información */}
             <Card>
@@ -123,7 +119,29 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                         <div className="flex flex-wrap items-center justify-evenly space-x-2 gap-1">
                             {quotation.isActive && (
                                 <>
+                                    <div>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="sm:hidden"
+                                            onClick={() => setSendOpen(true)}
+                                        >
+                                            <Send className="h-4 w-4" />
+                                        </Button>
+
+                                        <Button
+                                            variant="outline"
+                                            className="hidden sm:flex items-center gap-2"
+                                            onClick={() => setSendOpen(true)}
+                                        >
+                                            <Send className="h-4 w-4" />
+                                            Enviar
+                                        </Button>
+                                    </div>
+
                                     <DocumentSenderDialog
+                                        open={sendOpen}
+                                        setOpen={setSendOpen}
                                         documentName="Cotización"
                                         startingEmail={quotation.client.email}
                                         startingNumber={quotation.client.phoneNumber}
@@ -479,14 +497,6 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Botones de acción para móvil en la parte inferior */}
-            <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-background border-t p-4 flex justify-between">
-                <Button variant="outline" onClick={handleGoBack} className="flex-1">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
-                </Button>
-            </div>
 
             {/* Modales y diálogos */}
             {quotation.client && (

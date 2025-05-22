@@ -12,6 +12,7 @@ import {
     FileText,
     MapPin,
     Save,
+    Send,
     X,
 } from "lucide-react";
 import { parseISO } from "date-fns";
@@ -27,6 +28,7 @@ import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
 import { GenerateCertificateWord, GenerateCertificatePDF, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
+import { useState } from "react";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -41,6 +43,7 @@ export function DownloadCertificateForm({
 })
 {
     const router = useRouter();
+    const [sendOpen, setSendOpen] = useState(false);
 
     const serviceNames = project.services.map((service) => service.name);
     const certificateNumber = appointment.certificateNumber?.toString(10).padStart(3, "0") ?? "";
@@ -513,14 +516,34 @@ export function DownloadCertificateForm({
                         Guardar
                     </Button>
 
-                    <DocumentSenderDialog
-                        documentName="Certificado"
-                        startingEmail={project.client?.email ?? ""}
-                        startingNumber={project.client.phoneNumber}
-                        pdfLoadAction={async() => GenerateCertificatePDF(appointment.id!)}
-                        emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)}
-                        whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)}
-                    />
+                    <div>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="sm:hidden"
+                            onClick={() => setSendOpen(true)}
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="hidden sm:flex items-center gap-2"
+                            onClick={() => setSendOpen(true)}
+                        >
+                            <Send className="h-4 w-4" />
+                            Enviar
+                        </Button>
+                        <DocumentSenderDialog
+                            open={sendOpen}
+                            setOpen={setSendOpen}
+                            documentName="Certificado"
+                            startingEmail={project.client?.email ?? ""}
+                            startingNumber={project.client.phoneNumber}
+                            pdfLoadAction={async() => GenerateCertificatePDF(appointment.id!)}
+                            emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)}
+                            whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)}
+                        />
+                    </div>
 
                     <Button
                         type="button"

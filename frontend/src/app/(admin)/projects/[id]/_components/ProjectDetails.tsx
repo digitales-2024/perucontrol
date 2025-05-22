@@ -18,6 +18,7 @@ import {
     Edit,
     FileSpreadsheet,
     MapPin,
+    Send,
     Shield,
     User,
     XCircle,
@@ -84,6 +85,7 @@ export function ProjectDetails({
         field?: string;
     } | null>(null);
     const [selectedServices, setSelectedServices] = useState<Array<string>>([]);
+    const [sendOpen, setSendOpen] = useState(false);
     void setNewDate;
 
     // Ordenar las citas por fecha
@@ -514,7 +516,28 @@ export function ProjectDetails({
                                         Exportar cronograma estándar
                                     </h4>
                                     <div className="flex flex-wrap gap-4">
+                                        <div>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="sm:hidden"
+                                                onClick={() => setSendOpen(true)}
+                                            >
+                                                <Send className="h-4 w-4" />
+                                            </Button>
+
+                                            <Button
+                                                variant="outline"
+                                                className="hidden sm:flex items-center gap-2"
+                                                onClick={() => setSendOpen(true)}
+                                            >
+                                                <Send className="h-4 w-4" />
+                                                Enviar
+                                            </Button>
+                                        </div>
                                         <DocumentSenderDialog
+                                            open={sendOpen}
+                                            setOpen={setSendOpen}
                                             documentName="Cronograma"
                                             startingEmail={""}
                                             startingNumber={""}

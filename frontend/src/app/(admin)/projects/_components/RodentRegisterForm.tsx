@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "lucide-react";
+import { Save, Send } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { components } from "@/types/api";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import { toastWrapper } from "@/types/toasts";
 import { RodentControlFormSchema, RodentControlFormValues } from "../schemas";
 import { GenerateRodentExcel, GenerateRodentsPDF, SaveRodentData, SendRodentPDFViaEmail, SendRodentPDFViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
+import { useState } from "react";
 
 export function RodentControlForm({
     project,
@@ -28,6 +29,7 @@ export function RodentControlForm({
 })
 {
     const router = useRouter();
+    const [sendOpen, setSendOpen] = useState(false);
 
     const form = useForm<RodentControlFormValues>({
         resolver: zodResolver(RodentControlFormSchema),
@@ -464,14 +466,34 @@ export function RodentControlForm({
                             <Save className="h-4 w-4" />
                             Guardar
                         </Button>
-                        <DocumentSenderDialog
-                            documentName="Registro de Roedores"
-                            startingEmail={project.client?.email ?? ""}
-                            startingNumber={project.client?.phoneNumber ?? ""}
-                            pdfLoadAction={async() => GenerateRodentsPDF(appointment.id!)}
-                            emailSendAction={async(email: string) => SendRodentPDFViaEmail(appointment.id!, email)}
-                            whatsappSendAction={async(number: string) => SendRodentPDFViaWhatsapp(appointment.id!, number)}
-                        />
+                        <div>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="sm:hidden"
+                                onClick={() => setSendOpen(true)}
+                            >
+                                <Send className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="hidden sm:flex items-center gap-2"
+                                onClick={() => setSendOpen(true)}
+                            >
+                                <Send className="h-4 w-4" />
+                                Enviar
+                            </Button>
+                            <DocumentSenderDialog
+                                open={sendOpen}
+                                setOpen={setSendOpen}
+                                documentName="Registro de Roedores"
+                                startingEmail={project.client?.email ?? ""}
+                                startingNumber={project.client?.phoneNumber ?? ""}
+                                pdfLoadAction={async() => GenerateRodentsPDF(appointment.id!)}
+                                emailSendAction={async(email: string) => SendRodentPDFViaEmail(appointment.id!, email)}
+                                whatsappSendAction={async(number: string) => SendRodentPDFViaWhatsapp(appointment.id!, number)}
+                            />
+                        </div>
                         <Button
                             type="button"
                             className="bg-red-700 hover:bg-red-800 flex items-center gap-2 px-6 py-2"
