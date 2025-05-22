@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -36,6 +35,8 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
     const [error, setError] = useState("");
     const [sending, setSending] = useState(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [openWhatsapp, setOpenWhatsapp] = useState(false);
+    const [openGmail, setOpenGmail] = useState(false);
     const isMobile = useIsMobile();
 
     useEffect(() =>
@@ -96,105 +97,158 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
         }
     };
 
-    if (isMobile)
-    {
-        return <SenderContentMobile open={open} setOpen={setOpen} pdfUrl={pdfUrl} />;
-    }
-
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="w-[90vw] h-[40rem] md:max-w-[60rem]">
-                <DialogHeader>
+        <>
+            {isMobile ? (
+                <SenderContentMobile
+                    open={open} setOpen={setOpen} pdfUrl={pdfUrl}
+                    openWhatsapp={() => setOpenWhatsapp(true)}
+                    openGmail={() => setOpenGmail(true)}
+                />
+            ) : (
+
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogContent className="w-[90vw] h-[40rem] md:max-w-[60rem] max-h-[90vh]">
+                        <DialogHeader>
+                            <DialogTitle className="grid grid-cols-2 items-center gap-2">
+                                <span>
+
+                                    Enviar
+                                    {" "}
+                                    {documentName}
+                                </span>
+                                <div className="flex items-center justify-end px-2 gap-2">
+                                    <button
+                                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                        onClick={() => setOpenWhatsapp(true)}
+                                    >
+                                        <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
+                                    </button>
+                                    <button
+                                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                        onClick={() => setOpenGmail(true)}
+                                    >
+                                        <img className="h-6" src="/icons/gmail.png" alt="Gmail" />
+                                    </button>
+                                    {/*
+                                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2">
+                                        <img className="h-6" src="/icons/printer.png" alt="Imprimir" />
+                                    </button>
+                                    */}
+                                </div>
+                            </DialogTitle>
+
+                            {!!pdfUrl ? (
+                                <iframe
+                                    src={pdfUrl}
+                                    width="100%"
+                                    title="PDF Preview"
+                                    className="inline-block h-[26rem] pdf-viewer"
+                                />
+                            ) : (
+                                <Skeleton className="w-full h-[26rem] rounded" />
+                            )}
+
+                            {error && (
+                                <div className="text-red-500 flex items-center gap-2">
+                                    <OctagonAlert />
+                                    Error:
+                                    {" "}
+                                    {error}
+                                </div>
+                            )}
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
+            )}
+            <Dialog open={openWhatsapp} onOpenChange={setOpenWhatsapp}>
+                <DialogContent>
                     <DialogTitle>
-                        Enviar
-                        {" "}
-                        {documentName}
+                        Enviar por Whatsapp
                     </DialogTitle>
-                    <DialogDescription>
-                        Enviar
-                        {" "}
-                        {documentName}
-                        {" "}
-                        en PDF por Correo o Whatsapp.
-                    </DialogDescription>
-
-                    {!!pdfUrl ? (
-                        <iframe
-                            src={pdfUrl}
-                            width="100%"
-                            title="PDF Preview"
-                            className="h-[26rem] pdf-viewer"
-                        />
-                    ) : (
-                        <Skeleton className="w-full h-[26rem] rounded" />
-                    )}
-
                     <form
-                        className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2"
-                        onSubmit={(e) =>
-                        {
-                            e.preventDefault();
-                            sendEmail();
-                        }}
-                    >
-                        <Mail />
-                        <span>
-                            Enviar por correo a:
-                        </span>
-                        <Input
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="correo@ejemplo.com"
-                        />
-                        <Button
-                            type="submit"
-                            disabled={sending}
-                        >
-                            <Mail />
-                            Enviar
-                        </Button>
-                    </form>
-                    <form
-                        className="grid grid-cols-[1.25rem_10rem_auto_5rem] items-center gap-2"
+                        className="grid gap-2"
                         onSubmit={(e) =>
                         {
                             e.preventDefault();
                             sendWhatsapp();
                         }}
                     >
-                        <PhoneCall />
-                        <span>
-                            Enviar por WhatsApp a:
-                        </span>
-                        <Input
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            placeholder="correo@ejemplo.com"
-                        />
-                        <Button
-                            type="submit"
-                            className="bg-green-600 text-white hover:bg-green-500"
-                            disabled={sending}
-                        >
-                            <PhoneCall />
-                            Enviar
-                        </Button>
-                    </form>
-                    {error && (
-                        <div className="text-red-500 flex items-center gap-2">
-                            <OctagonAlert />
-                            Error:
-                            {" "}
-                            {error}
+                        <div className="flex items-center gap-2">
+                            <span>
+                                +51
+                            </span>
+                            <Input
+                                type="number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                required
+                                placeholder=""
+                            />
                         </div>
-                    )}
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+                        <div className="text-right">
+                            <Button
+                                type="submit"
+                                className="bg-green-600 text-white hover:bg-green-500"
+                                disabled={sending}
+                            >
+                                <PhoneCall />
+                                Enviar
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={openGmail} onOpenChange={setOpenGmail}>
+                <DialogContent>
+                    <DialogTitle>
+                        Enviar por Gmail
+                    </DialogTitle>
+                    <form
+                        className="grid gap-2"
+                        onSubmit={(e) =>
+                        {
+                            e.preventDefault();
+                            sendEmail();
+                        }}
+                    >
+                        <div className="flex items-center gap-2">
+                            <Input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="correo@ejemplo.com"
+                            />
+                        </div>
+                        <div className="text-right">
+                            <Button
+                                type="submit"
+                                disabled={sending}
+                            >
+                                <Mail />
+                                Enviar
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
 
-function SenderContentMobile({ open, setOpen, pdfUrl }: { open: boolean, setOpen: (open: boolean) => void, pdfUrl: string | null })
+function SenderContentMobile({
+    open,
+    setOpen,
+    pdfUrl,
+    openWhatsapp,
+    openGmail,
+}: {
+    open: boolean,
+    setOpen: (open: boolean) => void,
+    pdfUrl: string | null,
+    openWhatsapp: () => void
+    openGmail: () => void
+})
 {
     return (
         <Drawer open={open} onOpenChange={setOpen}>
@@ -205,15 +259,23 @@ function SenderContentMobile({ open, setOpen, pdfUrl }: { open: boolean, setOpen
                     </DrawerTitle>
                 </DrawerHeader>
                 <div className="grid grid-cols-3 px-2 gap-2">
-                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                    <button
+                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1"
+                        onClick={openWhatsapp}
+                    >
                         <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
                     </button>
-                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                    <button
+                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1"
+                        onClick={openGmail}
+                    >
                         <img className="h-6" src="/icons/gmail.png" alt="Gmail" />
                     </button>
-                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1">
+                    {/*
+                    <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2">
                         <img className="h-6" src="/icons/printer.png" alt="Imprimir" />
                     </button>
+                    */}
                 </div>
 
                 {!!pdfUrl ? (
@@ -230,4 +292,3 @@ function SenderContentMobile({ open, setOpen, pdfUrl }: { open: boolean, setOpen
         </Drawer>
     );
 }
-
