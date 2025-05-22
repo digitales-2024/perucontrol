@@ -109,44 +109,45 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
 
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogContent className="w-[90vw] h-[40rem] md:max-w-[60rem] max-h-[90vh]">
-                        <DialogHeader>
-                            <DialogTitle className="grid grid-cols-2 items-center gap-2">
-                                <span>
-
-                                    Enviar
-                                    {" "}
-                                    {documentName}
-                                </span>
-                                <div className="flex items-center justify-end px-2 gap-2">
-                                    <button
-                                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
-                                        onClick={() => setOpenWhatsapp(true)}
-                                    >
-                                        <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
-                                    </button>
-                                    <button
-                                        className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
-                                        onClick={() => setOpenGmail(true)}
-                                    >
-                                        <img className="h-6" src="/icons/gmail.png" alt="Gmail" />
-                                    </button>
-                                    {/*
+                        <div className="grid grid-rows-[3rem_auto_2rem]">
+                            <DialogHeader>
+                                <DialogTitle className="grid grid-cols-2 items-center gap-2">
+                                    <span>
+                                        Enviar
+                                        {" "}
+                                        {documentName}
+                                    </span>
+                                    <div className="flex items-center justify-end px-2 gap-2">
+                                        <button
+                                            className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                            onClick={() => setOpenWhatsapp(true)}
+                                        >
+                                            <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
+                                        </button>
+                                        <button
+                                            className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                            onClick={() => setOpenGmail(true)}
+                                        >
+                                            <img className="h-6" src="/icons/gmail.png" alt="Gmail" />
+                                        </button>
+                                        {/*
                                     <button className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2">
                                         <img className="h-6" src="/icons/printer.png" alt="Imprimir" />
                                     </button>
                                     */}
-                                </div>
-                            </DialogTitle>
+                                    </div>
+                                </DialogTitle>
+                            </DialogHeader>
 
                             {!!pdfUrl ? (
                                 <iframe
                                     src={pdfUrl}
                                     width="100%"
                                     title="PDF Preview"
-                                    className="inline-block h-[26rem] pdf-viewer"
+                                    className="inline-block h-full pdf-viewer"
                                 />
                             ) : (
-                                <Skeleton className="w-full h-[26rem] rounded" />
+                                <Skeleton className="w-full  rounded" />
                             )}
 
                             {error && (
@@ -157,10 +158,11 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
                                     {error}
                                 </div>
                             )}
-                        </DialogHeader>
+                        </div>
                     </DialogContent>
-                </Dialog>
-            )}
+                </Dialog >
+            )
+            }
             <Dialog open={openWhatsapp} onOpenChange={setOpenWhatsapp}>
                 <DialogContent>
                     <DialogTitle>

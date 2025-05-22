@@ -4,7 +4,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bug, BugOff, BugPlay, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
+import { Bug, BugOff, BugPlay, CalendarIcon, CircleUser, ClipboardList, Download, Droplets, FileDigit, Hash, LandPlot, LightbulbIcon, ListCheck, MilkOff, MousePointer2, Rat, Save, Send, SprayCan, SprayCanIcon, Users, X } from "lucide-react";
 import { parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { downloadProjectSchema, type DownloadProjectSchema } from "../schemas";
@@ -18,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { components } from "@/types/api";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 
 type ProjectSummarySingle = components["schemas"]["ProjectSummarySingle"];
@@ -44,6 +44,8 @@ export function DownloadProjectForm({
 })
 {
     const router = useRouter();
+    const [sendOpen, setSendOpen] = useState(false);
+
     const serviceNames = project.services.map((service) => service.name);
     // const serviceNames = appointment.servicesIds.map((service) => service);
     const operationSheet = appointment.projectOperationSheet;
@@ -1110,14 +1112,34 @@ export function DownloadProjectForm({
                         Volver
                     </Button>
 
-                    <DocumentSenderDialog
-                        documentName="Ficha de Operaciones"
-                        startingEmail={project.client.email}
-                        startingNumber={project.client.phoneNumber}
-                        pdfLoadAction={async() => GenerateOperationSheetPDF(appointment.id!)}
-                        emailSendAction={async(d) => SendOperationSheetPDFViaEmail(appointment.id!, d)}
-                        whatsappSendAction={async(d) => SendOperationSheetPDFViaWhatsapp(appointment.id!, d)}
-                    />
+                    <div>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="sm:hidden"
+                            onClick={() => setSendOpen(true)}
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="hidden sm:flex items-center gap-2"
+                            onClick={() => setSendOpen(true)}
+                        >
+                            <Send className="h-4 w-4" />
+                            Enviar
+                        </Button>
+                        <DocumentSenderDialog
+                            open={sendOpen}
+                            setOpen={setSendOpen}
+                            documentName="Ficha de Operaciones"
+                            startingEmail={project.client.email}
+                            startingNumber={project.client.phoneNumber}
+                            pdfLoadAction={async() => GenerateOperationSheetPDF(appointment.id!)}
+                            emailSendAction={async(d) => SendOperationSheetPDFViaEmail(appointment.id!, d)}
+                            whatsappSendAction={async(d) => SendOperationSheetPDFViaWhatsapp(appointment.id!, d)}
+                        />
+                    </div>
                     <Button
                         type="button"
                         onClick={async() =>
