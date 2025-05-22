@@ -1,3 +1,6 @@
+/* Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @import 'tailwindcss';
 @plugin 'tailwindcss-animate';
 @custom-variant dark (&:is(.dark *));
@@ -55,10 +58,6 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-}
-
-html, body {
-  font-size: 22px;
 }
 
 @layer base {
@@ -186,10 +185,14 @@ html, body {
   }
 }
 
+html, body {
+  font-size: 20px;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
+  font-family: 'Inter_', 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
 }
 
 /*---break---*/

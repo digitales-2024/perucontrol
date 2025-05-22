@@ -52,8 +52,12 @@ export function NavMain({
 function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
     // Check if this item or any of its subitems is active
-    const isItemActive = pathname === item.url ||
+    const isActiveBasedOnParentUrl = pathname === item.url ||
         (pathname.startsWith(item.url) && item.url !== "/");
+
+    const isActiveBasedOnChildUrl = item.items?.some(subItem => subItem.url === pathname) ?? false;
+
+    const isItemActive = isActiveBasedOnParentUrl || isActiveBasedOnChildUrl;
 
     const [expandOpen, setExpandOpen] = useState(isItemActive);
 
