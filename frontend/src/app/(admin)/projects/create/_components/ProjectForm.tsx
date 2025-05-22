@@ -96,7 +96,6 @@ export function ProjectForm({ clients, services, quotations }: ProjectFormProps)
                 services: data.services,
                 address: data.address,
                 area: data.area,
-                companyRepresentative: data.representative,
                 spacesCount: data.spacesCount,
                 price: data.price,
                 ambients: data.ambients,
