@@ -16,12 +16,13 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
+import { cn } from "@/lib/utils";
 
 interface ViewClientDetailsProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  client: components["schemas"]["Client"]
-  showTrigger?: boolean
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    client: components["schemas"]["Client"]
+    showTrigger?: boolean
 }
 
 export function ViewClientDetails({ open, onOpenChange, client, showTrigger = true }: ViewClientDetailsProps)
@@ -62,8 +63,8 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                         {triggerContent}
                     </DialogTrigger>
                 )}
-                <DialogContent className="sm:max-w-[650px] md:max-w-[750px] p-0">
-                    <div className="p-4 sm:p-6">
+                <DialogContent className={cn("sm:max-w-[650px] md:max-w-[750px] p-0")}>
+                    <div className="p-1 sm:p-2">
                         <div className="flex justify-between items-center mb-4">
                             <DialogTitle className="text-xl font-bold flex items-center">
                                 <User className="h-6 w-6 mr-2 text-blue-500" />

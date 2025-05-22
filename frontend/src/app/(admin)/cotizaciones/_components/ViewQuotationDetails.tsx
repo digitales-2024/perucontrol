@@ -221,7 +221,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                     </div>
                 </CardHeader>
 
-                <CardContent>
+                <CardContent className="grid gap-4">
                     {/* Información del cliente */}
                     <div className="space-y-2 mt-4">
                         <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">

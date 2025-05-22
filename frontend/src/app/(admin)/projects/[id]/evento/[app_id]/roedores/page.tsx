@@ -22,20 +22,14 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
-
-    if (projectError)
-    {
-        console.error("Error getting project:", projectError);
-        return null;
-    }
-
-    const appointment = project.appointments.find((app) => app.id === appId);
-    if (appointment === undefined)
-    {
-        console.error("Error getting project:", projectError);
-        return null;
-    }
-
+    const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: appId,
+            },
+        },
+    }));
     const [rodent, rodentError] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/rodent", {
         ...auth,
         params: {
@@ -45,6 +39,17 @@ export default async function ProjectsPage({ params }: Props)
         },
     }));
 
+    if (projectError || appointmentError)
+    {
+        console.error("Error getting project:", projectError);
+        return null;
+    }
+    const appointmentData = project.appointments.find((app) => app.id === appId);
+    if (appointmentData === undefined)
+    {
+        console.error("Error getting project:", projectError);
+        return null;
+    }
     if (rodentError)
     {
         console.error("Error getting rodent:", projectError);
@@ -65,9 +70,16 @@ export default async function ProjectsPage({ params }: Props)
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={`/projects/${id}`}>
+                                <BreadcrumbLink href={`/projects/${appointment.project.id}`}>
                                     Servicio #
-                                    {project.projectNumber}
+                                    {appointment.project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${appointment.project.id}/${appId}`}>
+                                    Fecha #
+                                    {appointment.appointmentNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
@@ -80,7 +92,7 @@ export default async function ProjectsPage({ params }: Props)
                     </Breadcrumb>
                 )}
             />
-            <RoedoresForm project={project} appointment={appointment} rodent={rodent} />
+            <RoedoresForm project={project} appointment={appointmentData} rodent={rodent} />
         </>
     );
 }
