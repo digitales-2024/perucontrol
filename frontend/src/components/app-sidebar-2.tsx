@@ -16,11 +16,10 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuItem,
+    SidebarRail,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { components } from "@/types/api";
+import Link from "next/link";
 
 const data = {
     navMain: [
@@ -31,7 +30,7 @@ const data = {
         },
         {
             title: "Clientes",
-            url: "/clients",
+            url: "#",
             icon: Users,
             items: [
                 {
@@ -46,7 +45,7 @@ const data = {
         },
         {
             title: "Cotizaciones",
-            url: "/cotizaciones",
+            url: "#",
             icon: HandCoins,
             items: [
                 {
@@ -61,7 +60,7 @@ const data = {
         },
         {
             title: "Servicios",
-            url: "/projects",
+            url: "#",
             icon: BugOff,
             items: [
                 {
@@ -84,7 +83,7 @@ const data = {
         },
         {
             title: "Ajustes",
-            url: "/business",
+            url: "#",
             icon: Settings2,
             items: [
                 {
@@ -105,23 +104,19 @@ type User = components["schemas"]["UserReturn"]
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & { user: User })
 {
     return (
-        <Sidebar variant="inset" {...props}>
+        <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <Link href="/" className="my-2">
-                            <div className="text-center w-full">
-                                <img
-                                    className="inline-block"
-                                    alt="Logo"
-                                    src="/logo_perucontrol_com_fondo.plain.svg"
-                                    width={160}
-                                    height={160}
-                                />
-                            </div>
-                        </Link>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <Link href="/" className="my-2">
+                    <div className="text-center w-full">
+                        <img
+                            className="inline-block"
+                            alt="Logo"
+                            src="/logo_perucontrol_com_fondo.plain.svg"
+                            width={160}
+                            height={160}
+                        />
+                    </div>
+                </Link>
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
@@ -129,6 +124,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
             <SidebarFooter>
                 <NavUser user={props.user} />
             </SidebarFooter>
+            <SidebarRail />
         </Sidebar>
     );
 }
+

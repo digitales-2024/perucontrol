@@ -52,14 +52,18 @@ export function NavMain({
 function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
     // Check if this item or any of its subitems is active
-    const isItemActive = pathname === item.url ||
+    const isActiveBasedOnParentUrl = pathname === item.url ||
         (pathname.startsWith(item.url) && item.url !== "/");
+
+    const isActiveBasedOnChildUrl = item.items?.some((subItem) => subItem.url === pathname) ?? false;
+
+    const isItemActive = isActiveBasedOnParentUrl || isActiveBasedOnChildUrl;
 
     const [expandOpen, setExpandOpen] = useState(isItemActive);
 
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <SidebarMenuButton
                     asChild
                     tooltip={item.title}
