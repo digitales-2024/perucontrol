@@ -12,9 +12,9 @@ pipeline {
         //
         // VPS setup
         //
-        REMOTE_USER = "fernando"
-        REMOTE_IP = credentials("fernando-hetzner-hel-01-ip")
-        REMOTE_FOLDER = "/home/fernando/services/acide/perucontrol/"
+        REMOTE_USER = "docker_admin"
+        REMOTE_IP = "116.203.105.37"
+        REMOTE_FOLDER = "/opt/docker/compose/projects/${PROJECT_NAME}-${PROJECT_STAGE}"
 
         //
         // Docker registry setup
@@ -28,8 +28,8 @@ pipeline {
 
         // SSH command
         SSH_COM = "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
+        SSH_CRED = "ssh-id_docker_admin"
     }
-
     stages {
         stage("Build & push image") {
             steps {
@@ -58,7 +58,7 @@ pipeline {
                     }
 
                     withCredentials(credentialsList) {
-                        sshagent(['hetzner-helsink-01']) {
+                        sshagent([SSH_CRED]) {
                             // Create a temporary script that will create the .env file
                             // This enables us to use shell variables to properly handle 
                             // the credentials without using binding.getVariable()
