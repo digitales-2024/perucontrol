@@ -280,9 +280,7 @@ export async function DesactivateAppointment(
         ...auth,
         params: {
             path: {
-
                 proj_id: projId,
-
                 app_id: appId,
             },
         },
@@ -659,5 +657,28 @@ export async function SendOperationSheetPDFViaWhatsapp(appointmentId: string, ph
         console.error("Error sending operation sheet PDF via WhatsApp:", error);
         return err(error);
     }
+    return ok(null);
+}
+
+export async function DuplicateFromPreviousAppointment(appointmentId: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/duplicate-from-previous", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.error("Error duplicating from previous appointment:", error);
+        return err(error);
+    }
+
+    // Revalidate to refresh the data after duplication
+    revalidatePath("/(admin)/projects", "layout");
+
     return ok(null);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle } from "lucide-react";
+import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DocumentButton } from "./DocumentButton";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
@@ -10,7 +10,7 @@ import { components } from "@/types/api";
 import { AppointmentForTable } from "./ProjectDetails";
 import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
-import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes } from "../../actions";
+import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes, DuplicateFromPreviousAppointment } from "../../actions";
 import { MurinoMapSection } from "./MurinoMapSection";
 import { TreatmentSummary } from "./TreatmentSummary";
 import { ReportsList } from "./ReportsList";
@@ -104,14 +104,37 @@ export function AppointmentDetails({
         );
     }
 
+    async function DuplicateFromPrevious()
+    {
+        await toastWrapper(
+            DuplicateFromPreviousAppointment(appointment.id!),
+            {
+                success: "Datos duplicados exitosamente desde la fecha anterior",
+                loading: "Duplicando datos...",
+            },
+        );
+    }
+
     return (
         <div className="bg-white rounded-lg shadow p-6 space-y-6 mt-5">
             {/* Número de cita */}
             <div className="border-b pb-4">
-                <h2 className="text-xl font-semibold">
-                    Cita #
-                    {appointment.appointmentNumber ?? "N/A"}
-                </h2>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">
+                        Fecha #
+                        {appointment.appointmentNumber ?? "N/A"}
+                    </h2>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={DuplicateFromPrevious}
+                        disabled={appointment.cancelled}
+                        className="flex items-center gap-2"
+                    >
+                        <Copy className="h-4 w-4" />
+                        Duplicar de fecha anterior
+                    </Button>
+                </div>
             </div>
 
             {/* Fechas */}
