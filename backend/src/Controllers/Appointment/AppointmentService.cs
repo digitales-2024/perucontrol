@@ -162,43 +162,51 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
     public async Task<Result<string>> DuplicateFromPreviousAppointment(Guid appointmentId)
     {
         // Get the target appointment (the one we want to populate)
-        var targetAppointment = await db.ProjectAppointments
-            .Include(a => a.Project)
+        var targetAppointment = await db
+            .ProjectAppointments.Include(a => a.Project)
             .Include(a => a.Services)
             .Include(a => a.ProjectOperationSheet)
             .Include(a => a.RodentRegister)
-                .ThenInclude(r => r.RodentAreas)
+            .ThenInclude(r => r.RodentAreas)
             .Include(a => a.Certificate)
             .Include(a => a.TreatmentProducts)
-                .ThenInclude(tp => tp.Product)
+            .ThenInclude(tp => tp.Product)
             .Include(a => a.TreatmentProducts)
-                .ThenInclude(tp => tp.ProductAmountSolvent)
+            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-                .ThenInclude(ta => ta.TreatmentProducts)
             .FirstOrDefaultAsync(a => a.Id == appointmentId);
 
         if (targetAppointment == null)
             return new NotFoundResult<string>("No se encontró la cita especificada.");
 
-        // Find the previous appointment in the same project, ordered by DueDate
-        var previousAppointment = await db.ProjectAppointments
-            .Where(a => a.Project.Id == targetAppointment.Project.Id && a.DueDate < targetAppointment.DueDate)
-            .Include(a => a.Services)
+        // Get the previous appointment in the same project (ordered by DueDate)
+        var previousAppointment = await db
+            .ProjectAppointments.Include(a => a.Services)
             .Include(a => a.ProjectOperationSheet)
             .Include(a => a.RodentRegister)
-                .ThenInclude(r => r.RodentAreas)
+            .ThenInclude(r => r.RodentAreas)
             .Include(a => a.Certificate)
             .Include(a => a.TreatmentProducts)
-                .ThenInclude(tp => tp.Product)
+            .ThenInclude(tp => tp.Product)
             .Include(a => a.TreatmentProducts)
-                .ThenInclude(tp => tp.ProductAmountSolvent)
+            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-                .ThenInclude(ta => ta.TreatmentProducts)
+            .Include(a => a.CompleteReport)
+            .Include(a => a.Report1)
+            .Include(a => a.Report2)
+            .Include(a => a.Report3)
+            .Include(a => a.Report4)
+            .Where(a =>
+                a.Project.Id == targetAppointment.Project.Id
+                && a.DueDate < targetAppointment.DueDate
+            )
             .OrderByDescending(a => a.DueDate)
             .FirstOrDefaultAsync();
 
         if (previousAppointment == null)
-            return new NotFoundResult<string>("No se encontró una cita anterior en este proyecto para duplicar.");
+            return new NotFoundResult<string>(
+                "No se encontró una cita anterior en este proyecto para duplicar."
+            );
 
         using var transaction = await db.Database.BeginTransactionAsync();
         try
@@ -210,90 +218,125 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                 targetAppointment.Services.Add(service);
             }
 
-            // 2. Duplicate ProjectOperationSheet
+            // 2. Remove existing data first
+            if (targetAppointment.ProjectOperationSheet != null)
+            {
+                db.Remove(targetAppointment.ProjectOperationSheet);
+            }
+
+            if (targetAppointment.RodentRegister != null)
+            {
+                var existingAreas = await db
+                    .RodentAreas.Where(ra =>
+                        ra.RodentRegister.ProjectAppointmentId == targetAppointment.Id
+                    )
+                    .ToListAsync();
+                db.RemoveRange(existingAreas);
+                db.Remove(targetAppointment.RodentRegister);
+            }
+
+            if (targetAppointment.Certificate != null)
+            {
+                db.Remove(targetAppointment.Certificate);
+            }
+
+            var existingTreatmentProducts = await db
+                .TreatmentProducts.Where(tp => tp.ProjectAppointment.Id == targetAppointment.Id)
+                .ToListAsync();
+            db.RemoveRange(existingTreatmentProducts);
+
+            var existingTreatmentAreas = await db
+                .TreatmentAreas.Where(ta => ta.ProjectAppointment.Id == targetAppointment.Id)
+                .ToListAsync();
+            db.RemoveRange(existingTreatmentAreas);
+
+            // 3. Duplicate ProjectOperationSheet
             if (previousAppointment.ProjectOperationSheet != null)
             {
                 var newOperationSheet = new ProjectOperationSheet
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    ProjectAppointment = targetAppointment,
-                    OperationDate = targetAppointment.DueDate, // Use target's due date
+                    OperationDate = previousAppointment.ProjectOperationSheet.OperationDate, // Keep original date
                     TreatedAreas = previousAppointment.ProjectOperationSheet.TreatedAreas,
                     Insects = previousAppointment.ProjectOperationSheet.Insects,
                     Rodents = previousAppointment.ProjectOperationSheet.Rodents,
-                    RodentConsumptionPartial = previousAppointment.ProjectOperationSheet.RodentConsumptionPartial,
-                    RodentConsumptionTotal = previousAppointment.ProjectOperationSheet.RodentConsumptionTotal,
-                    RodentConsumptionDeteriorated = previousAppointment.ProjectOperationSheet.RodentConsumptionDeteriorated,
-                    RodentConsumptionNone = previousAppointment.ProjectOperationSheet.RodentConsumptionNone,
+                    RodentConsumptionPartial = previousAppointment
+                        .ProjectOperationSheet
+                        .RodentConsumptionPartial,
+                    RodentConsumptionTotal = previousAppointment
+                        .ProjectOperationSheet
+                        .RodentConsumptionTotal,
+                    RodentConsumptionDeteriorated = previousAppointment
+                        .ProjectOperationSheet
+                        .RodentConsumptionDeteriorated,
+                    RodentConsumptionNone = previousAppointment
+                        .ProjectOperationSheet
+                        .RodentConsumptionNone,
                     OtherPlagues = previousAppointment.ProjectOperationSheet.OtherPlagues,
                     AspersionManual = previousAppointment.ProjectOperationSheet.AspersionManual,
                     AspercionMotor = previousAppointment.ProjectOperationSheet.AspercionMotor,
                     NebulizacionFrio = previousAppointment.ProjectOperationSheet.NebulizacionFrio,
-                    NebulizacionCaliente = previousAppointment.ProjectOperationSheet.NebulizacionCaliente,
-                    ColocacionCebosCebaderos = previousAppointment.ProjectOperationSheet.ColocacionCebosCebaderos,
+                    NebulizacionCaliente = previousAppointment
+                        .ProjectOperationSheet
+                        .NebulizacionCaliente,
+                    ColocacionCebosCebaderos = previousAppointment
+                        .ProjectOperationSheet
+                        .ColocacionCebosCebaderos,
                     NumeroCeboTotal = previousAppointment.ProjectOperationSheet.NumeroCeboTotal,
-                    NumeroCeboRepuestos = previousAppointment.ProjectOperationSheet.NumeroCeboRepuestos,
-                    NroPlanchasPegantes = previousAppointment.ProjectOperationSheet.NroPlanchasPegantes,
+                    NumeroCeboRepuestos = previousAppointment
+                        .ProjectOperationSheet
+                        .NumeroCeboRepuestos,
+                    NroPlanchasPegantes = previousAppointment
+                        .ProjectOperationSheet
+                        .NroPlanchasPegantes,
                     NroJaulasTomahawk = previousAppointment.ProjectOperationSheet.NroJaulasTomahawk,
                     Insecticide = previousAppointment.ProjectOperationSheet.Insecticide,
                     Insecticide2 = previousAppointment.ProjectOperationSheet.Insecticide2,
                     InsecticideAmount = previousAppointment.ProjectOperationSheet.InsecticideAmount,
-                    InsecticideAmount2 = previousAppointment.ProjectOperationSheet.InsecticideAmount2,
+                    InsecticideAmount2 = previousAppointment
+                        .ProjectOperationSheet
+                        .InsecticideAmount2,
                     Rodenticide = previousAppointment.ProjectOperationSheet.Rodenticide,
                     RodenticideAmount = previousAppointment.ProjectOperationSheet.RodenticideAmount,
                     Desinfectant = previousAppointment.ProjectOperationSheet.Desinfectant,
-                    DesinfectantAmount = previousAppointment.ProjectOperationSheet.DesinfectantAmount,
+                    DesinfectantAmount = previousAppointment
+                        .ProjectOperationSheet
+                        .DesinfectantAmount,
                     OtherProducts = previousAppointment.ProjectOperationSheet.OtherProducts,
-                    OtherProductsAmount = previousAppointment.ProjectOperationSheet.OtherProductsAmount,
-                    DegreeInsectInfectivity = previousAppointment.ProjectOperationSheet.DegreeInsectInfectivity,
-                    DegreeRodentInfectivity = previousAppointment.ProjectOperationSheet.DegreeRodentInfectivity,
+                    OtherProductsAmount = previousAppointment
+                        .ProjectOperationSheet
+                        .OtherProductsAmount,
+                    DegreeInsectInfectivity = previousAppointment
+                        .ProjectOperationSheet
+                        .DegreeInsectInfectivity,
+                    DegreeRodentInfectivity = previousAppointment
+                        .ProjectOperationSheet
+                        .DegreeRodentInfectivity,
                     Staff1 = previousAppointment.ProjectOperationSheet.Staff1,
                     Staff2 = previousAppointment.ProjectOperationSheet.Staff2,
                     Staff3 = previousAppointment.ProjectOperationSheet.Staff3,
                     Staff4 = previousAppointment.ProjectOperationSheet.Staff4,
                     Observations = previousAppointment.ProjectOperationSheet.Observations,
-                    Recommendations = previousAppointment.ProjectOperationSheet.Recommendations
+                    Recommendations = previousAppointment.ProjectOperationSheet.Recommendations,
                 };
 
-                // Remove existing operation sheet if it exists
-                if (targetAppointment.ProjectOperationSheet != null)
-                {
-                    db.Remove(targetAppointment.ProjectOperationSheet);
-                }
-
-                targetAppointment.ProjectOperationSheet = newOperationSheet;
                 db.Add(newOperationSheet);
             }
 
-            // 3. Duplicate RodentRegister and RodentAreas
+            // 4. Duplicate RodentRegister and RodentAreas
             if (previousAppointment.RodentRegister != null)
             {
                 var newRodentRegister = new RodentRegister
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    ProjectAppointment = targetAppointment,
-                    ServiceDate = targetAppointment.DueDate, // Use target's due date
+                    ServiceDate = previousAppointment.RodentRegister.ServiceDate, // Keep original date
                     Incidents = previousAppointment.RodentRegister.Incidents,
-                    CorrectiveMeasures = previousAppointment.RodentRegister.CorrectiveMeasures
+                    CorrectiveMeasures = previousAppointment.RodentRegister.CorrectiveMeasures,
                 };
 
-                // Remove existing rodent register if it exists
-                if (targetAppointment.RodentRegister != null)
-                {
-                    // Remove existing areas first
-                    var existingAreas = await db.RodentAreas
-                        .Where(ra => ra.RodentRegister.ProjectAppointmentId == targetAppointment.Id)
-                        .ToListAsync();
-                    db.RemoveRange(existingAreas);
-                    
-                    db.Remove(targetAppointment.RodentRegister);
-                }
-
-                targetAppointment.RodentRegister = newRodentRegister;
                 db.Add(newRodentRegister);
 
                 // Duplicate RodentAreas
-                var newRodentAreas = new List<RodentArea>();
                 foreach (var area in previousAppointment.RodentRegister.RodentAreas)
                 {
                     var newArea = new RodentArea
@@ -306,40 +349,25 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                         RodentResult = area.RodentResult,
                         RodentMaterials = area.RodentMaterials,
                         ProductName = area.ProductName,
-                        ProductDose = area.ProductDose
+                        ProductDose = area.ProductDose,
                     };
-                    newRodentAreas.Add(newArea);
+                    db.Add(newArea);
                 }
-                db.AddRange(newRodentAreas);
             }
 
-            // 4. Duplicate Certificate
+            // 5. Duplicate Certificate
             if (previousAppointment.Certificate != null)
             {
                 var newCertificate = new Certificate
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    ProjectAppointment = targetAppointment,
-                    ExpirationDate = previousAppointment.Certificate.ExpirationDate
+                    ExpirationDate = previousAppointment.Certificate.ExpirationDate, // Keep original expiration date
                 };
 
-                // Remove existing certificate if it exists
-                if (targetAppointment.Certificate != null)
-                {
-                    db.Remove(targetAppointment.Certificate);
-                }
-
-                targetAppointment.Certificate = newCertificate;
                 db.Add(newCertificate);
             }
 
-            // 5. Duplicate TreatmentProducts
-            // Remove existing treatment products
-            var existingTreatmentProducts = await db.TreatmentProducts
-                .Where(tp => tp.ProjectAppointment.Id == targetAppointment.Id)
-                .ToListAsync();
-            db.RemoveRange(existingTreatmentProducts);
-
+            // 6. Duplicate TreatmentProducts
             foreach (var treatmentProduct in previousAppointment.TreatmentProducts)
             {
                 var newTreatmentProduct = new TreatmentProduct
@@ -350,18 +378,12 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                     EquipmentUsed = treatmentProduct.EquipmentUsed,
                     AppliedTechnique = treatmentProduct.AppliedTechnique,
                     AppliedService = treatmentProduct.AppliedService,
-                    AppliedTime = treatmentProduct.AppliedTime
+                    AppliedTime = treatmentProduct.AppliedTime,
                 };
                 db.Add(newTreatmentProduct);
             }
 
-            // 6. Duplicate TreatmentAreas
-            // Remove existing treatment areas
-            var existingTreatmentAreas = await db.TreatmentAreas
-                .Where(ta => ta.ProjectAppointment.Id == targetAppointment.Id)
-                .ToListAsync();
-            db.RemoveRange(existingTreatmentAreas);
-
+            // 7. Duplicate TreatmentAreas
             foreach (var treatmentArea in previousAppointment.TreatmentAreas)
             {
                 var newTreatmentArea = new PeruControl.Model.TreatmentArea
@@ -371,57 +393,21 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                     ObservedVector = treatmentArea.ObservedVector,
                     InfestationLevel = treatmentArea.InfestationLevel,
                     PerformedService = treatmentArea.PerformedService,
-                    AppliedTechnique = treatmentArea.AppliedTechnique
+                    AppliedTechnique = treatmentArea.AppliedTechnique,
                 };
                 db.Add(newTreatmentArea);
             }
 
-            // 7. Duplicate Reports
-            // CompleteReport
-            targetAppointment.CompleteReport = new PeruControl.Model.Reports.CompleteReport
-            {
-                SigningDate = previousAppointment.CompleteReport.SigningDate,
-                Content = previousAppointment.CompleteReport.Content.Select(c => CloneContentSection(c)).ToList()
-            };
-
-            // Report1
-            targetAppointment.Report1 = new PeruControl.Model.Reports.Report1
-            {
-                SigningDate = previousAppointment.Report1.SigningDate,
-                Content = previousAppointment.Report1.Content.Select(c => CloneContentSection(c)).ToList()
-            };
-
-            // Report2
-            targetAppointment.Report2 = new PeruControl.Model.Reports.Report2
-            {
-                SigningDate = previousAppointment.Report2.SigningDate,
-                Content = previousAppointment.Report2.Content.Select(c => CloneContentSection(c)).ToList()
-            };
-
-            // Report3
-            targetAppointment.Report3 = new PeruControl.Model.Reports.Report3
-            {
-                SigningDate = previousAppointment.Report3.SigningDate,
-                Content = previousAppointment.Report3.Content.Select(c => CloneContentSection(c)).ToList()
-            };
-
-            // Report4
-            targetAppointment.Report4 = new PeruControl.Model.Reports.Report4
-            {
-                SigningDate = previousAppointment.Report4.SigningDate,
-                Content = previousAppointment.Report4.Content.Select(c => CloneContentSection(c)).ToList()
-            };
-
-            // 8. Copy some basic appointment properties that make sense to duplicate
+            // 8. Update only CompanyRepresentative (not dates or other appointment metadata)
             targetAppointment.CompanyRepresentative = previousAppointment.CompanyRepresentative;
-            targetAppointment.EnterTime = previousAppointment.EnterTime;
-            targetAppointment.LeaveTime = previousAppointment.LeaveTime;
 
             // Save all changes
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            return new SuccessResult<string>("Datos duplicados exitosamente desde la cita anterior.");
+            return new SuccessResult<string>(
+                "Datos duplicados exitosamente desde la cita anterior."
+            );
         }
         catch (Exception ex)
         {
@@ -430,7 +416,9 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         }
     }
 
-    private static PeruControl.Model.Reports.ContentSection CloneContentSection(PeruControl.Model.Reports.ContentSection section)
+    private static PeruControl.Model.Reports.ContentSection CloneContentSection(
+        PeruControl.Model.Reports.ContentSection section
+    )
     {
         return section switch
         {
@@ -439,13 +427,13 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                 Title = textBlock.Title,
                 Numbering = textBlock.Numbering,
                 Level = textBlock.Level,
-                Sections = textBlock.Sections.Select(CloneContentSection).ToArray()
+                Sections = textBlock.Sections.Select(CloneContentSection).ToArray(),
             },
             PeruControl.Model.Reports.TextArea textArea => new PeruControl.Model.Reports.TextArea
             {
-                Content = textArea.Content
+                Content = textArea.Content,
             },
-            _ => throw new ArgumentException($"Unknown content section type: {section.GetType()}")
+            _ => throw new ArgumentException($"Unknown content section type: {section.GetType()}"),
         };
     }
 }
