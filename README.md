@@ -179,3 +179,37 @@ pnpm setup
 
 Ver documentacion en carpeta backend
 
+
+## New Features
+
+### Appointment Data Duplication
+
+A new endpoint has been added to duplicate all data from the previous appointment in the same project to the current appointment.
+
+**Endpoint:** `POST /api/appointment/{id}/duplicate-from-previous`
+
+**Description:** Duplicates all data from the previous appointment (ordered by DueDate) in the same project to the specified appointment. This includes:
+
+- Operation sheets (ProjectOperationSheet)
+- Rodent registers and areas (RodentRegister, RodentAreas)
+- Certificates
+- Treatment products and areas
+- All reports (CompleteReport, Report1-4)
+- Basic appointment properties (CompanyRepresentative, EnterTime, LeaveTime)
+
+**Parameters:**
+- `id` (path parameter): The GUID of the target appointment to populate with duplicated data
+
+**Responses:**
+- `200 OK`: Data successfully duplicated
+- `404 Not Found`: Target appointment not found or no previous appointment exists in the project
+- `400 Bad Request`: Error during duplication process
+
+**Example Usage:**
+```bash
+curl -X POST "https://api.perucontrol.com/api/appointment/{appointment-id}/duplicate-from-previous" \
+  -H "Authorization: Bearer {token}"
+```
+
+This feature is particularly useful for recurring appointments where most of the data remains the same between visits, saving significant time in data entry.
+

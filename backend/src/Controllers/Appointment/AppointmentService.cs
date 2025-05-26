@@ -158,4 +158,294 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
 
         return (odsBytes, null);
     }
+
+    public async Task<Result<string>> DuplicateFromPreviousAppointment(Guid appointmentId)
+    {
+        // Get the target appointment (the one we want to populate)
+        var targetAppointment = await db.ProjectAppointments
+            .Include(a => a.Project)
+            .Include(a => a.Services)
+            .Include(a => a.ProjectOperationSheet)
+            .Include(a => a.RodentRegister)
+                .ThenInclude(r => r.RodentAreas)
+            .Include(a => a.Certificate)
+            .Include(a => a.TreatmentProducts)
+                .ThenInclude(tp => tp.Product)
+            .Include(a => a.TreatmentProducts)
+                .ThenInclude(tp => tp.ProductAmountSolvent)
+            .Include(a => a.TreatmentAreas)
+                .ThenInclude(ta => ta.TreatmentProducts)
+            .FirstOrDefaultAsync(a => a.Id == appointmentId);
+
+        if (targetAppointment == null)
+            return new NotFoundResult<string>("No se encontró la cita especificada.");
+
+        // Find the previous appointment in the same project, ordered by DueDate
+        var previousAppointment = await db.ProjectAppointments
+            .Where(a => a.Project.Id == targetAppointment.Project.Id && a.DueDate < targetAppointment.DueDate)
+            .Include(a => a.Services)
+            .Include(a => a.ProjectOperationSheet)
+            .Include(a => a.RodentRegister)
+                .ThenInclude(r => r.RodentAreas)
+            .Include(a => a.Certificate)
+            .Include(a => a.TreatmentProducts)
+                .ThenInclude(tp => tp.Product)
+            .Include(a => a.TreatmentProducts)
+                .ThenInclude(tp => tp.ProductAmountSolvent)
+            .Include(a => a.TreatmentAreas)
+                .ThenInclude(ta => ta.TreatmentProducts)
+            .OrderByDescending(a => a.DueDate)
+            .FirstOrDefaultAsync();
+
+        if (previousAppointment == null)
+            return new NotFoundResult<string>("No se encontró una cita anterior en este proyecto para duplicar.");
+
+        using var transaction = await db.Database.BeginTransactionAsync();
+        try
+        {
+            // 1. Duplicate Services (many-to-many relationship)
+            targetAppointment.Services.Clear();
+            foreach (var service in previousAppointment.Services)
+            {
+                targetAppointment.Services.Add(service);
+            }
+
+            // 2. Duplicate ProjectOperationSheet
+            if (previousAppointment.ProjectOperationSheet != null)
+            {
+                var newOperationSheet = new ProjectOperationSheet
+                {
+                    ProjectAppointmentId = targetAppointment.Id,
+                    ProjectAppointment = targetAppointment,
+                    OperationDate = targetAppointment.DueDate, // Use target's due date
+                    TreatedAreas = previousAppointment.ProjectOperationSheet.TreatedAreas,
+                    Insects = previousAppointment.ProjectOperationSheet.Insects,
+                    Rodents = previousAppointment.ProjectOperationSheet.Rodents,
+                    RodentConsumptionPartial = previousAppointment.ProjectOperationSheet.RodentConsumptionPartial,
+                    RodentConsumptionTotal = previousAppointment.ProjectOperationSheet.RodentConsumptionTotal,
+                    RodentConsumptionDeteriorated = previousAppointment.ProjectOperationSheet.RodentConsumptionDeteriorated,
+                    RodentConsumptionNone = previousAppointment.ProjectOperationSheet.RodentConsumptionNone,
+                    OtherPlagues = previousAppointment.ProjectOperationSheet.OtherPlagues,
+                    AspersionManual = previousAppointment.ProjectOperationSheet.AspersionManual,
+                    AspercionMotor = previousAppointment.ProjectOperationSheet.AspercionMotor,
+                    NebulizacionFrio = previousAppointment.ProjectOperationSheet.NebulizacionFrio,
+                    NebulizacionCaliente = previousAppointment.ProjectOperationSheet.NebulizacionCaliente,
+                    ColocacionCebosCebaderos = previousAppointment.ProjectOperationSheet.ColocacionCebosCebaderos,
+                    NumeroCeboTotal = previousAppointment.ProjectOperationSheet.NumeroCeboTotal,
+                    NumeroCeboRepuestos = previousAppointment.ProjectOperationSheet.NumeroCeboRepuestos,
+                    NroPlanchasPegantes = previousAppointment.ProjectOperationSheet.NroPlanchasPegantes,
+                    NroJaulasTomahawk = previousAppointment.ProjectOperationSheet.NroJaulasTomahawk,
+                    Insecticide = previousAppointment.ProjectOperationSheet.Insecticide,
+                    Insecticide2 = previousAppointment.ProjectOperationSheet.Insecticide2,
+                    InsecticideAmount = previousAppointment.ProjectOperationSheet.InsecticideAmount,
+                    InsecticideAmount2 = previousAppointment.ProjectOperationSheet.InsecticideAmount2,
+                    Rodenticide = previousAppointment.ProjectOperationSheet.Rodenticide,
+                    RodenticideAmount = previousAppointment.ProjectOperationSheet.RodenticideAmount,
+                    Desinfectant = previousAppointment.ProjectOperationSheet.Desinfectant,
+                    DesinfectantAmount = previousAppointment.ProjectOperationSheet.DesinfectantAmount,
+                    OtherProducts = previousAppointment.ProjectOperationSheet.OtherProducts,
+                    OtherProductsAmount = previousAppointment.ProjectOperationSheet.OtherProductsAmount,
+                    DegreeInsectInfectivity = previousAppointment.ProjectOperationSheet.DegreeInsectInfectivity,
+                    DegreeRodentInfectivity = previousAppointment.ProjectOperationSheet.DegreeRodentInfectivity,
+                    Staff1 = previousAppointment.ProjectOperationSheet.Staff1,
+                    Staff2 = previousAppointment.ProjectOperationSheet.Staff2,
+                    Staff3 = previousAppointment.ProjectOperationSheet.Staff3,
+                    Staff4 = previousAppointment.ProjectOperationSheet.Staff4,
+                    Observations = previousAppointment.ProjectOperationSheet.Observations,
+                    Recommendations = previousAppointment.ProjectOperationSheet.Recommendations
+                };
+
+                // Remove existing operation sheet if it exists
+                if (targetAppointment.ProjectOperationSheet != null)
+                {
+                    db.Remove(targetAppointment.ProjectOperationSheet);
+                }
+
+                targetAppointment.ProjectOperationSheet = newOperationSheet;
+                db.Add(newOperationSheet);
+            }
+
+            // 3. Duplicate RodentRegister and RodentAreas
+            if (previousAppointment.RodentRegister != null)
+            {
+                var newRodentRegister = new RodentRegister
+                {
+                    ProjectAppointmentId = targetAppointment.Id,
+                    ProjectAppointment = targetAppointment,
+                    ServiceDate = targetAppointment.DueDate, // Use target's due date
+                    Incidents = previousAppointment.RodentRegister.Incidents,
+                    CorrectiveMeasures = previousAppointment.RodentRegister.CorrectiveMeasures
+                };
+
+                // Remove existing rodent register if it exists
+                if (targetAppointment.RodentRegister != null)
+                {
+                    // Remove existing areas first
+                    var existingAreas = await db.RodentAreas
+                        .Where(ra => ra.RodentRegister.ProjectAppointmentId == targetAppointment.Id)
+                        .ToListAsync();
+                    db.RemoveRange(existingAreas);
+                    
+                    db.Remove(targetAppointment.RodentRegister);
+                }
+
+                targetAppointment.RodentRegister = newRodentRegister;
+                db.Add(newRodentRegister);
+
+                // Duplicate RodentAreas
+                var newRodentAreas = new List<RodentArea>();
+                foreach (var area in previousAppointment.RodentRegister.RodentAreas)
+                {
+                    var newArea = new RodentArea
+                    {
+                        RodentRegister = newRodentRegister,
+                        Name = area.Name,
+                        CebaderoTrampa = area.CebaderoTrampa,
+                        Frequency = area.Frequency,
+                        RodentConsumption = area.RodentConsumption,
+                        RodentResult = area.RodentResult,
+                        RodentMaterials = area.RodentMaterials,
+                        ProductName = area.ProductName,
+                        ProductDose = area.ProductDose
+                    };
+                    newRodentAreas.Add(newArea);
+                }
+                db.AddRange(newRodentAreas);
+            }
+
+            // 4. Duplicate Certificate
+            if (previousAppointment.Certificate != null)
+            {
+                var newCertificate = new Certificate
+                {
+                    ProjectAppointmentId = targetAppointment.Id,
+                    ProjectAppointment = targetAppointment,
+                    ExpirationDate = previousAppointment.Certificate.ExpirationDate
+                };
+
+                // Remove existing certificate if it exists
+                if (targetAppointment.Certificate != null)
+                {
+                    db.Remove(targetAppointment.Certificate);
+                }
+
+                targetAppointment.Certificate = newCertificate;
+                db.Add(newCertificate);
+            }
+
+            // 5. Duplicate TreatmentProducts
+            // Remove existing treatment products
+            var existingTreatmentProducts = await db.TreatmentProducts
+                .Where(tp => tp.ProjectAppointment.Id == targetAppointment.Id)
+                .ToListAsync();
+            db.RemoveRange(existingTreatmentProducts);
+
+            foreach (var treatmentProduct in previousAppointment.TreatmentProducts)
+            {
+                var newTreatmentProduct = new TreatmentProduct
+                {
+                    ProjectAppointment = targetAppointment,
+                    Product = treatmentProduct.Product,
+                    ProductAmountSolvent = treatmentProduct.ProductAmountSolvent,
+                    EquipmentUsed = treatmentProduct.EquipmentUsed,
+                    AppliedTechnique = treatmentProduct.AppliedTechnique,
+                    AppliedService = treatmentProduct.AppliedService,
+                    AppliedTime = treatmentProduct.AppliedTime
+                };
+                db.Add(newTreatmentProduct);
+            }
+
+            // 6. Duplicate TreatmentAreas
+            // Remove existing treatment areas
+            var existingTreatmentAreas = await db.TreatmentAreas
+                .Where(ta => ta.ProjectAppointment.Id == targetAppointment.Id)
+                .ToListAsync();
+            db.RemoveRange(existingTreatmentAreas);
+
+            foreach (var treatmentArea in previousAppointment.TreatmentAreas)
+            {
+                var newTreatmentArea = new PeruControl.Model.TreatmentArea
+                {
+                    ProjectAppointment = targetAppointment,
+                    AreaName = treatmentArea.AreaName,
+                    ObservedVector = treatmentArea.ObservedVector,
+                    InfestationLevel = treatmentArea.InfestationLevel,
+                    PerformedService = treatmentArea.PerformedService,
+                    AppliedTechnique = treatmentArea.AppliedTechnique
+                };
+                db.Add(newTreatmentArea);
+            }
+
+            // 7. Duplicate Reports
+            // CompleteReport
+            targetAppointment.CompleteReport = new PeruControl.Model.Reports.CompleteReport
+            {
+                SigningDate = previousAppointment.CompleteReport.SigningDate,
+                Content = previousAppointment.CompleteReport.Content.Select(c => CloneContentSection(c)).ToList()
+            };
+
+            // Report1
+            targetAppointment.Report1 = new PeruControl.Model.Reports.Report1
+            {
+                SigningDate = previousAppointment.Report1.SigningDate,
+                Content = previousAppointment.Report1.Content.Select(c => CloneContentSection(c)).ToList()
+            };
+
+            // Report2
+            targetAppointment.Report2 = new PeruControl.Model.Reports.Report2
+            {
+                SigningDate = previousAppointment.Report2.SigningDate,
+                Content = previousAppointment.Report2.Content.Select(c => CloneContentSection(c)).ToList()
+            };
+
+            // Report3
+            targetAppointment.Report3 = new PeruControl.Model.Reports.Report3
+            {
+                SigningDate = previousAppointment.Report3.SigningDate,
+                Content = previousAppointment.Report3.Content.Select(c => CloneContentSection(c)).ToList()
+            };
+
+            // Report4
+            targetAppointment.Report4 = new PeruControl.Model.Reports.Report4
+            {
+                SigningDate = previousAppointment.Report4.SigningDate,
+                Content = previousAppointment.Report4.Content.Select(c => CloneContentSection(c)).ToList()
+            };
+
+            // 8. Copy some basic appointment properties that make sense to duplicate
+            targetAppointment.CompanyRepresentative = previousAppointment.CompanyRepresentative;
+            targetAppointment.EnterTime = previousAppointment.EnterTime;
+            targetAppointment.LeaveTime = previousAppointment.LeaveTime;
+
+            // Save all changes
+            await db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return new SuccessResult<string>("Datos duplicados exitosamente desde la cita anterior.");
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return new ErrorResult<string>($"Error al duplicar los datos: {ex.Message}");
+        }
+    }
+
+    private static PeruControl.Model.Reports.ContentSection CloneContentSection(PeruControl.Model.Reports.ContentSection section)
+    {
+        return section switch
+        {
+            PeruControl.Model.Reports.TextBlock textBlock => new PeruControl.Model.Reports.TextBlock
+            {
+                Title = textBlock.Title,
+                Numbering = textBlock.Numbering,
+                Level = textBlock.Level,
+                Sections = textBlock.Sections.Select(CloneContentSection).ToArray()
+            },
+            PeruControl.Model.Reports.TextArea textArea => new PeruControl.Model.Reports.TextArea
+            {
+                Content = textArea.Content
+            },
+            _ => throw new ArgumentException($"Unknown content section type: {section.GetType()}")
+        };
+    }
 }

@@ -1199,4 +1199,23 @@ public class AppointmentController(
 
         return Ok();
     }
+
+    [EndpointSummary("Duplicate data from previous appointment")]
+    [EndpointDescription("Duplicates all data from the previous appointment in the same project to the current appointment. This includes operation sheets, rodent registers, certificates, treatment data, and reports.")]
+    [HttpPost("{id}/duplicate-from-previous")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> DuplicateFromPreviousAppointment(Guid id)
+    {
+        var result = await appointmentService.DuplicateFromPreviousAppointment(id);
+
+        return result switch
+        {
+            SuccessResult<string> success => Ok(new { message = success.Data }),
+            NotFoundResult<string> notFound => NotFound(new { message = notFound.Message }),
+            ErrorResult<string> error => BadRequest(new { message = error.Message }),
+            _ => throw new Exception("Unexpected result type"),
+        };
+    }
 }
