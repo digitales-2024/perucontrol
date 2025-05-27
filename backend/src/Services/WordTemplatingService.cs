@@ -210,6 +210,78 @@ public class WordTemplateService
         string templatePath = "Templates/nuevos_informes/informe_01.docx"
     )
     {
+        return GenerateReport(appointment, appointment.CompleteReport, templatePath);
+    }
+
+    public byte[] GenerateReport1(
+        Model.ProjectAppointment appointment,
+        string templatePath = "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
+    )
+    {
+        return GenerateReport(appointment, appointment.Report1, templatePath);
+    }
+
+    public byte[] GenerateReport2(
+        Model.ProjectAppointment appointment,
+        string templatePath = "Templates/nuevos_informes/informe_02.docx"
+    )
+    {
+        return GenerateReport(appointment, appointment.Report2, templatePath);
+    }
+
+    public byte[] GenerateReport3(
+        Model.ProjectAppointment appointment,
+        string templatePath = "Templates/nuevos_informes/informe_03.docx"
+    )
+    {
+        return GenerateReport(appointment, appointment.Report3, templatePath);
+    }
+
+    public byte[] GenerateReport4(
+        Model.ProjectAppointment appointment,
+        string templatePath = "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx"
+    )
+    {
+        return GenerateReport(appointment, appointment.Report4, templatePath);
+    }
+
+    private byte[] GenerateReport(
+        Model.ProjectAppointment appointment,
+        object reportData,
+        string templatePath
+    )
+    {
+        // Extract SigningDate and Content from the report data
+        DateTime? signingDate = null;
+        List<ContentSection> content = [];
+
+        // Use reflection or pattern matching to extract data from different report types
+        switch (reportData)
+        {
+            case CompleteReport completeReport:
+                signingDate = completeReport.SigningDate;
+                content = completeReport.Content;
+                break;
+            case Report1 report1:
+                signingDate = report1.SigningDate;
+                content = report1.Content;
+                break;
+            case Report2 report2:
+                signingDate = report2.SigningDate;
+                content = report2.Content;
+                break;
+            case Report3 report3:
+                signingDate = report3.SigningDate;
+                content = report3.Content;
+                break;
+            case Report4 report4:
+                signingDate = report4.SigningDate;
+                content = report4.Content;
+                break;
+            default:
+                throw new ArgumentException($"Unsupported report type: {reportData.GetType()}");
+        }
+
         using var ms = new MemoryStream();
         using (var fs = File.OpenRead(templatePath))
         {
@@ -233,7 +305,7 @@ public class WordTemplateService
         {
             {
                 "{sign_date}",
-                appointment.CompleteReport.SigningDate?.ToString(
+                signingDate?.ToString(
                     "dd 'de' MMMM 'de' yyyy",
                     new System.Globalization.CultureInfo("es-PE")
                 ) ?? ""
@@ -346,7 +418,7 @@ public class WordTemplateService
         ReplacePlaceholderWithContent(
             wordDoc,
             "{section_5}",
-            [.. appointment.CompleteReport.Content]
+            [.. content]
         );
 
         wordDoc.Save();

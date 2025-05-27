@@ -183,8 +183,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            // Still calls GenerateReportComplete as per instruction
-            fileBytes = _wordTemplateService.GenerateReportComplete(
+            // Use the specific method for Report1
+            fileBytes = _wordTemplateService.GenerateReport1(
                 appointment,
                 "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
             );
@@ -275,7 +275,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment);
+            fileBytes = _wordTemplateService.GenerateReport2(appointment);
         }
         catch (Exception ex)
         {
@@ -363,7 +363,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(appointment);
+            fileBytes = _wordTemplateService.GenerateReport3(appointment);
         }
         catch (Exception ex)
         {
@@ -451,7 +451,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReportComplete(
+            fileBytes = _wordTemplateService.GenerateReport4(
                 appointment,
                 "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx"
             );
