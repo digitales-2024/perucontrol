@@ -123,7 +123,9 @@ export function Dashboard({ data: initialData }: { data: StatsData })
             </Popover>
 
             <div className={loading ? "animate-pulse" : ""}>
+                {/*
                 <TopMetrics />
+                */}
                 <Graphics1 chartData={data.monthlyProfit} quotationData={data.monthlyQuotations} />
                 <Graphics2 chartData={mappedData} pieChartData={pieChartData} />
             </div>
@@ -133,7 +135,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
     );
 }
 
-function TopMetrics()
+export function TopMetrics()
 {
     return (
         <div className="grid xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 my-2">
