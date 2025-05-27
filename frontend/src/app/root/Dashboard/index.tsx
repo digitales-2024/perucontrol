@@ -135,7 +135,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
     );
 }
 
-function TopMetrics()
+export function TopMetrics()
 {
     return (
         <div className="grid xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 my-2">
