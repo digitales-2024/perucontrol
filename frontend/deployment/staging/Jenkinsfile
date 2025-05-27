@@ -41,7 +41,7 @@ pipeline {
         stage("Restart frontend service") {
             steps {
                 script {
-                    def config = readYaml file: 'deployment/env.yaml'
+                    def config = readYaml file: 'frontend/deployment/env.yaml'
                     def env = config.staging.frontend
 
                     def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }

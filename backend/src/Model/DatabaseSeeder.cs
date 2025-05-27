@@ -34,21 +34,34 @@ public static class DatabaseSeeder
                 UserName = "Admin",
                 Email = adminEmail,
                 EmailConfirmed = true,
-                // Add any additional required fields here
+            };
+
+            var pcUser = new User
+            {
+                Name = "Administrador",
+                UserName = "PeruControl",
+                Email = "administracion@perucontrol.com",
+                EmailConfirmed = true,
             };
 
             // Create the admin user with a password
             var result = await userManager.CreateAsync(adminUser, "Acide2025/1");
+            var result2 = await userManager.CreateAsync(pcUser, "Perucontrol2025/1");
 
-            if (result.Succeeded)
+            if (result.Succeeded && result2.Succeeded)
             {
                 // Add admin role to user
                 await userManager.AddToRoleAsync(adminUser, adminRoleName);
                 logger.LogInformation("Created admin user with email {email}", adminEmail);
             }
-            else
+            else if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Failed to create admin user. Errors: {errors}");
+            }
+            else if (!result2.Succeeded)
+            {
+                var errors = string.Join(", ", result2.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to create admin user. Errors: {errors}");
             }
         }
