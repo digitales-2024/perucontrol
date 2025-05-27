@@ -4,8 +4,7 @@ import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 import { revalidatePath } from "next/cache";
 import { ok, err, Result } from "@/utils/result";
-import { backend, FetchError, wrapper } from "@/types/backend";
-import { components } from "@/types/api";
+import { FetchError } from "@/types/backend";
 
 export async function UploadMurinoMap(appointmentId: string, formData: FormData): Promise<Result<null, FetchError>>
 {

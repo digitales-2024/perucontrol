@@ -36,9 +36,14 @@ export default async function ReportPage({ params }: Props)
 
     // Get the appropriate endpoint for this report type
     const endpoint = reportEndpoints[reportId];
-    if (!endpoint) {
+    if (!endpoint)
+    {
         console.error("Unknown report type:", reportId);
-        return <div>Tipo de informe no encontrado</div>;
+        return (
+            <div>
+                Tipo de informe no encontrado
+            </div>
+        );
     }
 
     // Fetch appointment data for breadcrumbs
@@ -51,11 +56,13 @@ export default async function ReportPage({ params }: Props)
         },
     }));
 
-    if (appointmentError) {
+    if (appointmentError)
+    {
         console.error("Error getting appointment:", appointmentError);
         return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [report, error] = await wrapper((auth) => backend.GET(endpoint as any, {
         ...auth,
         params: {
@@ -72,38 +79,46 @@ export default async function ReportPage({ params }: Props)
     }
 
     // Render the appropriate form component based on report_id
-    const renderReportForm = () => {
-        switch (reportId) {
-            case "desinsectacion-desratizacion-desinfeccion":
-                return (
-                    <CompleteReportForm
-                        projectId={projectId}
-                        appointmentId={appointmentId}
-                        reportId={reportId as any}
-                        reportTitle={reportTitles[reportId]}
-                        report={report}
-                    />
-                );
-            case "desinfeccion-desinsectacion":
-                return (
-                    <DisinfectionDesinsectForm
-                        projectId={projectId}
-                        appointmentId={appointmentId}
-                        reportTitle={reportTitles[reportId]}
-                        report={report}
-                    />
-                );
-            case "sostenimiento-desratizacion":
-                return (
-                    <RatExterminationSubstForm
-                        projectId={projectId}
-                        appointmentId={appointmentId}
-                        reportTitle={reportTitles[reportId]}
-                        report={report}
-                    />
-                );
-            default:
-                return <div>Tipo de informe no soportado: {reportId}</div>;
+    const renderReportForm = () =>
+    {
+        switch (reportId)
+        {
+        case "desinsectacion-desratizacion-desinfeccion":
+            return (
+                <CompleteReportForm
+                    projectId={projectId}
+                    appointmentId={appointmentId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    reportId={reportId as any}
+                    reportTitle={reportTitles[reportId]}
+                    report={report}
+                />
+            );
+        case "desinfeccion-desinsectacion":
+            return (
+                <DisinfectionDesinsectForm
+                    projectId={projectId}
+                    appointmentId={appointmentId}
+                    reportTitle={reportTitles[reportId]}
+                    report={report}
+                />
+            );
+        case "sostenimiento-desratizacion":
+            return (
+                <RatExterminationSubstForm
+                    projectId={projectId}
+                    appointmentId={appointmentId}
+                    reportTitle={reportTitles[reportId]}
+                    report={report}
+                />
+            );
+        default:
+            return (
+                <div>
+                    Tipo de informe no soportado:
+                    {reportId}
+                </div>
+            );
         }
     };
 
@@ -122,13 +137,15 @@ export default async function ReportPage({ params }: Props)
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 <BreadcrumbLink href={`/projects/${projectId}`}>
-                                    Servicio #{appointment.project.projectNumber}
+                                    Servicio #
+                                    {appointment.project.projectNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 <BreadcrumbLink href={`/projects/${projectId}/${appointmentId}`}>
-                                    Fecha #{appointment.orderedNumber}
+                                    Fecha #
+                                    {appointment.orderedNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />

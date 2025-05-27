@@ -1,9 +1,8 @@
 "use server";
 
-import { backend, DownloadFile, wrapper } from "@/types/backend";
+import { backend, DownloadFile, wrapper , FetchError} from "@/types/backend";
 
 import { components } from "@/types/api";
-import { FetchError } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 
 export async function GenerateCompleteReportWord(appointmentid: string): Promise<Result<Blob, FetchError>>
