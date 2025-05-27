@@ -226,7 +226,7 @@ public class WordTemplateService
         string templatePath = "Templates/nuevos_informes/informe_02.docx"
     )
     {
-        return GenerateReport(appointment, appointment.Report2, templatePath);
+        return GenerateRodenticideReport(appointment, appointment.Report2, templatePath);
     }
 
     public byte[] GenerateReport3(
@@ -412,6 +412,127 @@ public class WordTemplateService
         ProcessTable(body, 1, "{area}", dataForTable2);
         ProcessTable(body, 2, "{treated_area}", dataForTable3);
         ProcessTable(body, 3, "{product.name}", productsToInsert);
+
+        // Try to replace a placeholder called "{section_5}" with rich content
+        // Make sure your template has this placeholder somewhere
+        ReplacePlaceholderWithContent(
+            wordDoc,
+            "{section_5}",
+            [.. content]
+        );
+
+        wordDoc.Save();
+        return ms.ToArray();
+    }
+
+    private byte[] GenerateRodenticideReport(
+        Model.ProjectAppointment appointment,
+        object reportData,
+        string templatePath
+    )
+    {
+        // Extract SigningDate and Content from the report data
+        DateTime? signingDate = null;
+        List<ContentSection> content = [];
+
+        // Use reflection or pattern matching to extract data from different report types
+        switch (reportData)
+        {
+            case CompleteReport completeReport:
+                signingDate = completeReport.SigningDate;
+                content = completeReport.Content;
+                break;
+            case Report1 report1:
+                signingDate = report1.SigningDate;
+                content = report1.Content;
+                break;
+            case Report2 report2:
+                signingDate = report2.SigningDate;
+                content = report2.Content;
+                break;
+            case Report3 report3:
+                signingDate = report3.SigningDate;
+                content = report3.Content;
+                break;
+            case Report4 report4:
+                signingDate = report4.SigningDate;
+                content = report4.Content;
+                break;
+            default:
+                throw new ArgumentException($"Unsupported report type: {reportData.GetType()}");
+        }
+
+        using var ms = new MemoryStream();
+        using (var fs = File.OpenRead(templatePath))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+
+        using var wordDoc = WordprocessingDocument.Open(ms, true);
+        var mainPart = wordDoc.MainDocumentPart;
+        if (mainPart?.Document?.Body == null)
+        {
+            throw new InvalidOperationException(
+                "Invalid Word document template: MainDocumentPart or Body is null."
+            );
+        }
+
+        var body = mainPart.Document.Body;
+
+        // Replace placeholders on main document
+        var placeholders = new Dictionary<string, string>
+        {
+            {
+                "{sign_date}",
+                signingDate?.ToString(
+                    "dd 'de' MMMM 'de' yyyy",
+                    new System.Globalization.CultureInfo("es-PE")
+                ) ?? ""
+            },
+            {
+                "{client_name}",
+                appointment.Project.Client.RazonSocial ?? appointment.Project.Client.Name
+            },
+            { "{client_address}", appointment.Project.Address },
+            { "{client_supervisor}", appointment.CompanyRepresentative ?? "" },
+            { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") },
+        };
+        foreach (var text in body.Descendants<Text>())
+        {
+            foreach (var placeholder in placeholders)
+            {
+                if (text.Text.Contains(placeholder.Key))
+                {
+                    text.Text = text.Text.Replace(placeholder.Key, placeholder.Value);
+                }
+            }
+        }
+
+        var dataForTable1 = new List<Dictionary<string, string>>();
+        if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
+        {
+            dataForTable1 =
+            [
+                .. appointment.TreatmentProducts
+                // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
+                .Select(tp => new Dictionary<string, string>
+                {
+                    { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
+                    { "{service_hour}", tp.AppliedTime ?? "-" },
+                    {
+                        "{treatment_type}",
+                        $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
+                    },
+                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" },
+                    { "{performed_by}", "Sr. William Moreyra Auris" },
+                    { "{supervisor}", appointment.CompanyRepresentative ?? "-" },
+                }),
+            ];
+        }
+
+        // Process Tables in Order
+        ProcessTable(body, 0, "{service_hour}", dataForTable1);
 
         // Try to replace a placeholder called "{section_5}" with rich content
         // Make sure your template has this placeholder somewhere

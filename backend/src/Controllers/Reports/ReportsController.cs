@@ -205,8 +205,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     }
 
     // Report 2 Endpoints
-    [EndpointSummary("Get Report2 of an Appointment")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report2")]
+    [EndpointSummary("Get Rodenticide Report of an Appointment")]
+    [HttpGet("/api/Appointment/{appointmentid}/RodenticideReport")]
     public async Task<ActionResult<Report2DTO>> GetReport2(Guid appointmentid)
     {
         var appointment = await db
@@ -226,8 +226,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return Ok(result);
     }
 
-    [EndpointSummary("Update Report2 of an Appointment")]
-    [HttpPatch("/api/Appointment/{appointmentid}/Report2")]
+    [EndpointSummary("Update Rodenticide Report of an Appointment")]
+    [HttpPatch("/api/Appointment/{appointmentid}/RodenticideReport")]
     public async Task<ActionResult> UpdateReport2(Guid appointmentid, UpdateReport2DTO updateDto)
     {
         var appointment = await db
@@ -248,8 +248,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         return NoContent();
     }
 
-    [EndpointSummary("Download Report2 as DOCX")]
-    [HttpGet("/api/Appointment/{appointmentid}/Report2/docx")]
+    [EndpointSummary("Download Rodenticide Report as DOCX")]
+    [HttpGet("/api/Appointment/{appointmentid}/RodenticideReport/docx")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -275,7 +275,9 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReport2(appointment);
+            fileBytes = _wordTemplateService.GenerateReport2(appointment,
+                "Templates/nuevos_informes/informe_desratizacion.docx"
+            );
         }
         catch (Exception ex)
         {
