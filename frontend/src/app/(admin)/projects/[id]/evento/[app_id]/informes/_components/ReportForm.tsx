@@ -25,10 +25,6 @@ const reportFilenames = {
 
 const reportNumberings: Record<string, string> = {
     "desinsectacion-desratizacion-desinfeccion": "5",
-    "desinfeccion-desinsectacion": "1",
-    "desratizacion": "1",
-    "sostenimiento-desratizacion": "1",
-    "sostenimiento-desinsectacion-desratizacion": "1",
 } as const;
 
 interface CompleteReportFormProps {

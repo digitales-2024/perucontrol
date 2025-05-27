@@ -1,5 +1,5 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CompleteReportForm } from "../_components/ReportForm";
 import { DisinfectionDesinsectForm } from "../_components/DisinfectionDesinsectForm";
 import { RatExterminationSubstForm } from "../_components/RatExterminationSubstForm";
@@ -39,6 +39,21 @@ export default async function ReportPage({ params }: Props)
     if (!endpoint) {
         console.error("Unknown report type:", reportId);
         return <div>Tipo de informe no encontrado</div>;
+    }
+
+    // Fetch appointment data for breadcrumbs
+    const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id: appointmentId,
+            },
+        },
+    }));
+
+    if (appointmentError) {
+        console.error("Error getting appointment:", appointmentError);
+        return null;
     }
 
     const [report, error] = await wrapper((auth) => backend.GET(endpoint as any, {
@@ -101,23 +116,26 @@ export default async function ReportPage({ params }: Props)
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href="/projects">
-                                    Proyectos
+                                    Todos los servicios
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
+                            <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 <BreadcrumbLink href={`/projects/${projectId}`}>
-                                    Proyecto
+                                    Servicio #{appointment.project.projectNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
+                            <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={`/projects/${projectId}/evento/${appointmentId}`}>
-                                    Cita
+                                <BreadcrumbLink href={`/projects/${projectId}/${appointmentId}`}>
+                                    Fecha #{appointment.orderedNumber}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
+                            <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href={`/projects/${projectId}/evento/${appointmentId}/informes`}>
-                                    Informes
-                                </BreadcrumbLink>
+                                <BreadcrumbPage>
+                                    {reportTitles[reportId] || "Informe"}
+                                </BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>
