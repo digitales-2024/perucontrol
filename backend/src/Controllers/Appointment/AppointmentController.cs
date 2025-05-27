@@ -687,6 +687,12 @@ public class AppointmentController(
             { "{perucontrol_telefonos}", business.Phones },
             { "{perucontrol_correo}", business.Email },
             { "{perucontrol_pagina}", "www.perucontrol.com" },
+            { "{technical_name}", business.ThechnicalDirectorName },
+            { "{technical_position}", business.ThechnicalDirectorPosition },
+            { "{technical_cip}", business.ThechnicalDirectorCIP },
+            { "{responsible_name}", business.ResponsibleName },
+            { "{responsible_position}", business.ResponsiblePosition },
+            { "{responsible_cip}", business.ResponsibleCIP },
             { "{imagen_firma_1}", $"data:image/png;base64,{signature1}" },
             { "{imagen_firma_2}", $"data:image/png;base64,{signature2}" },
         };
