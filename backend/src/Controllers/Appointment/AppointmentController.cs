@@ -675,7 +675,7 @@ public class AppointmentController(
             { "{servicio_area}", sheetTreatedAreas ?? "" },
             { "{fecha_servicio}", projectAppointment.ActualDate?.ToString("dd/MM/yyyy") ?? "" },
             { "{fecha_vencimiento}", certificate.ExpirationDate?.ToString("dd/MM/yyyy") ?? "" },
-            { "{cert_n}", projectAppointment.CertificateNumber?.ToString() ?? "" },
+            { "{cert_n}", projectAppointment.CertificateNumber?.ToString("D6") ?? "" },
             { "{fum}", fum },
             { "{inse}", inse },
             { "{ratiz}", ratiz },

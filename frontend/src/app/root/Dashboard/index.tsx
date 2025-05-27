@@ -8,41 +8,70 @@ import { components } from "@/types/api";
 import { serviceLabelToServiceName } from "./types";
 import { ProfitChart, ProfitChartInput } from "./_ProfitChart";
 import { QuotationChart, QuotationChartData } from "./_QuotationChart";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { format, subMonths } from "date-fns";
-import { es } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
 import { LoadDashboardData } from "../actions";
 import { toast } from "sonner";
+import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 type StatsData = components["schemas"]["StatsGet"]
+
+interface MonthYear {
+    month: number;
+    year: number;
+}
+
+// Generate month options
+const months = [
+    { value: 0, label: "Enero" },
+    { value: 1, label: "Febrero" },
+    { value: 2, label: "Marzo" },
+    { value: 3, label: "Abril" },
+    { value: 4, label: "Mayo" },
+    { value: 5, label: "Junio" },
+    { value: 6, label: "Julio" },
+    { value: 7, label: "Agosto" },
+    { value: 8, label: "Septiembre" },
+    { value: 9, label: "Octubre" },
+    { value: 10, label: "Noviembre" },
+    { value: 11, label: "Diciembre" },
+];
+
+// Generate year options (current year and previous 5 years)
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
 export function Dashboard({ data: initialData }: { data: StatsData })
 {
     const [data, setData] = useState<StatsData>(initialData);
     const [loading, setLoading] = useState(false);
 
-    const [date, setDate] = useState<DateRange | undefined>({
-        from: subMonths(new Date(), 6),
-        to: new Date(),
+    // Default to 6 months ago to current month
+    const sixMonthsAgo = subMonths(new Date(), 6);
+    const now = new Date();
+
+    const [startMonthYear, setStartMonthYear] = useState<MonthYear>({
+        month: sixMonthsAgo.getMonth(),
+        year: sixMonthsAgo.getFullYear(),
     });
 
-    // load data date range change
+    const [endMonthYear, setEndMonthYear] = useState<MonthYear>({
+        month: now.getMonth(),
+        year: now.getFullYear(),
+    });
+
+    // load data when date range changes
     useEffect(() =>
     {
         (async() =>
         {
-            if (!date || !date.from || !date.to)
-            {
-                return;
-            }
-
             setLoading(true);
-            const [data, err] = await LoadDashboardData(date.from, date.to!);
+
+            // Convert month/year to date range
+            const fromDate = startOfMonth(new Date(startMonthYear.year, startMonthYear.month));
+            const toDate = endOfMonth(new Date(endMonthYear.year, endMonthYear.month));
+
+            const [data, err] = await LoadDashboardData(fromDate, toDate);
             setLoading(false);
 
             if (err)
@@ -53,7 +82,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
             }
             setData(data);
         })();
-    }, [date]);
+    }, [startMonthYear, endMonthYear]);
 
     const mappedData = Object.entries(data.monthlyServiceCount)
         .map(([month, value]): ServiceChartLineInput => ({
@@ -68,59 +97,80 @@ export function Dashboard({ data: initialData }: { data: StatsData })
 
     return (
         <div>
-            <Popover>
-                <div className="text-right">
-                    <PopoverTrigger asChild>
-                        <Button
-                            id="date"
-                            variant={"outline"}
-                            className={cn(
-                                "w-[300px] justify-start text-left font-normal",
-                                !date && "text-muted-foreground",
-                            )}
-                        >
-                            <CalendarIcon />
-                            {date?.from ? (
-                                date.to ? (
-                                    <>
-                                        <span className="capitalize">
-                                            {format(date.from, "LLL dd, y", {
-                                                locale: es,
-                                            })}
-                                        </span>
-                                        {" "}
-                                        -
-                                        {" "}
-                                        <span className="capitalize">
-                                            {format(date.to, "LLL dd, y", {
-                                                locale: es,
-                                            })}
-                                        </span>
-                                    </>
-                                ) : (
-                                    format(date.from, "LLL dd, y", {
-                                        locale: es,
-                                    })
-                                )
-                            ) : (
-                                <span>
-                                    Selecciona una fecha
-                                </span>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
+            <div className="flex flex-wrap gap-4 items-center justify-end mb-4">
+                <div className="flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                        Desde:
+                    </span>
+                    <Select
+                        value={`${startMonthYear.month}`}
+                        onValueChange={(value) => setStartMonthYear((prev) => ({ ...prev, month: parseInt(value, 10) }))}
+                    >
+                        <SelectTrigger className="w-24">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {months.map((month) => (
+                                <SelectItem key={month.value} value={`${month.value}`}>
+                                    {month.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select
+                        value={`${startMonthYear.year}`}
+                        onValueChange={(value) => setStartMonthYear((prev) => ({ ...prev, year: parseInt(value, 10) }))}
+                    >
+                        <SelectTrigger className="w-16">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {years.map((year) => (
+                                <SelectItem key={year} value={`${year}`}>
+                                    {year}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={date?.from}
-                        selected={date}
-                        onSelect={setDate}
-                        numberOfMonths={2}
-                    />
-                </PopoverContent>
-            </Popover>
+
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">
+                        Hasta:
+                    </span>
+                    <Select
+                        value={`${endMonthYear.month}`}
+                        onValueChange={(value) => setEndMonthYear((prev) => ({ ...prev, month: parseInt(value, 10) }))}
+                    >
+                        <SelectTrigger className="w-24">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {months.map((month) => (
+                                <SelectItem key={month.value} value={`${month.value}`}>
+                                    {month.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select
+                        value={`${endMonthYear.year}`}
+                        onValueChange={(value) => setEndMonthYear((prev) => ({ ...prev, year: parseInt(value, 10) }))}
+                    >
+                        <SelectTrigger className="w-16">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {years.map((year) => (
+                                <SelectItem key={year} value={`${year}`}>
+                                    {year}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
 
             <div className={loading ? "animate-pulse" : ""}>
                 {/*

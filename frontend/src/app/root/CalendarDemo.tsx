@@ -5,13 +5,44 @@ import Calendar from "./calendar/calendar";
 import { CalendarEvent, Mode } from "./calendar/calendar-types";
 import { GetAppointmentsByDate } from "./actions";
 import { parseISO } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
 // import { datesToStatus } from "../(admin)/projects/[id]/_components/AppointmentDetail";
 
 export default function CalendarDemo()
 {
     const [events, setEvents] = useState<Array<CalendarEvent>>([]);
+    const isMobile = useIsMobile();
+
+    // Auto-set mode based on screen size
     const [mode, setMode] = useState<Mode>("mes");
     const [date, setDate] = useState<Date>(new Date());
+
+    // Auto-switch mode based on mobile state
+    useEffect(() =>
+    {
+        if (isMobile)
+        {
+            setMode("semana"); // Force week mode on mobile
+        }
+        else
+        {
+            setMode("mes"); // Default to month mode on desktop
+        }
+    }, [isMobile]);
+
+    // Custom mode setter that respects mobile constraints
+    const handleModeChange = (newMode: Mode) =>
+    {
+        // On mobile, only allow week mode
+        if (isMobile)
+        {
+            setMode("semana");
+        }
+        else
+        {
+            setMode(newMode);
+        }
+    };
 
     useEffect(() =>
     {
@@ -28,6 +59,28 @@ export default function CalendarDemo()
             setEvents(data.map((appointment) =>
             {
                 // const status = datesToStatus(appointment.dueDate, appointment.actualDate ?? undefined);
+
+                // Determine status based on appointment data until the import is available
+                let status = "Pendiente";
+                const today = new Date();
+                const dueDate = new Date(appointment.dueDate);
+
+                if (appointment.actualDate)
+                {
+                    const actualDate = new Date(appointment.actualDate);
+                    if (actualDate <= dueDate)
+                    {
+                        status = "Completo";
+                    }
+                    else
+                    {
+                        status = "Completo con retraso";
+                    }
+                }
+                else if (dueDate < today)
+                {
+                    status = "Retrasado";
+                }
 
                 let color = "";
                 let borderColor = "";
@@ -76,7 +129,7 @@ export default function CalendarDemo()
             events={events}
             setEvents={setEvents}
             mode={mode}
-            setMode={setMode}
+            setMode={handleModeChange}
             date={date}
             setDate={setDate}
         />

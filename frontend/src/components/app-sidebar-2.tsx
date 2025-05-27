@@ -107,11 +107,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <Link href="/" className="my-2">
-                    <div className="text-center w-full">
+                    <div className="text-center w-full bg-white hover:bg-zinc-100 transition-colors rounded-xl">
                         <img
                             className="inline-block"
                             alt="Logo"
-                            src="/logo_perucontrol_com_fondo.plain.svg"
+                            src="/logo_perucontrol_com.dark.plain.svg"
                             width={160}
                             height={160}
                         />

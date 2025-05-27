@@ -12,11 +12,11 @@ export default function CalendarBodyHeader({
     const isToday = isSameDay(date, new Date());
 
     return (
-        <div className="flex items-center justify-center gap-1 py-2 w-full sticky top-0 bg-background z-10 border-b">
+        <div className="flex items-center bg-primary text-white justify-center gap-1 py-2 w-full sticky top-0 bg-background z-10 border-b">
             <span
                 className={cn(
                     "text-xs font-medium capitalize",
-                    isToday ? "text-primary" : "text-muted-foreground",
+                    isToday ? "underline text-bold" : "",
                 )}
             >
                 {date.toLocaleString("es-PE", { weekday: "short" })}
@@ -24,8 +24,8 @@ export default function CalendarBodyHeader({
             {!onlyDay && (
                 <span
                     className={cn(
-                        "text-xs font-medium",
-                        isToday ? "text-primary font-bold" : "text-foreground",
+                        "text-xs font-medium text-white",
+                        isToday ? "underline font-bold" : "",
                     )}
                 >
                     {format(date, "dd")}
