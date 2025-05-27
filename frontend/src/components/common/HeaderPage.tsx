@@ -14,7 +14,7 @@ export const HeaderPage = ({
     breadcrumbs,
 }: HeaderPageProps) => (
     <>
-        <h1 className="text-2xl md:text-2xl font-bold">
+        <h1 className="text-2xl md:text-2xl font-bold font-display">
             <SidebarTrigger />
             {title}
         </h1>

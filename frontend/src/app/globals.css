@@ -186,11 +186,6 @@ html, body {
   font-size: 22px;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'GeoSlab703_', 'Swiss 721 Condensed', sans-serif;
-}
 
 /*---break---*/
 
@@ -203,6 +198,9 @@ body {
   --sidebar-accent-foreground: var(--color-primary-foreground);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+  --font-display: 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
+  --font-body: 'GeoSlab703', 'Swiss 721 Condensed', sans-serif;
 }
 
 /*---break---*/
@@ -216,4 +214,25 @@ body {
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/* Custom font utility classes */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  
+  .font-body {
+    font-family: var(--font-body);
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
 }

@@ -232,7 +232,7 @@ export function DisinfectionDesinsectForm({
                             <Label>
                                 Contenido del Informe
                             </Label>
-                            <ReportBuilder startNumbering="1" />
+                            <ReportBuilder startNumbering="5" />
                         </div>
 
                         {/* Botón de guardar */}
