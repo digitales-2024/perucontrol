@@ -3,6 +3,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { CompleteReportForm } from "../_components/ReportForm";
 import { DisinfectionDesinsectForm } from "../_components/DisinfectionDesinsectForm";
 import { RatExterminationSubstForm } from "../_components/RatExterminationSubstForm";
+import { DesratizacionForm } from "../_components/DesratizacionForm";
 import { backend, wrapper } from "@/types/backend";
 
 interface Props {
@@ -25,9 +26,9 @@ const reportTitles: Record<string, string> = {
 const reportEndpoints: Record<string, string> = {
     "desinsectacion-desratizacion-desinfeccion": "/api/Appointment/{appointmentid}/CompleteReport",
     "desinfeccion-desinsectacion": "/api/Appointment/{appointmentid}/Disinfection-Desinsect",
-    "desratizacion": "/api/Appointment/{appointmentid}/Report3",
+    "desratizacion": "/api/Appointment/{appointmentid}/RodenticideReport",
     "sostenimiento-desratizacion": "/api/Appointment/{appointmentid}/RatExterminationSubst",
-    "sostenimiento-desinsectacion-desratizacion": "/api/Appointment/{appointmentid}/Report2",
+    "sostenimiento-desinsectacion-desratizacion": "/api/Appointment/{appointmentid}/RatExterminationSubst",
 };
 
 export default async function ReportPage({ params }: Props)
@@ -97,6 +98,15 @@ export default async function ReportPage({ params }: Props)
         case "desinfeccion-desinsectacion":
             return (
                 <DisinfectionDesinsectForm
+                    projectId={projectId}
+                    appointmentId={appointmentId}
+                    reportTitle={reportTitles[reportId]}
+                    report={report}
+                />
+            );
+        case "desratizacion":
+            return (
+                <DesratizacionForm
                     projectId={projectId}
                     appointmentId={appointmentId}
                     reportTitle={reportTitles[reportId]}

@@ -63,7 +63,7 @@ export async function UpdateDisinfectionDesinsect(
 // Report2 (Sostenimiento Desinsectacion Desratization) Actions
 export async function GenerateSostenimientoDesinsectacionDesratizationWord(appointmentid: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${appointmentid}/Report2/docx`, "GET");
+    return DownloadFile(`/api/Appointment/${appointmentid}/RatExterminationSubst/docx`, "GET");
 }
 
 export async function UpdateSostenimientoDesinsectacionDesratization(
@@ -71,7 +71,7 @@ export async function UpdateSostenimientoDesinsectacionDesratization(
     body: components["schemas"]["Report2DTO"],
 ): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/Report2", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/RatExterminationSubst", {
         ...auth,
         params: {
             path: {
@@ -128,6 +128,34 @@ export async function UpdateSostenimientoDesratization(
 ): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/RatExterminationSubst", {
+        ...auth,
+        params: {
+            path: {
+                appointmentid: appointmentId,
+            },
+        },
+        body,
+    }));
+
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(null);
+}
+
+// Desratizacion Actions
+export async function GenerateDesratizacionWord(appointmentid: string): Promise<Result<Blob, FetchError>>
+{
+    return DownloadFile(`/api/Appointment/${appointmentid}/RodenticideReport/docx`, "GET");
+}
+
+export async function UpdateDesratizacion(
+    appointmentId: string,
+    body: components["schemas"]["Report2DTO"],
+): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/RodenticideReport", {
         ...auth,
         params: {
             path: {

@@ -5515,14 +5515,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Appointment/{appointmentid}/Report2": {
+    "/api/Appointment/{appointmentid}/RodenticideReport": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Report2 of an Appointment */
+        /** Get Rodenticide Report of an Appointment */
         get: {
             parameters: {
                 query?: never;
@@ -5552,7 +5552,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Report2 of an Appointment */
+        /** Update Rodenticide Report of an Appointment */
         patch: {
             parameters: {
                 query?: never;
@@ -5581,14 +5581,14 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Appointment/{appointmentid}/Report2/docx": {
+    "/api/Appointment/{appointmentid}/RodenticideReport/docx": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Download Report2 as DOCX */
+        /** Download Rodenticide Report as DOCX */
         get: {
             parameters: {
                 query?: never;

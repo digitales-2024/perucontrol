@@ -36,12 +36,12 @@ const reports = [
         description: "Informe de mantenimiento del servicio de desratización",
         icon: "📋🐀",
     },
-    {
-        id: "sostenimiento-desinsectacion-desratizacion",
-        title: "Informe de Sostenimiento de Desinsectación y Desratización",
-        description: "Informe de mantenimiento combinado de desinsectación y desratización",
-        icon: "📋🦟🐀",
-    },
+    // {
+    //     id: "sostenimiento-desinsectacion-desratizacion",
+    //     title: "Informe de Sostenimiento de Desinsectación y Desratización",
+    //     description: "Informe de mantenimiento combinado de desinsectación y desratización",
+    //     icon: "📋🦟🐀",
+    // },
 ];
 
 export function ReportsList({ appointmentId, projectId }: ReportsListProps)

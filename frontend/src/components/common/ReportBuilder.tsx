@@ -383,13 +383,6 @@ export default function ReportBuilder({startNumbering}: {startNumbering: string}
                     <Textarea
                         value={section.text}
                         onChange={(e) => updateContent(section.id, e.target.value)}
-                        onKeyDown={(e) =>
-                        {
-                            if (e.key === "Enter" && !e.shiftKey)
-                            {
-                                e.preventDefault();
-                            }
-                        }}
                         rows={4}
                         placeholder="Escribe el contenido aquí..."
                         className="w-full text-sm border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-y min-h-[100px] bg-gray-50 focus:bg-white transition-colors"
