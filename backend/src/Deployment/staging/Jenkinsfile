@@ -3,7 +3,7 @@ pipeline {
     environment {
         PROJECT_NAME = "perucontrol"
         PROJECT_SERVICE = "backend"
-        PROJECT_STAGE = "develop"
+        PROJECT_STAGE = "staging"
         PROJECT_TRIPLET = "${PROJECT_NAME}-${PROJECT_SERVICE}-${PROJECT_STAGE}"
 
         REMOTE_USER = "docker_admin"
@@ -20,6 +20,9 @@ pipeline {
         // SSH command
         SSH_COM = "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP}"
         SSH_CRED = "ssh-id_docker_admin"
+
+        // Hash for this build
+        BUILD_REF = "${sh(script: "echo -n '${BUILD_TAG}' | sha256sum | cut -c1-12", returnStdout: true).trim()}"
     }
     stages {
         stage("Build & push image") {
@@ -27,7 +30,7 @@ pipeline {
                 dir("backend/src") {
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f Deployment/Dockerfile.alpine .")
+                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_REF}", "-f Deployment/Dockerfile.alpine .")
                             image.push()
                             image.push("latest")
                         }
@@ -39,12 +42,12 @@ pipeline {
             steps {
                 script {
                     def config = readYaml file: 'backend/src/Deployment/env.yaml'
-                    def env = config.develop.backend
+                    def env = config.staging.backend
 
                     def nonSensitiveVars = env.nonsensitive.collect { k, v -> "${k}=${v}" }
                     def sensitiveVars = env.sensitive
 
-                    def credentialsList = sensitiveVars.collect {
+                    def credentialsList = sensitiveVars.collect { 
                         string(credentialsId: it, variable: it)
                     }
 
@@ -58,7 +61,7 @@ pipeline {
 #!/bin/bash
 cat << EOF
 # Non-sensitive variables
-PERUCONTROL_BACKEND_VERSION=${BUILD_NUMBER}
+PERUCONTROL_BACKEND_VERSION=${BUILD_REF}
 ${nonSensitiveVars.join('\n')}
 
 # Sensitive variables
@@ -70,13 +73,13 @@ EOL
 
                             // Execute the script to generate env content and send it to remote
                             sh """
-                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env.backend'
+                                ${WORKSPACE}/create_env.sh | ${SSH_COM} 'umask 077 && cat > ${REMOTE_FOLDER}/.env.${PROJECT_SERVICE}'
                             """
 
                             // populate & restart
                             sh """
                                 ${SSH_COM} 'cd ${REMOTE_FOLDER} && \
-                                docker pull ${FULL_REGISTRY_URL}:${BUILD_NUMBER} && \
+                                docker pull ${FULL_REGISTRY_URL}:${BUILD_REF} && \
                                 (rm .env || true) && \
                                 touch .env.base && \
                                 touch .env.backend && \
@@ -93,3 +96,5 @@ EOL
         }
     }
 }
+
+

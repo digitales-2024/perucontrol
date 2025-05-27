@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         PROJECT_NAME = "perucontrol"
-        PROJECT_SERVICE = "backend"
+        PROJECT_SERVICE = "frontend"
         PROJECT_STAGE = "staging"
         PROJECT_TRIPLET = "${PROJECT_NAME}-${PROJECT_SERVICE}-${PROJECT_STAGE}"
 
@@ -30,7 +30,7 @@ pipeline {
                 dir("frontend") {
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deployment/Dockerfile .")
+                            def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_REF}", "-f deployment/Dockerfile .")
                             image.push()
                             image.push("latest")
                         }
@@ -38,7 +38,7 @@ pipeline {
                 }
             }
         }
-        stage("Restart backend service") {
+        stage("Restart frontend service") {
             steps {
                 script {
                     def config = readYaml file: 'devops/env.yaml'
