@@ -49,12 +49,12 @@ export function Dashboard({ data: initialData }: { data: StatsData })
     // Default to 6 months ago to current month
     const sixMonthsAgo = subMonths(new Date(), 6);
     const now = new Date();
-    
+
     const [startMonthYear, setStartMonthYear] = useState<MonthYear>({
         month: sixMonthsAgo.getMonth(),
         year: sixMonthsAgo.getFullYear(),
     });
-    
+
     const [endMonthYear, setEndMonthYear] = useState<MonthYear>({
         month: now.getMonth(),
         year: now.getFullYear(),
@@ -66,11 +66,11 @@ export function Dashboard({ data: initialData }: { data: StatsData })
         (async() =>
         {
             setLoading(true);
-            
+
             // Convert month/year to date range
             const fromDate = startOfMonth(new Date(startMonthYear.year, startMonthYear.month));
             const toDate = endOfMonth(new Date(endMonthYear.year, endMonthYear.month));
-            
+
             const [data, err] = await LoadDashboardData(fromDate, toDate);
             setLoading(false);
 
@@ -100,10 +100,12 @@ export function Dashboard({ data: initialData }: { data: StatsData })
             <div className="flex flex-wrap gap-4 items-center justify-end mb-4">
                 <div className="flex items-center gap-2">
                     <CalendarIcon className="w-4 h-4" />
-                    <span className="text-sm font-medium">Desde:</span>
+                    <span className="text-sm font-medium">
+                        Desde:
+                    </span>
                     <Select
                         value={`${startMonthYear.month}`}
-                        onValueChange={(value) => setStartMonthYear(prev => ({ ...prev, month: parseInt(value) }))}
+                        onValueChange={(value) => setStartMonthYear((prev) => ({ ...prev, month: parseInt(value, 10) }))}
                     >
                         <SelectTrigger className="w-24">
                             <SelectValue />
@@ -118,7 +120,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
                     </Select>
                     <Select
                         value={`${startMonthYear.year}`}
-                        onValueChange={(value) => setStartMonthYear(prev => ({ ...prev, year: parseInt(value) }))}
+                        onValueChange={(value) => setStartMonthYear((prev) => ({ ...prev, year: parseInt(value, 10) }))}
                     >
                         <SelectTrigger className="w-16">
                             <SelectValue />
@@ -132,12 +134,14 @@ export function Dashboard({ data: initialData }: { data: StatsData })
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Hasta:</span>
+                    <span className="text-sm font-medium">
+                        Hasta:
+                    </span>
                     <Select
                         value={`${endMonthYear.month}`}
-                        onValueChange={(value) => setEndMonthYear(prev => ({ ...prev, month: parseInt(value) }))}
+                        onValueChange={(value) => setEndMonthYear((prev) => ({ ...prev, month: parseInt(value, 10) }))}
                     >
                         <SelectTrigger className="w-24">
                             <SelectValue />
@@ -152,7 +156,7 @@ export function Dashboard({ data: initialData }: { data: StatsData })
                     </Select>
                     <Select
                         value={`${endMonthYear.year}`}
-                        onValueChange={(value) => setEndMonthYear(prev => ({ ...prev, year: parseInt(value) }))}
+                        onValueChange={(value) => setEndMonthYear((prev) => ({ ...prev, year: parseInt(value, 10) }))}
                     >
                         <SelectTrigger className="w-16">
                             <SelectValue />

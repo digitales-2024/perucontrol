@@ -14,7 +14,8 @@ export default function CalendarHeaderActionsMode()
     const isMobile = useIsMobile();
 
     // Don't render the mode selector on mobile
-    if (isMobile) {
+    if (isMobile)
+    {
         return null;
     }
 

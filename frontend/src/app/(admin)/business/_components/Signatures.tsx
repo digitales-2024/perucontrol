@@ -146,10 +146,17 @@ export function SignaturesForm({ initialImages, thechnicalDirector, responsible 
                                                                             <Upload className="h-6 w-6 text-white" />
                                                                         </div>
                                                                         <div className="text-sm">
-                                                                            <span className="font-medium text-blue-700">Haz clic para subir</span>
-                                                                            <span className="text-blue-600"> o arrastra el archivo aquí</span>
+                                                                            <span className="font-medium text-blue-700">
+                                                                                Haz clic para subir
+                                                                            </span>
+                                                                            <span className="text-blue-600">
+                                                                                {" "}
+                                                                                o arrastra el archivo aquí
+                                                                            </span>
                                                                         </div>
-                                                                        <p className="text-xs text-blue-500">Solo archivos PNG</p>
+                                                                        <p className="text-xs text-blue-500">
+                                                                            Solo archivos PNG
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                             </div>
