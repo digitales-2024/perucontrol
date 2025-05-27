@@ -287,11 +287,43 @@ public class ExcelTemplateService
                 workbookPart.SharedStringTablePart
                 ?? throw new Exception("Couldn't load shared string part");
 
+            // Collect unique service combinations for this month
+            var uniqueServiceCombinations = entry.Value
+                .Select(appointment => appointment.ServiceNames.OrderBy(s => s).ToList())
+                .Distinct(new ListComparer<string>())
+                .ToList();
+
+            // Create combination labels using predefined label order
+            var combinationLabels = new Dictionary<string, string>();
+            var labelsList = new List<string>();
+            
+            // Predefined labels in order of preference
+            var predefinedLabels = new[] { "D", "F", "T", "DF", "DT", "DR", "DTR", "X" };
+            
+            for (int i = 0; i < uniqueServiceCombinations.Count; i++)
+            {
+                var combination = uniqueServiceCombinations[i];
+                var combinationKey = string.Join("|", combination);
+                
+                // Use predefined label or "X" if we run out of labels
+                string label = i < predefinedLabels.Length ? predefinedLabels[i] : "X";
+                
+                combinationLabels[combinationKey] = label;
+                
+                // Create the label description (e.g., "D=Fumigación, Desinfección")
+                var serviceNames = string.Join(", ", combination);
+                labelsList.Add($"{label}={serviceNames}");
+            }
+
+            // Join all labels for the {service_labels} placeholder
+            var labelsText = string.Join("; ", labelsList);
+
             var placeholders = new Dictionary<string, string>()
             {
                 { "{empresa_contratante}", project.Client.RazonSocial ?? project.Client.Name },
                 { "{direccion}", project.Address },
                 { "{periodo}", "-" },
+                { "{service_labels}", labelsText },
             };
 
             // Fill Ambients, up to 8
@@ -322,10 +354,15 @@ public class ExcelTemplateService
             foreach (var appointment in entry.Value)
             {
                 var day = appointment.DateTime.Day.ToString();
-                var services = appointment.ServiceLetterList();
+                var serviceNames = appointment.ServiceNames.OrderBy(s => s).ToList();
+                
+                // Find the label for this service combination
+                var combinationKey = string.Join("|", serviceNames);
+                var combinationLabel = combinationLabels[combinationKey];
+                
                 for (var i = 1; i <= projectAmbientsCount; i += 1)
                 {
-                    placeholders[$"{{{i}_{day}}}"] = services;
+                    placeholders[$"{{{i}_{day}}}"] = combinationLabel;
                 }
             }
 
@@ -442,5 +479,35 @@ public class ExcelTemplateService
         }
 
         return newWorksheetPart;
+    }
+}
+
+// Helper class to compare lists for equality
+public class ListComparer<T> : IEqualityComparer<List<T>>
+{
+    public bool Equals(List<T>? x, List<T>? y)
+    {
+        if (x == null && y == null) return true;
+        if (x == null || y == null) return false;
+        if (x.Count != y.Count) return false;
+        
+        for (int i = 0; i < x.Count; i++)
+        {
+            if (!EqualityComparer<T>.Default.Equals(x[i], y[i]))
+                return false;
+        }
+        return true;
+    }
+
+    public int GetHashCode(List<T> obj)
+    {
+        if (obj == null) return 0;
+        
+        int hash = 17;
+        foreach (var item in obj)
+        {
+            hash = hash * 31 + (item?.GetHashCode() ?? 0);
+        }
+        return hash;
     }
 }
