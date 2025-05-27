@@ -7,7 +7,6 @@ import { DocumentButton } from "./DocumentButton";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { components } from "@/types/api";
-import { AppointmentForTable } from "./ProjectDetails";
 import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes, DuplicateFromPreviousAppointment } from "../../actions";
@@ -17,7 +16,7 @@ import { ReportsList } from "./ReportsList";
 
 interface AppointmentDetailsProps {
     projectId: string;
-    appointment: AppointmentForTable;
+    appointment: components["schemas"]["AppointmentGetOutDTO"];
     project: components["schemas"]["AppointmentGetOutDTO"]["project"],
     services?: Array<components["schemas"]["Service"]>;
     murinoMapBase64?: string | null,
@@ -122,7 +121,7 @@ export function AppointmentDetails({
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">
                         Fecha #
-                        {appointment.appointmentNumber ?? "N/A"}
+                        {appointment.orderedNumber ?? "N/A"}
                     </h2>
                     <Button
                         variant="outline"

@@ -63,7 +63,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
 
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
-            <SidebarMenuItem className="group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
+            <SidebarMenuItem className="font-display group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <SidebarMenuButton
                     asChild
                     tooltip={item.title}

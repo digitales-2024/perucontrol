@@ -6208,6 +6208,8 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string | null;
             isActive: boolean;
+            /** Format: int32 */
+            orderedNumber: number;
             project: components["schemas"]["ProjectBasicInfoDTO"];
             servicesIds: Array<string>;
             treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;

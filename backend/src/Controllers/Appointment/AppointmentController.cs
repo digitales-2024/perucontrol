@@ -446,7 +446,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
@@ -687,13 +687,19 @@ public class AppointmentController(
             { "{perucontrol_telefonos}", business.Phones },
             { "{perucontrol_correo}", business.Email },
             { "{perucontrol_pagina}", "www.perucontrol.com" },
+            { "{technical_name}", business.ThechnicalDirectorName },
+            { "{technical_position}", business.ThechnicalDirectorPosition },
+            { "{technical_cip}", business.ThechnicalDirectorCIP },
+            { "{responsible_name}", business.ResponsibleName },
+            { "{responsible_position}", business.ResponsiblePosition },
+            { "{responsible_cip}", business.ResponsibleCIP },
             { "{imagen_firma_1}", $"data:image/png;base64,{signature1}" },
             { "{imagen_firma_2}", $"data:image/png;base64,{signature2}" },
         };
 
         var svgBytes = svgTemplateService.GenerateSvgFromTemplate(
             placeholders,
-            "Templates/certificado_plantilla.svg"
+            "Templates/certificado_plantilla_ok.svg"
         );
 
         var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(svgBytes, "svg");
@@ -761,7 +767,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateCertificatePdfBytes(id);
@@ -926,7 +932,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);

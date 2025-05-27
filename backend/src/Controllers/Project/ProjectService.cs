@@ -72,6 +72,9 @@ public class ProjectService(
             }
         }
 
+        var treatmentAreasNames = createDTO.Ambients.ToList();
+        var treatmentAreasNamesString = string.Join(", ", treatmentAreasNames);
+
         // Create Appointments
         var appointments = new List<ProjectAppointment>();
         foreach (var app in createDTO.AppointmentCreateDTOs)
@@ -104,7 +107,11 @@ public class ProjectService(
                             })
                             .ToList(),
                     },
-                    ProjectOperationSheet = new() { OperationDate = app.DueDate },
+                    ProjectOperationSheet = new()
+                    {
+                        OperationDate = app.DueDate,
+                        TreatedAreas = treatmentAreasNamesString,
+                     },
                     TreatmentAreas = createDTO
                         .Ambients.Select(areaName => new Model.TreatmentArea
                         {
