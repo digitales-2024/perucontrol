@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
@@ -9,7 +10,8 @@ namespace PeruControl.Controllers;
 public class ClientController(
     DatabaseContext db,
     ILogger<ClientController> logger,
-    ClientService clientService
+    ClientService clientService,
+    CsvExportService csvExportService
 ) : AbstractCrudController<Client, ClientCreateDTO, ClientPatchDTO>(db)
 {
     [EndpointSummary("Get all")]
@@ -293,6 +295,23 @@ public class ClientController(
         entity.IsActive = true;
         await _context.SaveChangesAsync();
         return NoContent();
+    }
+
+    [EndpointSummary("Export all clients to CSV")]
+    [HttpGet("export/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    public async Task<IActionResult> ExportClientsCsv()
+    {
+        var clients = await _context
+            .Clients
+            .OrderByDescending(c => c.ClientNumber)
+            .ToListAsync();
+
+        var csvBytes = csvExportService.ExportClientsToCsv(clients);
+
+        var fileName = $"clients_export_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+        
+        return File(csvBytes, "text/csv", fileName);
     }
 }
 

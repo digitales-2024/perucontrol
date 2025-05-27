@@ -17,6 +17,7 @@ public class EmailService
         _logger = logger;
     }
 
+    // Overloaded method for single address (backward compatibility)
     public async Task<(bool Success, string? ErrorMessage)> SendEmailAsync(
         string to,
         string subject,
@@ -25,9 +26,27 @@ public class EmailService
         List<EmailAttachment> attachments
     )
     {
+        return await SendEmailAsync([to], subject, htmlBody, textBody, attachments);
+    }
+
+    // Main method that accepts multiple addresses
+    public async Task<(bool Success, string? ErrorMessage)> SendEmailAsync(
+        List<string> toAddresses,
+        string subject,
+        string htmlBody,
+        string? textBody,
+        List<EmailAttachment> attachments
+    )
+    {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
-        message.To.Add(new MailboxAddress("", to));
+        
+        // Add all recipient addresses
+        foreach (var address in toAddresses)
+        {
+            message.To.Add(new MailboxAddress("", address));
+        }
+        
         message.Subject = subject;
 
         var builder = new BodyBuilder { HtmlBody = htmlBody, TextBody = textBody };

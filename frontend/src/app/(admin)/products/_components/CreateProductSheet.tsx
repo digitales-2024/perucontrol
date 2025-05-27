@@ -114,7 +114,7 @@ export const CreateProductSheet = ({ open, onOpenChange }: CreateProductSheetPro
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                                     <FormLabel className="text-sm font-medium text-gray-700">
-                                        Solventes
+                                        Cantidad y Contentraciones
                                     </FormLabel>
                                     <Button
                                         type="button"
@@ -124,7 +124,7 @@ export const CreateProductSheet = ({ open, onOpenChange }: CreateProductSheetPro
                                         className="text-blue-600 hover:text-blue-700 border-blue-200 hover:border-blue-300"
                                     >
                                         <Plus className="h-4 w-4 mr-2" />
-                                        Agregar Solvente
+                                        Agregar
                                     </Button>
                                 </div>
 
@@ -138,7 +138,7 @@ export const CreateProductSheet = ({ open, onOpenChange }: CreateProductSheetPro
                                                     <FormItem className="flex-1">
                                                         <FormControl>
                                                             <Input
-                                                                placeholder={`Solvente ${index + 1}`}
+                                                                placeholder={`Concentración ${index + 1}`}
                                                                 {...field}
                                                                 className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                             />

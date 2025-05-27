@@ -117,15 +117,15 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
                                         {" "}
                                         {documentName}
                                     </span>
-                                    <div className="flex items-center justify-end px-2 gap-2">
+                                    <div className="flex items-center justify-end px-2 gap-2 sm:pr-4">
                                         <button
-                                            className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                            className="flex items-center justify-center gap-2 hover:bg-gray-300 cursor-pointer py-1 px-2 rounded-full bg-zinc-200 w-10 h-10 transition-colors"
                                             onClick={() => setOpenWhatsapp(true)}
                                         >
                                             <img className="h-6" src="/icons/whatsapp_240.png" alt="Whatsapp" />
                                         </button>
                                         <button
-                                            className="flex items-center justify-center gap-2 hover:bg-gray-100 cursor-pointer py-1 px-2"
+                                            className="flex items-center justify-center gap-2 hover:bg-gray-300 cursor-pointer py-1 px-2 rounded-full bg-zinc-200 w-10 h-10 transition-colors"
                                             onClick={() => setOpenGmail(true)}
                                         >
                                             <img className="h-6" src="/icons/gmail.png" alt="Gmail" />

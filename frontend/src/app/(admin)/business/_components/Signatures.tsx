@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Image as ImageIcon, Save } from "lucide-react";
+import { Image as ImageIcon, Save, Upload } from "lucide-react";
 import { useState } from "react";
 import { toastWrapper } from "@/types/toasts";
 import { UpdateSignatures } from "../actions";
@@ -16,15 +16,15 @@ type SignaturesFormValues = {
 };
 
 type thechnicalDirector = {
-  name?: string,
-  position?: string,
-  cip?: string,
+    name?: string,
+    position?: string,
+    cip?: string,
 }
 
 type responsible = {
-  name?: string,
-  position?: string,
-  cip?: string,
+    name?: string,
+    position?: string,
+    cip?: string,
 }
 
 const signatureArray = [
@@ -33,9 +33,9 @@ const signatureArray = [
 ];
 
 interface SignaturesFormProps {
-  initialImages?: [string?, string?],
-  thechnicalDirector?: thechnicalDirector,
-  responsible?: responsible
+    initialImages?: [string?, string?],
+    thechnicalDirector?: thechnicalDirector,
+    responsible?: responsible
 }
 
 export function SignaturesForm({ initialImages, thechnicalDirector, responsible }: SignaturesFormProps)
@@ -83,7 +83,7 @@ export function SignaturesForm({ initialImages, thechnicalDirector, responsible 
 
     return (
         <div className="container mx-auto p-6 bg-transparent">
-            <Card className="w-full max-w-4xl">
+            <Card className="w-full max-w-4xl bg-transparent">
                 <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">
                         <ImageIcon className="h-6 w-6 text-primary" />
@@ -123,21 +123,36 @@ export function SignaturesForm({ initialImages, thechnicalDirector, responsible 
                                                             Cargar una nueva imágen:
                                                         </p>
                                                         <FormControl>
-                                                            <Input
-                                                                type="file"
-                                                                accept="image/png"
-                                                                onChange={(e) =>
-                                                                {
-                                                                    const files = e.target.files;
-                                                                    if (files && files[0] && files[0].type !== "image/png")
+                                                            <div className="relative">
+                                                                <Input
+                                                                    type="file"
+                                                                    accept="image/png"
+                                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                                    onChange={(e) =>
                                                                     {
-                                                                        e.target.value = ""; // Reset input
-                                                                        return;
-                                                                    }
-                                                                    f.onChange(files);
-                                                                    handlePreview(field as keyof SignaturesFormValues, files);
-                                                                }}
-                                                            />
+                                                                        const files = e.target.files;
+                                                                        if (files && files[0] && files[0].type !== "image/png")
+                                                                        {
+                                                                            e.target.value = ""; // Reset input
+                                                                            return;
+                                                                        }
+                                                                        f.onChange(files);
+                                                                        handlePreview(field as keyof SignaturesFormValues, files);
+                                                                    }}
+                                                                />
+                                                                <div className="border-2 border-dashed border-blue-300 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors duration-200 p-6 text-center cursor-pointer group">
+                                                                    <div className="flex flex-col items-center gap-2">
+                                                                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-200">
+                                                                            <Upload className="h-6 w-6 text-white" />
+                                                                        </div>
+                                                                        <div className="text-sm">
+                                                                            <span className="font-medium text-blue-700">Haz clic para subir</span>
+                                                                            <span className="text-blue-600"> o arrastra el archivo aquí</span>
+                                                                        </div>
+                                                                        <p className="text-xs text-blue-500">Solo archivos PNG</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>

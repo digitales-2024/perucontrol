@@ -165,7 +165,7 @@ export function ProductsDataTable({ data }: { data: Array<Product> })
             <div className="grid grid-cols-1 gap-4">
                 <div className="flex flex-col">
                     <h3 className="text-sm font-semibold mb-3 text-slate-700">
-                        Solventes Disponibles
+                        Cantidad y Concentraciones Disponibles
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {product.productAmountSolvents.map((solvent) => (

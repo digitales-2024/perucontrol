@@ -21,7 +21,7 @@ import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, ShieldCheck } from "lucide-react";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, Check, Cylinder } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import DatePicker from "@/components/ui/date-time-picker";
 import { addDays, format, parse } from "date-fns";
@@ -37,7 +37,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
     Desinsectación: <Bug className="h-3 w-3" />,
     Fumigación: <Spray className="h-3 w-3" />,
     Desinfección: <Shield className="h-3 w-3" />,
-    LimpiezaDeTanque: <ShieldCheck className="h-3 w-3" />,
+    "Limpieza de tanque": <Cylinder className="h-3 w-3" />,
 };
 
 type Terms = components["schemas"]["TermsAndConditions"];
@@ -103,7 +103,7 @@ export function CreateQuotation({ terms, clients, services }: {
                 "Ambientes a Tratar:",
                 "Todos nuestros productos cuentan con MDSD, Ficha Tecnica y Resolucion Directoral emitida por DIGESA.",
                 "Seguridad:\n- Nuestro personal cuenta con SCTR de Pension y Salud.\n- Nuestro personal cuenta con los EPPS necesarios para la actividad a realizar y los exigidas por ley.",
-                "Garantía: PERUCIONTROL COM BEL, garantiza el control de sectores propios del local (biletele germánica, moscas y credores.) . De encontrarse otro sector se procederá a una evaluación técnica y se evaluará la consecuencia de haber realizado un servicio mal ejecutado o si el orden y la limpieza es deficiente entre factores o encontrarse.",
+                "Garantía: PERUCONTROL COM EIRL, garantiza el control de vectores propios del local",
                 "Documentos a entregar:",
                 "REPROGRAMACION DEL SERVICIO:"],
         },
