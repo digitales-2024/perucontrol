@@ -112,7 +112,7 @@ public class Report2Test
         var (_, firstAppointmentId) = await CreateProjectAndGetFirstAppointmentIdAsync(httpClient);
 
         var reportResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report2"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RodenticideReport"
         );
 
         if (reportResponse.StatusCode != HttpStatusCode.OK)
@@ -150,7 +150,7 @@ public class Report2Test
         };
 
         var patchResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report2",
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RodenticideReport",
             updateDto
         );
 
@@ -164,7 +164,7 @@ public class Report2Test
         Assert.AreEqual(HttpStatusCode.NoContent, patchResponse.StatusCode);
 
         var getResponse = await httpClient.GetAsync(
-            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/Report2"
+            $"{ApiUrl}/api/Appointment/{firstAppointmentId}/RodenticideReport"
         );
 
         if (getResponse.StatusCode != HttpStatusCode.OK)
