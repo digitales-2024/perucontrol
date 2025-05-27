@@ -66,6 +66,8 @@ ${nonSensitiveVars.join('\n')}
 
 # Sensitive variables
 ${sensitiveVars.collect { varName -> "${varName}=\${${varName}}" }.join('\n')}
+
+
 EOF
 EOL
                                 chmod +x ${WORKSPACE}/create_env.sh
