@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http; // Needed for StatusCodes
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
@@ -152,7 +151,7 @@ public class ProductController(DatabaseContext context, ProductService productSe
                 // SuccessResult likely has a parameterless constructor or a static factory method
                 return Ok(new SuccessResult()); // Assuming parameterless constructor
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 await transaction.RollbackAsync();
                 // Log ex here
