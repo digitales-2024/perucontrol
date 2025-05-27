@@ -6,10 +6,17 @@ import { useCalendarContext } from "../../calendar-context";
 import { calendarModeIconMap } from "../../calendar-mode-icon-map";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function CalendarHeaderActionsMode()
 {
     const { mode, setMode } = useCalendarContext();
+    const isMobile = useIsMobile();
+
+    // Don't render the mode selector on mobile
+    if (isMobile) {
+        return null;
+    }
 
     return (
         <LayoutGroup>
