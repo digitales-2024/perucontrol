@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -12,92 +13,154 @@ public enum QuotationStatus
     Rejected,
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum QuotationFrequency
+{
+    Fortnightly,
+    Monthly,
+    Bimonthly,
+    Quarterly,
+    Semiannual,
+}
+
 public class Quotation : BaseModel
 {
-    public virtual Client Client { get; set; } = null!;
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int QuotationNumber { get; set; }
 
-    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
+    [Required(ErrorMessage = "El cliente es obligatorio")]
+    public Client Client { get; set; } = null!;
 
+    public ICollection<Service> Services { get; set; } = new HashSet<Service>();
+
+    [Required(ErrorMessage = "El estado de la cotización es obligatorio")]
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
-    public required string Description { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
-    public required uint Area { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public required uint SpacesCount { get; set; }
+    [Required(ErrorMessage = "La frecuencia es obligatoria")]
+    public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
 
     public required bool HasTaxes { get; set; }
 
-    /// <summary>
-    /// This is a COPY of the terms and conditions selected by the user,
-    /// this way the T&C in the database can be safely edited,
-    /// and used ones in the quotations wont be affected
-    /// </summary>
-    [Column(TypeName = "TEXT")]
-    public required string TermsAndConditions { get; set; }
+    [Required(ErrorMessage = "La fecha de creación es obligatoria")]
+    [DataType(DataType.Date)]
+    public required DateTime CreationDate { get; set; }
+
+    [Required(ErrorMessage = "La fecha de expiración es obligatoria")]
+    [DataType(DataType.Date)]
+    [CustomValidation(typeof(Quotation), nameof(ValidateExpirationDate))]
+    public required DateTime ExpirationDate { get; set; }
+
+    [Required(ErrorMessage = "La dirección del servicio es obligatoria")]
+    [StringLength(200, ErrorMessage = "La dirección no puede exceder 200 caracteres")]
+    public required string ServiceAddress { get; set; }
+
+    [Required(ErrorMessage = "El método de pago es obligatorio")]
+    [StringLength(100, ErrorMessage = "El método de pago no puede exceder 100 caracteres")]
+    public required string PaymentMethod { get; set; }
+
+    [StringLength(100, ErrorMessage = "El campo no puede exceder 100 caracteres")]
+    public required string Others { get; set; }
+
+    [StringLength(100, ErrorMessage = "El campo no puede exceder 100 caracteres")]
+    public required string Availability { get; set; }
+
+    // ======
+    // List of services
+    // ======
+
+    [Required]
+    [MinLength(1, ErrorMessage = "La lista de servicios es obligatoria")]
+    public IList<QuotationService> QuotationServices { get; set; } = [];
+
+    // ======
+    // Products to use
+    // ======
+
+    [Description("Name and description of the Desinsectant to use")]
+    public string? Desinsectant { get; set; }
+
+    [Description("Name and description of the Rodenticide to use")]
+    public string? Derodent { get; set; }
+
+    [Description("Name and description of the Disinfectant to use")]
+    public string? Disinfectant { get; set; }
+
+    // ======
+    // Terms and Conditions
+    // ======
+
+    [MinLength(1, ErrorMessage = "La lista de términos y condiciones es obligatoria")]
+    [MaxLength(10, ErrorMessage = "Solo puede haber hasta 10 términos y condiciones")]
+    public IList<string> TermsAndConditions { get; set; } = new List<string>();
+
+    // Custom validation method
+    public static ValidationResult? ValidateExpirationDate(
+        DateTime expirationDate,
+        ValidationContext context
+    )
+    {
+        var instance = (Quotation)context.ObjectInstance;
+
+        if (expirationDate <= instance.CreationDate)
+        {
+            return new ValidationResult(
+                "La fecha de expiración debe ser posterior a la fecha de creación"
+            );
+        }
+
+        return ValidationResult.Success;
+    }
 }
 
-public class QuotationCreateDTO : IMapToEntity<Quotation>
+public static class QuotationFrequencyExtensions
 {
-    public required Guid ClientId { get; set; }
-
-    [MinLength(1)]
-    public required ICollection<Guid> ServiceIds { get; set; }
-
-    public required string Description { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "El área debe ser al menos 1")]
-    public required uint Area { get; set; }
-
-    [Range(1, uint.MaxValue, ErrorMessage = "Debe ingresar al menos 1 espacio")]
-    public required uint SpacesCount { get; set; }
-    public required bool HasTaxes { get; set; }
-    public required string TermsAndConditions { get; set; }
-
-    public Quotation MapToEntity()
+    public static string ToSpanishString(this QuotationFrequency status)
     {
-        return new Quotation
+        return status switch
         {
-            Description = Description,
-            Status = QuotationStatus.Pending,
-            Area = Area,
-            SpacesCount = SpacesCount,
-            HasTaxes = HasTaxes,
-            TermsAndConditions = TermsAndConditions,
+            QuotationFrequency.Bimonthly => "BIMENSUAL",
+            QuotationFrequency.Quarterly => "TRIMESTRAL",
+            QuotationFrequency.Semiannual => "SEMESTRAL",
+            QuotationFrequency.Monthly => "MENSUAL",
+            QuotationFrequency.Fortnightly => "QUINCENAL",
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
     }
-}
 
-public class QuotationPatchDTO : IEntityPatcher<Quotation>
-{
-    public Guid? ClientId { get; set; }
-    public ICollection<Guid>? ServiceIds { get; set; }
-    public string? Description { get; set; }
-    public uint? Area { get; set; }
-    public uint? SpacesCount { get; set; }
-    public bool? HasTaxes { get; set; }
-
-    [Column(TypeName = "TEXT")]
-    public string? TermsAndConditions { get; set; }
-
-    public void ApplyPatch(Quotation entity)
+    public static (
+        string fortnightly,
+        string monthly,
+        string bimonthly,
+        string quarterly,
+        string semiannual
+    ) GetFrequencyMarkers(this QuotationFrequency frequency)
     {
-        if (Description != null)
-            entity.Description = Description;
-        if (Area != null)
-            entity.Area = (uint)Area;
-        if (SpacesCount != null)
-            entity.SpacesCount = (uint)SpacesCount;
-        if (HasTaxes != null)
-            entity.HasTaxes = (bool)HasTaxes;
-        if (TermsAndConditions != null)
-            entity.TermsAndConditions = TermsAndConditions;
-    }
-}
+        string fortnightly = "",
+            monthly = "",
+            bimonthly = "",
+            quarterly = "",
+            semiannual = "";
 
-public class QuotationStatusPatchDTO
-{
-    public required QuotationStatus Status { get; set; }
+        switch (frequency)
+        {
+            case QuotationFrequency.Fortnightly:
+                fortnightly = "x";
+                break;
+            case QuotationFrequency.Monthly:
+                monthly = "x";
+                break;
+            case QuotationFrequency.Bimonthly:
+                bimonthly = "x";
+                break;
+            case QuotationFrequency.Quarterly:
+                quarterly = "x";
+                break;
+            case QuotationFrequency.Semiannual:
+                semiannual = "x";
+                break;
+        }
+
+        return (fortnightly, monthly, bimonthly, quarterly, semiannual);
+    }
 }

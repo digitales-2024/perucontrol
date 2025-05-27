@@ -1,18 +1,25 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Model;
 
 public class Certificate : BaseModel
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Required]
-    public int ProjectNumber { get; set; }
-
     [JsonIgnore]
-    public virtual Project Project { get; set; } = null!;
+    public ProjectAppointment ProjectAppointment { get; set; } = null!;
 
-    public required DateTime CreationDate { get; set; }
-    public required DateTime ExpirationDate { get; set; }
+    [Required]
+    public Guid ProjectAppointmentId { get; set; }
+
+    public DateTime? ExpirationDate { get; set; } = null;
+}
+
+public class CertificateGet : PeruControl.Model.BaseModel
+{
+    public ProjectAppointment ProjectAppointment { get; set; } = null!;
+    public Guid ProjectAppointmentId { get; set; }
+    public DateTime ExpirationDate { get; set; }
+    public virtual Project Project { get; set; } = null!;
+    public virtual Client Client { get; set; } = null!;
+    public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
 }

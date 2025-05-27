@@ -45,6 +45,11 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
 
+    if (process.env.NODE_ENV === "development")
+    {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
     try
     {
         const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
@@ -94,7 +99,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error,
             });
         }
@@ -102,7 +107,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         {
             return err({
                 statusCode: data.response.status,
-                message: "Error: vacio",
+                message: "Error interno del servidor",
                 error: data.error!,
             });
         }
@@ -121,3 +126,59 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     }
 }
 
+/// File downloader
+export async function DownloadFile(
+    url: string,
+    method: RequestInit["method"],
+    body?: RequestInit["body"],
+): Promise<Result<Blob, FetchError>>
+{
+    const c = await cookies();
+    const jwt = c.get(ACCESS_TOKEN_KEY);
+    if (!jwt)
+    {
+        return err({
+            statusCode: 401,
+            message: "No autorizado",
+            error: null,
+        });
+    }
+
+    try
+    {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}${url}`, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt.value}`,
+            },
+            body,
+        });
+
+        if (!response.ok)
+        {
+            // attempt to get data
+            const body = await response.text();
+            console.error("Error generando documento:");
+            console.error(body);
+
+            return err({
+                statusCode: response.status,
+                message: body ?? "Error generando documento",
+                error: null,
+            });
+        }
+
+        const blob = await response.blob();
+        return ok(blob);
+    }
+    catch (e)
+    {
+        console.error(e);
+        return err({
+            statusCode: 503,
+            message: "Error conectando al servidor",
+            error: null,
+        });
+    }
+}

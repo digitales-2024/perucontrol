@@ -1,5 +1,5 @@
 import React from "react";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar-2";
 import {
     SidebarInset,
     SidebarProvider,
@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 <AppSidebar
                     user={{
                         username: "-",
+                        name: "-",
                         email: "-",
                     }}
                 />
@@ -28,10 +29,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     return (
         <SidebarProvider>
-            <AppSidebar user={user} />
-            <SidebarInset className="relative">
-                <div className="absolute z-10 top-0 left-0 w-full h-full bg-[url(/Isotipo.png)] bg-contain bg-no-repeat bg-center opacity-5" />
-                <div className="relative z-20 px-6 py-8">
+            <AppSidebar variant="sidebar" user={user} />
+            <SidebarInset>
+                <div className="sticky z-10 top-0 left-0 w-full">
+                    <div className="absolute z-10 top-0 left-0 w-full h-screen bg-[url(/logo_perucontrol_com.dark.plain.svg)] bg-contain bg-no-repeat bg-center opacity-5" />
+                </div>
+                <div className="relative z-20 px-1 py-2 md:px-6 md:py-4 ">
                     {children}
                 </div>
             </SidebarInset>

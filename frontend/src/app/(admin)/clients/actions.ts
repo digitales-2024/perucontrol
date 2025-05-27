@@ -46,7 +46,7 @@ export async function SearchClientByRuc(ruc: string): Promise<Result<SunatRespon
 
 export async function UpdateClient(id: string, newClient: CreateClientSchema): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Client/{id}", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/update/{id}", {
         ...auth,
         body: newClient,
         params: {
@@ -82,6 +82,31 @@ export async function RemoveClient(id: string): Promise<Result<null, FetchError>
     if (error)
     {
         console.log("Error deleting client:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
+
+export async function ReactivateClient(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Client/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/clients", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating client:", error);
         return err({
             statusCode: error.statusCode,
             message: error.message,

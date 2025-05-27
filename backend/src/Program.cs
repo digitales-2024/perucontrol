@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using PeruControl.Configuration;
 using PeruControl.Controllers;
 using PeruControl.Model;
 using PeruControl.Services;
@@ -15,13 +17,19 @@ builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
 
+// Configure Npgsql data source with JSON support
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new Exception("DB connection string not found");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.EnableDynamicJson();
+var dataSource = dataSourceBuilder.Build();
+builder.Services.AddSingleton(dataSource);
+
 // Database setup
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    var connectionString =
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new Exception("DB connection string not found");
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(dataSource);
 });
 
 // Configure Identity
@@ -98,7 +106,16 @@ builder.Services.AddOpenApi(options =>
 });
 
 // Register modules
-var modules = new IModule[] { new AuthModule(), new ClientModule() };
+var modules = new IModule[]
+{
+    new AuthModule(),
+    new ClientModule(),
+    new ProjectModule(),
+    new AppointmentModule(),
+    new PeruControl.Controllers.Product.ProductModule(),
+    new TreatmentProductModule(),
+    new PeruControl.Controllers.TreatmentArea.TreatmentAreaModule(),
+};
 foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
@@ -106,7 +123,25 @@ foreach (var module in modules)
 
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();
+builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();
+builder.Services.AddScoped<LibreOfficeConverterService>();
+builder.Services.AddScoped<SvgTemplateService>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<S3Service>();
+builder.Services.AddScoped<WhatsappService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<CsvExportService>();
+builder.Services.Configure<R2Config>(builder.Configuration.GetSection("R2Config"));
+builder.Services.Configure<EmailConfiguration>(
+    builder.Configuration.GetSection("EmailConfiguration")
+);
+builder.Services.Configure<TwilioConfiguration>(
+    builder.Configuration.GetSection("TwilioConfiguration")
+);
+
+// Register cleanup service
+builder.Services.AddHostedService<WhatsappCleanupService>();
 
 var app = builder.Build();
 
@@ -133,12 +168,24 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Seed the database
 using (var scope = app.Services.CreateScope())
 {
+    //
+    // Seed the database
+    //
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     await DatabaseSeeder.SeedDefaultUserAsync(app.Services, logger);
     await DatabaseSeeder.SeedDefaultServicesAsync(app.Services, logger);
+    await DatabaseSeeder.SeedBusiness(app.Services, logger);
+    await DatabaseSeeder.SeedDefaultCertificateNumber(app.Services, logger);
+
+    // Apply more seeds when not in prod or staging
+    if (!app.Environment.IsProduction() && !app.Environment.IsStaging())
+    {
+        logger.LogInformation("Seeding development data");
+        await DatabaseSeeder.SeedClients(app.Services, logger);
+        await DatabaseSeeder.SeedProductsAsync(app.Services, logger);
+    }
 }
 
 app.UseGlobalExceptionHandler();

@@ -4,7 +4,6 @@ import type { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
-import { CreateQuotationSchema, DownloadQuotationSchema } from "./schemas";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 
@@ -76,7 +75,7 @@ export async function RegisterQuotation(body: components["schemas"]["QuotationCr
     return ok(null);
 }
 
-export async function UpdateQuotation(id: string, newQuotation: CreateQuotationSchema): Promise<Result<null, FetchError>>
+export async function UpdateQuotation(id: string, newQuotation: components["schemas"]["QuotationPatchDTO"]): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Quotation/{id}", {
         ...auth,
@@ -119,6 +118,31 @@ export async function RemoveQuotation(id: string): Promise<Result<null, FetchErr
     return ok(null);
 }
 
+export async function ReactivatedQuotation(id: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/Quotation/{id}/reactivate", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/cotizaciones", "page");
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
+
 type StatesQuotation = "Pending" | "Approved" | "Rejected";
 
 export async function UpdateStatus(id: string, newStatus: StatesQuotation): Promise<Result<null, FetchError>>
@@ -146,7 +170,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     return ok(null);
 }
 
-export async function GenerateExcel(id: string, body: DownloadQuotationSchema): Promise<Result<Blob, FetchError>>
+export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -167,7 +191,6 @@ export async function GenerateExcel(id: string, body: DownloadQuotationSchema): 
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt.value}`,
             },
-            body: JSON.stringify(body),
         });
 
         if (!response.ok)
@@ -196,4 +219,107 @@ export async function GenerateExcel(id: string, body: DownloadQuotationSchema): 
             error: null,
         });
     }
+}
+
+export async function GeneratePdf(id: string): Promise<Result<Blob, FetchError>>
+{
+    const c = await cookies();
+    const jwt = c.get(ACCESS_TOKEN_KEY);
+    if (!jwt)
+    {
+        return err({
+            statusCode: 401,
+            message: "No autorizado",
+            error: null,
+        });
+    }
+
+    try
+    {
+        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Quotation/${id}/gen-pdf`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt.value}`,
+            },
+        });
+
+        if (!response.ok)
+        {
+            // attempt to get data
+            const body = await response.text();
+            console.error("Error generando pdf:");
+            console.error(body);
+
+            return err({
+                statusCode: response.status,
+                message: "Error generando pdf",
+                error: null,
+            });
+        }
+
+        const blob = await response.blob();
+        return ok(blob);
+    }
+    catch (e)
+    {
+        console.error(e);
+        return err({
+            statusCode: 503,
+            message: "Error conectando al servidor",
+            error: null,
+        });
+    }
+}
+
+export async function SendQuotationPdfViaMail(id: string, email: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Quotation/{id}/email-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+            query: {
+                email,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
+}
+
+export async function SendQuotationPdfViaWhatsapp(id: string, phoneNumber: string): Promise<Result<null, FetchError>>
+{
+    const [, error] = await wrapper((auth) => backend.POST("/api/Quotation/{id}/whatsapp-pdf", {
+        ...auth,
+        params: {
+            path: {
+                id: id,
+            },
+            query: {
+                phoneNumber,
+            },
+        },
+    }));
+
+    if (error)
+    {
+        console.log("Error reactivating quotation:", error);
+        return err({
+            statusCode: error.statusCode,
+            message: error.message,
+            error: error.error,
+        });
+    }
+    return ok(null);
 }

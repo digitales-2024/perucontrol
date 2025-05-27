@@ -1,22 +1,27 @@
-import { Shell } from "@/components/common/Shell";
 import AdminLayout from "./(admin)/layout";
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Construction } from "lucide-react";
+import CalendarDemo from "./root/CalendarDemo";
+import { Dashboard } from "./root/Dashboard";
+import { backend, wrapper } from "@/types/backend";
 
-export default function Home()
+export default async function Home()
 {
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Stats", auth));
+    if (!!error)
+    {
+        console.log("Error getting stats", error);
+        throw error;
+    }
+
     return (
         <AdminLayout>
-            <Shell>
-                <HeaderPage title="Dashboard" description="Sistema de gestión de PeruControl - en desarrollo" />
-            </Shell>
-            <div className="grid items-center justify-center">
-                <p>
-                    Esta página aun no está disponible
-                </p>
-                <div className="text-center py-16">
-                    <Construction className="inline-block opacity-75" size={128} />
-                </div>
+            <HeaderPage title="Inicio" description="Sistema de gestión de PeruControl" />
+
+            <div className="max-w-[50rem] mx-auto">
+                <Dashboard data={data} />
+                <hr />
+
+                <CalendarDemo />
             </div>
         </AdminLayout>
     );

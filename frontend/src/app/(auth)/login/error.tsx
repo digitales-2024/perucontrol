@@ -4,7 +4,7 @@ export default function LoginErrorPage()
 {
     return (
         <div>
-            :c
+            Error de inicio de sesión.
         </div>
     );
 }

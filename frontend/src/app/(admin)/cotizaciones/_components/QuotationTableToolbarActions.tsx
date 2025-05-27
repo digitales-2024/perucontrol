@@ -1,12 +1,19 @@
 "use client";
 
-import { CreateQuotation } from "./CreateQuotation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export function QuotationTableToolbarActions({})
 {
     return (
-        <div className="flex w-fit flex-wrap items-center gap-2">
-            <CreateQuotation  />
+        <div>
+            <Link href="/cotizaciones/nuevo">
+                <Button>
+                    <Plus />
+                    Crear cotización
+                </Button>
+            </Link>
         </div>
     );
 }

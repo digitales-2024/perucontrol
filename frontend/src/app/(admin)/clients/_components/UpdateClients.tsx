@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,12 +9,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, CreateClientSchema } from "../schemas";
-import { SearchClientByRuc, UpdateClient } from "../actions";
-import { Client } from "../types/clients";
+import { UpdateClient } from "../actions";
 import { toastWrapper } from "@/types/toasts";
+import { components } from "@/types/api";
 
 interface UpdateClientProps {
-    client: Client;
+    client: components["schemas"]["Client"];
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -33,12 +33,13 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
             name: client.name ?? "",
             fiscalAddress: client.fiscalAddress ?? "",
             email: client.email ?? "",
+            contactName: client.contactName ?? "",
             clientLocations: client.clientLocations ?? [{ address: "" }],
             phoneNumber: client.phoneNumber ?? "",
         },
     });
 
-    const { reset, setValue } = form;
+    const { reset } = form;
 
     // Add this after your existing form fields, before the SheetFooter
     const { fields, append, remove } = useFieldArray({
@@ -58,6 +59,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                 name: client.name ?? "",
                 fiscalAddress: client.fiscalAddress ?? "",
                 email: client.email ?? "",
+                contactName: client.contactName ?? "",
                 clientLocations: client.clientLocations ?? [{ address: "" }],
                 phoneNumber: client.phoneNumber ?? "",
             });
@@ -66,26 +68,9 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
         }
     }, [open, client, form]);
 
-    const handleSearchByRuc = async(ruc: string) =>
-    {
-        const result = await SearchClientByRuc(ruc);
-        if (result)
-        {
-            const data = result;
-            // Actualiza los campos del formulario con los datos obtenidos
-            setValue("razonSocial", data[0].razonSocial ?? "");
-            setValue("name", data[0].name ?? "");
-            setValue("fiscalAddress", data[0].fiscalAddress ?? "");
-        }
-        else
-        {
-            console.error("Error searching client by RUC:", result);
-        }
-    };
-
     const onSubmit = async(input: CreateClientSchema) =>
     {
-        const [, err] = await toastWrapper(UpdateClient(client.id, input), {
+        const [, err] = await toastWrapper(UpdateClient(client.id!, input), {
             loading: "Cargando...",
             success: "¡Cliente actualizado exitosamente!",
         });
@@ -99,7 +84,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent>
+            <SheetContent className="w-full sm:max-w-md md:max-w-lg p-0 overflow-hidden">
                 <SheetHeader>
                     <SheetTitle>
                         Actualizar Cliente
@@ -109,7 +94,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                     </SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="max-h-[90vh] h-full overflow-y-auto">
+                <ScrollArea className="max-h-[85vh] overflow-y-auto px-2">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <div className="mx-4 grid gap-3">
@@ -123,11 +108,12 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                             <FormLabel>
                                                 Tipo de documento
                                             </FormLabel>
-                                            <Select value={field.value} onValueChange={(value) =>
-                                            {
-                                                field.onChange(value);
-                                                setTypeDocument(value);
-                                            }}
+                                            <Select
+                                                disabled value={field.value} onValueChange={(value) =>
+                                                {
+                                                    field.onChange(value);
+                                                    setTypeDocument(value);
+                                                }}
                                             >
                                                 <FormControl className="mb-0">
                                                     <SelectTrigger>
@@ -160,10 +146,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="flex gap-2">
-                                                            <Input placeholder="Ingrese el RUC" {...field} />
-                                                            <Button type="button" className="px-3" onClick={() => handleSearchByRuc(field.value)}>
-                                                                <Search />
-                                                            </Button>
+                                                            <Input disabled placeholder="Ingrese el RUC" {...field} />
                                                         </div>
                                                     </FormControl>
                                                     <FormMessage />
@@ -200,6 +183,21 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                 </FormItem>
                                             )}
                                         />
+                                        <FormField
+                                            control={form.control}
+                                            name="contactName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Nombre de Contacto
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Ingrese el nombre de contacto" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </>
                                 )}
 
@@ -215,7 +213,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                         DNI
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Ingrese el DNI" {...field} />
+                                                        <Input disabled placeholder="Ingrese el DNI" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -254,22 +252,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientPr
                                                 <Input placeholder="Dirección" {...field} />
                                             </FormControl>
                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Giro del negocio */}
-                                <FormField
-                                    control={form.control}
-                                    name="businessType"
-                                    render={({ field }) => (
-                                        <FormItem className="truncate">
-                                            <FormLabel>
-                                                Giro del Negocio
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Giro del Negocio" {...field} />
-                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />

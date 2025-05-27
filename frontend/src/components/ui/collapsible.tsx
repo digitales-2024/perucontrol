@@ -15,6 +15,7 @@ function CollapsibleTrigger({
 {
     return (
         <CollapsiblePrimitive.CollapsibleTrigger
+            suppressHydrationWarning
             data-slot="collapsible-trigger"
             {...props}
         />

@@ -1,33 +1,25 @@
 import { Badge } from "../ui/badge";
-
-interface TitleSecctionProps {
-  text: string;
-}
-
-function TitleSecction({ text }: TitleSecctionProps)
-{
-    return (
-        <h1 className="text-4xl font-bold">
-            {text}
-        </h1>
-    );
-}
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface HeaderPageProps {
-  title: string;
-  description?: string;
-  badgeContent?: string;
+    title: string;
+    description?: string;
+    badgeContent?: string;
+    breadcrumbs?: React.ReactNode;
 }
 
 export const HeaderPage = ({
     title,
-    description,
     badgeContent,
+    breadcrumbs,
 }: HeaderPageProps) => (
-    <div>
-        <TitleSecction text={title} />
+    <>
+        <h1 className="text-2xl md:text-2xl font-bold font-display">
+            <SidebarTrigger />
+            {title}
+        </h1>
         {badgeContent && (
-            <div className="m-2">
+            <div className="m-2 mt-5">
                 <Badge
                     className="bg-emerald-100 capitalize text-emerald-700"
                     variant="secondary"
@@ -36,8 +28,8 @@ export const HeaderPage = ({
                 </Badge>
             </div>
         )}
-        <span className="text-sm">
-            {description}
-        </span>
-    </div>
+        <div className="pl-8">
+            {breadcrumbs}
+        </div>
+    </>
 );

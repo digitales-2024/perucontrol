@@ -1,13 +1,11 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import {
     BugOff,
     HandCoins,
     PieChart,
     Settings2,
-    ShieldCheck,
     Users,
 } from "lucide-react";
 
@@ -27,7 +25,7 @@ import { components } from "@/types/api";
 const data = {
     navMain: [
         {
-            title: "Dashboard",
+            title: "Inicio",
             url: "/",
             icon: PieChart,
         },
@@ -35,48 +33,67 @@ const data = {
             title: "Clientes",
             url: "/clients",
             icon: Users,
+            items: [
+                {
+                    title: "Todos los clientes",
+                    url: "/clients",
+                },
+                {
+                    title: "Nuevo cliente",
+                    url: "/clients/nuevo",
+                },
+            ],
         },
         {
             title: "Cotizaciones",
             url: "/cotizaciones",
             icon: HandCoins,
+            items: [
+                {
+                    title: "Todas las cotizaciones",
+                    url: "/cotizaciones",
+                },
+                {
+                    title: "Nueva cotización",
+                    url: "/cotizaciones/nuevo",
+                },
+            ],
         },
         {
             title: "Servicios",
             url: "/projects",
             icon: BugOff,
-        },
-        {
-            title: "Certificaciones",
-            url: "#",
-            icon: ShieldCheck,
             items: [
                 {
-                    title: "Emisión de Certificados",
-                    url: "/certificados",
+                    title: "Todos los servicios",
+                    url: "/projects",
                 },
                 {
-                    title: "Calendario",
-                    url: "#",
+                    title: "Nuevo servicio",
+                    url: "/projects/create",
+                },
+                {
+                    title: "Fichas de operacion",
+                    url: "/projects/ver/ficha",
+                },
+                {
+                    title: "Certificados",
+                    url: "/projects/ver/certificado",
                 },
             ],
         },
         {
             title: "Ajustes",
-            url: "#",
+            url: "/business",
             icon: Settings2,
             items: [
                 {
-                    title: "Cuenta",
-                    url: "#",
-                },
-                {
                     title: "Datos de la empresa",
-                    url: "#",
+                    url: "/business",
                 },
                 {
-                    title: "Exportar datos",
-                    url: "#",
+                    title: "Productos",
+                    url: "/products",
                 },
             ],
         },
@@ -94,10 +111,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
                     <SidebarMenuItem>
                         <Link href="/" className="my-2">
                             <div className="text-center w-full">
-                                <Image
+                                <img
                                     className="inline-block"
-                                    src="/logo.png"
                                     alt="Logo"
+                                    src="/logo_perucontrol_com_fondo.plain.svg"
                                     width={160}
                                     height={160}
                                 />

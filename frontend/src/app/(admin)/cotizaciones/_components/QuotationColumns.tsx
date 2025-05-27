@@ -1,153 +1,131 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { components } from "@/types/api";
-import { useState } from "react";
-import { UpdateQuotationSheet } from "./UpdateQuotations";
-import { useQuotationContext } from "../context/QuotationContext";
-import { ViewQuotationDetails } from "./ViewQuotationDetails";
-import { DeleteQuotation } from "./DeleteQuotation";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialogAcceptQuotation } from "./AcceptQuotation";
-import { AlertDialogRejectQuotation } from "./RejectQuotation";
-import { QuotationDownload } from "./QuotationDownload";
+import { format } from "date-fns";
+import { Calendar1, CalendarX, CircleUserRound, Hash } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
+export type Quotation = components["schemas"]["Quotation2"]
+
+export const columns: Array<ColumnDef<Quotation>> = [
+    {
+        accessorKey: "quotationNumber",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                SERIE/CORRELATIVO
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            return (
+                <span
+                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <Hash className="mr-1" />
+                    {row.original!.quotationNumber}
+                </span>
+            );
+        },
+    },
     {
         accessorKey: "client",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Cliente
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                CLIENTE
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="uppercase">
-                {row.original?.client?.name === "-" ? row.original.client.razonSocial : row.original?.client?.name}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const client = row.original.client;
+
+            const isActive = row.original.isActive;
+            const inactiveClass = !isActive ? "line-through text-red-500" : "";
+            const name = client.typeDocument === "ruc" ? client.razonSocial : client.name;
+
+            return (
+                <div className={`grid grid-cols-[1rem_auto] gap-2 items-center ${inactiveClass}`}>
+                    <CircleUserRound className="mr-1" />
+                    <div>
+                        <div
+                            className={`items-center flex justify-center text-center text-xs md:text-sm ${inactiveClass}`}
+                        >
+                            {name}
+                        </div>
+                    </div>
+                </div>
+            );
+        },
     },
     {
-        accessorKey: "description",
+        accessorKey: "createdAt",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Descripción
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                FECHA DE EMISIÓN
             </Button>
         ),
-        cell: ({ row }) => (
-            <span>
-                {row.original?.description}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original.isActive;
+            const formattedDate = format(new Date(row.original.createdAt!), "dd/mm/yyyy");
+
+            return (
+                <span
+                    className={`items-center flex justify-center uppercase text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <Calendar1 className="mr-1" />
+                    {formattedDate}
+                </span>
+            );
+        },
     },
     {
-        accessorKey: "area",
+        accessorKey: "expirationDate",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
-                Área m2
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
+                FECHA DE EXPIRACIÓN
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.area}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "spacesCount",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-                Nro. de Ambientes
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="flex justify-center">
-                {row.original?.spacesCount}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
-            >
-                Estado
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
-            </Button>
-        ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original?.status === "Pending" ? (
-                    <Badge variant="default">
-                        Pendiente
-                    </Badge>
-                ) : row.original?.status === "Approved" ? (
-                    <Badge variant="approved">
-                        Aprobado
-                    </Badge>
-                ) : (
-                    <Badge variant="destructive">
-                        Rechazado
-                    </Badge>
-                )}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            const rawDate = row.original?.expirationDate;
+            const formattedDate = rawDate
+                ? new Intl.DateTimeFormat("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                }).format(new Date(rawDate))
+                : "Fecha no disponible";
+
+            return (
+                <span
+                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    <CalendarX className="mr-1" />
+                    {formattedDate}
+                </span>
+            );
+        },
     },
     {
         accessorKey: "hasTaxes",
@@ -155,124 +133,74 @@ export const columns: Array<ColumnDef<components["schemas"]["Quotation2"]>> = [
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                className="p-0 hover:bg-transparent"
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
             >
                 IGV
-                {column.getIsSorted() === "asc" ? (
-                    <ArrowUp className="ml-1 h-4 w-4" />
-                ) : column.getIsSorted() === "desc" ? (
-                    <ArrowDown className="ml-1 h-4 w-4" />
-                ) : (
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                )}
             </Button>
         ),
-        cell: ({ row }) => (
-            <span className="items-center text-center flex justify-center">
-                {row.original?.hasTaxes ? "SI" : "NO"}
-            </span>
-        ),
+        cell: ({ row }) =>
+        {
+            const isActive = row.original?.isActive;
+            return (
+                <span
+                    className={`items-center flex justify-center text-center text-xs md:text-sm ${!isActive ? "line-through text-red-500" : ""}`}
+                >
+                    {row.original?.hasTaxes
+                        ? "SI"
+                        : "NO"}
+                </span>
+            );
+        },
     },
     {
-        id: "acciones",
-        header: "Acciones",
-        cell: function Cell({ row })
+        accessorKey: "status",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center w-full"
+            >
+                ESTADO
+            </Button>
+        ),
+        cell: ({ row }) =>
         {
-            const [showUpdateQuotation, setShowUpdateQuotation] = useState(false);
-            const [showDeleteQuotation, setShowDeleteQuotation] = useState(false);
-            const [showDetailQuotation, setShowDetailQuotation] = useState(false);
-            const [showAcceptQuotaion, setShowAcceptQuotaion] = useState(false);
-            const [showRejectQuotaion, setShowRejectQuotaion] = useState(false);
-            const [showDownload, setShowDownload] = useState(false);
-            const { terms, clients, services } = useQuotationContext();
+            const isActive = row.original?.isActive;
 
             return (
-                <div>
-                    <div>
-                        {/* Actualizar cotización */}
-                        <UpdateQuotationSheet
-                            open={showUpdateQuotation}
-                            onOpenChange={setShowUpdateQuotation}
-                            quotation={row.original}
-                            termsAndConditions={terms}
-                            clients={clients}
-                            services={services}
-                        />
-                        {/* Eliminar una cotización */}
-                        <DeleteQuotation
-                            open={showDeleteQuotation}
-                            onOpenChange={setShowDeleteQuotation}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
-                        {/* Ver Detalles de una cotización */}
-                        <ViewQuotationDetails
-                            open={showDetailQuotation}
-                            onOpenChange={setShowDetailQuotation}
-                            quotation={row.original}
-                        />
-                        {/* Acceptar Cotizacion */}
-                        <AlertDialogAcceptQuotation
-                            open={showAcceptQuotaion}
-                            onOpenChange={setShowAcceptQuotaion}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
-                        {/* Rechazar Cotización */}
-                        <AlertDialogRejectQuotation
-                            open={showRejectQuotaion}
-                            onOpenChange={setShowRejectQuotaion}
-                            quotation={row?.original}
-                            showTrigger={false}
-                        />
-                        {/* Descargar Cotización */}
-                        <QuotationDownload
-                            open={showDownload}
-                            onOpenChange={setShowDownload}
-                            quotationId={row.original.id!}
-                        />
-                    </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                aria-label="Open menu"
-                                variant="ghost"
-                                className="flex size-8 p-0 data-[state=open]:bg-muted"
-                            >
-                                <Ellipsis
-                                    className="size-4"
-                                    aria-hidden="true"
-                                />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                Acciones
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowAcceptQuotaion(true)}>
-                                Aceptar cotización
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowRejectQuotaion(true)}>
-                                Rechazar cotización
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setShowDetailQuotation(true)}>
-                                Ver
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowUpdateQuotation(true)}>
-                                Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDownload(true)}>
-                                Descargar Cotización
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setShowDeleteQuotation(true)}>
-                                Eliminar
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+                row.original?.status === "Pending" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "default"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-blue-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Pendiente
+                    </Badge>
+                ) : row.original?.status === "Approved" ? (
+                    <Badge
+                        variant={!isActive ? "deleted" : "approved"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-green-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Aprobado
+                    </Badge>
+                ) : (
+                    <Badge
+                        variant={!isActive ? "deleted" : "destructive"}
+                        className={cn(
+                            "px-2 py-1 text-xs font-medium rounded-full",
+                            isActive ? "bg-red-500 text-white" : "bg-red-300 text-red-800",
+                        )}
+                    >
+                        Rechazado
+                    </Badge>
+                )
             );
         },
     },
 ];
+

@@ -1,11 +1,11 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
-import { Shell } from "@/components/common/Shell";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { UpdateClientData } from "./_components/UpdateData";
 
 interface Props {
     params: Promise<{
-      id: string;
+        id: string;
     }>
 }
 
@@ -13,40 +13,36 @@ export default async function ProjectsPage({ params }: Props)
 {
     const { id } = await params;
 
-    // get all clients
-    const [clients, clientsError] = await wrapper((auth) => backend.GET("/api/Client", { ...auth }));
+    const [
+        [clients, clientsError],
+        [services, servicesError],
+        [project, projectError],
+    ] = await Promise.all([
+        wrapper((auth) => backend.GET("/api/Client", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Service", { ...auth })),
+        wrapper((auth) => backend.GET("/api/Project/{id}", {
+            ...auth,
+            params: {
+                path: {
+                    id,
+                },
+            },
+
+        })),
+    ]);
+
     if (clientsError)
     {
         console.error("Error getting all clients:", clientsError);
         return null;
     }
 
-    // get all services
-    const [services, servicesError] = await wrapper((auth) => backend.GET("/api/Service", { ...auth }));
     if (servicesError)
     {
         console.error("Error getting all services:", servicesError);
         return null;
     }
 
-    // get all quotations
-    const [quotations, quotationsError] = await wrapper((auth) => backend.GET("/api/Quotation", { ...auth }));
-    if (quotationsError)
-    {
-        console.error("Error getting all quotations:", quotationsError);
-        return null;
-    }
-
-    // get project by id
-    const [project, projectError] = await wrapper((auth) => backend.GET("/api/Project/{id}", {
-        ...auth ,
-        params: {
-            path: {
-                id,
-            },
-        },
-
-    }));
     if (projectError)
     {
         console.error("Error getting project:", projectError);
@@ -54,9 +50,35 @@ export default async function ProjectsPage({ params }: Props)
     }
 
     return (
-        <Shell>
-            <HeaderPage title="Editar Servicio" description="Has los cambios que necesites en el servicio y guarda" />
-            <UpdateClientData clients={clients} services={services} quotations={quotations} project={project} />
-        </Shell>
+        <>
+            <HeaderPage
+                title="Editar Servicio" description="Editar información general del servicio"
+                breadcrumbs={(
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/projects">
+                                    Todos los servicios
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${project.id}`}>
+                                    Servicio #
+                                    {project.projectNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>
+                                    Editar Servicio
+                                </BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+            />
+            <UpdateClientData clients={clients} services={services} project={project} />
+        </>
     );
 }

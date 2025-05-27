@@ -4,6 +4,1459 @@
  */
 
 export interface paths {
+    "/api/Stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get statistics for dashboard */
+        get: {
+            parameters: {
+                query?: {
+                    start?: string;
+                    end?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StatsGet"];
+                        "application/json": components["schemas"]["StatsGet"];
+                        "text/json": components["schemas"]["StatsGet"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get by time range */
+        get: {
+            parameters: {
+                query?: {
+                    start?: string;
+                    end?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["AppointmentGetDTO"]>;
+                        "application/json": Array<components["schemas"]["AppointmentGetDTO"]>;
+                        "text/json": Array<components["schemas"]["AppointmentGetDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get by ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AppointmentGetOutDTO"];
+                        "application/json": components["schemas"]["AppointmentGetOutDTO"];
+                        "text/json": components["schemas"]["AppointmentGetOutDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all appointments */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                        "application/json": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                        "text/json": Array<components["schemas"]["AppointmentGetDTO2"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/gen-operations-sheet/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Operations Sheet excel */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/gen-operations-sheet/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Operations Sheet pdf */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/gen-operations-sheet/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Operations Sheet PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/gen-operations-sheet/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Operations Sheet PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/operation-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an operation sheet */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/operation-sheet/by-project/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find operation sheet by project ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Certificate of an appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Certificate"];
+                        "application/json": components["schemas"]["Certificate"];
+                        "text/json": components["schemas"]["Certificate"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a certificate */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "text/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{id}/certificate/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Certificate Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/certificate/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Certificate PDF
+         * @description Generates the Certificate in PDF format for an Appointment. The id parameter is the Appointment ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/certificate/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Certificate PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/certificate/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Certificate PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/allCertificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all certificates */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["CertificateGet"]>;
+                        "application/json": Array<components["schemas"]["CertificateGet"]>;
+                        "text/json": Array<components["schemas"]["CertificateGet"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/rodents/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Rodents Excel
+         * @description Generates the Rodents Template in Ods format for an Appointment. The id parameter is the Appointment ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/rodents/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Rodents PDF
+         * @description Generates the Rodents Template in PDF format for an Appointment. The id parameter is the Appointment ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/rodents/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Rodents PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/rodents/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Rodents PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentId}/rodent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Rodent Register
+         * @description Updates the Rodent Register for a specific appointment. The appointmentId parameter is the ID of the appointment.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RodentRegisterUpdateDTO"];
+                    "text/json": components["schemas"]["RodentRegisterUpdateDTO"];
+                    "application/*+json": components["schemas"]["RodentRegisterUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/rodent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rodent of an appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RodentRegister"];
+                        "application/json": components["schemas"]["RodentRegister"];
+                        "text/json": components["schemas"]["RodentRegister"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/upload-murino-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Murino Map
+         * @description Allows uploading the Murino Map (PNG or PDF)
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        ContentType?: string;
+                        ContentDisposition?: string;
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /** Format: int64 */
+                        Length?: number;
+                        Name?: string;
+                        FileName?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/murino-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get murino map file */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/mail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{id}/duplicate-from-previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Duplicate data from previous appointment
+         * @description Duplicates all data from the previous appointment in the same project to the current appointment. This includes operation sheets, rodent registers, certificates, treatment data, and reports.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -112,7 +1565,132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Certificate": {
+    "/api/Business/upload-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload system images */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        name?: string;
+                    } & {
+                        ContentType?: string;
+                        ContentDisposition?: string;
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /** Format: int64 */
+                        Length?: number;
+                        Name?: string;
+                        FileName?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Business/image/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get system image by name */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    name: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Business/image/{key}/{bucketName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get public R2 file */
+        get: {
+            parameters: {
+                query?: {
+                    expectedMime?: string;
+                };
+                header?: never;
+                path: {
+                    key: string;
+                    bucketName: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Business": {
         parameters: {
             query?: never;
             header?: never;
@@ -135,9 +1713,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Certificate"]>;
-                        "application/json": Array<components["schemas"]["Certificate"]>;
-                        "text/json": Array<components["schemas"]["Certificate"]>;
+                        "text/plain": Array<components["schemas"]["Business"]>;
+                        "application/json": Array<components["schemas"]["Business"]>;
+                        "text/json": Array<components["schemas"]["Business"]>;
                     };
                 };
             };
@@ -153,9 +1731,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CertificateCreateDTO"];
-                    "text/json": components["schemas"]["CertificateCreateDTO"];
-                    "application/*+json": components["schemas"]["CertificateCreateDTO"];
+                    "application/json": components["schemas"]["BusinessCreateDTO"];
+                    "text/json": components["schemas"]["BusinessCreateDTO"];
+                    "application/*+json": components["schemas"]["BusinessCreateDTO"];
                 };
             };
             responses: {
@@ -165,9 +1743,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Certificate"];
-                        "application/json": components["schemas"]["Certificate"];
-                        "text/json": components["schemas"]["Certificate"];
+                        "text/plain": components["schemas"]["Business"];
+                        "application/json": components["schemas"]["Business"];
+                        "text/json": components["schemas"]["Business"];
                     };
                 };
                 /** @description Bad Request */
@@ -189,64 +1767,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Certificate/{id}/gen-certificate-word": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Certificate Word */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectCertificateExport"];
-                    "text/json": components["schemas"]["ProjectCertificateExport"];
-                    "application/*+json": components["schemas"]["ProjectCertificateExport"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Certificate/{id}": {
+    "/api/Business/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -271,9 +1792,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Certificate"];
-                        "application/json": components["schemas"]["Certificate"];
-                        "text/json": components["schemas"]["Certificate"];
+                        "text/plain": components["schemas"]["Business"];
+                        "application/json": components["schemas"]["Business"];
+                        "text/json": components["schemas"]["Business"];
                     };
                 };
                 /** @description Not Found */
@@ -337,9 +1858,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CertificatePatchDTO"];
-                    "text/json": components["schemas"]["CertificatePatchDTO"];
-                    "application/*+json": components["schemas"]["CertificatePatchDTO"];
+                    "application/json": components["schemas"]["BusinessPatchDTO"];
+                    "text/json": components["schemas"]["BusinessPatchDTO"];
+                    "application/*+json": components["schemas"]["BusinessPatchDTO"];
                 };
             };
             responses: {
@@ -376,7 +1897,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Certificate/{id}/reactivate": {
+    "/api/Business/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -629,6 +2150,77 @@ export interface paths {
         };
         trace?: never;
     };
+    "/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualizar cliente por ID */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClientPatchDTO"];
+                    "text/json": components["schemas"]["ClientPatchDTO"];
+                    "application/*+json": components["schemas"]["ClientPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Client/search-by-ruc/{ruc}": {
         parameters: {
             query?: never;
@@ -693,7 +2285,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Reactivate by id */
+        /** Reactive client by Id */
         patch: {
             parameters: {
                 query?: never;
@@ -705,6 +2297,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description No Content */
                 204: {
                     headers: {
@@ -755,6 +2354,17 @@ export interface paths {
                         "text/json": Array<components["schemas"]["ProjectSummary"]>;
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         put?: never;
@@ -787,6 +2397,17 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -934,7 +2555,316 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Project/{id}/update-state": {
+    "/api/Project/{id}/v2": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one by Id v2 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectSummarySingle"];
+                        "application/json": components["schemas"]["ProjectSummarySingle"];
+                        "text/json": components["schemas"]["ProjectSummarySingle"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one by Id v3 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectSummarySingle2"];
+                        "application/json": components["schemas"]["ProjectSummarySingle2"];
+                        "text/json": components["schemas"]["ProjectSummarySingle2"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/desactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Deactivate Project by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/appointment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Appointment
+         * @description Creates and adds a new appointment to a project
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentCreateDTO"];
+                    "text/json": components["schemas"]["AppointmentCreateDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{proj_id}/appointment/{app_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Desactivate Appointment
+         * @description Deactivates an appointment from a project
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit Appointment
+         * @description Edits an appointment from a project
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentPatchDTO"];
+                    "text/json": components["schemas"]["AppointmentPatchDTO"];
+                    "application/*+json": components["schemas"]["AppointmentPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Project"];
+                        "application/json": components["schemas"]["Project"];
+                        "text/json": components["schemas"]["Project"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Project/{proj_id}/cancel/{app_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -947,7 +2877,61 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Project State */
+        /** Cancel or reactivate an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proj_id: string;
+                    app_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentCancelDTO"];
+                    "text/json": components["schemas"]["AppointmentCancelDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCancelDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Project/{id}/times": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update enterTime and leaveTime of a Appointment */
         patch: {
             parameters: {
                 query?: never;
@@ -959,9 +2943,867 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectStatusPatchDTO"];
-                    "text/json": components["schemas"]["ProjectStatusPatchDTO"];
-                    "application/*+json": components["schemas"]["ProjectStatusPatchDTO"];
+                    "application/json": components["schemas"]["UpdateAppointmentTimesDto"];
+                    "text/json": components["schemas"]["UpdateAppointmentTimesDto"];
+                    "application/*+json": components["schemas"]["UpdateAppointmentTimesDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule Excel
+         * @description Generates the Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule PDF
+         * @description Generates the Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule2/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule Format 2 excel
+         * @description Generates the secons Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule2/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Schedule Format 2 PDF
+         * @description Generates the secons Schedule spreadsheet for a project.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinfection/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinfection Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinsection/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinsection Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/ratextermination/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Rat Extermination Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/disinfestation/sustainment/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Disinfestation Sustainment Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/desinsecticides/desratization/sustainment/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Desinsecticides Desratization Sustainment Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/sustainability/desratization/report/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Sustainability Desratization Report Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReportGenerationRequest"];
+                    "text/json": components["schemas"]["ReportGenerationRequest"];
+                    "application/*+json": components["schemas"]["ReportGenerationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Schedule PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/schedule/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Schedule PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Project/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactivate by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one by ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Deactivate by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Partial edit one by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
                 };
             };
             responses: {
@@ -998,32 +3840,22 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Project/{id}/gen-operations-sheet": {
+    "/api/ProjectOperationSheet": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Generate Operations Sheet */
-        post: {
+        /** Get all */
+        get: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    id: string;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "text/json": components["schemas"]["ProjectOperationSheetExport"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetExport"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -1031,13 +3863,43 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
+                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
                     };
                 };
-                /** @description Not Found */
-                404: {
+            };
+        };
+        put?: never;
+        /** Create */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                    "text/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                    "application/*+json": components["schemas"]["ProjectOperationSheetCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1055,7 +3917,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Project/{id}/reactivate": {
+    "/api/ProjectOperationSheet/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -1257,7 +4119,6 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Partial edit one by id */
         patch: {
             parameters: {
                 query?: never;
@@ -1372,7 +4233,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/Quotation/{id}/gen-excel": {
+    "/api/Quotation/{id}/gen-pdf": {
         parameters: {
             query?: never;
             header?: never;
@@ -1381,7 +4242,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Generate Excel */
+        /** Generate PDF */
         post: {
             parameters: {
                 query?: never;
@@ -1391,13 +4252,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["QuotationExportDto"];
-                    "text/json": components["schemas"]["QuotationExportDto"];
-                    "application/*+json": components["schemas"]["QuotationExportDto"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -1427,6 +4282,187 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/{id}/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Quotation PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/{id}/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Quotation PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/{id}/gen-excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Excel */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactive quotation by Id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/Quotation/approved/not-associated": {
@@ -1465,53 +4501,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/Quotation/{id}/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reactivate by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
         trace?: never;
     };
     "/api/Service": {
@@ -1722,260 +4711,6 @@ export interface paths {
         trace?: never;
     };
     "/api/Service/{id}/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reactivate by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Supply": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Supply"]>;
-                        "application/json": Array<components["schemas"]["Supply"]>;
-                        "text/json": Array<components["schemas"]["Supply"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Create */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["SupplyCreateDTO"];
-                    "text/json": components["schemas"]["SupplyCreateDTO"];
-                    "application/*+json": components["schemas"]["SupplyCreateDTO"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Supply"];
-                        "application/json": components["schemas"]["Supply"];
-                        "text/json": components["schemas"]["Supply"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Supply/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get one by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Supply"];
-                        "application/json": components["schemas"]["Supply"];
-                        "text/json": components["schemas"]["Supply"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Deactivate by id */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Partial edit one by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["SupplyPatchDTO"];
-                    "text/json": components["schemas"]["SupplyPatchDTO"];
-                    "application/*+json": components["schemas"]["SupplyPatchDTO"];
-                };
-            };
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Supply/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -2276,6 +5011,72 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/TreatmentProduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Treatment Products of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["TreatmentProductDTO"]>;
+                        "application/json": Array<components["schemas"]["TreatmentProductDTO"]>;
+                        "text/json": Array<components["schemas"]["TreatmentProductDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Treatment Products of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                    "text/json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                    "application/*+json": Array<components["schemas"]["TreatmentProductInDTO"]>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/User": {
         parameters: {
             query?: never;
@@ -2339,6 +5140,245 @@ export interface paths {
                 };
             };
         };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserUpdateDTO"];
+                    "text/json": components["schemas"]["UserUpdateDTO"];
+                    "application/*+json": components["schemas"]["UserUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/TreatmentArea": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Treatment Areas of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                        "application/json": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                        "text/json": Array<components["schemas"]["TreatmentAreaGetDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Treatment Areas of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                    "text/json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                    "application/*+json": Array<components["schemas"]["TreatmentAreaInDTO"]>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/CompleteReport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get CompleteReport of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CompleteReportDTO"];
+                        "application/json": components["schemas"]["CompleteReportDTO"];
+                        "text/json": components["schemas"]["CompleteReportDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update CompleteReport of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateCompleteReportDTO"];
+                    "text/json": components["schemas"]["UpdateCompleteReportDTO"];
+                    "application/*+json": components["schemas"]["UpdateCompleteReportDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/CompleteReport/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Complete Report as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -2347,17 +5387,800 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Appointment/{appointmentid}/Disinfection-Desinsect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Disinfection-Desinsect of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report1DTO"];
+                        "application/json": components["schemas"]["Report1DTO"];
+                        "text/json": components["schemas"]["Report1DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Disinfection-Desinsect of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport1DTO"];
+                    "text/json": components["schemas"]["UpdateReport1DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport1DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Disinfection-Desinsect/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Disinfection-Desinsect as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RodenticideReport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rodenticide Report of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report2DTO"];
+                        "application/json": components["schemas"]["Report2DTO"];
+                        "text/json": components["schemas"]["Report2DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Rodenticide Report of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport2DTO"];
+                    "text/json": components["schemas"]["UpdateReport2DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport2DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RodenticideReport/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Rodenticide Report as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report3 of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report3DTO"];
+                        "application/json": components["schemas"]["Report3DTO"];
+                        "text/json": components["schemas"]["Report3DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Report3 of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport3DTO"];
+                    "text/json": components["schemas"]["UpdateReport3DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport3DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/Report3/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Report3 as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RatExterminationSubst": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get RatExterminationSubst of an Appointment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Report4DTO"];
+                        "application/json": components["schemas"]["Report4DTO"];
+                        "text/json": components["schemas"]["Report4DTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update RatExterminationSubst of an Appointment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReport4DTO"];
+                    "text/json": components["schemas"]["UpdateReport4DTO"];
+                    "application/*+json": components["schemas"]["UpdateReport4DTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentid}/RatExterminationSubst/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download RatExterminationSubst as DOCX */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Product": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all products & solvents */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                        "application/json": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                        "text/json": Array<components["schemas"]["ProductGetAllOutputDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a product with Solvents */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCreateInputDTO"];
+                    "text/json": components["schemas"]["ProductCreateInputDTO"];
+                    "application/*+json": components["schemas"]["ProductCreateInputDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Product/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a product */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update a product and its solvents */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductUpdateInputDTO"];
+                    "text/json": components["schemas"]["ProductUpdateInputDTO"];
+                    "application/*+json": components["schemas"]["ProductUpdateInputDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SuccessResult"];
+                        "application/json": components["schemas"]["SuccessResult"];
+                        "text/json": components["schemas"]["SuccessResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotFoundResult"];
+                        "application/json": components["schemas"]["NotFoundResult"];
+                        "text/json": components["schemas"]["NotFoundResult"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ErrorResult"];
+                        "application/json": components["schemas"]["ErrorResult"];
+                        "text/json": components["schemas"]["ErrorResult"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ErrorResult"];
+                        "application/json": components["schemas"]["ErrorResult"];
+                        "text/json": components["schemas"]["ErrorResult"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Product/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactivate a product */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Certificate: {
+        AppointmentCancelDTO: {
+            cancelled?: boolean;
+        };
+        AppointmentCertificatePatchDTO: {
+            /** Format: date-time */
+            expirationDate?: string | null;
+        };
+        AppointmentCreateDTO: {
+            /** Format: date-time */
+            dueDate?: string;
+            serviceIds?: Array<string>;
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
+        };
+        AppointmentCreateDTOThroughProject: {
+            /** Format: date-time */
+            dueDate: string;
+            /** @description Array of Service IDs */
+            services: Array<string>;
+        };
+        AppointmentGetDTO: {
+            project: components["schemas"]["Project"];
             /** Format: int32 */
-            projectNumber: number;
+            certificateNumber?: number | null;
             /** Format: date-time */
-            creationDate: string;
+            dueDate: string;
             /** Format: date-time */
-            expirationDate: string;
+            actualDate?: string | null;
+            client: components["schemas"]["Client"];
+            /** Format: uuid */
+            id: string;
+            isActive: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt: string;
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
+        };
+        AppointmentGetDTO2: {
+            /** Format: int32 */
+            appointmentNumber?: number;
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: date-time */
+            actualDate?: string;
+            services?: Array<components["schemas"]["Service"]>;
+            project?: components["schemas"]["Project"];
+            client?: components["schemas"]["Client"];
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2366,43 +6189,131 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        CertificateCreateDTO: {
+        AppointmentGetOutDTO: {
             /** Format: uuid */
-            projectId: string;
+            id: string;
+            /** Format: int32 */
+            appointmentNumber: number;
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
             /** Format: date-time */
-            creationDate: string;
+            dueDate: string;
             /** Format: date-time */
-            expirationDate: string;
+            actualDate?: string | null;
+            cancelled: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            modifiedAt?: string | null;
+            isActive: boolean;
+            /** Format: int32 */
+            orderedNumber: number;
+            project: components["schemas"]["ProjectBasicInfoDTO"];
+            servicesIds: Array<string>;
+            treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;
+            treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
         };
-        CertificatePatchDTO: Record<string, never>;
+        AppointmentPatchDTO: {
+            /** Format: int32 */
+            orderNumber?: number | null;
+            /** Format: date-time */
+            dueDate?: string | null;
+            /** Format: date-time */
+            actualDate?: string | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
+        };
+        Business: {
+            digesaNumber: string;
+            address: string;
+            email: string;
+            ruc: string;
+            phones: string;
+            directorName: string;
+            bankName: string;
+            bankAccount: string;
+            bankCCI: string;
+            deductions: string;
+            thechnicalDirectorName: string;
+            thechnicalDirectorPosition: string;
+            thechnicalDirectorCIP: string;
+            responsibleName: string;
+            responsiblePosition: string;
+            responsibleCIP: string;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        BusinessCreateDTO: Record<string, never>;
+        BusinessPatchDTO: {
+            digesaNumber?: string | null;
+            address?: string | null;
+            email?: string | null;
+            ruc?: string | null;
+            phones?: string | null;
+            directorName?: string | null;
+            bankName?: string | null;
+            bankAccount?: string | null;
+            bankCCI?: string | null;
+            deductions?: string | null;
+            thechnicalDirectorName?: string | null;
+            thechnicalDirectorPosition?: string | null;
+            thechnicalDirectorCIP?: string | null;
+            responsibleName?: string | null;
+            responsiblePosition?: string | null;
+            responsibleCIP?: string | null;
+        };
+        Certificate: {
+            /** Format: uuid */
+            projectAppointmentId: string;
+            /** Format: date-time */
+            expirationDate?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        CertificateGet: {
+            projectAppointment?: components["schemas"]["ProjectAppointment"];
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            expirationDate?: string;
+            project?: components["schemas"]["Project"];
+            client?: components["schemas"]["Client"];
+            services?: Array<components["schemas"]["Service"]>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         Client: {
+            /** Format: int32 */
+            clientNumber: number;
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
             clientLocations: Array<components["schemas"]["ClientLocation"]>;
             phoneNumber: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        Client2: {
-            typeDocument: string;
-            typeDocumentValue: string;
-            razonSocial?: string | null;
-            businessType: string;
-            name: string;
-            fiscalAddress: string;
-            email: string;
-            clientLocations: components["schemas"];
-            phoneNumber: string;
+            contactName?: string | null;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2415,12 +6326,13 @@ export interface components {
             typeDocument: string;
             typeDocumentValue: string;
             razonSocial?: string | null;
-            businessType: string;
+            businessType?: string | null;
             name: string;
             fiscalAddress: string;
             email: string;
-            clientLocations: Array<components["schemas"]["ClientLocationDTO"]>;
+            clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
             phoneNumber: string;
+            contactName?: string | null;
         };
         ClientLocation: {
             address: string;
@@ -2433,6 +6345,8 @@ export interface components {
             modifiedAt?: string;
         };
         ClientLocationDTO: {
+            /** Format: uuid */
+            id?: string | null;
             address: string;
         };
         ClientPatchDTO: {
@@ -2442,14 +6356,68 @@ export interface components {
             fiscalAddress?: string | null;
             email?: string | null;
             phoneNumber?: string | null;
+            contactName?: string | null;
+            clientLocations?: Array<components["schemas"]["ClientLocationDTO"]> | null;
+        };
+        CompleteReport: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        CompleteReportDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content: Array<components["schemas"]["ContentSection"]>;
+        };
+        ContentSection: components["schemas"]["ContentSectionTextBlock"] | components["schemas"]["ContentSectionTextArea"];
+        ContentSectionTextArea: {
+            /** @enum {string} */
+            $type?: "textArea";
+            content: string;
+        };
+        ContentSectionTextBlock: {
+            /** @enum {string} */
+            $type?: "textBlock";
+            title: string;
+            numbering: string;
+            /** Format: int32 */
+            level: number;
+            sections: Array<unknown>;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
         } | null;
+        Error: {
+            code?: string | null;
+            details?: string | null;
+        };
+        ErrorResult: {
+            message?: string | null;
+            errors?: Array<components["schemas"]["Error"]> | null;
+            success?: boolean;
+            failure?: boolean;
+        };
         FileContentResult: {
             /** Format: byte */
             fileContents?: string;
+            contentType?: string | null;
+            fileDownloadName?: string | null;
+            /** Format: date-time */
+            lastModified?: string | null;
+            entityTag?: components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
+        FileResult: {
             contentType?: string | null;
             fileDownloadName?: string | null;
             /** Format: date-time */
@@ -2471,6 +6439,16 @@ export interface components {
             /** Format: int32 */
             refreshExpiresIn: number;
         };
+        NotFoundResult: {
+            message?: string | null;
+            errors?: Array<components["schemas"]["Error"]> | null;
+            success?: boolean;
+            failure?: boolean;
+        };
+        /** @enum {unknown|null} */
+        NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
+        /** @enum {unknown|null} */
+        NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -2479,15 +6457,52 @@ export interface components {
             detail?: string | null;
             instance?: string | null;
         };
+        ProductAmountSolventOutputDTO: {
+            /** Format: uuid */
+            id: string;
+            amountAndSolvent: string;
+        };
+        ProductAmountSolventUpdateDTO: {
+            /** Format: uuid */
+            id?: string | null;
+            amountAndSolvent: string;
+        };
+        ProductCreateInputDTO: {
+            name: string;
+            activeIngredient: string;
+            solvents: Array<string>;
+        };
+        ProductDTO: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            activeIngredient: string;
+        };
+        ProductGetAllOutputDTO: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            activeIngredient: string;
+            isActive: boolean;
+            productAmountSolvents: Array<components["schemas"]["ProductAmountSolventOutputDTO"]>;
+        };
+        ProductUpdateInputDTO: {
+            name?: string | null;
+            activeIngredient?: string | null;
+            solvents?: Array<components["schemas"]["ProductAmountSolventUpdateDTO"]> | null;
+        };
         Project: {
+            /** Format: int32 */
+            projectNumber?: number;
             address: string;
             /** Format: uint32 */
             area: number;
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
-            /** Format: int32 */
-            orderNumber?: number;
+            ambients?: Array<string>;
+            /** Format: double */
+            price: number;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2496,7 +6511,65 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        ProjectCertificateExport: Record<string, never>;
+        ProjectAppointment: {
+            /** Format: int32 */
+            appointmentNumber: number;
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            /** Format: date-time */
+            dueDate: string;
+            /** Format: date-time */
+            actualDate?: string | null;
+            cancelled?: boolean;
+            companyRepresentative?: string | null;
+            murinoMapKey?: string | null;
+            murinoMapUrl?: string | null;
+            completeReport?: components["schemas"]["CompleteReport"];
+            report1?: components["schemas"]["Report1"];
+            report2?: components["schemas"]["Report2"];
+            report3?: components["schemas"]["Report3"];
+            report4?: components["schemas"]["Report4"];
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectAppointmentDTO: {
+            /** Format: int32 */
+            certificateNumber?: number | null;
+            /** Format: date-time */
+            dueDate: string;
+            /** Format: date-time */
+            actualDate?: string | null;
+            /** Format: int32 */
+            appointmentNumber?: number | null;
+            cancelled?: boolean | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
+            servicesIds: Array<string>;
+            projectOperationSheet: components["schemas"]["ProjectOperationSheet"];
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectBasicInfoDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            projectNumber: number;
+            address: string;
+            services: Array<components["schemas"]["Service"]>;
+            status?: components["schemas"]["ProjectStatus"];
+        };
         ProjectCreateDTO: {
             /** Format: uuid */
             clientId: string;
@@ -2509,32 +6582,137 @@ export interface components {
             area: number;
             /** Format: uint32 */
             spacesCount: number;
+            companyRepresentative?: string | null;
+            /** Format: double */
+            price: number;
+            appointmentCreateDTOs: Array<components["schemas"]["AppointmentCreateDTOThroughProject"]>;
+            ambients?: Array<string>;
         };
-        ProjectOperationSheetExport: {
-            operationDate?: string;
-            enterTime?: string;
-            leaveTime?: string;
-            sanitaryCondition?: string;
-            treatedAreas?: string;
-            insects?: string;
+        ProjectOperationSheet: {
+            /** Format: uuid */
+            projectAppointmentId: string;
+            /** Format: date-time */
+            operationDate: string;
+            treatedAreas: string;
+            insects: string;
+            rodents: string;
+            rodentConsumptionPartial?: string;
+            rodentConsumptionTotal?: string;
+            rodentConsumptionDeteriorated?: string;
+            rodentConsumptionNone?: string;
+            otherPlagues: string;
+            aspersionManual: boolean;
+            aspercionMotor: boolean;
+            nebulizacionFrio: boolean;
+            nebulizacionCaliente: boolean;
+            colocacionCebosCebaderos: string;
+            numeroCeboTotal: string;
+            numeroCeboRepuestos: string;
+            nroPlanchasPegantes: string;
+            nroJaulasTomahawk: string;
+            insecticide: string;
+            insecticide2: string;
+            insecticideAmount: string;
+            insecticideAmount2: string;
+            rodenticide: string;
+            rodenticideAmount: string;
+            desinfectant: string;
+            desinfectantAmount: string;
+            otherProducts: string;
+            otherProductsAmount: string;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            staff1: string;
+            staff2: string;
+            staff3: string;
+            staff4: string;
+            observations: string;
+            recommendations: string;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectOperationSheetCreateDTO: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            operationDate?: string | null;
+            treatedAreas?: string | null;
+            insects?: string | null;
             rodents?: string;
-            otherPlagues?: string;
-            insecticide?: string;
-            rodenticide?: string;
-            desinfectant?: string;
-            otherProducts?: string;
-            insecticideAmount?: string;
-            rodenticideAmount?: string;
-            desinfectantAmount?: string;
-            otherProductsAmount?: string;
-            ratExtermination1?: string;
-            ratExtermination2?: string;
-            ratExtermination3?: string;
-            ratExtermination4?: string;
-            staff1?: string;
-            staff2?: string;
-            staff3?: string;
-            staff4?: string;
+            otherPlagues?: string | null;
+            insecticide?: string | null;
+            insecticide2?: string | null;
+            rodenticide?: string | null;
+            desinfectant?: string | null;
+            otherProducts?: string | null;
+            insecticideAmount?: string | null;
+            insecticideAmount2?: string | null;
+            rodenticideAmount?: string | null;
+            desinfectantAmount?: string | null;
+            otherProductsAmount?: string | null;
+            staff1?: string | null;
+            staff2?: string | null;
+            staff3?: string | null;
+            staff4?: string | null;
+            aspersionManual?: boolean | null;
+            aspercionMotor?: boolean | null;
+            nebulizacionFrio?: boolean | null;
+            nebulizacionCaliente?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            observations?: string | null;
+            recommendations?: string | null;
+        };
+        ProjectOperationSheetPatchDTO: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            operationDate?: string | null;
+            treatedAreas?: string | null;
+            insects?: string | null;
+            rodents?: string | null;
+            otherPlagues?: string | null;
+            rodentConsumptionPartial?: string | null;
+            rodentConsumptionTotal?: string | null;
+            rodentConsumptionDeteriorated?: string | null;
+            rodentConsumptionNone?: string | null;
+            insecticide?: string | null;
+            insecticide2?: string | null;
+            rodenticide?: string | null;
+            desinfectant?: string | null;
+            otherProducts?: string | null;
+            insecticideAmount?: string | null;
+            insecticideAmount2?: string | null;
+            rodenticideAmount?: string | null;
+            desinfectantAmount?: string | null;
+            otherProductsAmount?: string | null;
+            staff1?: string | null;
+            staff2?: string | null;
+            staff3?: string | null;
+            staff4?: string | null;
+            aspersionManual?: boolean | null;
+            aspercionMotor?: boolean | null;
+            nebulizacionFrio?: boolean | null;
+            nebulizacionCaliente?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            observations?: string | null;
+            recommendations?: string | null;
         };
         ProjectPatchDTO: {
             /** Format: uuid */
@@ -2548,24 +6726,75 @@ export interface components {
             area?: number | null;
             /** Format: uint32 */
             spacesCount?: number | null;
+            /** Format: double */
+            price?: number | null;
+            ambients?: Array<string> | null;
         };
         /** @enum {unknown} */
-        ProjectStatus: "Pending" | "Approved" | "Rejected";
-        ProjectStatusPatchDTO: {
-            status?: components["schemas"]["ProjectStatus"];
-        };
+        ProjectStatus: "Pending" | "Completed" | "Rejected";
         ProjectSummary: {
-            client?: components["schemas"]["Client"];
-            services?: Array<components["schemas"]["Service"]>;
+            client: components["schemas"]["Client"];
+            services: Array<components["schemas"]["Service"]>;
             quotation?: components["schemas"]["Quotation"];
+            /** Format: int32 */
+            projectNumber: number;
             address: string;
             /** Format: uint32 */
             area: number;
             status: components["schemas"]["ProjectStatus"];
             /** Format: uint32 */
             spacesCount: number;
+            /** Format: double */
+            price: number;
+            ambients: Array<string>;
+            appointments: Array<string>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectSummarySingle: {
+            client: components["schemas"]["Client"];
+            services: Array<components["schemas"]["Service"]>;
+            quotation?: components["schemas"]["Quotation"];
             /** Format: int32 */
-            orderNumber: number;
+            projectNumber: number;
+            address: string;
+            /** Format: uint32 */
+            area: number;
+            status: components["schemas"]["ProjectStatus"];
+            /** Format: uint32 */
+            spacesCount: number;
+            /** Format: double */
+            price: number;
+            ambients: Array<string>;
+            appointments: Array<components["schemas"]["ProjectAppointmentDTO"]>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ProjectSummarySingle2: {
+            client: components["schemas"]["Client"];
+            services: Array<components["schemas"]["Service"]>;
+            quotation?: components["schemas"]["Quotation"];
+            /** Format: int32 */
+            projectNumber: number;
+            address: string;
+            /** Format: uint32 */
+            area: number;
+            status: components["schemas"]["ProjectStatus"];
+            /** Format: uint32 */
+            spacesCount: number;
+            /** Format: double */
+            price: number;
+            appointments: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2575,16 +6804,29 @@ export interface components {
             modifiedAt?: string;
         };
         Quotation: {
-            client?: components["schemas"]["Client2"];
-            services?: Array<components["schemas"]>;
+            /** Format: int32 */
+            quotationNumber: number;
+            client: components["schemas"]["Client"];
+            services?: Array<unknown>;
             status: components["schemas"]["QuotationStatus"];
-            description: string;
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
+            frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
-            termsAndConditions: string;
+            /** Format: date-time */
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationService"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2594,16 +6836,29 @@ export interface components {
             modifiedAt?: string;
         } | null;
         Quotation2: {
-            client?: components["schemas"]["Client"];
+            /** Format: int32 */
+            quotationNumber: number;
+            client: components["schemas"]["Client"];
             services?: Array<components["schemas"]["Service"]>;
             status: components["schemas"]["QuotationStatus"];
-            description: string;
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
+            frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
-            termsAndConditions: string;
+            /** Format: date-time */
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationService"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -2616,31 +6871,109 @@ export interface components {
             /** Format: uuid */
             clientId: string;
             serviceIds: Array<string>;
-            description: string;
-            /** Format: uint32 */
-            area: number;
-            /** Format: uint32 */
-            spacesCount: number;
+            frequency: components["schemas"]["QuotationFrequency"];
             hasTaxes: boolean;
-            termsAndConditions: string;
-        };
-        QuotationExportDto: {
             /** Format: date-time */
-            validUntil: string;
-            guarantee: string;
-            deliverables: string;
+            creationDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            serviceAddress: string;
+            paymentMethod: string;
+            others: string;
+            availability: string;
+            quotationServices: Array<components["schemas"]["QuotationServiceCreateDTO"]>;
+            /** @description Name and description of the Desinsectant to use */
+            desinsectant?: string | null;
+            /** @description Name and description of the Rodenticide to use */
+            derodent?: string | null;
+            /** @description Name and description of the Disinfectant to use */
+            disinfectant?: string | null;
+            termsAndConditions?: Array<string>;
         };
+        QuotationData: {
+            /** Format: int32 */
+            accepted: number;
+            /** Format: int32 */
+            rejected: number;
+        };
+        /** @enum {unknown} */
+        QuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual";
         QuotationPatchDTO: {
             /** Format: uuid */
             clientId?: string | null;
             serviceIds?: Array<string> | null;
-            description?: string | null;
-            /** Format: uint32 */
-            area?: number | null;
-            /** Format: uint32 */
-            spacesCount?: number | null;
+            frequency?: components["schemas"]["NullableOfQuotationFrequency"];
             hasTaxes?: boolean | null;
-            termsAndConditions?: string | null;
+            /** Format: date-time */
+            creationDate?: string | null;
+            /** Format: date-time */
+            expirationDate?: string | null;
+            serviceAddress?: string | null;
+            paymentMethod?: string | null;
+            others?: string | null;
+            availability?: string | null;
+            quotationServices?: Array<components["schemas"]["QuotationServicePatchDTO"]> | null;
+            termsAndConditions?: Array<string> | null;
+            desinsectant?: string | null;
+            derodent?: string | null;
+            disinfectant?: string | null;
+        };
+        QuotationService: {
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
+            price?: number | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        QuotationServiceCreateDTO: {
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
+            price?: number | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
+        };
+        QuotationServicePatchDTO: {
+            /** Format: uuid */
+            id: string | null;
+            /**
+             * Format: int32
+             * @description Amount of items
+             */
+            amount: number;
+            /** @description Name and description of the service */
+            nameDescription: string;
+            /**
+             * Format: double
+             * @description Price of this service
+             */
+            price?: number | null;
+            /** @description Accesories to use for this service */
+            accesories?: string | null;
         };
         /** @enum {unknown} */
         QuotationStatus: "Pending" | "Approved" | "Rejected";
@@ -2650,6 +6983,148 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        Report1: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report1DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report2: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report2DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report3: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report3DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        Report4: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<unknown>;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Report4DTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]>;
+        };
+        ReportGenerationRequest: {
+            day: string;
+            month: string;
+            year: string;
+        };
+        RodentArea: {
+            name: string;
+            /** Format: int32 */
+            cebaderoTrampa: number;
+            frequency: components["schemas"]["QuotationFrequency"];
+            rodentConsumption: components["schemas"]["RodentConsumption"];
+            rodentResult: components["schemas"]["RodentResult"];
+            rodentMaterials: components["schemas"]["RodentMaterials"];
+            productName: string;
+            productDose: string;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        RodentAreaUpdateDTO: {
+            /** Format: uuid */
+            id?: string | null;
+            name?: string;
+            /** Format: int32 */
+            cebaderoTrampa?: number;
+            frequency?: components["schemas"]["QuotationFrequency"];
+            rodentConsumption?: components["schemas"]["RodentConsumption"];
+            rodentResult?: components["schemas"]["RodentResult"];
+            rodentMaterials?: components["schemas"]["RodentMaterials"];
+            productName?: string;
+            productDose?: string;
+        };
+        /** @enum {unknown} */
+        RodentConsumption: "Partial" | "Total" | "Deteriorated" | "NoConsumption";
+        /** @enum {unknown} */
+        RodentMaterials: "Fungicide" | "RodenticideOrBait" | "StickyTrap" | "Tomahawk";
+        RodentRegister: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            serviceDate: string;
+            rodentAreas?: Array<components["schemas"]["RodentArea"]>;
+            incidents?: string | null;
+            correctiveMeasures?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        RodentRegisterUpdateDTO: {
+            /** Format: date-time */
+            serviceDate?: string | null;
+            incidents?: string | null;
+            correctiveMeasures?: string | null;
+            rodentAreas?: Array<components["schemas"]["RodentAreaUpdateDTO"]>;
+            companyRepresentative?: string | null;
+        };
+        /** @enum {unknown} */
+        RodentResult: "Active" | "Inactive" | "RoedMto" | "Others";
         Service: {
             name: string;
             /** Format: uuid */
@@ -2666,6 +7141,20 @@ export interface components {
         ServicePatchDTO: {
             name?: string | null;
         };
+        StatsGet: {
+            monthlyServiceCount: {
+                [key: string]: number;
+            };
+            serviceCount: {
+                [key: string]: number;
+            };
+            monthlyProfit: {
+                [key: string]: number;
+            };
+            monthlyQuotations: {
+                [key: string]: components["schemas"]["QuotationData"];
+            };
+        };
         StringSegment: {
             buffer?: string | null;
             /** Format: int32 */
@@ -2675,29 +7164,16 @@ export interface components {
             value?: string | null;
             hasValue?: boolean;
         };
+        SuccessResult: {
+            success?: boolean;
+            failure?: boolean;
+        };
         SunatQueryResponse: {
             razonSocial?: string | null;
             name?: string | null;
             fiscalAddress?: string | null;
             businessType?: string | null;
-        };
-        Supply: {
-            name: string;
-            unit: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        SupplyCreateDTO: {
-            name: string;
-            unit: string;
-        };
-        SupplyPatchDTO: {
-            unit: string;
+            contactName?: string | null;
         };
         TermsAndConditions: {
             name: string;
@@ -2718,9 +7194,107 @@ export interface components {
             name?: string | null;
             content?: string | null;
         };
+        TreatmentAreaDTO: {
+            /** Format: uuid */
+            id: string;
+            areaName: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+        };
+        TreatmentAreaGetDTO: {
+            /** Format: uuid */
+            id: string;
+            areaName: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+            productsList: Array<string>;
+        };
+        TreatmentAreaInDTO: {
+            /** Format: uuid */
+            id?: string;
+            observedVector?: string | null;
+            infestationLevel?: string | null;
+            performedService?: string | null;
+            appliedTechnique?: string | null;
+            treatmentProductIds: Array<string>;
+        };
+        TreatmentProductDTO: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["ProductDTO"];
+            /** Format: uuid */
+            productAmountSolventId: string;
+            productAmountSolvent: string;
+            equipmentUsed?: string | null;
+            appliedTechnique?: string | null;
+            appliedService?: string | null;
+            appliedTime?: string | null;
+        };
+        TreatmentProductInDTO: {
+            /** Format: uuid */
+            id?: string | null;
+            /** Format: uuid */
+            productId: string;
+            /** Format: uuid */
+            productAmountSolventId: string;
+            equipmentUsed?: string | null;
+            appliedTechnique?: string | null;
+            appliedService?: string | null;
+            appliedTime?: string | null;
+        };
+        UpdateAppointmentTimesDto: {
+            enterTime?: string | null;
+            leaveTime?: string | null;
+        };
+        UpdateCompleteReportDTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport1DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport2DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport3DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
+        UpdateReport4DTO: {
+            /** Format: date-time */
+            signingDate?: string | null;
+            content?: Array<components["schemas"]["ContentSection"]> | null;
+        };
         UserReturn: {
+            name: string;
             username: string;
             email: string;
+        };
+        UserUpdateDTO: {
+            name: string;
+            email: string;
+            password?: string | null;
+        };
+        ValidationProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+            errors?: {
+                [key: string]: Array<string>;
+            };
         };
     };
     responses: never;

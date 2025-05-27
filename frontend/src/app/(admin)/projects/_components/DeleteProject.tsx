@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { RemoveProject } from "../actions";
-import { Project } from "../types";
 import { toastWrapper } from "@/types/toasts";
+import { ProjectSummary } from "./ProjectsDataTable";
 
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    project: Project,
+    project: ProjectSummary,
     showTrigger?: boolean;
 }
 

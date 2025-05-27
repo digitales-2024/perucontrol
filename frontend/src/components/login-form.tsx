@@ -57,6 +57,13 @@ export function LoginForm({
                 onSubmit={form.handleSubmit(login)}
             >
                 <div className="flex flex-col items-center gap-2 text-center">
+                    <img
+                        className="inline-block"
+                        src="/logo_perucontrol_com.dark.plain.svg"
+                        alt="Logo de PeruControl"
+                        width={180}
+                        height={180}
+                    />
                     <h1 className="text-2xl font-bold">
                         Bienvenido
                     </h1>

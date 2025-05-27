@@ -1,13 +1,34 @@
 # Dockerfile para produccion
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine
 WORKDIR /app
+
+# Static operations
+# Install fontconfig
+RUN apk add --no-cache fontconfig
+# Copy fonts
+COPY Fonts /usr/local/share/fonts/
+# Update font cache
+RUN fc-cache -f -v
+
+# Install LibreOffice headless
+RUN apk add --no-cache libreoffice libreoffice-lang-en_us libreoffice-lang-es
+
+# Create symlink to ensure 'soffice' command works
+RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+
+# Create directory for LibreOffice user profile to avoid permissions issues
+RUN mkdir -p /tmp/.config && chmod 777 /tmp/.config
 
 RUN dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Copy only what is neccesary for the build,
-# so that small changes dont reset the whole build
+# Copy deps file and install
+COPY PeruControl.csproj .
+RUN HUSKY=0 dotnet restore --locked-mode
+
+COPY Configuration ./Configuration
 COPY Controllers ./Controllers
+COPY Images ./Images
 COPY Migrations ./Migrations
 COPY Model ./Model
 COPY Properties ./Properties
@@ -17,18 +38,16 @@ COPY Program.cs .
 COPY PeruControl.csproj .
 COPY appsettings.json .
 
-RUN HUSKY=0 dotnet restore --locked-mode
-
 # Build binary
 RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out
 # Create a EF bundle for migrating the db
 RUN HUSKY=0 dotnet-ef migrations bundle -r linux-musl-x64
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
-WORKDIR /app
-COPY --from=build /app/out ./
-COPY --from=build /app/efbundle ./efbundle
-COPY --from=build /app/appsettings.json ./appsettings.json
+# FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
+# WORKDIR /app
+# COPY --from=build /app/out ./
+# COPY --from=build /app/efbundle ./efbundle
+# COPY --from=build /app/appsettings.json ./appsettings.json
 COPY Deployment/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY Templates ./Templates
 

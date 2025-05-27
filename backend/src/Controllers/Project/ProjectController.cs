@@ -7,78 +7,64 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectController(DatabaseContext db, ExcelTemplateService excelTemplate)
-    : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
+public class ProjectController(
+    DatabaseContext db,
+    ProjectService projectService,
+    LibreOfficeConverterService pdfConverterService,
+    EmailService emailService,
+    WhatsappService whatsappService
+) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
+    private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
+
     [EndpointSummary("Create")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> Create([FromBody] ProjectCreateDTO createDTO)
     {
-        var entity = createDTO.MapToEntity();
-        entity.Id = Guid.NewGuid();
-
-        // validate the client exists before creating the project
-        var client = await _context.Set<Client>().FindAsync(createDTO.ClientId);
-        if (client == null)
-            return NotFound("Cliente no encontrado");
-        entity.Client = client;
-
-        // if a quotation is provided, validate it exists
-        Quotation? quotation = null;
-        if (createDTO.QuotationId != null)
+        var (status, msg) = await projectService.CreateProject(createDTO);
+        return status switch
         {
-            quotation = await _context.Set<Quotation>().FindAsync(createDTO.QuotationId);
-            if (quotation == null)
-                return NotFound("Cotización no encontrada");
-            entity.Quotation = quotation;
-        }
-
-        // Validate all services exist
-        if (createDTO.Services.Count == 0)
-            return BadRequest("Debe ingresar al menos un servicio");
-
-        var services = await _context
-            .Set<Service>()
-            .Where(s => createDTO.Services.Contains(s.Id))
-            .ToListAsync();
-
-        if (services.Count != createDTO.Services.Count)
-            return NotFound("Algunos servicios no fueron encontrados");
-        entity.Services = services;
-
-        // Create and populate the project
-        _context.Add(entity);
-        await _context.SaveChangesAsync();
-
-        return Created();
+            201 => Created(),
+            400 => BadRequest(msg),
+            404 => NotFound(msg),
+            _ => throw new InvalidOperationException("Unexpected status code"),
+        };
     }
 
     [EndpointSummary("Get all")]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectSummary>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<IEnumerable<Project>>> GetAll()
     {
         var projects = await _context
-            .Projects.Include(c => c.Client)
+            .Projects.Include(p => p.Client)
+            .OrderByDescending(p => p.ProjectNumber)
             .Include(p => p.Services)
             .Include(q => q.Quotation)
+            .Include(p => p.Appointments)
             .ToListAsync();
 
         var projectSummaries = projects
             .Select(p => new ProjectSummary
             {
                 Id = p.Id,
+                ProjectNumber = p.ProjectNumber,
                 Client = p.Client,
                 Services = p.Services,
                 Status = p.Status,
                 SpacesCount = p.SpacesCount,
-                OrderNumber = p.OrderNumber,
                 Area = p.Area,
                 Address = p.Address,
                 Quotation = p.Quotation,
                 IsActive = p.IsActive,
+                Price = p.Price,
+                Ambients = p.Ambients,
+                CreatedAt = p.CreatedAt,
+                Appointments = p.Appointments.Select(a => a.DueDate).ToList(),
             })
             .ToList();
 
@@ -87,14 +73,18 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
 
     [EndpointSummary("Get one by Id")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ProjectSummary), StatusCodes.Status200OK)]
+    [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Project>> GetById(Guid id)
     {
         var project = await _context
-            .Projects.Include(c => c.Client)
+            .Projects.Include(p => p.Client)
             .Include(p => p.Services)
-            .Include(q => q.Quotation)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.ProjectOperationSheet)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
@@ -102,17 +92,133 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
             return NotFound();
         }
 
-        var projectSummary = new ProjectSummary
+        var projectSummary = new ProjectSummarySingle
         {
             Id = project.Id,
+            ProjectNumber = project.ProjectNumber,
             Client = project.Client,
             Services = project.Services,
             Status = project.Status,
             SpacesCount = project.SpacesCount,
-            OrderNumber = project.OrderNumber,
             Area = project.Area,
             Address = project.Address,
             Quotation = project.Quotation,
+            IsActive = project.IsActive,
+            Price = project.Price,
+            Ambients = project.Ambients,
+            Appointments = project
+                .Appointments.Select(a => new ProjectAppointmentDTO
+                {
+                    Id = a.Id,
+                    CreatedAt = a.CreatedAt,
+                    ModifiedAt = a.ModifiedAt,
+                    CertificateNumber = a.CertificateNumber,
+                    DueDate = a.DueDate,
+                    ActualDate = a.ActualDate,
+                    ServicesIds = a.Services.Select(s => s.Id).ToList(),
+                    ProjectOperationSheet = a.ProjectOperationSheet,
+                })
+                .ToList(),
+        };
+
+        return Ok(projectSummary);
+    }
+
+    [EndpointSummary("Get one by Id v2")]
+    [HttpGet("{id}/v2")]
+    [ProducesResponseType<ProjectSummarySingle>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProjectSummarySingle>> GetById2(Guid id)
+    {
+        var project = await _context
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Services)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.ProjectOperationSheet)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var projectSummary = new ProjectSummarySingle
+        {
+            Id = project.Id,
+            Client = project.Client,
+            Services = project.Services,
+            ProjectNumber = project.ProjectNumber,
+            Status = project.Status,
+            SpacesCount = project.SpacesCount,
+            Area = project.Area,
+            Address = project.Address,
+            Quotation = project.Quotation,
+            IsActive = project.IsActive,
+            Price = project.Price,
+            Ambients = project.Ambients,
+            Appointments = project
+                .Appointments.Select(a => new ProjectAppointmentDTO
+                {
+                    Id = a.Id,
+                    IsActive = a.IsActive,
+                    CreatedAt = a.CreatedAt,
+                    ModifiedAt = a.ModifiedAt,
+                    CertificateNumber = a.CertificateNumber,
+                    DueDate = a.DueDate,
+                    ActualDate = a.ActualDate,
+                    Cancelled = a.Cancelled,
+                    EnterTime = a.EnterTime,
+                    LeaveTime = a.LeaveTime,
+                    AppointmentNumber = a.AppointmentNumber,
+                    ServicesIds = a.Services.Select(s => s.Id).ToList(),
+                    ProjectOperationSheet = a.ProjectOperationSheet,
+                })
+                .OrderBy(a => a.DueDate)
+                .ToList(),
+            CreatedAt = project.CreatedAt,
+            ModifiedAt = project.ModifiedAt,
+        };
+
+        return Ok(projectSummary);
+    }
+
+    [EndpointSummary("Get one by Id v3")]
+    [HttpGet("{id}/v3")]
+    [ProducesResponseType<ProjectSummarySingle2>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Project>> GetById3(Guid id)
+    {
+        var project = await _context
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Services)
+            .Include(p => p.Quotation)
+            .Include(p => p.Appointments)
+            .ThenInclude(a => a.Services)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var projectSummary = new ProjectSummarySingle2
+        {
+            Id = project.Id,
+            Client = project.Client,
+            Services = project.Services,
+            ProjectNumber = project.ProjectNumber,
+            Status = project.Status,
+            SpacesCount = project.SpacesCount,
+            Area = project.Area,
+            Address = project.Address,
+            Quotation = project.Quotation,
+            IsActive = project.IsActive,
+            Price = project.Price,
+            Appointments = project.Appointments.Select(a => a.DueDate).ToList(),
+            CreatedAt = project.CreatedAt,
         };
 
         return Ok(projectSummary);
@@ -122,7 +228,7 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] ProjectPatchDTO patchDto)
     {
         var entity = await _dbSet.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == id);
@@ -193,90 +299,440 @@ public class ProjectController(DatabaseContext db, ExcelTemplateService excelTem
         return NoContent();
     }
 
-    [EndpointSummary("Update Project State")]
-    [HttpPatch("{id}/update-state")]
+    [EndpointSummary("Deactivate Project by id")]
+    [HttpDelete("{id}/desactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateState(Guid id, [FromBody] ProjectStatusPatchDTO patchDto)
+    public async Task<IActionResult> DeactivateProject(Guid id)
     {
-        var project = await _dbSet.FirstOrDefaultAsync(q => q.Id == id);
+        // Buscar el proyecto por ID
+        var project = await _context
+            .Projects.Include(p => p.Quotation) // Incluir la relación con la cotización
+            .FirstOrDefaultAsync(p => p.Id == id);
+
         if (project == null)
         {
-            return NotFound();
+            return NotFound("Proyecto no encontrado");
         }
 
-        // Actualizar el estado del proyecto y guardar en la base de datos
-        project.Status = patchDto.Status;
+        // Desactivar el proyecto
+        project.IsActive = false;
+
+        // Liberar la cotización asociada, si existe
+        if (project.Quotation != null)
+        {
+            project.Quotation = null;
+        }
+
+        // Guardar los cambios en la base de datos
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    [EndpointSummary("Generate Operations Sheet")]
-    [HttpPost("{id}/gen-operations-sheet")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateOperationsSheet(
+    [EndpointSummary("Add Appointment")]
+    [EndpointDescription("Creates and adds a new appointment to a project")]
+    [HttpPost("{id}/appointment")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> AddAppointment(
         Guid id,
-        [FromBody] ProjectOperationSheetExport export
+        [FromBody] AppointmentCreateDTO dto
     )
     {
-        var project = _dbSet
-            .Include(p => p.Client)
-            .Include(p => p.Services)
-            .FirstOrDefault(p => p.Id == id);
+        // verify project exists
+        // var project = await _context.Projects.FindAsync(id);
+        var project = await _context
+            .Projects.Include(p => p.Services)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
+            return NotFound("Proyecto no encontrado");
+
+        // Verify services exist
+        var invalidServices = dto.ServiceIds.Except(project.Services.Select(s => s.Id)).ToList();
+        if (invalidServices.Any())
         {
-            return NotFound(
-                $"Proyecto no encontrado (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            return BadRequest(
+                $"Los siguientes servicios no existen: {string.Join(", ", invalidServices)}"
             );
         }
 
-        var serviceNames = project.Services.Select(s => s.Name).ToList();
-        var serviceNamesStr = string.Join(", ", serviceNames);
-
-        var placeholders = new Dictionary<string, string>
+        // create appointment
+        var newAppointment = new ProjectAppointment
         {
-            { "{{fecha_op}}", export.OperationDate },
-            { "{{hora_ingreso}}", export.EnterTime },
-            { "{{hora_salida}}", export.LeaveTime },
-            { "{{razon_social}}", project.Client.RazonSocial ?? "" },
-            { "{{direccion}}", project.Address },
-            { "{{giro_empresa}}", project.Client.BusinessType },
-            { "{{condicion_sanitaria}}", export.SanitaryCondition },
-            { "{{areas_tratadas}}", export.TreatedAreas },
-            { "{{servicio}}", serviceNamesStr },
-            { "{{certificado_nro}}", "--prov--" },
-            { "{{insectos}}", export.Insects },
-            { "{{roedores}}", export.Rodents },
-            { "{{otros}}", export.OtherPlagues },
-            { "{{insecticida}}", export.Insecticide },
-            { "{{rodenticida}}", export.Rodenticide },
-            { "{{desinfectante}}", export.Desinfectant },
-            { "{{producto_otros}}", export.OtherProducts },
-            { "{{insecticida_cantidad}}", export.InsecticideAmount },
-            { "{{rodenticida_cantidad}}", export.RodenticideAmount },
-            { "{{desinfectante_cantidad}}", export.DesinfectantAmount },
-            { "{{producto_otros_cantidad}}", export.OtherProductsAmount },
-            { "{{monitoreo_desratizacion_1}}", export.RatExtermination1 },
-            { "{{monitoreo_desratizacion_2}}", export.RatExtermination2 },
-            { "{{monitoreo_desratizacion_3}}", export.RatExtermination3 },
-            { "{{monitoreo_desratizacion_4}}", export.RatExtermination4 },
-            { "{{personal_1}}", export.Staff1 },
-            { "{{personal_2}}", export.Staff2 },
-            { "{{personal_3}}", export.Staff3 },
-            { "{{personal_4}}", export.Staff4 },
+            DueDate = dto.DueDate,
+            Certificate = new(),
+            ProjectOperationSheet = new() { OperationDate = dto.DueDate },
+            RodentRegister = new() { ServiceDate = dto.DueDate },
+            Services = await _context
+                .Services.Where(s => dto.ServiceIds.Contains(s.Id))
+                .ToListAsync(),
         };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-            placeholders,
-            "Templates/ficha_operaciones.xlsx"
+
+        // append appointment to projects
+        _context.Entry(newAppointment).State = EntityState.Added;
+        _context.Entry(newAppointment.ProjectOperationSheet).State = EntityState.Added;
+        project.Appointments.Add(newAppointment);
+
+        await _context.SaveChangesAsync();
+
+        return Created();
+    }
+
+    [EndpointSummary("Edit Appointment")]
+    [EndpointDescription("Edits an appointment from a project")]
+    [HttpPatch("{proj_id}/appointment/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> PatchAppointment(
+        Guid proj_id,
+        Guid app_id,
+        [FromBody] AppointmentPatchDTO dto
+    )
+    {
+        // validate entity exists
+        var appointment = await _context
+            .ProjectAppointments.Include(a => a.Project)
+            .FirstOrDefaultAsync(a => a.Id == app_id);
+        if (appointment is null)
+            return NotFound("Evento no encontrado");
+        if (appointment.Project.Id != proj_id)
+            return BadRequest("Evento no pertenece al proyecto");
+
+        // If the appointment cert id is not null, AND
+        // the real date is being set, create and set the appointment cert id
+        if (appointment.CertificateNumber == null && dto.ActualDate.HasValue)
+        {
+            await _orderNumberLock.WaitAsync();
+            try
+            {
+                var newIdResult = await _context
+                    .Database.SqlQueryRaw<int>(
+                        "UPDATE \"ProjectOrderNumbers\" SET \"ProjectOrderNumberValue\" = \"ProjectOrderNumberValue\" + 1 RETURNING \"ProjectOrderNumberValue\""
+                    )
+                    .ToListAsync();
+
+                if (newIdResult.Count() == 0)
+                {
+                    throw new InvalidOperationException(
+                        "No se encontró el último ID de la cotización. Sistema corrupto."
+                    );
+                }
+
+                var newId = newIdResult[0];
+                appointment.CertificateNumber = newId;
+            }
+            finally
+            {
+                _orderNumberLock.Release();
+            }
+        }
+
+        dto.ApplyPatch(appointment);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [EndpointSummary("Cancel or reactivate an Appointment")]
+    [HttpPatch("{proj_id}/cancel/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CancelAppointment(
+        Guid proj_id,
+        Guid app_id,
+        [FromBody] AppointmentCancelDTO dto
+    )
+    {
+        var appointment = await _context.ProjectAppointments.FindAsync(app_id);
+        if (appointment == null)
+            return NotFound();
+
+        appointment.Cancelled = dto.Cancelled;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { appointment.AppointmentNumber, appointment.Cancelled });
+    }
+
+    [EndpointSummary("Update enterTime and leaveTime of a Appointment")]
+    [HttpPatch("{id}/times")]
+    public async Task<IActionResult> UpdateAppointmentTimes(
+        Guid id,
+        [FromBody] UpdateAppointmentTimesDto dto
+    )
+    {
+        var appointment = await _context.ProjectAppointments.FindAsync(id);
+
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        appointment.EnterTime = dto.EnterTime;
+        appointment.LeaveTime = dto.LeaveTime;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [EndpointSummary("Desactivate Appointment")]
+    [EndpointDescription("Deactivates an appointment from a project")]
+    [HttpDelete("{proj_id}/appointment/{app_id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Project>> DeactivateAppointment(Guid proj_id, Guid app_id)
+    {
+        // validate entity exists
+        var appointment = await _context
+            .ProjectAppointments.Include(a => a.Project)
+            .FirstOrDefaultAsync(a => a.Id == app_id);
+        if (appointment == null)
+            return NotFound("Evento no encontrado");
+        if (appointment.Project.Id != proj_id)
+            return BadRequest("Evento no pertenece al proyecto");
+
+        appointment.IsActive = false;
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [EndpointSummary("Generate Schedule Excel")]
+    [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
+    [HttpPost("{id}/schedule/excel")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateScheduleExcel(Guid id)
+    {
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (excelBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // send
+        return File(excelBytes, "application/vnd.ms-excel", "schedule.xlsx");
+    }
+
+    [EndpointSummary("Generate Schedule PDF")]
+    [EndpointDescription("Generates the Schedule spreadsheet for a project.")]
+    [HttpPost("{id}/schedule/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedulePDF(Guid id)
+    {
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
+
+        if (pdfBytes == null)
+        {
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.ToLower().Contains("no encontrado")
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Generate Schedule Format 2 excel")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpPost("{id}/schedule2/excel")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2Excel(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        // send
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "cronograma.ods");
+    }
+
+    [EndpointSummary("Generate Schedule Format 2 PDF")]
+    [EndpointDescription("Generates the secons Schedule spreadsheet for a project.")]
+    [HttpPost("{id}/schedule2/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule2PDF(Guid id)
+    {
+        var (odsBytes, error) = await projectService.GenerateAppointmentSchedule2Excel(id);
+        if (error is not null)
+        {
+            return BadRequest(error);
+        }
+        if (odsBytes is null)
+        {
+            return NotFound("Error generando excel");
+        }
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (pdfErr != "")
+        {
+            return BadRequest(pdfErr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
+    }
+
+    [EndpointSummary("Send Schedule PDF via Email")]
+    [HttpPost("{id}/schedule/email-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendSchedulePDFViaEmail(
+        Guid id,
+        [FromQuery]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+            string email
+    )
+    {
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
+
+        if (pdfBytes == null)
+        {
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase)
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+        }
+
+        var (ok, serviceError) = await emailService.SendEmailAsync(
+            to: email,
+            subject: "Cronograma de Proyecto PDF",
+            htmlBody: "",
+            textBody: "",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "cronograma_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
         );
-        return File(
-            fileBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "quotation.xlsx"
+
+        if (!ok)
+        {
+            return StatusCode(500, serviceError ?? "Error enviando el correo");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Schedule PDF via WhatsApp")]
+    [HttpPost("{id}/schedule/whatsapp-pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
+        Guid id,
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+    )
+    {
+        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
+
+        if (pdfBytes == null)
+        {
+            if (
+                errorMsg != null
+                && (
+                    errorMsg.ToLower().Contains("no encontrado")
+                    || errorMsg.ToLower().Contains("not found")
+                )
+            )
+            {
+                return NotFound(errorMsg);
+            }
+            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+        }
+
+        await whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Assuming this SID is generic for document sending
+            fileName: "ficha_operaciones.pdf",
+            phoneNumber: phoneNumber
         );
+
+        return Ok();
+    }
+
+    private async Task<(byte[]? PdfBytes, string? ErrorMessage)> GenerateSchedulePdfBytesAsync(
+        Guid id
+    )
+    {
+        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(
+            id,
+            isPdf: true
+        );
+
+        if (error != null)
+        {
+            return (null, error);
+        }
+        if (excelBytes == null)
+        {
+            return (
+                null,
+                "Error generando los datos base (Excel) para el cronograma del proyecto."
+            );
+        }
+
+        var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
+        if (!string.IsNullOrEmpty(odsErr))
+        {
+            return (null, $"Error convirtiendo a ODS: {odsErr}");
+        }
+        if (odsBytes == null)
+        {
+            return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
+        }
+
+        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        if (!string.IsNullOrEmpty(pdfErr))
+        {
+            return (null, $"Error convirtiendo a PDF: {pdfErr}");
+        }
+        if (pdfBytes == null)
+        {
+            return (null, "Error final generando el archivo PDF del cronograma.");
+        }
+
+        return (pdfBytes, null);
     }
 }

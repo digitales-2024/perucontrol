@@ -6,33 +6,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { components } from "@/types/api";
-import { Bug, SprayCanIcon as Spray, Rat, Shield } from "lucide-react";
+import type { components } from "@/types/api";
+import { Bug, SprayCanIcon as Spray, Rat, Shield, ShieldCheck, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { clientDataSchema, ClientDataSchema } from "../../../schemas";
+import { type ProjectDataSchema, projectDataSchema } from "../../../schemas";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { UpdateProject } from "../../../actions";
 import { toastWrapper } from "@/types/toasts";
 import { redirect } from "next/navigation";
-
-interface ProjectProps {
-    id?: string;
-    client?: components["schemas"]["Client"];
-    services?: Array<components["schemas"]["Service"]>;
-    quotation?: components["schemas"]["Quotation"];
-    address: string;
-    area: number;
-    status: components["schemas"]["ProjectStatus"];
-    spacesCount: number;
-    modifiedAt?: string;
-}
+import { Separator } from "@/components/ui/separator";
+import { Project } from "../../../types";
+import { toast } from "sonner";
 
 interface UpdateClientDataProps {
     clients: Array<components["schemas"]["Client"]>
     services: Array<components["schemas"]["Service"]>
-    quotations: Array<components["schemas"]["Quotation2"]>
-    project: ProjectProps
+    project: Project
 }
 
 // Mapa de iconos para servicios
@@ -43,13 +33,17 @@ const serviceIcons: Record<string, React.ReactNode> = {
     Desinfección: <Shield className="h-3 w-3" />,
 };
 
-export function UpdateClientData({ clients, services, quotations, project }: UpdateClientDataProps)
-{
-    const [quotation, setQuotation] = useState(project.quotation?.id ?? "");
-    // const [showQuotation, setShowQuotation] = useState(true);
+// Máximo número de ambientes permitidos
+const MAX_ENVIRONMENTS = 8;
 
-    const form = useForm<ClientDataSchema>({
-        resolver: zodResolver(clientDataSchema),
+export function UpdateClientData({ clients, services, project }: UpdateClientDataProps)
+{
+    // Estado local para manejar los ambientes
+    const [environments, setEnvironments] = useState<Array<string>>(Array.isArray(project.ambients) ? project.ambients : []);
+    const [addressOptions, setAddressOptions] = useState<Array<Option>>([]);
+
+    const form = useForm<ProjectDataSchema>({
+        resolver: zodResolver(projectDataSchema),
         defaultValues: {
             clientId: project.client?.id ?? "",
             quotationId: project.quotation?.id ?? null,
@@ -57,44 +51,85 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
             address: project.address ?? "",
             area: project.area ?? 0,
             spacesCount: project.spacesCount ?? 0,
+            ambients: Array.isArray(project.ambients) ? project.ambients : [],
         },
     });
 
     const { setValue } = form;
 
-    const activeClients = clients.filter((client) => client.isActive);  // Filtrando los clientes activos
-    const activeQuotations = quotations.filter((quotation) => quotation?.isActive);   // Filtrando las cotizaciones activas
+    // Actualizar el campo ambients en el formulario cuando cambia environments
+    useEffect(() =>
+    {
+        setValue("ambients", environments);
+    }, [environments, setValue]);
 
-    { /* Creando las opciones para el AutoComplete */ }
+    // Efecto para actualizar las opciones de dirección cuando cambia el cliente seleccionado
+
+    useEffect(() =>
+    {
+
+        const selectedClient = clients.find((client) => client.id === form.getValues("clientId"));
+
+        if (selectedClient)
+        {
+            const options: Array<Option> = [];
+
+            // Agregar la dirección fiscal
+            if (selectedClient.fiscalAddress)
+            {
+                options.push({
+                    value: selectedClient.fiscalAddress,
+                    label: selectedClient.fiscalAddress,
+                });
+            }
+
+            // Agregar las direcciones de las ubicaciones del cliente
+            selectedClient.clientLocations.forEach((location) =>
+            {
+                if (location.address)
+                { // Asegúrate de que la dirección no sea nula
+                    options.push({
+                        value: location.address,
+                        label: location.address,
+                    });
+                }
+            });
+            setAddressOptions(options);
+        }
+        else
+        {
+            setAddressOptions([]); // Si no hay cliente seleccionado, limpiar las opciones
+        }
+
+    }, [clients, form]);
+
+    const activeClients = clients.filter((client) => client.isActive);
+
     const clientsOptions: Array<Option> =
         activeClients?.map((client) => ({
             value: client.id ?? "",
-            label: client.razonSocial !== "" ? client.razonSocial ?? "" : client.name ?? "",
+            label: client.razonSocial !== "" ? (client.razonSocial ?? "") : (client.name ?? ""),
         })) ?? [];
 
-    const quotationsOptions: Array<Option> =
-        activeQuotations?.map((quotation) => ({
-            value: quotation?.id ?? "",
-            label: quotation?.id ?? "",
-        })) ?? [];
-
-    const handleQuotationChange = (option: Option | null) =>
+    const onSubmit = async(data: ProjectDataSchema) =>
     {
-        const selectedQuotation = quotations.find((q) => q?.id === option?.value);
-        if (selectedQuotation)
+        // Verificar si la dirección está en las opciones
+        const isAddressValid = addressOptions.some((option) => option.value === data.address);
+
+        if (!isAddressValid)
         {
-            setValue("clientId", selectedQuotation.client?.id ?? "");
-            setValue("quotationId", selectedQuotation.id ?? null);
-            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
-            setValue("area", selectedQuotation.area ?? 0);
-            setValue("spacesCount", selectedQuotation.spacesCount ?? 0);
-            setValue("services", selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? []);
+            // Mostrar un mensaje de error o manejar la validación
+            toast.warning("La dirección seleccionada no es válida. Por favor, elige una dirección de la lista.");
+            return;
         }
-    };
 
-    const onSubmit = async(data: ClientDataSchema) =>
-    {
-        const [, err] = await toastWrapper(UpdateProject(project.id!, data), {
+        // Asegurarse de que ambients esté actualizado con los valores más recientes
+        const formattedData = {
+            ...data,
+            ambients: environments,
+        };
+
+        const [, err] = await toastWrapper(UpdateProject(project.id!, formattedData), {
             loading: "Cargando...",
             success: "Proyecto actualizado exitosamente",
         });
@@ -105,27 +140,48 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
         redirect("./");
     };
 
+    // Función para agregar un nuevo ambiente
+    const addEnvironment = () =>
+    {
+        if (environments.length < MAX_ENVIRONMENTS)
+        {
+            setEnvironments([...environments, ""]);
+        }
+    };
+
+    // Función para eliminar un ambiente
+    const removeEnvironment = (index: number) =>
+    {
+        // Verificar si hay más de un ambiente antes de eliminar
+        if (environments.length > 1)
+        {
+            setEnvironments(environments.filter((_, i) => i !== index));
+        }
+        else
+        {
+            // Mostrar un mensaje de advertencia si se intenta eliminar el último ambiente
+            toast.warning("Debe haber al menos un ambiente.");
+        }
+    };
+
+    // Función para actualizar un ambiente
+    const updateEnvironment = (index: number, value: string) =>
+    {
+        const newEnvironments = [...environments];
+        newEnvironments[index] = value;
+        setEnvironments(newEnvironments);
+    };
+
+    // Verificar si se ha alcanzado el límite de ambientes
+    const isMaxEnvironmentsReached = environments.length >= MAX_ENVIRONMENTS;
+
     return (
-        <Card>
+        <Card className="mt-5 bg-transparent">
             <CardHeader>
                 <div className="flex justify-between">
                     <CardTitle className="text-xl font-semibold">
-                        Datos de cliente
+                        Datos del proyecto
                     </CardTitle>
-                    <AutoComplete
-                        options={quotationsOptions}
-                        placeholder="Buscar cotización..."
-                        emptyMessage="No se encontraron clientes"
-                        value={
-                            quotationsOptions.find((option) => option.value ===
-                                quotation) ?? undefined
-                        }
-                        onValueChange={(option) =>
-                        {
-                            setQuotation(option?.value || "");
-                            handleQuotationChange(option);
-                        }}
-                    />
                 </div>
             </CardHeader>
             <CardContent>
@@ -139,16 +195,16 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                 <FormItem>
                                     <FormLabel className="text-base">
                                         Cliente
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
                                         <AutoComplete
                                             options={clientsOptions}
                                             placeholder="Buscar cliente..."
                                             emptyMessage="No se encontraron clientes"
-                                            value={
-                                                clientsOptions.find((option) => option.value ===
-                                                    field.value) ?? undefined
-                                            }
+                                            value={clientsOptions.find((option) => option.value === field.value) ?? undefined}
                                             onValueChange={(option) =>
                                             {
                                                 field.onChange(option?.value || "");
@@ -168,9 +224,24 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                 <FormItem>
                                     <FormLabel>
                                         Dirección
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
                                     </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
+                                        <AutoComplete
+                                            options={addressOptions}
+                                            placeholder="Selecciona una dirección"
+                                            emptyMessage="No se encontraron direcciones"
+                                            value={
+                                                addressOptions.find((option) => option.value ===
+                                                    field.value) ?? undefined
+                                            }
+                                            onValueChange={(option) =>
+                                            {
+                                                field.onChange(option?.value ?? "");
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -186,6 +257,9 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                     <FormItem>
                                         <FormLabel>
                                             Área m2
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -207,6 +281,9 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                     <FormItem>
                                         <FormLabel>
                                             Nro. de ambientes
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -222,9 +299,8 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                             />
                         </div>
 
-                        {/* Servicios y Número de Orden */}
+                        {/* Servicios */}
                         <div className="space-y-4">
-                            {/* Servicios */}
                             <FormField
                                 control={form.control}
                                 name="services"
@@ -232,6 +308,9 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                     <FormItem>
                                         <FormLabel className="text-base font-medium">
                                             Servicios
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </FormLabel>
                                         <div className="grid grid-cols-2 gap-4 mt-2">
                                             {services.map((service) =>
@@ -247,21 +326,27 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                                                         )}
                                                         onClick={() =>
                                                         {
-                                                            const newValue = isSelected
-                                                                ? field.value?.filter((id) => id !== service.id)
-                                                                : [...(field.value || []), service.id!];
-                                                            field.onChange(newValue);
+                                                            // Solo permitir agregar servicios (no quitar)
+                                                            if (!isSelected)
+                                                            {
+                                                                const newValue = isSelected
+                                                                    ? field.value?.filter((id) => id !== service.id)
+                                                                    : [...(field.value || []), service.id!];
+                                                                field.onChange(newValue);
+                                                            }
                                                         }}
                                                     >
                                                         <div className="mr-4">
-                                                            {serviceIcons[service.name] ?? <Bug className="h-6 w-6" />}
+                                                            {serviceIcons[service.name] ?? <ShieldCheck className="h-3 w-3" />}
                                                         </div>
                                                         <div>
                                                             <h3 className="text-sm font-medium">
                                                                 {service.name}
                                                             </h3>
                                                         </div>
-                                                        {isSelected && <div className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full" />}
+                                                        {isSelected && (
+                                                            <div className="absolute top-2 right-2 h-3 w-3 bg-blue-500 rounded-full" />
+                                                        )}
                                                     </div>
                                                 );
                                             })}
@@ -272,7 +357,100 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
                             />
                         </div>
 
-                        <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700">
+                        {/* Nueva sección para tipos de ambientes */}
+                        <div className="mt-6">
+                            <Separator className="my-4" />
+                            <div className="flex justify-between items-center mb-4">
+                                <div>
+                                    <FormLabel className="text-base font-medium">
+                                        Tipos de Ambientes
+                                        <span className="text-red-500">
+                                            *
+                                        </span>
+                                    </FormLabel>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Máximo
+                                        {" "}
+                                        {MAX_ENVIRONMENTS}
+                                        {" "}
+                                        ambientes (
+                                        {environments.length}
+                                        /
+                                        {MAX_ENVIRONMENTS}
+                                        )
+                                    </p>
+                                </div>
+                                <Button
+                                    type="button"
+                                    onClick={addEnvironment}
+                                    variant="outline"
+                                    size="sm"
+                                    className={cn(
+                                        "flex items-center gap-1 border-blue-300",
+                                        isMaxEnvironmentsReached
+                                            ? "text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed"
+                                            : "text-blue-600 hover:bg-blue-50",
+                                    )}
+                                    disabled={isMaxEnvironmentsReached}
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Agregar ambiente
+                                </Button>
+                            </div>
+
+                            <p className="text-sm text-gray-500 mb-4">
+                                Especifique los diferentes tipos de ambientes o espacios que existen en la ubicación (ej. oficinas,
+                                almacenes, baños, etc.)
+                            </p>
+
+                            <div className="space-y-3">
+                                {environments.length === 0 && (
+                                    <div className="text-sm text-gray-500 italic p-3 border border-dashed border-gray-300 rounded-md text-center">
+                                        No hay ambientes especificados. Agregue un ambiente para comenzar.
+                                    </div>
+                                )}
+
+                                {environments.map((env, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <FormItem className="flex-1">
+                                            <FormControl>
+                                                <Input
+                                                    value={env}
+                                                    onChange={(e) => updateEnvironment(index, e.target.value)}
+                                                    placeholder="Nombre del ambiente (ej. Oficina principal)"
+                                                    className="w-full"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => removeEnvironment(index)}
+                                            className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                        >
+                                            <X className="h-4 w-4" />
+                                            <span className="sr-only">
+                                                Eliminar ambiente
+                                            </span>
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {isMaxEnvironmentsReached && (
+                                <p className="text-amber-600 text-sm mt-2">
+                                    Ha alcanzado el límite máximo de
+                                    {" "}
+                                    {MAX_ENVIRONMENTS}
+                                    {" "}
+                                    ambientes.
+                                </p>
+                            )}
+                        </div>
+
+                        <Button type="submit" className="w-52 bg-blue-600 hover:bg-blue-700 mt-6">
                             Guardar
                         </Button>
                     </form>
@@ -281,3 +459,5 @@ export function UpdateClientData({ clients, services, quotations, project }: Upd
         </Card>
     );
 }
+
+export default UpdateClientData;

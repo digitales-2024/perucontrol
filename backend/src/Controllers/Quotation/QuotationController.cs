@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,13 @@ using PeruControl.Services;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class QuotationController(DatabaseContext db, ExcelTemplateService excelTemplate)
-    : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
+public class QuotationController(
+    DatabaseContext db,
+    OdsTemplateService odsTemplateService,
+    LibreOfficeConverterService pDFConverterService,
+    EmailService emailService,
+    WhatsappService whatsappService
+) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
     [HttpPost]
@@ -28,7 +34,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             .ToListAsync();
 
         var missingServiceIds = createDto.ServiceIds.Except(services.Select(s => s.Id)).ToList();
-        if (missingServiceIds.Any())
+        if (missingServiceIds.Count != 0)
         {
             return NotFound("Algunos servicios no fueron encontrados");
         }
@@ -39,6 +45,18 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         entity.Services = services;
 
         _dbSet.Add(entity);
+
+        // set services
+        entity.QuotationServices = createDto
+            .QuotationServices.Select(qs => new QuotationService
+            {
+                Amount = qs.Amount,
+                NameDescription = qs.NameDescription,
+                Price = qs.Price,
+                Accesories = qs.Accesories,
+            })
+            .ToList();
+
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
     }
@@ -50,7 +68,9 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     {
         return await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
+            .OrderByDescending(q => q.QuotationNumber)
             .ToListAsync();
     }
 
@@ -61,22 +81,38 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     public override async Task<ActionResult<Quotation>> GetById(Guid id)
     {
         var entity = await _dbSet
+            .Include(q => q.QuotationServices)
             .Include(c => c.Client)
             .Include(s => s.Services)
             .FirstOrDefaultAsync(q => q.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
 
-    [EndpointSummary("Partial edit one by id")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<IActionResult> Patch(Guid id, [FromBody] QuotationPatchDTO patchDto)
     {
-        var quotation = await _dbSet.Include(q => q.Services).FirstOrDefaultAsync(q => q.Id == id);
+        // Use AsNoTracking() to avoid tracking issues with the first query
+        var quotation = await _dbSet
+            .AsNoTracking() // Add this
+            .Include(q => q.Services)
+            .Include(q => q.QuotationServices)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
         if (quotation == null)
             return NotFound();
+
+        // Now get a clean tracked entity for updating
+        var trackedQuotation = await _dbSet.FindAsync(id);
+        if (trackedQuotation == null)
+            return NotFound();
+
+        // Load related entities for the tracked entity
+        await _context.Entry(trackedQuotation).Collection(q => q.Services).LoadAsync();
+
+        await _context.Entry(trackedQuotation).Collection(q => q.QuotationServices).LoadAsync();
 
         if (patchDto.ClientId != null)
         {
@@ -85,7 +121,7 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             {
                 return NotFound("Cliente no encontrado");
             }
-            quotation.Client = client;
+            trackedQuotation.Client = client;
         }
 
         if (patchDto.ServiceIds != null)
@@ -99,35 +135,106 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             if (newServiceIds.Count != patchDto.ServiceIds.Count)
             {
                 var invalidIds = patchDto.ServiceIds.Except(newServiceIds).ToList();
-
                 return BadRequest($"Invalid service IDs: {string.Join(", ", invalidIds)}");
             }
 
-            // Get services to remove (existing ones not in new list)
-            var servicesToRemove = quotation
-                .Services.Where(s => !newServiceIds.Contains(s.Id))
-                .ToList();
+            // Clear existing services and add the new ones
+            trackedQuotation.Services.Clear();
 
-            // Get services to add (new ones not in existing list)
-            var existingServiceIds = quotation.Services.Select(s => s.Id);
             var servicesToAdd = await _context
-                .Services.Where(s =>
-                    newServiceIds.Contains(s.Id) && !existingServiceIds.Contains(s.Id)
-                )
+                .Services.Where(s => newServiceIds.Contains(s.Id))
                 .ToListAsync();
 
-            // Apply the changes
-            foreach (var service in servicesToRemove)
-                quotation.Services.Remove(service);
-
             foreach (var service in servicesToAdd)
-                quotation.Services.Add(service);
+                trackedQuotation.Services.Add(service);
         }
 
-        patchDto.ApplyPatch(quotation);
-        await _context.SaveChangesAsync();
+        if (patchDto.QuotationServices is not null)
+        {
+            // Get existing services
+            var existingServices = trackedQuotation.QuotationServices.ToList();
+            var existingIds = existingServices.Select(x => x.Id).ToList();
 
-        return Ok(quotation);
+            // Keep track of processed IDs to determine what to delete later
+            var processedIds = new List<Guid>();
+
+            foreach (var patchQs in patchDto.QuotationServices)
+            {
+                if (patchQs.Id != null)
+                {
+                    // Try to find existing service
+                    var existingService = existingServices.FirstOrDefault(e => e.Id == patchQs.Id);
+
+                    if (existingService != null)
+                    {
+                        // Update existing service
+                        existingService.Amount = patchQs.Amount;
+                        if (patchQs.NameDescription != null)
+                            existingService.NameDescription = patchQs.NameDescription;
+                        if (patchQs.Price != null)
+                            existingService.Price = patchQs.Price;
+                        existingService.Accesories = patchQs.Accesories;
+
+                        processedIds.Add(existingService.Id);
+                    }
+                    else
+                    {
+                        // ID specified but not found - create new with specific ID
+                        // Note: This might not work if ID is auto-generated
+                        // Alternative: Ignore the ID and just create new
+                        var newQuotationService = new QuotationService
+                        {
+                            Quotation = trackedQuotation,
+                            Amount = patchQs.Amount,
+                            NameDescription = patchQs.NameDescription ?? "",
+                            Price = patchQs.Price,
+                            Accesories = patchQs.Accesories,
+                        };
+
+                        _context.Add(newQuotationService);
+                        // We'll get the ID after save, can't add to processedIds yet
+                    }
+                }
+                else
+                {
+                    // Create new without specified ID
+                    var newQuotationService = new QuotationService
+                    {
+                        Quotation = trackedQuotation,
+                        Amount = patchQs.Amount,
+                        NameDescription = patchQs.NameDescription ?? "",
+                        Price = patchQs.Price,
+                        Accesories = patchQs.Accesories,
+                    };
+
+                    _context.Add(newQuotationService);
+                    // We'll get the ID after save, can't add to processedIds yet
+                }
+            }
+
+            // Delete any existing services that weren't processed
+            var toDelete = existingServices.Where(e => !processedIds.Contains(e.Id)).ToList();
+
+            foreach (var service in toDelete)
+            {
+                _context.Remove(service);
+            }
+        }
+
+        // Apply other property updates
+        patchDto.ApplyPatch(trackedQuotation);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Ok(trackedQuotation);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await _dbSet.AnyAsync(q => q.Id == id))
+                return NotFound();
+            throw;
+        }
     }
 
     [EndpointSummary("Update Quotation State")]
@@ -146,6 +253,20 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             return NotFound();
         }
 
+        // Validar si la cotización está asociada a un proyecto cuando se intenta rechazar
+        if (patchDto.Status == QuotationStatus.Rejected)
+        {
+            var project = await _context.Projects.FirstOrDefaultAsync(p =>
+                p.Quotation != null && p.Quotation.Id == id
+            );
+            if (project != null)
+            {
+                return BadRequest(
+                    "No se puede rechazar una cotización que está asociada a un proyecto"
+                );
+            }
+        }
+
         // Actualizar el estado de la cotizacion y guardar en la base de datos
         quotation.Status = patchDto.Status;
         await _context.SaveChangesAsync();
@@ -153,13 +274,14 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         return NoContent();
     }
 
-    [EndpointSummary("Generate Excel")]
-    [HttpPost("{id}/gen-excel")]
+    [EndpointSummary("Generate PDF")]
+    [HttpPost("{id}/gen-pdf")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel(Guid id, [FromBody] QuotationExportDto export)
+    public IActionResult GeneratePDF(Guid id)
     {
         var quotation = _dbSet
+            .Include(q => q.QuotationServices)
             .Include(q => q.Client)
             .Include(q => q.Services)
             .FirstOrDefault(q => q.Id == id);
@@ -171,38 +293,167 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
             );
         }
 
-        var serviceNames = quotation.Services.Select(s => s.Name).ToList();
-        var serviceNamesStr = string.Join(", ", serviceNames);
-        var hasTaxes = quotation.HasTaxes ? "SI" : "NO";
-        var expiryDaysAmount = (export.ValidUntil - quotation.CreatedAt).Days;
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
 
-        var placeholders = new Dictionary<string, string>
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
         {
-            { "{{digesa_habilitacion}}", "123-PROV" },
-            { "{{fecha_cotizacion}}", quotation.CreatedAt.ToString("dd/MM/yyyy") },
-            { "{{nro_presupuesto}}", "123-PROV" },
-            { "{{nro_cliente}}", "123-PROV" },
-            { "{{validez_presupuesto}}", export.ValidUntil.ToString("dd/MM/yyyy") },
-            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
-            { "{{direccion_cliente}}", quotation.Client.FiscalAddress },
-            { "{{adicional_cliente}}", "--Provicional--" },
-            { "{{garantia}}", export.Guarantee },
-            { "{{cantidad_servicio}}", quotation.Services.Count.ToString() },
-            { "{{nombre_servicio}}", serviceNamesStr },
-            { "{{incluye_igv_str}}", hasTaxes },
-            { "{{validez_dias}}", expiryDaysAmount.ToString() },
-            { "{{termino_custom}}", quotation.TermsAndConditions },
-            { "{{doc_entregados}}", export.Deliverables },
-        };
-        var fileBytes = excelTemplate.GenerateExcelFromTemplate(
-            placeholders,
-            "Templates/cotizacion.xlsx"
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send
+        return File(pdfBytes, "application/pdf", "quotation.pdf");
+    }
+
+    [EndpointSummary("Send Quotation PDF via Email")]
+    [HttpPost("{id}/email-pdf")]
+    public async Task<ActionResult> SendPDFViaEmail(
+        Guid id,
+        [FromQuery] [Required] [EmailAddress] string email
+    )
+    {
+        var quotation = await _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        // send email
+        var (ok, error) = await emailService.SendEmailAsync(
+            to: email,
+            subject: "Cotización PDF",
+            htmlBody: "",
+            textBody: "",
+            attachments:
+            [
+                new()
+                {
+                    FileName = "cotizacion_perucontrol.pdf",
+                    Content = new MemoryStream(pdfBytes),
+                    ContentType = "application/pdf",
+                },
+            ]
         );
-        return File(
-            fileBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "quotation.xlsx"
+
+        if (!ok)
+        {
+            return StatusCode(500, error ?? "Error enviando el correo");
+        }
+
+        return Ok();
+    }
+
+    [EndpointSummary("Send Quotation PDF via WhatsApp")]
+    [HttpPost("{id}/whatsapp-pdf")]
+    public async Task<ActionResult> SendPDFViaWhatsapp(
+        Guid id,
+        [FromQuery] [Required] string phoneNumber
+    )
+    {
+        var quotation = await _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+
+        if (!string.IsNullOrEmpty(pdfErrorStr))
+        {
+            return BadRequest(pdfErrorStr);
+        }
+        if (pdfBytes == null)
+        {
+            return BadRequest("Error generando PDF");
+        }
+
+        await whatsappService.SendWhatsappServiceMessageAsync(
+            fileBytes: pdfBytes,
+            contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
+            fileName: "quotation.pdf",
+            phoneNumber: phoneNumber
         );
+        return Ok();
+    }
+
+    [EndpointSummary("Generate Excel")]
+    [HttpPost("{id}/gen-excel")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GenerateExcel(Guid id)
+    {
+        var quotation = _dbSet
+            .Include(q => q.QuotationServices)
+            .Include(q => q.Client)
+            .Include(q => q.Services)
+            .FirstOrDefault(q => q.Id == id);
+
+        if (quotation == null)
+        {
+            return NotFound(
+                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
+            );
+        }
+
+        var business = _context.Businesses.FirstOrDefault();
+        if (business == null)
+            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+
+        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+
+        if (!string.IsNullOrEmpty(errorStr) || fileBytes == null)
+        {
+            return BadRequest(errorStr ?? "Error generando archivo ODS");
+        }
+
+        // send ODS file
+        return File(fileBytes, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
     }
 
     [HttpDelete("{id}")]
@@ -231,6 +482,23 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
         return NoContent();
     }
 
+    [EndpointSummary("Reactive quotation by Id")]
+    [HttpPatch("{id}/reactivate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public override async Task<IActionResult> Reactivate(Guid id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        entity.IsActive = true;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
     [EndpointSummary("Get approved and not associated project")]
     [HttpGet("approved/not-associated")]
     [ProducesResponseType(typeof(IEnumerable<Quotation>), StatusCodes.Status200OK)]
@@ -238,9 +506,10 @@ public class QuotationController(DatabaseContext db, ExcelTemplateService excelT
     {
         var approvedQuotations = await _context
             .Quotations.Include(c => c.Client)
+            .Include(q => q.QuotationServices)
             .Include(s => s.Services)
             .Where(q => q.Status == QuotationStatus.Approved)
-            .Where(q => !_context.Projects.Any(p => p.Quotation.Id == q.Id))
+            .Where(q => !_context.Projects.Any(p => p.Quotation!.Id == q.Id))
             .ToListAsync();
 
         return Ok(approvedQuotations);

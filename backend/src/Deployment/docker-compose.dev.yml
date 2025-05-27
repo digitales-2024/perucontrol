@@ -1,33 +1,37 @@
 services:
   perucontrol-backend-develop:
-    image: docker.io/digitalesacide/perucontrol-backend-develop:0
+    image: docker.io/digitalesacide/perucontrol-backend-develop:${PERUCONTROL_BACKEND_VERSION:-latest}
     container_name: perucontrol-backend-develop
     restart: unless-stopped
     depends_on:
       perucontrol-db-develop:
         condition: service_started
-    environment:
-      ConnectionStrings__DefaultConnection: "${ConnectionStrings__DefaultConnection}"
-      Jwt__SecretKey: "${Jwt__SecretKey}"
-      Jwt__Issuer: "${Jwt__Issuer}"
-      Jwt__Audience: "${Jwt__Audience}"
-      Jwt__ExpirationMinutes: "${Jwt__ExpirationMinutes}"
-      Logging__LogLevel__Default: "${Logging__LogLevel__Default}"
-      Logging__LogLevel__Microsoft.AspNetCore: "${Logging__LogLevel__Microsoft.AspNetCore}"
-      AllowedHosts: "${AllowedHosts}"
+    env_file:
+      - .env.backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.perucontrol-backend-develop.rule=Host(`perucontrol-backend-develop.acide.win`)"
+      - "traefik.http.routers.perucontrol-backend-develop.entrypoints=websecure"
+      - "traefik.http.routers.perucontrol-backend-develop.tls=true"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.certresolver=dns-cloudflare"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].main=acide.win"
+      - "traefik.http.routers.perucontrol-backend-develop.tls.domains[0].sans=*.acide.win"
+      - "traefik.http.services.perucontrol-backend-develop.loadbalancer.server.port=8080"
     networks:
       - proxy
       - perucontrol-network-develop
 
   perucontrol-frontend-develop:
-    image: docker.io/digitalesacide/perucontrol-frontend-develop:0
+    image: docker.io/digitalesacide/perucontrol-frontend-develop:${PERUCONTROL_FRONTEND_VERSION:-latest}
     container_name: perucontrol-frontend-develop
     restart: unless-stopped
     depends_on:
       perucontrol-backend-develop:
         condition: service_started
+    env_file:
+      - .env.frontend
     environment:
-      NODE_ENV: "${NODE_ENV}"
+      NODE_ENV: "production"
     networks:
       - proxy
       - perucontrol-network-develop

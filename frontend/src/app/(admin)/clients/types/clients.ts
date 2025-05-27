@@ -7,8 +7,10 @@ export type Client = {
     name: string;
     fiscalAddress: string;
     email: string;
+    contactName: string;
     phoneNumber: string;
     clientLocations: Array<{
         address: string;
     }>;
+    isActive: boolean;
 }
