@@ -23,8 +23,20 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         if (appointment is null)
             return new NotFoundResult<AppointmentGetOutDTO>("No se encontró la fecha.");
 
+        // Calculate the ordered number by finding the position of this appointment
+        // within all appointments of the same project, ordered by due date
+        var projectAppointments = await db
+            .ProjectAppointments.Where(a => a.Project.Id == appointment.Project.Id)
+            .OrderBy(a => a.DueDate)
+            .Select(a => new { a.Id, a.DueDate })
+            .ToListAsync();
+
+        var orderedNumber = projectAppointments
+            .Select((app, index) => new { app.Id, OrderedNumber = index + 1 })
+            .FirstOrDefault(x => x.Id == id)?.OrderedNumber ?? 1;
+
         return new SuccessResult<AppointmentGetOutDTO>(
-            AppointmentGetOutDTO.FromEntity(appointment)
+            AppointmentGetOutDTO.FromEntity(appointment, orderedNumber)
         );
     }
 

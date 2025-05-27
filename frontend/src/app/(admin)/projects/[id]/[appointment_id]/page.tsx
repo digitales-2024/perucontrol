@@ -86,7 +86,7 @@ export default async function AppoinmentPage({ params }: {
                             <BreadcrumbItem>
                                 <BreadcrumbPage>
                                     Fecha #
-                                    {appointment.appointmentNumber}
+                                    {appointment.orderedNumber}
                                 </BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
@@ -96,7 +96,7 @@ export default async function AppoinmentPage({ params }: {
             <AppointmentDetails
                 project={appointment.project}
                 projectId={id}
-                appointment={appointment}  // Si es null, lo asignamos a false
+                appointment={appointment}
                 murinoMapBase64={murinoMapBase64}
             />
         </>

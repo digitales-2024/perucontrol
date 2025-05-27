@@ -18,6 +18,9 @@ public class AppointmentGetOutDTO
     public DateTime? ModifiedAt { get; init; }
     public required bool IsActive { get; init; }
 
+    // Ordered number within the project (based on due date)
+    public required int OrderedNumber { get; init; }
+
     // Project basic fields
     public required ProjectBasicInfoDTO Project { get; init; } = null!;
 
@@ -33,7 +36,7 @@ public class AppointmentGetOutDTO
         Array.Empty<TreatmentProductDTO>();
 
     // Mapping method from entity to DTO
-    public static AppointmentGetOutDTO FromEntity(ProjectAppointment appointment)
+    public static AppointmentGetOutDTO FromEntity(ProjectAppointment appointment, int orderedNumber)
     {
         return new AppointmentGetOutDTO
         {
@@ -47,6 +50,7 @@ public class AppointmentGetOutDTO
             Cancelled = appointment.Cancelled,
             CreatedAt = appointment.CreatedAt,
             ModifiedAt = appointment.ModifiedAt,
+            OrderedNumber = orderedNumber,
             Project = new ProjectBasicInfoDTO
             {
                 Id = appointment.Project.Id,
