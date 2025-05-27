@@ -13,45 +13,24 @@ import { components } from "@/types/api";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reportFormSchema, type ReportFormData, type TextBlock, type TextArea } from "../schemas";
-import { GenerateCompleteReportWord, UpdateReport } from "../actions";
+import { GenerateDisinfectionDesinsectWord, UpdateDisinfectionDesinsect } from "../actions";
 
-const reportFilenames = {
-    "desinsectacion-desratizacion-desinfeccion": "Informe_Desinfección_Desratización_Desinsectación.docx",
-    "desinfeccion-desinsectacion": "Informe_Desinfección_Desinsectación.docx",
-    "desratizacion": "Informe_Desratización.docx",
-    "sostenimiento-desratizacion": "Informe_Sostenimiento_Desratización.docx",
-    "sostenimiento-desinsectacion-desratizacion": "Informe_Sostenimiento_Desinsectación_Desratización.docx",
-} as const;
-
-const reportNumberings: Record<string, string> = {
-    "desinsectacion-desratizacion-desinfeccion": "5",
-    "desinfeccion-desinsectacion": "1",
-    "desratizacion": "1",
-    "sostenimiento-desratizacion": "1",
-    "sostenimiento-desinsectacion-desratizacion": "1",
-} as const;
-
-interface CompleteReportFormProps {
+interface DisinfectionDesinsectFormProps {
     projectId: string;
     appointmentId: string;
-    reportId: keyof typeof reportFilenames;
     reportTitle: string;
-    report: components["schemas"]["CompleteReportDTO"];
+    report: components["schemas"]["Report1DTO"];
 }
 
-export function CompleteReportForm({
+export function DisinfectionDesinsectForm({
     projectId,
     appointmentId,
-    reportId,
     reportTitle,
     report,
-}: CompleteReportFormProps)
+}: DisinfectionDesinsectFormProps)
 {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Obtener el número de inicio del informe
-    const startNumbering = reportNumberings[reportId];
 
     const defaultContent: Array<TextBlock | TextArea> = [
         {
@@ -68,7 +47,7 @@ export function CompleteReportForm({
         defaultValues: {
             id: report.id,
             signingDate: report.signingDate ?? null,
-            content: report.content?.length > 0 ? (report.content as Array<TextBlock | TextArea>) : defaultContent,
+            content: (report.content?.length ?? 0) > 0 ? (report.content as Array<TextBlock | TextArea>) : defaultContent,
         },
     });
 
@@ -99,9 +78,9 @@ export function CompleteReportForm({
             return;
         }
 
-        // UpdateReport
+        // UpdateDisinfectionDesinsect
         const [, error] = await toastWrapper(
-            UpdateReport(appointmentId, {
+            UpdateDisinfectionDesinsect(appointmentId, {
                 ...data,
                 id: report.id,
             }),
@@ -141,7 +120,7 @@ export function CompleteReportForm({
         {
             // Primero guardamos los datos
             const [, updateError] = await toastWrapper(
-                UpdateReport(appointmentId, {
+                UpdateDisinfectionDesinsect(appointmentId, {
                     ...data,
                     id: report.id,
                 }),
@@ -160,11 +139,10 @@ export function CompleteReportForm({
             }
 
             // Luego generamos el informe
-            const filename = reportFilenames[reportId];
-            console.log("Generando informe para cita:", appointmentId);
+            console.log("Generando informe de desinfección-desinsectación para cita:", appointmentId);
 
             const [blob, err] = await toastWrapper(
-                GenerateCompleteReportWord(appointmentId),
+                GenerateDisinfectionDesinsectWord(appointmentId),
                 {
                     loading: "Generando documento...",
                     success: "Documento generado con éxito",
@@ -198,7 +176,7 @@ export function CompleteReportForm({
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = filename;
+            a.download = "Informe_Desinfección_Desinsectación.docx";
             a.click();
             URL.revokeObjectURL(url);
 
@@ -254,7 +232,7 @@ export function CompleteReportForm({
                             <Label>
                                 Contenido del Informe
                             </Label>
-                            <ReportBuilder startNumbering={startNumbering} />
+                            <ReportBuilder startNumbering="1" />
                         </div>
 
                         {/* Botón de guardar */}
@@ -284,4 +262,4 @@ export function CompleteReportForm({
             </CardContent>
         </Card>
     );
-}
+} 

@@ -365,124 +365,122 @@ export default function ReportBuilder({startNumbering}: {startNumbering: string}
         if (section.type === "textArea")
         {
             return (
-                <div key={section.id} className="mb-4 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center">
-                        <span className="text-sm font-medium text-slate-600 flex-1">
-                            Contenido de texto
+                <div key={section.id} className="mb-3 group">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Contenido
                         </span>
                         <Button
                             type="button"
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => deleteItem(section.id)}
-                            className="h-8 px-3"
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Eliminar
+                            <Trash2 className="h-3 w-3" />
                         </Button>
                     </div>
-                    <div className="p-3">
-                        <Textarea
-                            value={section.text}
-                            onChange={(e) => updateContent(section.id, e.target.value)}
-                            onKeyDown={(e) =>
+                    <Textarea
+                        value={section.text}
+                        onChange={(e) => updateContent(section.id, e.target.value)}
+                        onKeyDown={(e) =>
+                        {
+                            if (e.key === "Enter" && !e.shiftKey)
                             {
-                                if (e.key === "Enter" && !e.shiftKey)
-                                {
-                                    e.preventDefault();
-                                }
-                            }}
-                            rows={6}
-                            placeholder="Escribe el contenido aquí..."
-                            className="w-full border-slate-200 focus-visible:ring-slate-400 resize-y min-h-[150px]"
-                        />
-                    </div>
+                                e.preventDefault();
+                            }
+                        }}
+                        rows={4}
+                        placeholder="Escribe el contenido aquí..."
+                        className="w-full text-sm border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-y min-h-[100px] bg-gray-50 focus:bg-white transition-colors"
+                    />
                 </div>
             );
         }
 
         return (
-            <div key={section.id} className="mb-6 pl-6 border-l-2 border-gray-200 hover:border-blue-400 transition-colors">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <div className="flex-1 flex items-center gap-2">
-                        <span className="flex items-center justify-center text-sm font-semibold bg-slate-100 text-slate-700 rounded-md h-7 min-w-[2.5rem] px-2">
-                            {section.visualNumbering}
-                        </span>
-                        <Input
-                            value={section.title}
-                            onChange={(e) => updateSectionTitle(section.id, e.target.value)}
-                            onKeyDown={(e) =>
+            <div key={section.id} className="mb-4 group">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-flex items-center justify-center text-xs font-bold bg-blue-100 text-blue-700 rounded-full h-6 min-w-[1.5rem] px-2">
+                        {section.visualNumbering}
+                    </span>
+                    <Input
+                        value={section.title}
+                        onChange={(e) => updateSectionTitle(section.id, e.target.value)}
+                        onKeyDown={(e) =>
+                        {
+                            if (e.key === "Enter")
                             {
-                                if (e.key === "Enter")
-                                {
-                                    e.preventDefault();
-                                }
-                            }}
-                            placeholder="Título de la sección"
-                            className="flex-1 border-slate-300 focus-visible:ring-slate-400 shadow-sm"
-                        />
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                                e.preventDefault();
+                            }
+                        }}
+                        placeholder="Título de la sección"
+                        className="flex-1 text-sm font-medium border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 h-8 bg-white"
+                    />
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={() => addSubsection(section.id, section.level)}
-                            className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
+                            className="h-7 px-2 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 hover:text-blue-800 border border-blue-200"
                         >
-                            <PlusCircle className="h-4 w-4 mr-1 text-slate-500" />
-                            Subsección
+                            <PlusCircle className="h-3 w-3 mr-1" />
+                            Sub
                         </Button>
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={() => addContent(section.id)}
-                            className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
+                            className="h-7 px-2 text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 hover:text-green-800 border border-green-200"
                         >
-                            <PlusCircle className="h-4 w-4 mr-1 text-slate-500" />
-                            Contenido
+                            <PlusCircle className="h-3 w-3 mr-1" />
+                            Texto
                         </Button>
                         <Button
                             type="button"
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => deleteItem(section.id)}
-                            className="hover:bg-red-600"
+                            className="h-7 w-7 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50"
                         >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3" />
                         </Button>
                     </div>
                 </div>
 
-                <div className="pl-5">
-                    {section.children.map((child) => renderSection(child))}
-                </div>
+                {section.children.length > 0 && (
+                    <div className="ml-6 pl-3 border-l-2 border-gray-300 space-y-2">
+                        {section.children.map((child) => renderSection(child))}
+                    </div>
+                )}
             </div>
         );
     };
 
     return (
-        <div className="p-6 border border-slate-200 rounded-lg bg-white shadow-sm">
-            <div className="mb-4">
-                <h3 className="text-lg font-medium text-slate-800 mb-1">
+        <div className="border border-gray-300 rounded-lg bg-white shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-300 bg-gray-50">
+                <h3 className="text-sm font-semibold text-gray-800">
                     Estructura del informe
                 </h3>
-                <p className="text-sm text-slate-500">
-                    Crea y organiza las secciones y contenidos de tu informe
+                <p className="text-xs text-gray-600 mt-1">
+                    Organiza las secciones y contenidos de tu informe
                 </p>
             </div>
-            <div className="space-y-4 divide-y divide-slate-100">
+            <div className="p-4 space-y-3">
                 {report.map(renderSection)}
+                <Button
+                    type="button"
+                    onClick={addMainSection}
+                    variant="outline"
+                    className="w-full mt-4 h-9 text-sm border-dashed border-gray-400 text-gray-600 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50"
+                >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Agregar Sección Principal
+                </Button>
             </div>
-            <Button
-                type="button"
-                onClick={addMainSection}
-                className="mt-6 bg-slate-800 hover:bg-slate-700 text-white"
-            >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Agregar Sección Principal
-            </Button>
         </div>
     );
 }

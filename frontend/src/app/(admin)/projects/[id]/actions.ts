@@ -56,25 +56,3 @@ export async function UploadMurinoMap(appointmentId: string, formData: FormData)
         });
     }
 }
-
-export async function UpdateReport(
-    appointmentId: string,
-    body: components["schemas"]["CompleteReportDTO"],
-): Promise<Result<null, FetchError>>
-{
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/CompleteReport", {
-        ...auth,
-        params: {
-            path: {
-                appointmentid: appointmentId,
-            },
-        },
-        body,
-    }));
-
-    if (error)
-    {
-        return err(error);
-    }
-    return ok(null);
-}

@@ -441,11 +441,6 @@ export async function Generate(
     );
 }
 
-export async function GenerateCompleteReportWord(appointmentid: string): Promise<Result<Blob, FetchError>>
-{
-    return DownloadFile(`/api/Appointment/${appointmentid}/CompleteReport/docx`, "GET");
-}
-
 export async function CreateTreatmentProduct(appointmentId: string, body: Array<components["schemas"]["TreatmentProductInDTO"]>): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/TreatmentProduct", {
