@@ -415,11 +415,7 @@ public class WordTemplateService
 
         // Try to replace a placeholder called "{section_5}" with rich content
         // Make sure your template has this placeholder somewhere
-        ReplacePlaceholderWithContent(
-            wordDoc,
-            "{section_5}",
-            [.. content]
-        );
+        ReplacePlaceholderWithContent(wordDoc, "{section_5}", [.. content]);
 
         wordDoc.Save();
         return ms.ToArray();
@@ -536,11 +532,7 @@ public class WordTemplateService
 
         // Try to replace a placeholder called "{section_5}" with rich content
         // Make sure your template has this placeholder somewhere
-        ReplacePlaceholderWithContent(
-            wordDoc,
-            "{section_5}",
-            [.. content]
-        );
+        ReplacePlaceholderWithContent(wordDoc, "{section_5}", [.. content]);
 
         wordDoc.Save();
         return ms.ToArray();

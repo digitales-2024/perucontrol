@@ -7,6 +7,7 @@ import { CheckCheck, Pencil, Trash2, UserPlus } from "lucide-react";
 import { UpdateClientSheet } from "./UpdateClients";
 import { DeleteClient } from "./DeleteClient";
 import { ViewClientDetails } from "./ViewClientsDetail";
+import { ExportCSVDialog } from "./ExportCSVDialog";
 import type { Client } from "./ClientsColumns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -85,12 +86,15 @@ export function ClientsDataTable<TData extends Client>({ columns, data }: DataTa
 
     // Acciones de la barra de herramientas
     const toolbarActions = (
-        <Link href="/clients/nuevo">
-            <Button variant="default" size="sm" className="ml-auto">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Nuevo cliente
-            </Button>
-        </Link>
+        <div className="flex items-center gap-2 ml-auto">
+            <ExportCSVDialog />
+            <Link href="/clients/nuevo">
+                <Button variant="default" size="sm">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Nuevo cliente
+                </Button>
+            </Link>
+        </div>
     );
 
     // Función para filtrar por estado

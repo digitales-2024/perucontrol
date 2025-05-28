@@ -1,6 +1,6 @@
 "use server";
 
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, FetchError, wrapper, DownloadFile } from "@/types/backend";
 import { ok, err, Result } from "@/utils/result";
 import { CreateClientSchema } from "./schemas";
 import { components } from "@/types/api";
@@ -114,4 +114,26 @@ export async function ReactivateClient(id: string): Promise<Result<null, FetchEr
         });
     }
     return ok(null);
+}
+
+export async function ExportClientsCSV(startDate?: string, endDate?: string): Promise<Result<Blob, FetchError>>
+{
+    let url = "/api/Client/export/csv";
+    const params = new URLSearchParams();
+
+    if (startDate)
+    {
+        params.append("startDate", startDate);
+    }
+    if (endDate)
+    {
+        params.append("endDate", endDate);
+    }
+
+    if (params.toString())
+    {
+        url += `?${params.toString()}`;
+    }
+
+    return DownloadFile(url, "GET");
 }

@@ -101,6 +101,12 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
     [StringLength(100, ErrorMessage = "La Disponibilidad no puede exceder 100 caracteres")]
     public required string Availability { get; set; }
 
+    [StringLength(
+        200,
+        ErrorMessage = "El contacto del pie de página no puede exceder 200 caracteres"
+    )]
+    public string? FooterContact { get; set; }
+
     // ======
     // List of services
     // ======
@@ -141,6 +147,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
             PaymentMethod = PaymentMethod,
             Others = Others,
             Availability = Availability,
+            FooterContact = FooterContact ?? "Lic. Isabel Garavito S. 986951290",
             Desinsectant = Desinsectant,
             Derodent = Derodent,
             Disinfectant = Disinfectant,
@@ -178,6 +185,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
     public string? Others { get; set; }
     public string? Availability { get; set; }
 
+    public string? FooterContact { get; set; }
+
     // requires diffing
     public IList<QuotationServicePatchDTO>? QuotationServices { get; set; }
 
@@ -209,6 +218,8 @@ public class QuotationPatchDTO : IEntityPatcher<Quotation>
             entity.Availability = Availability;
         if (TermsAndConditions != null)
             entity.TermsAndConditions = TermsAndConditions;
+        if (FooterContact != null)
+            entity.FooterContact = FooterContact;
         if (Desinsectant != null)
             entity.Desinsectant = Desinsectant;
         if (Derodent != null)

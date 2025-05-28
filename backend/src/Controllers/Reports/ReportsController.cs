@@ -275,7 +275,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            fileBytes = _wordTemplateService.GenerateReport2(appointment,
+            fileBytes = _wordTemplateService.GenerateReport2(
+                appointment,
                 "Templates/nuevos_informes/informe_desratizacion.docx"
             );
         }

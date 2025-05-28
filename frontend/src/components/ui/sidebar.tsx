@@ -32,6 +32,23 @@ const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
+// Helper function to read sidebar state from cookie
+function getSidebarStateFromCookie(): boolean | null
+{
+    if (typeof document === "undefined") return null;
+
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies)
+    {
+        const [name, value] = cookie.trim().split("=");
+        if (name === SIDEBAR_COOKIE_NAME)
+        {
+            return value === "true";
+        }
+    }
+    return null;
+}
+
 type SidebarContext = {
     state: "expanded" | "collapsed"
     open: boolean
@@ -79,9 +96,13 @@ const SidebarProvider = React.forwardRef<
                 const isMobile = useIsMobile();
                 const [openMobile, setOpenMobile] = React.useState(false);
 
-                // This is the internal state of the sidebar.
-                // We use openProp and setOpenProp for control from outside the component.
-                const [_open, _setOpen] = React.useState(defaultOpen);
+                // Initialize state from cookie or default
+                const [_open, _setOpen] = React.useState(() =>
+                {
+                    const savedState = getSidebarStateFromCookie();
+                    return savedState ?? defaultOpen;
+                });
+
                 const open = openProp ?? _open;
                 const setOpen = React.useCallback(
                     (value: boolean | ((value: boolean) => boolean)) =>
@@ -241,6 +262,7 @@ function Sidebar({
             data-variant={variant}
             data-side={side}
             data-slot="sidebar"
+            suppressHydrationWarning
         >
             {/* This is what handles the sidebar gap on desktop */}
             <div
@@ -510,6 +532,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">)
             data-slot="sidebar-menu-item"
             data-sidebar="menu-item"
             className={cn("group/menu-item relative", className)}
+            suppressHydrationWarning
             {...props}
         />
     );
@@ -561,6 +584,7 @@ function SidebarMenuButton({
             data-sidebar="menu-button"
             data-size={size}
             data-active={isActive}
+            suppressHydrationWarning
             className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
             {...props}
         />

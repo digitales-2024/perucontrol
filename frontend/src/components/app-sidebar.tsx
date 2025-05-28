@@ -109,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar> & 
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Link href="/" className="my-2">
+                        <Link href="/" className="my-2" suppressHydrationWarning>
                             <div className="text-center w-full">
                                 <img
                                     className="inline-block"

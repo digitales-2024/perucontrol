@@ -677,3 +677,25 @@ export async function DuplicateFromPreviousAppointment(appointmentId: string): P
 
     return ok(null);
 }
+
+export async function ExportProjectsCSV(startDate?: string, endDate?: string): Promise<Result<Blob, FetchError>>
+{
+    let url = "/api/Project/export/csv";
+    const params = new URLSearchParams();
+
+    if (startDate)
+    {
+        params.append("startDate", startDate);
+    }
+    if (endDate)
+    {
+        params.append("endDate", endDate);
+    }
+
+    if (params.toString())
+    {
+        url += `?${params.toString()}`;
+    }
+
+    return DownloadFile(url, "GET");
+}

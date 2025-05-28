@@ -12,7 +12,8 @@ public class ProjectController(
     ProjectService projectService,
     LibreOfficeConverterService pdfConverterService,
     EmailService emailService,
-    WhatsappService whatsappService
+    WhatsappService whatsappService,
+    CsvExportService csvExportService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
     private static readonly SemaphoreSlim _orderNumberLock = new SemaphoreSlim(1, 1);
@@ -662,7 +663,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
@@ -734,5 +735,40 @@ public class ProjectController(
         }
 
         return (pdfBytes, null);
+    }
+
+    [EndpointSummary("Export all projects to CSV with optional date range filtering")]
+    [EndpointDescription(
+        "Export projects to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time."
+    )]
+    [HttpGet("export/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    public async Task<IActionResult> ExportProjectsCsv(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null
+    )
+    {
+        var projects = await _context
+            .Projects.Include(p => p.Client)
+            .Include(p => p.Services)
+            .Include(p => p.Appointments)
+            .OrderByDescending(p => p.ProjectNumber)
+            .ToListAsync();
+
+        var csvBytes = csvExportService.ExportProjectsToCsv(projects, startDate, endDate);
+
+        // Create a more descriptive filename with date range info
+        var fileName = "projects_export";
+        if (startDate.HasValue || endDate.HasValue)
+        {
+            fileName += "_";
+            if (startDate.HasValue)
+                fileName += $"from_{startDate.Value:yyyyMMdd}";
+            if (endDate.HasValue)
+                fileName += $"_to_{endDate.Value:yyyyMMdd}";
+        }
+        fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+
+        return File(csvBytes, "text/csv", fileName);
     }
 }

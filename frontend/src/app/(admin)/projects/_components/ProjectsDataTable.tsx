@@ -10,6 +10,7 @@ import { CheckCheck, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ReactivateProject } from "./ReactivateProject";
+import { ExportCSVDialog } from "./ExportCSVDialog";
 
 export type ProjectSummary = components["schemas"]["ProjectSummary"]
 
@@ -104,12 +105,15 @@ export function ProjectsDataTable({ columns, data }: DataTableProps)
 
     // Acciones de la barra de herramientas
     const toolbarActions = (
-        <Link href="/projects/create">
-            <Button>
-                <Plus />
-                Crear Servicio
-            </Button>
-        </Link>
+        <div className="flex items-center gap-2 ml-auto">
+            <ExportCSVDialog />
+            <Link href="/projects/create">
+                <Button>
+                    <Plus />
+                    Crear Servicio
+                </Button>
+            </Link>
+        </div>
     );
 
     return (

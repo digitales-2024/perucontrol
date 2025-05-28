@@ -65,6 +65,12 @@ public class Quotation : BaseModel
     [StringLength(100, ErrorMessage = "El campo no puede exceder 100 caracteres")]
     public required string Availability { get; set; }
 
+    [StringLength(
+        200,
+        ErrorMessage = "El contacto del pie de página no puede exceder 200 caracteres"
+    )]
+    public string FooterContact { get; set; } = "Lic. Isabel Garavito S. 986951290";
+
     // ======
     // List of services
     // ======

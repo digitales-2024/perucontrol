@@ -28,6 +28,7 @@ function CollapsibleContent({
 {
     return (
         <CollapsiblePrimitive.CollapsibleContent
+            suppressHydrationWarning
             data-slot="collapsible-content"
             {...props}
         />
