@@ -2,6 +2,8 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useState, useRef, useCallback } from "react";
+import Link from "next/link";
 
 import {
     Collapsible,
@@ -24,8 +26,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import Link from "next/link";
 
 type NavMainItem = {
     title: string
@@ -58,7 +58,7 @@ export function NavMain({
 function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
     const { state, isMobile } = useSidebar();
-    
+
     // Check if this item or any of its subitems is active
     const isActiveBasedOnParentUrl = pathname === item.url ||
         (pathname.startsWith(item.url) && item.url !== "/");
@@ -69,16 +69,36 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
 
     const [expandOpen, setExpandOpen] = useState(isItemActive);
     const [hoverOpen, setHoverOpen] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Determine if we should show hover popover
     const isCollapsed = state === "collapsed" && !isMobile;
     const hasChildren = item.items && item.items.length > 0;
     const shouldShowHoverMenu = isCollapsed && hasChildren;
 
+    const handleMouseEnter = useCallback(() =>
+    {
+        if (timeoutRef.current)
+        {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setHoverOpen(true);
+    }, []);
+
+    const handleMouseLeave = useCallback(() =>
+    {
+        timeoutRef.current = setTimeout(() =>
+        {
+            setHoverOpen(false);
+        }, 150);
+    }, []);
+
     // When collapsed with children, render with popover
-    if (shouldShowHoverMenu) {
+    if (shouldShowHoverMenu)
+    {
         return (
-            <SidebarMenuItem className="font-display">
+            <SidebarMenuItem className="font-display group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
                     <PopoverTrigger asChild>
                         <SidebarMenuButton
@@ -86,8 +106,8 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                             tooltip={item.title}
                             data-active={isItemActive}
                             className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-                            onMouseEnter={() => setHoverOpen(true)}
-                            onMouseLeave={() => setHoverOpen(false)}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
                         >
                             <Link href={item.url}>
                                 <item.icon />
@@ -97,12 +117,13 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                             </Link>
                         </SidebarMenuButton>
                     </PopoverTrigger>
-                    <PopoverContent 
-                        side="right" 
-                        align="start"
+                    <PopoverContent
+                        side="right"
+                        align="center"
+                        sideOffset={0}
                         className="w-48 p-1"
-                        onMouseEnter={() => setHoverOpen(true)}
-                        onMouseLeave={() => setHoverOpen(false)}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                     >
                         <div className="grid gap-1">
                             <div className="px-2 py-1.5 text-sm font-semibold">
@@ -117,7 +138,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                                         hover:bg-accent hover:text-accent-foreground 
                                         focus:bg-accent focus:text-accent-foreground 
                                         outline-none transition-colors
-                                        ${subItem.url === pathname ? 'bg-accent text-accent-foreground' : ''}
+                                        ${subItem.url === pathname ? "bg-accent text-accent-foreground" : ""}
                                     `}
                                 >
                                     {subItem.title}
