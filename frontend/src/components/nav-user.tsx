@@ -26,6 +26,7 @@ import {
 import { LogoutAction } from "@/app/(auth)/login/actions";
 import { components } from "@/types/api";
 import { UserEditDialog } from "./UserEditDialog";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 type User = components["schemas"]["UserReturn"]
 
@@ -52,8 +53,10 @@ export function NavUser({
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarFallback className="rounded-lg text-black">
+                            <Avatar className="h-8 w-8 rounded-full">
+                                <AvatarImage src="/profiles/foto_perfil_fem.jpg" />
+                                {/* <AvatarImage src="/profiles/foto_perfil_masc.png" /> */}
+                                <AvatarFallback className="rounded-full text-black">
                                     {userInitials}
                                 </AvatarFallback>
                             </Avatar>
