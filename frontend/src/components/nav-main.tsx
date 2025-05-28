@@ -100,7 +100,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
         return (
             <SidebarMenuItem className="font-display group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
-                    <PopoverTrigger asChild>
+                    <PopoverTrigger asChild suppressHydrationWarning>
                         <SidebarMenuButton
                             asChild
                             tooltip={item.title}
@@ -108,6 +108,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                             className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
+                            suppressHydrationWarning
                         >
                             <Link href={item.url}>
                                 <item.icon />
@@ -153,7 +154,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
 
     // Default expanded behavior
     return (
-        <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
+        <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen} suppressHydrationWarning>
             <SidebarMenuItem className="font-display group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
                 <SidebarMenuButton
                     asChild
@@ -177,7 +178,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                 </SidebarMenuButton>
                 {item.items?.length ? (
                     <>
-                        <CollapsibleTrigger asChild>
+                        <CollapsibleTrigger asChild suppressHydrationWarning>
                             <SidebarMenuAction className="data-[state=open]:rotate-90">
                                 <ChevronRight />
                                 <span className="sr-only">
@@ -185,7 +186,7 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
                                 </span>
                             </SidebarMenuAction>
                         </CollapsibleTrigger>
-                        <CollapsibleContent>
+                        <CollapsibleContent suppressHydrationWarning>
                             <SidebarMenuSub>
                                 {item.items?.map((subItem) => (
                                     <SidebarMenuSubItem key={subItem.title}>
