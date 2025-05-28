@@ -31,9 +31,11 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             .Select(a => new { a.Id, a.DueDate })
             .ToListAsync();
 
-        var orderedNumber = projectAppointments
-            .Select((app, index) => new { app.Id, OrderedNumber = index + 1 })
-            .FirstOrDefault(x => x.Id == id)?.OrderedNumber ?? 1;
+        var orderedNumber =
+            projectAppointments
+                .Select((app, index) => new { app.Id, OrderedNumber = index + 1 })
+                .FirstOrDefault(x => x.Id == id)
+                ?.OrderedNumber ?? 1;
 
         return new SuccessResult<AppointmentGetOutDTO>(
             AppointmentGetOutDTO.FromEntity(appointment, orderedNumber)

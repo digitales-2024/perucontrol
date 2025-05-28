@@ -40,13 +40,13 @@ public class EmailService
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
-        
+
         // Add all recipient addresses
         foreach (var address in toAddresses)
         {
             message.To.Add(new MailboxAddress("", address));
         }
-        
+
         message.Subject = subject;
 
         var builder = new BodyBuilder { HtmlBody = htmlBody, TextBody = textBody };

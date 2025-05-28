@@ -352,6 +352,7 @@ public class OdsTemplateService
             { "{productos_desinsectacion}", quotation.Desinsectant ?? "" },
             { "{productos_desratizacion}", quotation.Derodent ?? "" },
             { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
+            { "{footer_contact}", quotation.FooterContact ?? "" },
         };
 
         var templatePath = "Templates/cotizacion_plantilla.ods";

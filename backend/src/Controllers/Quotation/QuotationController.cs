@@ -47,15 +47,16 @@ public class QuotationController(
         _dbSet.Add(entity);
 
         // set services
-        entity.QuotationServices = createDto
-            .QuotationServices.Select(qs => new QuotationService
+        entity.QuotationServices =
+        [
+            .. createDto.QuotationServices.Select(qs => new QuotationService
             {
                 Amount = qs.Amount,
                 NameDescription = qs.NameDescription,
                 Price = qs.Price,
                 Accesories = qs.Accesories,
-            })
-            .ToList();
+            }),
+        ];
 
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);

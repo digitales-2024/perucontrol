@@ -80,6 +80,7 @@ export default function EditQuotation({
             paymentMethod: quotation?.paymentMethod ?? "",
             others: quotation?.others ?? "",
             availability: quotation?.availability ?? "",
+            footerContact: quotation?.footerContact ?? "Lic. Isabel Garavito S. 986951290",
             quotationServices: quotation?.quotationServices?.map((service) => ({
                 id: service.id ?? null,
                 amount: service.amount ?? 1,
@@ -723,6 +724,28 @@ export default function EditQuotation({
                                                         *
                                                     </span>
                                                 </FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                </div>
+
+                                <div>
+                                    <FormField
+                                        control={form.control}
+                                        name="footerContact"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Contacto del Pie de Página
+                                                </FormLabel>
+                                                <FormDescription>
+                                                    Información de contacto que aparecerá en el pie de página de la cotización
+                                                </FormDescription>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
