@@ -17,7 +17,13 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
+    useSidebar,
 } from "@/components/ui/sidebar";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -51,6 +57,8 @@ export function NavMain({
 
 function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname: string })
 {
+    const { state, isMobile } = useSidebar();
+    
     // Check if this item or any of its subitems is active
     const isActiveBasedOnParentUrl = pathname === item.url ||
         (pathname.startsWith(item.url) && item.url !== "/");
@@ -60,7 +68,69 @@ function SidebarMenuItemLocal({ item, pathname }: { item: NavMainItem, pathname:
     const isItemActive = isActiveBasedOnParentUrl || isActiveBasedOnChildUrl;
 
     const [expandOpen, setExpandOpen] = useState(isItemActive);
+    const [hoverOpen, setHoverOpen] = useState(false);
 
+    // Determine if we should show hover popover
+    const isCollapsed = state === "collapsed" && !isMobile;
+    const hasChildren = item.items && item.items.length > 0;
+    const shouldShowHoverMenu = isCollapsed && hasChildren;
+
+    // When collapsed with children, render with popover
+    if (shouldShowHoverMenu) {
+        return (
+            <SidebarMenuItem className="font-display">
+                <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
+                    <PopoverTrigger asChild>
+                        <SidebarMenuButton
+                            asChild
+                            tooltip={item.title}
+                            data-active={isItemActive}
+                            className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                            onMouseEnter={() => setHoverOpen(true)}
+                            onMouseLeave={() => setHoverOpen(false)}
+                        >
+                            <Link href={item.url}>
+                                <item.icon />
+                                <span>
+                                    {item.title}
+                                </span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </PopoverTrigger>
+                    <PopoverContent 
+                        side="right" 
+                        align="start"
+                        className="w-48 p-1"
+                        onMouseEnter={() => setHoverOpen(true)}
+                        onMouseLeave={() => setHoverOpen(false)}
+                    >
+                        <div className="grid gap-1">
+                            <div className="px-2 py-1.5 text-sm font-semibold">
+                                {item.title}
+                            </div>
+                            {item.items?.map((subItem) => (
+                                <Link
+                                    key={subItem.title}
+                                    href={subItem.url}
+                                    className={`
+                                        flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm 
+                                        hover:bg-accent hover:text-accent-foreground 
+                                        focus:bg-accent focus:text-accent-foreground 
+                                        outline-none transition-colors
+                                        ${subItem.url === pathname ? 'bg-accent text-accent-foreground' : ''}
+                                    `}
+                                >
+                                    {subItem.title}
+                                </Link>
+                            ))}
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            </SidebarMenuItem>
+        );
+    }
+
+    // Default expanded behavior
     return (
         <Collapsible key={item.title} asChild open={expandOpen} onOpenChange={setExpandOpen}>
             <SidebarMenuItem className="font-display group-data-[state=collapsed]:flex group-data-[state=collapsed]:justify-center">
