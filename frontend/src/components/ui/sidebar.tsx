@@ -100,7 +100,7 @@ const SidebarProvider = React.forwardRef<
                 const [_open, _setOpen] = React.useState(() =>
                 {
                     const savedState = getSidebarStateFromCookie();
-                    return savedState !== null ? savedState : defaultOpen;
+                    return savedState ?? defaultOpen;
                 });
 
                 const open = openProp ?? _open;
