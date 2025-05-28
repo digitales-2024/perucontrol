@@ -91,11 +91,15 @@ export default function EditQuotation({
             desinsectant: quotation?.desinsectant ?? "",
             derodent: quotation?.derodent ?? "",
             disinfectant: quotation?.disinfectant ?? "",
-            termsAndConditions: quotation?.termsAndConditions?.length === 9
-                ? quotation.termsAndConditions
-                : [
-                    "",
-                ],
+            termsAndConditions: (() => {
+                const existingTerms = quotation?.termsAndConditions ?? [];
+                // Ensure we always have exactly 9 terms, padding with empty strings if needed
+                const paddedTerms = [...existingTerms];
+                while (paddedTerms.length < 9) {
+                    paddedTerms.push("");
+                }
+                return paddedTerms.slice(0, 9); // Ensure we don't exceed 9 terms
+            })(),
         },
     });
 
@@ -795,10 +799,10 @@ export default function EditQuotation({
                                                 <FormLabel>
                                                     Punto
                                                     {" "}
-                                                    {index + 1}
+                                                    {index + 2}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Textarea {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
