@@ -297,19 +297,32 @@ public class ClientController(
         return NoContent();
     }
 
-    [EndpointSummary("Export all clients to CSV")]
+    [EndpointSummary("Export all clients to CSV with optional date range filtering")]
+    [EndpointDescription("Export clients to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time.")]
     [HttpGet("export/csv")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
-    public async Task<IActionResult> ExportClientsCsv()
+    public async Task<IActionResult> ExportClientsCsv(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
     {
         var clients = await _context
             .Clients
             .OrderByDescending(c => c.ClientNumber)
             .ToListAsync();
 
-        var csvBytes = csvExportService.ExportClientsToCsv(clients);
+        var csvBytes = csvExportService.ExportClientsToCsv(clients, startDate, endDate);
 
-        var fileName = $"clients_export_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+        // Create a more descriptive filename with date range info
+        var fileName = "clients_export";
+        if (startDate.HasValue || endDate.HasValue)
+        {
+            fileName += "_";
+            if (startDate.HasValue)
+                fileName += $"from_{startDate.Value:yyyyMMdd}";
+            if (endDate.HasValue)
+                fileName += $"_to_{endDate.Value:yyyyMMdd}";
+        }
+        fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
         
         return File(csvBytes, "text/csv", fileName);
     }
