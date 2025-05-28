@@ -69,6 +69,84 @@ public class CsvExportService
         return Encoding.UTF8.GetBytes(csv.ToString());
     }
 
+    public byte[] ExportQuotationsToCsv(
+        IEnumerable<Quotation> quotations,
+        DateTime? startDate = null,
+        DateTime? endDate = null
+    )
+    {
+        // Apply date filtering if parameters are provided
+        var filteredQuotations = quotations.AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            filteredQuotations = filteredQuotations.Where(q => q.CreatedAt >= startDate.Value);
+        }
+        else
+        {
+            // If no start date, use Unix epoch start (January 1, 1970)
+            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            filteredQuotations = filteredQuotations.Where(q => q.CreatedAt >= unixStart);
+        }
+
+        if (endDate.HasValue)
+        {
+            // Include the entire end date (until end of day)
+            var endOfDay = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            filteredQuotations = filteredQuotations.Where(q => q.CreatedAt <= endOfDay);
+        }
+        else
+        {
+            // If no end date, use current UTC time
+            filteredQuotations = filteredQuotations.Where(q => q.CreatedAt <= DateTime.UtcNow);
+        }
+
+        var finalQuotations = filteredQuotations.ToList();
+
+        var csv = new StringBuilder();
+
+        // Header
+        csv.AppendLine(
+            "QuotationNumber,ClientName,Services,Status,Frequency,HasTaxes,CreationDate,ExpirationDate,ServiceAddress,PaymentMethod,Others,Availability,Desinsectant,Derodent,Disinfectant,TermsAndConditions,IsActive,CreatedAt,ModifiedAt"
+        );
+
+        // Data rows
+        foreach (var quotation in finalQuotations)
+        {
+            var servicesString = quotation.Services != null 
+                ? string.Join("; ", quotation.Services.Select(s => s.Name))
+                : "";
+
+            var termsAndConditionsString = quotation.TermsAndConditions != null
+                ? string.Join("; ", quotation.TermsAndConditions)
+                : "";
+
+            csv.AppendLine(
+                $"{quotation.QuotationNumber},"
+                    + $"\"{EscapeCsvValue(quotation.Client?.Name)}\","
+                    + $"\"{EscapeCsvValue(servicesString)}\","
+                    + $"\"{quotation.Status}\","
+                    + $"\"{quotation.Frequency}\","
+                    + $"{quotation.HasTaxes},"
+                    + $"{quotation.CreationDate:yyyy-MM-dd},"
+                    + $"{quotation.ExpirationDate:yyyy-MM-dd},"
+                    + $"\"{EscapeCsvValue(quotation.ServiceAddress)}\","
+                    + $"\"{EscapeCsvValue(quotation.PaymentMethod)}\","
+                    + $"\"{EscapeCsvValue(quotation.Others)}\","
+                    + $"\"{EscapeCsvValue(quotation.Availability)}\","
+                    + $"\"{EscapeCsvValue(quotation.Desinsectant)}\","
+                    + $"\"{EscapeCsvValue(quotation.Derodent)}\","
+                    + $"\"{EscapeCsvValue(quotation.Disinfectant)}\","
+                    + $"\"{EscapeCsvValue(termsAndConditionsString)}\","
+                    + $"{quotation.IsActive},"
+                    + $"{quotation.CreatedAt:yyyy-MM-dd HH:mm:ss},"
+                    + $"{quotation.ModifiedAt:yyyy-MM-dd HH:mm:ss}"
+            );
+        }
+
+        return Encoding.UTF8.GetBytes(csv.ToString());
+    }
+
     private static string EscapeCsvValue(string? value)
     {
         if (value == null)

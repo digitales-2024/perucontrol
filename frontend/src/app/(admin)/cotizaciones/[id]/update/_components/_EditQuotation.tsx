@@ -91,11 +91,13 @@ export default function EditQuotation({
             desinsectant: quotation?.desinsectant ?? "",
             derodent: quotation?.derodent ?? "",
             disinfectant: quotation?.disinfectant ?? "",
-            termsAndConditions: (() => {
+            termsAndConditions: (() =>
+            {
                 const existingTerms = quotation?.termsAndConditions ?? [];
                 // Ensure we always have exactly 9 terms, padding with empty strings if needed
                 const paddedTerms = [...existingTerms];
-                while (paddedTerms.length < 9) {
+                while (paddedTerms.length < 9)
+                {
                     paddedTerms.push("");
                 }
                 return paddedTerms.slice(0, 9); // Ensure we don't exceed 9 terms

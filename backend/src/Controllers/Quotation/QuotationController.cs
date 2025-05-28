@@ -13,7 +13,8 @@ public class QuotationController(
     OdsTemplateService odsTemplateService,
     LibreOfficeConverterService pDFConverterService,
     EmailService emailService,
-    WhatsappService whatsappService
+    WhatsappService whatsappService,
+    CsvExportService csvExportService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -514,5 +515,40 @@ public class QuotationController(
             .ToListAsync();
 
         return Ok(approvedQuotations);
+    }
+
+    [EndpointSummary("Export all quotations to CSV with optional date range filtering")]
+    [EndpointDescription(
+        "Export quotations to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time."
+    )]
+    [HttpGet("export/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    public async Task<IActionResult> ExportQuotationsCsv(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null
+    )
+    {
+        var quotations = await _context
+            .Quotations.Include(q => q.Client)
+            .Include(q => q.Services)
+            .Include(q => q.QuotationServices)
+            .OrderByDescending(q => q.QuotationNumber)
+            .ToListAsync();
+
+        var csvBytes = csvExportService.ExportQuotationsToCsv(quotations, startDate, endDate);
+
+        // Create a more descriptive filename with date range info
+        var fileName = "quotations_export";
+        if (startDate.HasValue || endDate.HasValue)
+        {
+            fileName += "_";
+            if (startDate.HasValue)
+                fileName += $"from_{startDate.Value:yyyyMMdd}";
+            if (endDate.HasValue)
+                fileName += $"_to_{endDate.Value:yyyyMMdd}";
+        }
+        fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+
+        return File(csvBytes, "text/csv", fileName);
     }
 }
