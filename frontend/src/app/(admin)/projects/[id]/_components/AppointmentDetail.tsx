@@ -2,12 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy, Clock } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DocumentButton } from "./DocumentButton";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { components } from "@/types/api";
-import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes, DuplicateFromPreviousAppointment } from "../../actions";
 import { MurinoMapSection } from "./MurinoMapSection";
@@ -25,7 +24,6 @@ interface AppointmentDetailsProps {
 export function AppointmentDetails({
     projectId,
     appointment,
-    project,
     murinoMapBase64,
 }: AppointmentDetailsProps)
 {
@@ -40,13 +38,6 @@ export function AppointmentDetails({
 
     // Determinar si las acciones están deshabilitadas
     const actionsDisabled = !appointment.actualDate;
-
-    const servicesMap = useMemo(() =>
-    {
-        const map = new Map<string, string>();
-        project.services.forEach((service) => map.set(service.id!, service.name));
-        return map;
-    }, [project]);
 
     async function UpdateDueDate(newDate: Date)
     {
@@ -138,7 +129,9 @@ export function AppointmentDetails({
 
             {/* Detalles de Fecha y Hora */}
             <div className="pt-6 border-t mt-6">
-                <h3 className="text-lg font-semibold text-zinc-800 mb-4">Detalles de Fecha y Hora</h3>
+                <h3 className="text-lg font-semibold text-zinc-800 mb-4">
+                    Detalles de Fecha y Hora
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Columna Izquierda: Fechas - Ahora una tarjeta */}
                     <div className="bg-white p-4 border rounded-lg shadow-sm">
@@ -147,11 +140,15 @@ export function AppointmentDetails({
                             <div className="bg-sky-100 p-2 rounded-lg">
                                 <Calendar className="h-6 w-6 text-sky-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-zinc-800">Fechas</h3>
+                            <h3 className="text-lg font-semibold text-zinc-800">
+                                Fechas
+                            </h3>
                         </div>
 
                         {/* Contenido de Fechas */}
-                        <div className="space-y-6"> {/* Wrapper for content to maintain spacing with header*/}
+                        <div className="space-y-6">
+                            {" "}
+                            {/* Wrapper for content to maintain spacing with header*/}
                             {/* Fecha planificada */}
                             <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3">
                                 <Flag className="h-5 w-5 text-blue-500 row-span-2" />
@@ -260,11 +257,15 @@ export function AppointmentDetails({
                             <div className="bg-amber-100 p-2 rounded-lg">
                                 <Clock className="h-6 w-6 text-amber-600" />
                             </div>
-                            <h3 className="text-lg font-semibold text-zinc-800">Horas del servicio</h3>
+                            <h3 className="text-lg font-semibold text-zinc-800">
+                                Horas del servicio
+                            </h3>
                         </div>
 
                         {/* Contenido de Horas */}
-                        <div className="space-y-4"> {/* Wrapper for content to maintain spacing with header*/}
+                        <div className="space-y-4">
+                            {" "}
+                            {/* Wrapper for content to maintain spacing with header*/}
                             <div>
                                 <label htmlFor="enterTimeInput" className="block text-xs font-medium text-zinc-600 mb-1">
                                     Hora de entrada
@@ -306,7 +307,7 @@ export function AppointmentDetails({
                 </div>
             </div>
 
-            {/* Servicios 
+            {/* Servicios
             <div className="space-y-2 pt-6 border-t mt-6">
                 <h3 className="text-base font-medium text-zinc-800">
                     Servicios programados
