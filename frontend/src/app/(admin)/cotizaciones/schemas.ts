@@ -13,6 +13,7 @@ export const quotationSchema = z.object({
     paymentMethod: z.string().min(1, "El método de pago es requerido"),
     others: z.string(),
     availability: z.string().min(1, "La disponibilidad es necesaria"),
+    footerContact: z.string().optional(),
     quotationServices: z.array(z.object({
         id: z.string().nullable()
             .optional(),
@@ -58,6 +59,7 @@ export const quotationSchema2 = z.object({
     paymentMethod: z.string().min(1, "El método de pago es requerido"),
     others: z.string(),
     availability: z.string().min(1, "La disponibilidad es necesaria"),
+    footerContact: z.string().optional(),
     quotationServices: z.array(z.object({
         id: z.string().nullable()
             .optional(),

@@ -93,6 +93,7 @@ export function CreateQuotation({ terms, clients, services }: {
             paymentMethod: "",
             others: "",
             availability: "",
+            footerContact: "Lic. Isabel Garavito S. 986951290",
             quotationServices: [],
             desinsectant: "",
             derodent: "",
@@ -230,6 +231,7 @@ export function CreateQuotation({ terms, clients, services }: {
                     paymentMethod: parsedData.paymentMethod ?? "",
                     others: parsedData.others ?? "",
                     availability: parsedData.availability ?? "",
+                    footerContact: parsedData.footerContact ?? "Lic. Isabel Garavito S. 986951290",
                     quotationServices: parsedData.quotationServices?.map((qs: QuotationService) => ({
                         amount: qs.amount || 1,
                         nameDescription: qs.nameDescription || "",
@@ -810,6 +812,27 @@ export function CreateQuotation({ terms, clients, services }: {
                                                 *
                                             </span>
                                         </FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="footerContact"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Contacto del Pie de Página
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Información de contacto que aparecerá en el pie de página de la cotización
+                                        </FormDescription>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>

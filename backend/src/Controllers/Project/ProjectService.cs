@@ -111,7 +111,7 @@ public class ProjectService(
                     {
                         OperationDate = app.DueDate,
                         TreatedAreas = treatmentAreasNamesString,
-                     },
+                    },
                     TreatmentAreas = createDTO
                         .Ambients.Select(areaName => new Model.TreatmentArea
                         {

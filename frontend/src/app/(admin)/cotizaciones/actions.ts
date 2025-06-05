@@ -1,7 +1,7 @@
 "use server";
 
 import type { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, FetchError, wrapper, DownloadFile } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -322,4 +322,26 @@ export async function SendQuotationPdfViaWhatsapp(id: string, phoneNumber: strin
         });
     }
     return ok(null);
+}
+
+export async function ExportQuotationsCSV(startDate?: string, endDate?: string): Promise<Result<Blob, FetchError>>
+{
+    let url = "/api/Quotation/export/csv";
+    const params = new URLSearchParams();
+
+    if (startDate)
+    {
+        params.append("startDate", startDate);
+    }
+    if (endDate)
+    {
+        params.append("endDate", endDate);
+    }
+
+    if (params.toString())
+    {
+        url += `?${params.toString()}`;
+    }
+
+    return DownloadFile(url, "GET");
 }

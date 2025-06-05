@@ -5,14 +5,24 @@ import {
     SidebarProvider,
 } from "@/components/ui/sidebar";
 import { backend, wrapper } from "@/types/backend";
+import { cookies } from "next/headers";
+
+async function getSidebarStateFromServerCookies(): Promise<boolean>
+{
+    const cookieStore = await cookies();
+    const sidebarState = cookieStore.get("sidebar_state");
+    return sidebarState?.value === "true";
+}
 
 export default async function AdminLayout({ children }: { children: React.ReactNode })
 {
     const [user, err] = await wrapper((auth) => backend.GET("/api/User", auth));
+    const defaultOpen = await getSidebarStateFromServerCookies();
+
     if (err)
     {
         return (
-            <SidebarProvider>
+            <SidebarProvider defaultOpen={defaultOpen}>
                 <AppSidebar
                     user={{
                         username: "-",
@@ -28,7 +38,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     }
 
     return (
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar variant="sidebar" user={user} />
             <SidebarInset>
                 <div className="sticky z-10 top-0 left-0 w-full">

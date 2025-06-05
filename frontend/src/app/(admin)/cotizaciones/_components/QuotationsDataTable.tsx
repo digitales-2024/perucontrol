@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ReactivateQuotation } from "./ReactivateQuotation";
+import { ExportCSVDialog } from "./ExportCSVDialog";
 
 interface DataTableProps {
     columns: Array<ColumnDef<Quotation, unknown>>
@@ -171,12 +172,15 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
 
     // Acciones de la barra de herramientas
     const toolbarActions = (
-        <Link href="/cotizaciones/nuevo">
-            <Button>
-                <Plus />
-                Crear cotización
-            </Button>
-        </Link>
+        <div className="flex items-center gap-2 ml-auto">
+            <ExportCSVDialog />
+            <Link href="/cotizaciones/nuevo">
+                <Button>
+                    <Plus />
+                    Crear cotización
+                </Button>
+            </Link>
+        </div>
     );
 
     return (
