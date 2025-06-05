@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy } from "lucide-react";
+import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy, Clock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DocumentButton } from "./DocumentButton";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
@@ -115,7 +115,7 @@ export function AppointmentDetails({
     }
 
     return (
-        <div className="bg-white rounded-lg shadow p-6 space-y-6 mt-5">
+        <div className="bg-transparent rounded-lg shadow p-6 space-y-6 mt-5">
             {/* Número de cita */}
             <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
@@ -136,151 +136,179 @@ export function AppointmentDetails({
                 </div>
             </div>
 
-            {/* Fechas */}
-            <div className="space-y-4">
-                {/* Fecha planificada */}
-                <div className="grid grid-cols-1 md:grid-cols-[2rem_1fr_7rem] items-center gap-4">
-                    <div className="text-center">
-                        <Flag className="inline-block text-blue-500" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-zinc-700">
-                            Fecha planificada
-                        </p>
-                        <p className="text-lg">
-                            {dueDate.toLocaleString("es-PE", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                timeZone: "America/Lima",
-                            })}
-                        </p>
-                    </div>
-                    <div>
-                        <Button
-                            variant="outline"
-                            onClick={() => setEditDueDateOpen(true)}
-                            className="w-full"
-                        >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Editar
-                        </Button>
-                    </div>
-                </div>
+            {/* Detalles de Fecha y Hora */}
+            <div className="pt-6 border-t mt-6">
+                <h3 className="text-lg font-semibold text-zinc-800 mb-4">Detalles de Fecha y Hora</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Columna Izquierda: Fechas - Ahora una tarjeta */}
+                    <div className="bg-white p-4 border rounded-lg shadow-sm">
+                        {/* Card Header for Fechas */}
+                        <div className="flex items-center gap-3 pb-3 border-b mb-4">
+                            <div className="bg-sky-100 p-2 rounded-lg">
+                                <Calendar className="h-6 w-6 text-sky-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-zinc-800">Fechas</h3>
+                        </div>
 
-                {/* Fecha real */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="w-8 text-center">
-                        {appointment.cancelled
-                            ? <XCircle className="text-red-500" />
-                            : deliveryDate
-                                ? <CheckIcon className="text-green-500" />
-                                : <Calendar className="text-amber-500" />
-                        }
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-xs text-zinc-700">
-                            Fecha real
-                        </p>
-                        <p className="text-base break-words whitespace-normal truncate">
-                            {appointment.cancelled ? (
-                                <span className="text-red-500 font-medium">
-                                    No realizado
-                                </span>
-                            ) : deliveryDate ? (
-                                deliveryDate.toLocaleString("es-PE", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    timeZone: "America/Lima",
-                                })
-                            ) : (
-                                <span className="text-zinc-400">
-                                    Pendiente
-                                </span>
-                            )}
-                        </p>
-                    </div>
-                    <div className="flex flex-col md:flex-row gap-2 shrink-0">
-                        {/* Botón editar/completar sólo si no está cancelada */}
-                        <Button
-                            variant="outline"
-                            onClick={() => setEditActualDateOpen(true)}
-                            className="w-full"
-                            disabled={appointment.cancelled}
-                        >
-                            {deliveryDate ? (
-                                <>
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Editar
-                                </>
-                            ) : (
-                                <>
-                                    <CheckIcon className="mr-2 h-4 w-4" />
-                                    Completar
-                                </>
-                            )}
-                        </Button>
+                        {/* Contenido de Fechas */}
+                        <div className="space-y-6"> {/* Wrapper for content to maintain spacing with header*/}
+                            {/* Fecha planificada */}
+                            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3">
+                                <Flag className="h-5 w-5 text-blue-500 row-span-2" />
+                                <p className="text-xs text-zinc-600 col-start-2">
+                                    Fecha planificada
+                                </p>
+                                <div className="col-start-3 row-start-1 row-span-2 flex items-center">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setEditDueDateOpen(true)}
+                                    >
+                                        <Pencil className="mr-1.5 h-4 w-4" />
+                                        Editar
+                                    </Button>
+                                </div>
+                                <p className="text-base font-medium text-zinc-800 col-start-2">
+                                    {dueDate.toLocaleString("es-PE", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                        timeZone: "America/Lima",
+                                    })}
+                                </p>
+                            </div>
 
-                        {/* Botón cancelar/reactivar */}
-                        <Button
-                            variant={appointment.cancelled ? "secondary" : "destructive"}
-                            onClick={ToggleCancelAppointment}
-                            className="w-full"
-                        >
-                            {appointment.cancelled ? (
-                                <>
-                                    <CheckIcon className="mr-2 h-4 w-4" />
-                                    Reactivar
-                                </>
-                            ) : (
-                                <>
-                                    <CircleOff className="mr-2 h-4 w-4" />
-                                    No realizado
-                                </>
-                            )}
-                        </Button>
+                            {/* Fecha real */}
+                            <div className="grid grid-cols-[auto_1fr_auto] items-start gap-x-3">
+                                <div className="row-span-2 flex items-center h-full pt-0.5">
+                                    {appointment.cancelled ? (
+                                        <XCircle className="h-5 w-5 text-red-500" />
+                                    ) : deliveryDate ? (
+                                        <CheckIcon className="h-5 w-5 text-green-500" />
+                                    ) : (
+                                        <Calendar className="h-5 w-5 text-amber-500" />
+                                    )}
+                                </div>
+                                <p className="text-xs text-zinc-600 col-start-2">
+                                    Fecha real
+                                </p>
+                                <div className="col-start-3 row-start-1 row-span-2 flex flex-col gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setEditActualDateOpen(true)}
+                                        disabled={appointment.cancelled}
+                                    >
+                                        {deliveryDate ? (
+                                            <>
+                                                <Pencil className="mr-1.5 h-4 w-4" />
+                                                Editar
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CheckIcon className="mr-1.5 h-4 w-4" />
+                                                Completar
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant={appointment.cancelled ? "secondary" : "destructive"}
+                                        size="sm"
+                                        onClick={ToggleCancelAppointment}
+                                    >
+                                        {appointment.cancelled ? (
+                                            <>
+                                                <CheckIcon className="mr-1.5 h-4 w-4" />
+                                                Reactivar
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CircleOff className="mr-1.5 h-4 w-4" />
+                                                No realizado
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                                <div className="col-start-2 pt-0.5">
+                                    {appointment.cancelled ? (
+                                        <span className="text-base font-medium text-red-500">
+                                            No realizado
+                                        </span>
+                                    ) : deliveryDate ? (
+                                        <p className="text-base font-medium text-zinc-800">
+                                            {deliveryDate.toLocaleString("es-PE", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                timeZone: "America/Lima",
+                                            })}
+                                        </p>
+                                    ) : (
+                                        <span className="text-base font-medium text-zinc-500">
+                                            Pendiente
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Columna Derecha: Horas - Ahora una tarjeta */}
+                    <div className="bg-white p-4 border rounded-lg shadow-sm">
+                        {/* Card Header for Horas */}
+                        <div className="flex items-center gap-3 pb-3 border-b mb-4">
+                            <div className="bg-amber-100 p-2 rounded-lg">
+                                <Clock className="h-6 w-6 text-amber-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-zinc-800">Horas del servicio</h3>
+                        </div>
+
+                        {/* Contenido de Horas */}
+                        <div className="space-y-4"> {/* Wrapper for content to maintain spacing with header*/}
+                            <div>
+                                <label htmlFor="enterTimeInput" className="block text-xs font-medium text-zinc-600 mb-1">
+                                    Hora de entrada
+                                </label>
+                                <input
+                                    id="enterTimeInput"
+                                    type="time"
+                                    value={enterTime}
+                                    onChange={(e) => setEnterTime(e.target.value)}
+                                    className="w-full border rounded p-2 text-sm shadow-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    disabled={appointment.cancelled}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="leaveTimeInput" className="block text-xs font-medium text-zinc-600 mb-1">
+                                    Hora de salida
+                                </label>
+                                <input
+                                    id="leaveTimeInput"
+                                    type="time"
+                                    value={leaveTime}
+                                    onChange={(e) => setLeaveTime(e.target.value)}
+                                    className="w-full border rounded p-2 text-sm shadow-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    disabled={appointment.cancelled}
+                                />
+                            </div>
+                            <div>
+                                <Button
+                                    onClick={UpdateTimes}
+                                    disabled={appointment.cancelled}
+                                    className="w-full"
+                                    size="sm"
+                                >
+                                    Guardar horas
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Hora de entrada (Formato 12 horas)
-                    </label>
-                    <input
-                        type="time"
-                        value={enterTime}
-                        onChange={(e) => setEnterTime(e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Hora de salida (Formato 12 horas)
-                    </label>
-                    <input
-                        type="time"
-                        value={leaveTime}
-                        onChange={(e) => setLeaveTime(e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                </div>
-                <div>
-                    <Button
-                        onClick={UpdateTimes}
-                        disabled={appointment.cancelled}
-                        className="w-full"
-                    >
-                        Guardar horas
-                    </Button>
-                </div>
-            </div>
-
-            {/* Servicios */}
-            <div className="space-y-2">
-                <h3 className="text-base font-medium">
+            {/* Servicios 
+            <div className="space-y-2 pt-6 border-t mt-6">
+                <h3 className="text-base font-medium text-zinc-800">
                     Servicios programados
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -293,6 +321,7 @@ export function AppointmentDetails({
                     </div>
                 </div>
             </div>
+*/}
 
             {/* Resumen de Productos y Áreas */}
             <TreatmentSummary

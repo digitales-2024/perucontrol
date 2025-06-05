@@ -312,35 +312,13 @@ export function ProjectDetails({
         URL.revokeObjectURL(url);
     };
 
-    // const downloadPDF2 = async() =>
-    // {
-    //     const [blob, err] = await toastWrapper(GenerateSchedule2PDF(projectId), {
-    //         loading: "Generando archivo",
-    //         success: "Excel generado",
-    //         error: (e) => `Error al generar el Excel: ${e.message}`,
-    //     });
-    //
-    //     if (err)
-    //     {
-    //         console.error("Error al generar el Excel:", err);
-    //         return;
-    //     }
-    //
-    //     const url = URL.createObjectURL(blob);
-    //     const a = document.createElement("a");
-    //     a.href = url;
-    //     a.download = `cronograma_${projectId.substring(0, 4)}.pdf`;
-    //     a.click();
-    //     URL.revokeObjectURL(url);
-    // };
-
     return (
         <div className="container mx-auto md:p-4 p-1 space-y-6">
             <div className="flex flex-col space-y-6">
                 {/* Cabecera con botón de regreso */}
 
                 {/* Tarjeta principal de información */}
-                <Card>
+                <Card className="bg-transparent">
                     <CardHeader className="pb-2">
                         <div className="grid grid-cols-[auto_5rem] sm:items-center gap-4">
                             <div>
@@ -637,7 +615,7 @@ export function ProjectDetails({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-transparent">
                     <CardHeader className="pb-2">
                         <div className="flex flex-wrap gap-4 justify-between">
                             <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
