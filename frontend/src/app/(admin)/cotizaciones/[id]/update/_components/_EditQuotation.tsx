@@ -535,11 +535,11 @@ export default function EditQuotation({
                                             render={({ field }) => (
                                                 <FormItem className="mt-4">
                                                     <FormLabel>
-                                                        Accesorios
+                                                        Equipos a utilizar
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Textarea
-                                                            placeholder="Accesorios requeridos para el servicio"
+                                                            placeholder="Equipos requeridos para el servicio"
                                                             className="resize-none"
                                                             {...field}
                                                         />
@@ -561,7 +561,7 @@ export default function EditQuotation({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Desinsectante
+                                                Insecticida
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
@@ -581,11 +581,11 @@ export default function EditQuotation({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Derodentizante
+                                                Rodenticida
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Derodentizante"
+                                                    placeholder="Rodenticida"
                                                     className="resize-none"
                                                     {...field}
                                                 />
