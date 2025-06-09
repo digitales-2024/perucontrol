@@ -61,7 +61,6 @@ interface OperationSheetTableProps<T> {
     stateFilter?: (data: Array<T>, state: string) => Array<T>,
     searchFields?: Array<keyof T | string>
     dateRangeField?: DateRangeField | null
-    actionButtons?: Array<ActionButton<T>>
     dropdownActions?: Array<DropdownAction<T>>
     onRowClick?: (row: T) => void
     toolbarActions?: React.ReactNode
@@ -79,7 +78,6 @@ export function OperationSheetTable<T extends object>({
     stateFilter,
     searchFields,
     dateRangeField,
-    actionButtons,
     dropdownActions,
     onRowClick,
     toolbarActions,

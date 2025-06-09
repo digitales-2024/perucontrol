@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { components } from "@/types/api";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Calendar1, CircleUserRound, Clock1, Hash, Send } from "lucide-react";
+import { Calendar1, CircleUserRound, Clock1, Ellipsis, Hash, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
@@ -15,6 +15,8 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toastWrapper } from "@/types/toasts";
+import { GenerateOperationSheetExcel, GenerateOperationSheetPDF } from "../../../actions";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 
@@ -147,41 +149,99 @@ export const columns: Array<ColumnDef<OperationSheetProp>> = [
                 ACCIONES
             </div>
         ),
-        cell: () =>
-        {
-            console.log("cell actions");
-            return (
-                <div className="flex items-center justify-center">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                aria-label="Open menu"
-                                variant="ghost"
-                                className="flex py-0 px-4 data-[state=open]:bg-muted
+        cell: ({ row }) => (
+            <div className="flex items-center justify-center gap-2">
+                <button
+                    className="cursor-pointer"
+                    onClick={(ev) =>
+                    {
+                        ev.stopPropagation();
+                        downloadExcel(row.original.appointmentId);
+                    }}
+                >
+                    <Badge variant="excel">
+                        Excel
+                    </Badge>
+                </button>
+                <button onClick={(ev) =>
+                {
+                    ev.stopPropagation();
+                    downloadPdf(row.original.appointmentId);
+                }}
+                >
+                    <Badge variant="pdf">
+                        PDF
+                    </Badge>
+                </button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            aria-label="Open menu"
+                            variant="ghost"
+                            className="flex py-0 data-[state=open]:bg-muted
                                     border border-blue-500 text-blue-500
                                     hover:text-blue-700 rounded-xl"
-                            >
-                                Opciones
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem>
-                                Ver
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                Enviar
-                                <DropdownMenuShortcut>
-                                    <Send
-                                        className="size-4"
-                                        aria-hidden="true"
-                                    />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            );
-        },
+                        >
+                            <Ellipsis />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem>
+                            Ver
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                            Enviar
+                            <DropdownMenuShortcut>
+                                <Send
+                                    className="size-4"
+                                    aria-hidden="true"
+                                />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        ),
     },
 ];
+
+async function downloadExcel(id: string)
+{
+    const [blob, err] = await toastWrapper(GenerateOperationSheetExcel(id), {
+        loading: "Generando archivo",
+        success: "Excel generado",
+    });
+
+    if (err)
+    {
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cotizacion_${id}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+async function downloadPdf(id: string)
+{
+    const [blob, err] = await toastWrapper(GenerateOperationSheetPDF(id), {
+        loading: "Generando archivo",
+        success: "Excel generado",
+    });
+
+    if (err)
+    {
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cotizacion_${id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+};

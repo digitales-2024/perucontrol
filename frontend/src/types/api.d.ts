@@ -6257,6 +6257,10 @@ export interface components {
             enableRangeProcessing?: boolean;
         };
         GetOperationSheetsForTableOutDto: {
+            /** Format: uuid */
+            operationSheetId: string;
+            /** Format: uuid */
+            appointmentId: string;
             /** Format: int32 */
             number: number;
             clientName: string;

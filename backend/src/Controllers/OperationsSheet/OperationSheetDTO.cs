@@ -201,6 +201,8 @@ public class OperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
 
 public class GetOperationSheetsForTableOutDto
 {
+    public required Guid OperationSheetId { get; set; }
+    public required Guid AppointmentId { get; set; }
     public required int Number { get; set; }
     public required string ClientName { get; set; }
     public DateTime? ActualDate { get; set; } = null;
