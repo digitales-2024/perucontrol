@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PeruControl.Model;
 
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectOperationSheetController(DatabaseContext db)
+public class ProjectOperationSheetController(DatabaseContext db,
+        OperationSheetService operationSheetService)
     : AbstractCrudController<
         ProjectOperationSheet,
-        ProjectOperationSheetCreateDTO,
-        ProjectOperationSheetPatchDTO
+        OperationSheetCreateDTO,
+        OperationSheetPatchDTO
     >(db)
 {
     [EndpointSummary("Partial edit one by id")]
@@ -20,7 +20,7 @@ public class ProjectOperationSheetController(DatabaseContext db)
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public override async Task<IActionResult> Patch(
         Guid id,
-        [FromBody] ProjectOperationSheetPatchDTO patchDTO
+        [FromBody] OperationSheetPatchDTO patchDTO
     )
     {
         var entity = await _dbSet.FindAsync(id);
@@ -33,5 +33,15 @@ public class ProjectOperationSheetController(DatabaseContext db)
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [EndpointSummary("Get Operation Sheets by table")]
+    [EndpointDescription("This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created")]
+    // [ProducesResponseType<IEnumerable<AppointmentGetDTO>>(StatusCodes.Status200OK)]
+    [HttpGet("for-table")]
+    public async Task<IList<GetOperationSheetsForTableOutDto>> GetOperationSheetsForTable()
+    {
+        var list = await operationSheetService.GetOperationSheetsForTable();
+        return list;
     }
 }

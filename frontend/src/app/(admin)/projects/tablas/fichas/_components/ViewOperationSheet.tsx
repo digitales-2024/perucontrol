@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { GenerateOperationSheetExcel, GenerateOperationSheetPDF } from "../../../actions";
 
-export type OperationSheetProp = components["schemas"]["AppointmentGetDTO2"]
+export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 
 interface OperationRecordsListProps {
     columns: Array<ColumnDef<OperationSheetProp, unknown>>;
@@ -54,7 +54,6 @@ export default function OperationRecordsList({ columns, data }: OperationRecords
 
     return (
         <div className="space-y-4">
-
             <OperationSheetTable
                 columns={columns}
                 data={data}

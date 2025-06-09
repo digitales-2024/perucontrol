@@ -2,7 +2,7 @@ using PeruControl.Model;
 
 namespace PeruControl.Controllers;
 
-public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet>
+public class OperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet>
 {
     public Guid ProjectAppointmentId { get; set; }
     public DateTime? OperationDate { get; set; }
@@ -81,7 +81,7 @@ public class ProjectOperationSheetCreateDTO : IMapToEntity<ProjectOperationSheet
     }
 }
 
-public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
+public class OperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
 {
     public Guid ProjectAppointmentId { get; set; }
     public DateTime? OperationDate { get; set; }
@@ -196,4 +196,14 @@ public class ProjectOperationSheetPatchDTO : IEntityPatcher<ProjectOperationShee
         if (Recommendations != null)
             entity.Recommendations = Recommendations;
     }
+}
+
+
+public class GetOperationSheetsForTableOutDto
+{
+    public required int Number { get; set; }
+    public required string ClientName { get; set; }
+    public DateTime? ActualDate { get; set; } = null;
+    public required string EnterLeaveTime { get; set; }
+    public required OperationSheetStatus Status { get; set; }
 }

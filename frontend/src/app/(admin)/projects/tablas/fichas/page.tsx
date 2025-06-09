@@ -7,7 +7,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 export default async function ProjectDetail()
 {
     // Obtener todas las fichas de operaciones
-    const [ProjectsOperationSheet, err] = await wrapper((auth) => backend.GET("/api/Appointment/all", auth));
+    const [data, err] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-table", auth));
     if (err)
     {
         console.error(`error ${err.message}`);
@@ -30,7 +30,7 @@ export default async function ProjectDetail()
                     </Breadcrumb>
                 )}
             />
-            <OperationRecordsList columns={columns} data={ProjectsOperationSheet} />
+            <OperationRecordsList columns={columns} data={data} />
         </>
     );
 }
