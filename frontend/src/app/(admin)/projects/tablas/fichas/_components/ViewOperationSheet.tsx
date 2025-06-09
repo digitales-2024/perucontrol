@@ -6,6 +6,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 import { GenerateOperationSheetPdf } from "../actions";
+import { SendOperationSheetPDFViaEmail, SendOperationSheetPDFViaWhatsapp } from "../../../actions";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 
@@ -33,8 +34,8 @@ export default function OperationRecordsList({ columns, data }: OperationRecords
                 startingEmail=""
                 startingNumber=""
                 pdfLoadAction={async() => GenerateOperationSheetPdf(appointmentId ?? "")}
-                emailSendAction={async(email) => SendQuotationPdfViaMail(quotation.id!, email)}
-                whatsappSendAction={async(number) => SendQuotationPdfViaWhatsapp(quotation.id!, number)}
+                emailSendAction={async(email) => SendOperationSheetPDFViaEmail(appointmentId ?? "", email)}
+                whatsappSendAction={async(number) => SendOperationSheetPDFViaWhatsapp(appointmentId ?? "", number)}
             />
 
             <OperationSheetTable
