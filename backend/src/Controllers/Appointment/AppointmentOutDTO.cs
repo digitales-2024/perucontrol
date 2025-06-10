@@ -17,6 +17,7 @@ public class AppointmentGetOutDTO
     public required DateTime CreatedAt { get; init; }
     public DateTime? ModifiedAt { get; init; }
     public required bool IsActive { get; init; }
+    public required ProjectOperationSheet OperationSheet { get; init; }
 
     // Ordered number within the project (based on due date)
     public required int OrderedNumber { get; init; }
@@ -51,6 +52,7 @@ public class AppointmentGetOutDTO
             CreatedAt = appointment.CreatedAt,
             ModifiedAt = appointment.ModifiedAt,
             OrderedNumber = orderedNumber,
+            OperationSheet = appointment.ProjectOperationSheet,
             Project = new ProjectBasicInfoDTO
             {
                 Id = appointment.Project.Id,

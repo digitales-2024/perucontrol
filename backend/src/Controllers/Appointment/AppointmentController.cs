@@ -481,7 +481,7 @@ public class AppointmentController(
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la fecha especificada.");
         }
 
         if (updateDTO.EnterTime is not null)
@@ -541,7 +541,7 @@ public class AppointmentController(
 
         if (certificate == null)
         {
-            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la fecha especificada.");
         }
 
         // Aplicar los cambios al objeto existente
@@ -565,7 +565,7 @@ public class AppointmentController(
             .FirstOrDefaultAsync(a => a.Id == appointmentid);
 
         if (appointment == null)
-            return NotFound("No se encontró la Cita para el Certificado");
+            return NotFound("No se encontró la fecha para el Certificado");
 
         return Ok(appointment.Certificate);
     }
@@ -1092,7 +1092,7 @@ public class AppointmentController(
             .FirstOrDefaultAsync(p => p.Id == appointmentid);
 
         if (appointment == null)
-            return NotFound("No se encontró la Cita para el registro de roedores");
+            return NotFound("No se encontró la fecha para el registro de roedores");
 
         return Ok(appointment.RodentRegister);
     }

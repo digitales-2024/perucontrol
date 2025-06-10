@@ -32,12 +32,10 @@ const infestationLevels = [
 ];
 
 export function DownloadProjectForm({
-    onOpenChange,
     project,
     client,
     appointment,
 }: {
-    onOpenChange: (v: boolean) => void,
     project: components["schemas"]["ProjectSummarySingle"],
     client: components["schemas"]["Client"],
     appointment: ProjectAppointment,
@@ -151,7 +149,6 @@ export function DownloadProjectForm({
         a.download = "servicio.ods";
         a.click();
         URL.revokeObjectURL(url);
-        onOpenChange(false);
     };
 
     const downloadPDF = async() =>
@@ -174,7 +171,6 @@ export function DownloadProjectForm({
         a.download = `ficha_operaciones_${appointment.id!.substring(0, 4)}.pdf`;
         a.click();
         URL.revokeObjectURL(url);
-        onOpenChange(false);
     };
 
     const handleSubmit = async(input: components["schemas"]["OperationSheetCreateDTO"]) =>
@@ -199,7 +195,6 @@ export function DownloadProjectForm({
 
     const handleCancel = async() =>
     {
-        onOpenChange(false);
         router.back();
     };
 
@@ -368,7 +363,7 @@ export function DownloadProjectForm({
                                                                 N° Certificado
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Numero de certificado" {...field} />
+                                                                <Input disabled placeholder="Numero de certificado" {...field} />
                                                             </FormControl>
                                                         </FormItem>
                                                     )}

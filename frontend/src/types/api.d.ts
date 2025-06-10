@@ -6119,6 +6119,7 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string | null;
             isActive: boolean;
+            operationSheet: components["schemas"]["ProjectOperationSheet"];
             /** Format: int32 */
             orderedNumber: number;
             project: components["schemas"]["ProjectBasicInfoDTO"];
@@ -6435,6 +6436,8 @@ export interface components {
             /** Format: date-time */
             operationDate?: string | null;
             treatedAreas?: string | null;
+            enterTime?: string | null;
+            leaveTime?: string | null;
             insects?: string | null;
             rodents?: string | null;
             otherPlagues?: string | null;
