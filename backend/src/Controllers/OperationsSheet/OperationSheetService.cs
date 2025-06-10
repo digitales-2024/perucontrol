@@ -12,6 +12,7 @@ public class OperationSheetService(DatabaseContext db)
             .Include(sheet => sheet.ProjectAppointment)
             .ThenInclude(appt => appt.Project)
             .ThenInclude(proj => proj.Client)
+            .OrderByDescending(sheet => sheet.ProjectAppointment.DueDate)
             .ToListAsync();
 
         if (sheets is null)
