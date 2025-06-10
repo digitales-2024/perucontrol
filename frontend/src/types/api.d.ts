@@ -2541,6 +2541,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ProjectOperationSheet/for-creation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Operation Sheets for creation
+         * @description Returns a list of services and their appointments for creation, where the operation sheet has status == Created
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                        "application/json": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                        "text/json": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ProjectOperationSheet": {
         parameters: {
             query?: never;
@@ -6256,6 +6297,14 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        GetOperationSheetsForCreationOutDto: {
+            /** Format: uuid */
+            serviceId: string;
+            clientName: string;
+            /** Format: int32 */
+            serviceNumber: number;
+            availableSheets: Array<components["schemas"]["OperationSheetAvailable"]>;
+        };
         GetOperationSheetsForTableOutDto: {
             /** Format: uuid */
             projectId: string;
@@ -6295,6 +6344,15 @@ export interface components {
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
+        OperationSheetAvailable: {
+            /** Format: uuid */
+            appoinmentId: string;
+            /** Format: uuid */
+            operationSheetId: string;
+            /** Format: date-time */
+            dueDate: string;
+            status: components["schemas"]["OperationSheetStatus"];
+        };
         OperationSheetCreateDTO: {
             /** Format: uuid */
             projectAppointmentId?: string;

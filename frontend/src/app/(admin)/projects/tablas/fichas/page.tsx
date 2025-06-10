@@ -13,6 +13,14 @@ export default async function ProjectDetail()
         throw err;
     }
 
+    // Get available sheets for creation
+    const [availableSheets, availableSheetsErr] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-creation", auth));
+    if (availableSheetsErr)
+    {
+        console.error(`error ${availableSheetsErr.message}`);
+        throw err;
+    }
+
     return (
         <>
             <HeaderPage
@@ -29,7 +37,7 @@ export default async function ProjectDetail()
                     </Breadcrumb>
                 )}
             />
-            <OperationRecordsList data={data} />
+            <OperationRecordsList data={data} availableSheets={availableSheets} />
         </>
     );
 }

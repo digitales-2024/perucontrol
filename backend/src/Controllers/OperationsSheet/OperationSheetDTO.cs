@@ -212,12 +212,15 @@ public class GetOperationSheetsForTableOutDto
 
 public class GetOperationSheetsForCreationOutDto
 {
+    public required Guid ServiceId { get; set; }
     public required string ClientName { get; set; }
     public required int ServiceNumber { get; set; }
     public required IList<OperationSheetAvailable> AvailableSheets { get; set; }
 
     public class OperationSheetAvailable
     {
+        public required Guid AppoinmentId { get; set; }
+        public required Guid OperationSheetId { get; set; }
         public required DateTime DueDate { get; set; }
         public required OperationSheetStatus Status { get; set; }
     }

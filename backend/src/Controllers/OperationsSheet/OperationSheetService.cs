@@ -55,6 +55,7 @@ public class OperationSheetService(DatabaseContext db)
         return services
             .Select(service => new GetOperationSheetsForCreationOutDto
             {
+                ServiceId = service.Id,
                 ClientName = service.Client.Name,
                 ServiceNumber = service.ProjectNumber,
                 AvailableSheets = service
@@ -63,6 +64,8 @@ public class OperationSheetService(DatabaseContext db)
                     .Select(
                         appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
                         {
+                            AppoinmentId = appt.Id,
+                            OperationSheetId = appt.ProjectOperationSheet.Id,
                             DueDate = appt.DueDate,
                             Status = appt.ProjectOperationSheet.Status,
                         }

@@ -2,7 +2,7 @@
 
 import { OperationSheetTable } from "@/components/data-table/OperationSheetDataTable";
 import { components } from "@/types/api";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 import { GenerateOperationSheetPdf } from "../actions";
 import { SendOperationSheetPDFViaEmail, SendOperationSheetPDFViaWhatsapp } from "../../../actions";
@@ -17,14 +17,20 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
+type OperationSheetAvailable = components["schemas"]["GetOperationSheetsForCreationOutDto"]
+type AvailableOperationSheetAppointment = components["schemas"]["GetOperationSheetsForCreationOutDto"]["availableSheets"][number]
 
 interface OperationRecordsListProps {
     data: Array<OperationSheetProp>
+    availableSheets: Array<OperationSheetAvailable>
 }
 
-export default function OperationRecordsList({ data }: OperationRecordsListProps)
+export default function OperationRecordsList({ data, availableSheets }: OperationRecordsListProps)
 {
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [appointmentId, setAppointmentId] = useState<string | null>(null);
@@ -63,14 +69,38 @@ export default function OperationRecordsList({ data }: OperationRecordsListProps
                     setAppointmentId(record.appointmentId);
                     setDetailsDialogOpen(true);
                 }}
-                toolbarActions={<OperationSheetTableActions />}
+                toolbarActions={<OperationSheetTableActions availableSheets={availableSheets} />}
             />
         </div>
     );
 }
 
-function OperationSheetTableActions()
+function OperationSheetTableActions({ availableSheets }: { availableSheets: Array<OperationSheetAvailable> })
 {
+    const [selectedService, setSelectedService] = useState<OperationSheetAvailable | null>(null);
+    const [selectedAppointment, setSelectedAppointment] = useState<AvailableOperationSheetAppointment | null>(null);
+
+    const serviceOptions: Array<Option> = useMemo(
+        () => availableSheets.map((available) => ({
+            value: available.serviceId,
+            label: `#${available.serviceNumber} - ${available.clientName}`,
+        })),
+        [availableSheets],
+    );
+
+    const appointmentOptions: Array<Option> = useMemo(
+        () =>
+        {
+            if (selectedService === null) return [];
+
+            return selectedService.availableSheets.map((available) => ({
+                value: available.appoinmentId,
+                label: `Fecha: ${format(parseISO(available.dueDate), "dd 'de' MMMM  'de' yyyy", { locale: es })}`,
+            }));
+        },
+        [selectedService],
+    );
+
     return (
         <div>
             <Dialog>
@@ -89,6 +119,50 @@ function OperationSheetTableActions()
                             Selecciona un servicio y una fecha
                         </DialogDescription>
                     </DialogHeader>
+
+                    <div>
+                        <label htmlFor="">
+                            Servicio:
+                        </label>
+                        <AutoComplete
+                            options={serviceOptions}
+                            placeholder="Selecciona un servicio"
+                            emptyMessage="No se encontraron servicios con fichas pendientes"
+                            value={
+                                serviceOptions.find((option) => option.value === selectedService?.serviceId) ?? undefined
+                            }
+                            onValueChange={(option) =>
+                            {
+                                setSelectedService(availableSheets.find((opt) => opt.serviceId === option.value) ?? null);
+                                setSelectedAppointment(null);
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="">
+                            Fecha:
+                        </label>
+                        <AutoComplete
+                            options={appointmentOptions}
+                            placeholder="Selecciona una fecha"
+                            emptyMessage="No se encontraron fechas pendientes"
+                            value={
+                                appointmentOptions.find((option) => option.value === selectedAppointment?.appoinmentId) ?? undefined
+                            }
+                            onValueChange={(option) =>
+                            {
+                                setSelectedAppointment(selectedService?.availableSheets?.find((appt) => appt.appoinmentId === option.value) ?? null);
+                            }}
+                        />
+                    </div>
+
+                    <div className="text-right">
+                        <Button>
+                            <Plus />
+                            Crear Ficha de Operaciones
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

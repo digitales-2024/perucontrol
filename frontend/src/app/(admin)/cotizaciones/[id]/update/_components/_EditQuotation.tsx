@@ -277,8 +277,7 @@ export default function EditQuotation({
                                                     placeholder="Selecciona un cliente"
                                                     emptyMessage="No se encontraron clientes"
                                                     value={
-                                                        clientsOptions.find((option) => option.value ===
-                                                            field.value) ?? undefined
+                                                        clientsOptions.find((option) => option.value === field.value) ?? undefined
                                                     }
                                                     onValueChange={(option) =>
                                                     {
