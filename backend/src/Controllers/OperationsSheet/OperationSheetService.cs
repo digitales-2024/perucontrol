@@ -24,6 +24,7 @@ public class OperationSheetService(DatabaseContext db)
         return sheets
             .Select(sheet => new GetOperationSheetsForTableOutDto
             {
+                ProjectId = sheet.ProjectAppointment.Project.Id,
                 OperationSheetId = sheet.Id,
                 AppointmentId = sheet.ProjectAppointment.Id,
                 Number = sheet.ProjectAppointment.AppointmentNumber,

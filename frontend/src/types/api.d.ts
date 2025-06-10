@@ -6258,6 +6258,8 @@ export interface components {
         };
         GetOperationSheetsForTableOutDto: {
             /** Format: uuid */
+            projectId: string;
+            /** Format: uuid */
             operationSheetId: string;
             /** Format: uuid */
             appointmentId: string;

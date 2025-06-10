@@ -4,19 +4,19 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { components } from "@/types/api";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Calendar1, CircleUserRound, Clock1, Ellipsis, Hash, Send } from "lucide-react";
+import { Calendar1, CircleUserRound, Clock1, Ellipsis, Hash, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toastWrapper } from "@/types/toasts";
 import { GenerateOperationSheetExcel, GenerateOperationSheetPDF } from "../../../actions";
+import Link from "next/link";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 
@@ -191,19 +191,17 @@ export const columns: Array<ColumnDef<OperationSheetProp>> = [
                         align="end" className="w-40"
                         onClick={(ev) => ev.stopPropagation()}
                     >
-                        <DropdownMenuItem >
-                            Ver
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem >
-                            Enviar
-                            <DropdownMenuShortcut>
-                                <Send
-                                    className="size-4"
-                                    aria-hidden="true"
-                                />
-                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                        <Link href={`/projects/${row.original.projectId}/evento/${row.original.appointmentId}/ficha`}>
+                            <DropdownMenuItem >
+                                Editar
+                                <DropdownMenuShortcut>
+                                    <Pencil
+                                        className="size-4"
+                                        aria-hidden="true"
+                                    />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </Link>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
