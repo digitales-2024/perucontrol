@@ -77,6 +77,15 @@ public class OperationSheetService(DatabaseContext db)
 
     public async Task MarkOperationSheetCreated(Guid operationSheetId)
     {
+        var sheet = await db.ProjectOperationSheet.FindAsync(operationSheetId);
+
+        if (sheet is null)
+        {
+            throw new Exception("No encontrado");
+        }
+
+        sheet.Status = OperationSheetStatus.Started;
+        await db.SaveChangesAsync();
 
         return;
     }
