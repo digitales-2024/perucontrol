@@ -198,7 +198,6 @@ public class OperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
     }
 }
 
-
 public class GetOperationSheetsForTableOutDto
 {
     public required Guid ProjectId { get; set; }
@@ -209,4 +208,17 @@ public class GetOperationSheetsForTableOutDto
     public DateTime? ActualDate { get; set; } = null;
     public required string EnterLeaveTime { get; set; }
     public required OperationSheetStatus Status { get; set; }
+}
+
+public class GetOperationSheetsForCreationOutDto
+{
+    public required string ClientName { get; set; }
+    public required int ServiceNumber { get; set; }
+    public required IList<OperationSheetAvailable> AvailableSheets { get; set; }
+
+    public class OperationSheetAvailable
+    {
+        public required DateTime DueDate { get; set; }
+        public required OperationSheetStatus Status { get; set; }
+    }
 }

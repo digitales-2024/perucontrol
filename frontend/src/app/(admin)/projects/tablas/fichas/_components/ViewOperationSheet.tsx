@@ -2,20 +2,29 @@
 
 import { OperationSheetTable } from "@/components/data-table/OperationSheetDataTable";
 import { components } from "@/types/api";
-import { type ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 import { GenerateOperationSheetPdf } from "../actions";
 import { SendOperationSheetPDFViaEmail, SendOperationSheetPDFViaWhatsapp } from "../../../actions";
+import { columns } from "../_components/OperationSheetColumns";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 
 interface OperationRecordsListProps {
-    columns: Array<ColumnDef<OperationSheetProp, unknown>>;
     data: Array<OperationSheetProp>
 }
 
-export default function OperationRecordsList({ columns, data }: OperationRecordsListProps)
+export default function OperationRecordsList({ data }: OperationRecordsListProps)
 {
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [appointmentId, setAppointmentId] = useState<string | null>(null);
@@ -54,8 +63,34 @@ export default function OperationRecordsList({ columns, data }: OperationRecords
                     setAppointmentId(record.appointmentId);
                     setDetailsDialogOpen(true);
                 }}
+                toolbarActions={<OperationSheetTableActions />}
             />
         </div>
     );
 }
 
+function OperationSheetTableActions()
+{
+    return (
+        <div>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus />
+                        Nueva ficha
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Nueva Ficha de Operaciones
+                        </DialogTitle>
+                        <DialogDescription>
+                            Selecciona un servicio y una fecha
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}

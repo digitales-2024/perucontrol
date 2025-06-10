@@ -5,8 +5,10 @@ using PeruControl.Model;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectOperationSheetController(DatabaseContext db,
-        OperationSheetService operationSheetService)
+public class ProjectOperationSheetController(
+    DatabaseContext db,
+    OperationSheetService operationSheetService
+)
     : AbstractCrudController<
         ProjectOperationSheet,
         OperationSheetCreateDTO,
@@ -36,12 +38,24 @@ public class ProjectOperationSheetController(DatabaseContext db,
     }
 
     [EndpointSummary("Get Operation Sheets by table")]
-    [EndpointDescription("This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created")]
-    // [ProducesResponseType<IEnumerable<AppointmentGetDTO>>(StatusCodes.Status200OK)]
+    [EndpointDescription(
+        "This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created"
+    )]
     [HttpGet("for-table")]
     public async Task<IList<GetOperationSheetsForTableOutDto>> GetOperationSheetsForTable()
     {
         var list = await operationSheetService.GetOperationSheetsForTable();
+        return list;
+    }
+
+    [EndpointSummary("Get Operation Sheets for creation")]
+    [EndpointDescription(
+        "Returns a list of services and their appointments for creation, where the operation sheet has status == Created"
+    )]
+    [HttpGet("for-creation")]
+    public async Task<IList<GetOperationSheetsForCreationOutDto>> GetOperationSheetsForCreation()
+    {
+        var list = await operationSheetService.GetOperationSheetsForCreation();
         return list;
     }
 }

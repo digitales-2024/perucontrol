@@ -1,7 +1,6 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import OperationRecordsList from "./_components/ViewOperationSheet";
-import { columns } from "./_components/OperationSheetColumns";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetail()
@@ -30,7 +29,7 @@ export default async function ProjectDetail()
                     </Breadcrumb>
                 )}
             />
-            <OperationRecordsList columns={columns} data={data} />
+            <OperationRecordsList data={data} />
         </>
     );
 }
