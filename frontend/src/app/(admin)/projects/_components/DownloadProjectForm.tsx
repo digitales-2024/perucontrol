@@ -205,21 +205,34 @@ export function DownloadProjectForm({
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-auto">
                 <Tabs defaultValue="general" className="w-full">
-                    <div className="px-6 mt-5">
-                        <TabsList className="w-full h-auto bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 p-1.5 rounded-xl flex flex-wrap gap-1 border border-blue-200 dark:border-blue-800">
-                            <TabsTrigger value="general" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
+                    <div className="px-4 mt-5">
+                        <TabsList className="w-full h-auto bg-[rgba(0,176,250,0.5)] text-zinc-700 font-bold p-1.5 rounded-xl flex flex-wrap gap-1">
+                            <TabsTrigger
+                                value="general" className="flex-1 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all duration-200
+                                hover:bg-white"
+                            >
                                 <ClipboardList className="h-4 w-4 mr-2" />
                                 Información General
                             </TabsTrigger>
-                            <TabsTrigger value="plagas" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
+                            <TabsTrigger
+                                value="plagas"
+                                className="flex-1 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all duration-200
+                                    hover:bg-white"
+                            >
                                 <Bug className="h-4 w-4 mr-2" />
                                 Diagnóstico y Métodos
                             </TabsTrigger>
-                            <TabsTrigger value="metodos" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
+                            <TabsTrigger
+                                value="metodos" className="flex-1 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all duration-200
+                                hover:bg-white"
+                            >
                                 <SprayCan className="h-4 w-4 mr-2" />
                                 Productos e Infestación
                             </TabsTrigger>
-                            <TabsTrigger value="personal" className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm rounded-lg transition-all duration-200">
+                            <TabsTrigger
+                                value="personal" className="flex-1 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all duration-200
+                                hover:bg-white"
+                            >
                                 <Users className="h-4 w-4 mr-2" />
                                 Personal y Observaciones
                             </TabsTrigger>
@@ -1061,7 +1074,7 @@ export function DownloadProjectForm({
                 </Tabs>
             </div>
 
-            <div className="sticky bottom-0 left-0 right-0 border-t bg-white dark:bg-background p-4 shadow-md z-10">
+            <div className="sticky bottom-0 left-0 right-0 border-t bg-white p-4 shadow-md z-10">
                 <div className="flex justify-end gap-3 px-6">
                     <Button
                         type="button"
