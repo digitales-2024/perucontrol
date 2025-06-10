@@ -546,10 +546,8 @@ export function CreateQuotation({ terms, clients, services }: {
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
-                                                    min={1}
                                                     {...field}
-                                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                                                    onChange={(e) => field.onChange(e.target.value)}
                                                 />
                                             </FormControl>
                                             <FormMessage />
