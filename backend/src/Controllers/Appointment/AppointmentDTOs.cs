@@ -15,8 +15,8 @@ public class AppointmentGetDTO
     public required DateTime CreatedAt { get; set; }
     public required DateTime ModifiedAt { get; set; }
 
-    public TimeSpan? EnterTime { get; set; } // <-- Add this
-    public TimeSpan? LeaveTime { get; set; } // <-- Add this
+    public TimeOnly? EnterTime { get; set; } // <-- Add this
+    public TimeOnly? LeaveTime { get; set; } // <-- Add this
 
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }

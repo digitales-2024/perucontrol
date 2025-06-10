@@ -60,17 +60,16 @@ public class OperationSheetService(DatabaseContext db)
                 ClientName = service.Client.Name,
                 ServiceNumber = service.ProjectNumber,
                 AvailableSheets = service
-                    .Appointments
-                    .Where(s => s.ProjectOperationSheet.Status == OperationSheetStatus.Created)
-                    .Select(
-                        appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
-                        {
-                            AppoinmentId = appt.Id,
-                            OperationSheetId = appt.ProjectOperationSheet.Id,
-                            DueDate = appt.DueDate,
-                            Status = appt.ProjectOperationSheet.Status,
-                        }
+                    .Appointments.Where(s =>
+                        s.ProjectOperationSheet.Status == OperationSheetStatus.Created
                     )
+                    .Select(appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
+                    {
+                        AppoinmentId = appt.Id,
+                        OperationSheetId = appt.ProjectOperationSheet.Id,
+                        DueDate = appt.DueDate,
+                        Status = appt.ProjectOperationSheet.Status,
+                    })
                     .ToList(),
             })
             .ToList();

@@ -9,8 +9,8 @@ public class AppointmentGetOutDTO
     public required Guid Id { get; init; }
     public required int AppointmentNumber { get; init; }
     public int? CertificateNumber { get; init; }
-    public TimeSpan? EnterTime { get; init; }
-    public TimeSpan? LeaveTime { get; init; }
+    public TimeOnly? EnterTime { get; init; }
+    public TimeOnly? LeaveTime { get; init; }
     public required DateTime DueDate { get; init; }
     public DateTime? ActualDate { get; init; }
     public required bool Cancelled { get; init; }
