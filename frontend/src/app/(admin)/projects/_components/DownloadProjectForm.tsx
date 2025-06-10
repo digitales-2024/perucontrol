@@ -61,6 +61,8 @@ export function DownloadProjectForm({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
             projectAppointmentId: appointment.id!,
+            enterTime: appointment.enterTime ?? "",
+            leaveTime: appointment.leaveTime ?? "",
             operationDate: operationSheet.operationDate ?? appointment.actualDate!,
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,
@@ -248,6 +250,11 @@ export function DownloadProjectForm({
                                             Información General
                                         </OperationsCardHeader>
                                         <Separator />
+                                        {/*
+                                            FIXME: place enter/leave time here as well. have it brought from the backend.
+                                            When the form is saved,.the backend endpoint should receive those times as well,
+                                            and update the parent apppointment.
+                                        */}
                                         <CardContent className="pt-4">
                                             <div className="grid grid-cols-1 gap-6">
                                                 <FormField
@@ -280,6 +287,50 @@ export function DownloadProjectForm({
                                                         </FormItem>
                                                     )}
                                                 />
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="enterTime"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                                                                    Hora de Entrada
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="time"
+                                                                        placeholder="--:--"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="leaveTime"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel className="flex items-center gap-2 font-medium">
+                                                                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                                                                    Hora de Salida
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="time"
+                                                                        placeholder="--:--"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
                                             </div>
                                         </CardContent>
                                     </Card>

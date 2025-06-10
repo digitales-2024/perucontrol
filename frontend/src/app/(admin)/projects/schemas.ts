@@ -77,6 +77,8 @@ export type ProjectFormFields = {
 
 export const downloadProjectSchema = z.object({
     projectAppointmentId: z.string(),
+    enterTime: z.string().optional(),
+    leaveTime: z.string().optional(),
     operationDate: z.string(),
     razonSocial: z.string(),
     address: z.string(),

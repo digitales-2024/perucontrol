@@ -446,7 +446,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
@@ -482,6 +482,15 @@ public class AppointmentController(
         if (operationSheet == null)
         {
             return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+        }
+
+        if (updateDTO.EnterTime is not null)
+        {
+            operationSheet.ProjectAppointment.EnterTime = updateDTO.EnterTime;
+        }
+        if (updateDTO.LeaveTime is not null)
+        {
+            operationSheet.ProjectAppointment.LeaveTime = updateDTO.LeaveTime;
         }
 
         // Aplicar los cambios al objeto existente
@@ -767,7 +776,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateCertificatePdfBytes(id);
@@ -932,7 +941,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
