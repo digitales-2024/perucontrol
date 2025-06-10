@@ -32,7 +32,7 @@ public class ProjectOperationSheetController(
         }
 
         patchDTO.ApplyPatch(entity);
-        entity.Status = OperationSheetStatus.Started;
+        if (entity.Status == OperationSheetStatus.Created) entity.Status = OperationSheetStatus.Started;
         await _context.SaveChangesAsync();
 
         return NoContent();

@@ -30,11 +30,9 @@ public class OperationSheetService(DatabaseContext db)
                 ClientName = sheet.ProjectAppointment.Project.Client.Name,
                 ActualDate = sheet.ProjectAppointment.ActualDate,
                 EnterLeaveTime =
-                    sheet.ProjectAppointment.EnterTime?.ToString("hh:mm")
-                    ?? "Sin hora de entrada"
+                    (sheet.ProjectAppointment.EnterTime?.ToString("hh:mm tt") ?? "Sin hora de entrada")
                         + " - "
-                        + sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm")
-                    ?? "Sin hora de salida",
+                        + (sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm tt") ?? "Sin hora de salida"),
                 Status = sheet.Status,
             })
             .ToList();
@@ -63,6 +61,7 @@ public class OperationSheetService(DatabaseContext db)
                     .Appointments.Where(s =>
                         s.ProjectOperationSheet.Status == OperationSheetStatus.Created
                     )
+                    .OrderBy(s => s.DueDate)
                     .Select(appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
                     {
                         AppoinmentId = appt.Id,
