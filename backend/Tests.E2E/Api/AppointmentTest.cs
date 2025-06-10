@@ -263,7 +263,7 @@ public class AppointmentTest
     )
     {
         // Populate Operation Sheet
-        var operationSheetData = new ProjectOperationSheetPatchDTO
+        var operationSheetData = new OperationSheetPatchDTO
         {
             TreatedAreas = "Test Kitchen, Test Bathroom, Test Living Room",
             Insects = "Test Cockroaches, Test Ants",

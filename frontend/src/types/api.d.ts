@@ -425,9 +425,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
-                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
+                    "application/json": components["schemas"]["OperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["OperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["OperationSheetPatchDTO"];
                 };
             };
             responses: {
@@ -2370,6 +2370,381 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ProjectOperationSheet/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one by ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Deactivate by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Partial edit one by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OperationSheetPatchDTO"];
+                    "text/json": components["schemas"]["OperationSheetPatchDTO"];
+                    "application/*+json": components["schemas"]["OperationSheetPatchDTO"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/for-table": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Operation Sheets by table
+         * @description This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["GetOperationSheetsForTableOutDto"]>;
+                        "application/json": Array<components["schemas"]["GetOperationSheetsForTableOutDto"]>;
+                        "text/json": Array<components["schemas"]["GetOperationSheetsForTableOutDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/for-creation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Operation Sheets for creation
+         * @description Returns a list of services and their appointments for creation, where the operation sheet has status == Created
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                        "application/json": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                        "text/json": Array<components["schemas"]["GetOperationSheetsForCreationOutDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/{operationSheetId}/mark-started": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark an Operation Sheet as 'Started'
+         * @description Marks the selected operation sheet as 'Started', thus showing it in its table UI
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    operationSheetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OperationSheetCreateDTO"];
+                    "text/json": components["schemas"]["OperationSheetCreateDTO"];
+                    "application/*+json": components["schemas"]["OperationSheetCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectOperationSheet"];
+                        "application/json": components["schemas"]["ProjectOperationSheet"];
+                        "text/json": components["schemas"]["ProjectOperationSheet"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProjectOperationSheet/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reactivate by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Project": {
         parameters: {
             query?: never;
@@ -3365,194 +3740,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Project/{id}/reactivate": {
+    "/api/Project/export/csv": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reactivate by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/ProjectOperationSheet/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get one by ID */
+        /**
+         * Export all projects to CSV with optional date range filtering
+         * @description Export projects to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time.
+         */
         get: {
             parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
+                query?: {
+                    startDate?: string;
+                    endDate?: string;
                 };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Deactivate by id */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Partial edit one by id */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
-                    "text/json": components["schemas"]["ProjectOperationSheetPatchDTO"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetPatchDTO"];
-                };
-            };
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/ProjectOperationSheet": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all */
-        get: {
-            parameters: {
-                query?: never;
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -3565,61 +3769,22 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "application/json": Array<components["schemas"]["ProjectOperationSheet"]>;
-                        "text/json": Array<components["schemas"]["ProjectOperationSheet"]>;
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
                     };
                 };
             };
         };
         put?: never;
-        /** Create */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                    "text/json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectOperationSheetCreateDTO"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/ProjectOperationSheet/{id}/reactivate": {
+    "/api/Project/{id}/reactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -4193,6 +4358,50 @@ export interface paths {
                         "text/plain": Array<components["schemas"]["Quotation2"]>;
                         "application/json": Array<components["schemas"]["Quotation2"]>;
                         "text/json": Array<components["schemas"]["Quotation2"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotation/export/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export all quotations to CSV with optional date range filtering
+         * @description Export quotations to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    startDate?: string;
+                    endDate?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
                     };
                 };
             };
@@ -6127,6 +6336,29 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        GetOperationSheetsForCreationOutDto: {
+            /** Format: uuid */
+            serviceId: string;
+            clientName: string;
+            /** Format: int32 */
+            serviceNumber: number;
+            availableSheets: Array<components["schemas"]["OperationSheetAvailable"]>;
+        };
+        GetOperationSheetsForTableOutDto: {
+            /** Format: uuid */
+            projectId: string;
+            /** Format: uuid */
+            operationSheetId: string;
+            /** Format: uuid */
+            appointmentId: string;
+            /** Format: int32 */
+            number: number;
+            clientName: string;
+            /** Format: date-time */
+            actualDate?: string | null;
+            enterLeaveTime: string;
+            status: components["schemas"]["OperationSheetStatus"];
+        };
         LoginRequest: {
             /** @default admin@admin.com */
             email: string;
@@ -6151,6 +6383,95 @@ export interface components {
         NullableOfInfestationDegree: "High" | "Moderate" | "Low" | "Negligible" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationFrequency: "Fortnightly" | "Monthly" | "Bimonthly" | "Quarterly" | "Semiannual" | null;
+        OperationSheetAvailable: {
+            /** Format: uuid */
+            appoinmentId: string;
+            /** Format: uuid */
+            operationSheetId: string;
+            /** Format: date-time */
+            dueDate: string;
+            status: components["schemas"]["OperationSheetStatus"];
+        };
+        OperationSheetCreateDTO: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            operationDate?: string | null;
+            treatedAreas?: string | null;
+            insects?: string | null;
+            rodents?: string;
+            otherPlagues?: string | null;
+            insecticide?: string | null;
+            insecticide2?: string | null;
+            rodenticide?: string | null;
+            desinfectant?: string | null;
+            otherProducts?: string | null;
+            insecticideAmount?: string | null;
+            insecticideAmount2?: string | null;
+            rodenticideAmount?: string | null;
+            desinfectantAmount?: string | null;
+            otherProductsAmount?: string | null;
+            staff1?: string | null;
+            staff2?: string | null;
+            staff3?: string | null;
+            staff4?: string | null;
+            aspersionManual?: boolean | null;
+            aspercionMotor?: boolean | null;
+            nebulizacionFrio?: boolean | null;
+            nebulizacionCaliente?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            observations?: string | null;
+            recommendations?: string | null;
+        };
+        OperationSheetPatchDTO: {
+            /** Format: uuid */
+            projectAppointmentId?: string;
+            /** Format: date-time */
+            operationDate?: string | null;
+            treatedAreas?: string | null;
+            insects?: string | null;
+            rodents?: string | null;
+            otherPlagues?: string | null;
+            rodentConsumptionPartial?: string | null;
+            rodentConsumptionTotal?: string | null;
+            rodentConsumptionDeteriorated?: string | null;
+            rodentConsumptionNone?: string | null;
+            insecticide?: string | null;
+            insecticide2?: string | null;
+            rodenticide?: string | null;
+            desinfectant?: string | null;
+            otherProducts?: string | null;
+            insecticideAmount?: string | null;
+            insecticideAmount2?: string | null;
+            rodenticideAmount?: string | null;
+            desinfectantAmount?: string | null;
+            otherProductsAmount?: string | null;
+            staff1?: string | null;
+            staff2?: string | null;
+            staff3?: string | null;
+            staff4?: string | null;
+            aspersionManual?: boolean | null;
+            aspercionMotor?: boolean | null;
+            nebulizacionFrio?: boolean | null;
+            nebulizacionCaliente?: boolean | null;
+            colocacionCebosCebaderos?: string | null;
+            numeroCeboTotal?: string | null;
+            numeroCeboRepuestos?: string | null;
+            nroPlanchasPegantes?: string | null;
+            nroJaulasTomahawk?: string | null;
+            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
+            observations?: string | null;
+            recommendations?: string | null;
+        };
+        /** @enum {unknown} */
+        OperationSheetStatus: "Created" | "Started" | "Completed";
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -6330,6 +6651,7 @@ export interface components {
             staff4: string;
             observations: string;
             recommendations: string;
+            status: components["schemas"]["OperationSheetStatus"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -6337,84 +6659,6 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
-        };
-        ProjectOperationSheetCreateDTO: {
-            /** Format: uuid */
-            projectAppointmentId?: string;
-            /** Format: date-time */
-            operationDate?: string | null;
-            treatedAreas?: string | null;
-            insects?: string | null;
-            rodents?: string;
-            otherPlagues?: string | null;
-            insecticide?: string | null;
-            insecticide2?: string | null;
-            rodenticide?: string | null;
-            desinfectant?: string | null;
-            otherProducts?: string | null;
-            insecticideAmount?: string | null;
-            insecticideAmount2?: string | null;
-            rodenticideAmount?: string | null;
-            desinfectantAmount?: string | null;
-            otherProductsAmount?: string | null;
-            staff1?: string | null;
-            staff2?: string | null;
-            staff3?: string | null;
-            staff4?: string | null;
-            aspersionManual?: boolean | null;
-            aspercionMotor?: boolean | null;
-            nebulizacionFrio?: boolean | null;
-            nebulizacionCaliente?: boolean | null;
-            colocacionCebosCebaderos?: string | null;
-            numeroCeboTotal?: string | null;
-            numeroCeboRepuestos?: string | null;
-            nroPlanchasPegantes?: string | null;
-            nroJaulasTomahawk?: string | null;
-            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
-            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
-            observations?: string | null;
-            recommendations?: string | null;
-        };
-        ProjectOperationSheetPatchDTO: {
-            /** Format: uuid */
-            projectAppointmentId?: string;
-            /** Format: date-time */
-            operationDate?: string | null;
-            treatedAreas?: string | null;
-            insects?: string | null;
-            rodents?: string | null;
-            otherPlagues?: string | null;
-            rodentConsumptionPartial?: string | null;
-            rodentConsumptionTotal?: string | null;
-            rodentConsumptionDeteriorated?: string | null;
-            rodentConsumptionNone?: string | null;
-            insecticide?: string | null;
-            insecticide2?: string | null;
-            rodenticide?: string | null;
-            desinfectant?: string | null;
-            otherProducts?: string | null;
-            insecticideAmount?: string | null;
-            insecticideAmount2?: string | null;
-            rodenticideAmount?: string | null;
-            desinfectantAmount?: string | null;
-            otherProductsAmount?: string | null;
-            staff1?: string | null;
-            staff2?: string | null;
-            staff3?: string | null;
-            staff4?: string | null;
-            aspersionManual?: boolean | null;
-            aspercionMotor?: boolean | null;
-            nebulizacionFrio?: boolean | null;
-            nebulizacionCaliente?: boolean | null;
-            colocacionCebosCebaderos?: string | null;
-            numeroCeboTotal?: string | null;
-            numeroCeboRepuestos?: string | null;
-            nroPlanchasPegantes?: string | null;
-            nroJaulasTomahawk?: string | null;
-            degreeInsectInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
-            degreeRodentInfectivity?: components["schemas"]["NullableOfInfestationDegree"];
-            observations?: string | null;
-            recommendations?: string | null;
         };
         ProjectPatchDTO: {
             /** Format: uuid */

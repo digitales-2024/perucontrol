@@ -1,16 +1,23 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import OperationRecordsList from "./_components/ViewOperationSheet";
-import { columns } from "./_components/OperationSheetColumns";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetail()
 {
     // Obtener todas las fichas de operaciones
-    const [ProjectsOperationSheet, err] = await wrapper((auth) => backend.GET("/api/Appointment/all", auth));
+    const [data, err] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-table", auth));
     if (err)
     {
         console.error(`error ${err.message}`);
+        throw err;
+    }
+
+    // Get available sheets for creation
+    const [availableSheets, availableSheetsErr] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-creation", auth));
+    if (availableSheetsErr)
+    {
+        console.error(`error ${availableSheetsErr.message}`);
         throw err;
     }
 
@@ -30,7 +37,7 @@ export default async function ProjectDetail()
                     </Breadcrumb>
                 )}
             />
-            <OperationRecordsList columns={columns} data={ProjectsOperationSheet} />
+            <OperationRecordsList data={data} availableSheets={availableSheets} />
         </>
     );
 }

@@ -162,6 +162,22 @@ public class ProjectOperationSheet : BaseModel
 
     [Required]
     public string Recommendations { get; set; } = string.Empty;
+
+    [Required]
+    public OperationSheetStatus Status { get; set; } = OperationSheetStatus.Created;
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum OperationSheetStatus
+{
+    /// The operation sheet has been only created
+    Created,
+
+    /// The operation sheet has started to be edited
+    Started,
+
+    /// The operation sheet is completed
+    Completed,
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

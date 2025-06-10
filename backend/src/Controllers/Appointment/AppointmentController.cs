@@ -472,7 +472,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectOperationSheet>> UpdateOperationSheet(
         Guid appointmentid,
-        [FromBody] ProjectOperationSheetPatchDTO updateDTO
+        [FromBody] OperationSheetPatchDTO updateDTO
     )
     {
         var operationSheet = await db.Set<ProjectOperationSheet>()

@@ -48,7 +48,8 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
             const [pdfBlob, error] = await pdfLoadAction();
             if (!!error)
             {
-                setError("Error cargando PDF");
+                console.error(error);
+                setError(`Error cargando PDF: ${error.message}`);
                 return;
             }
 

@@ -73,11 +73,15 @@ const data = {
                 },
                 {
                     title: "Fichas de operacion",
-                    url: "/projects/ver/ficha",
+                    url: "/projects/tablas/fichas",
+                },
+                {
+                    title: "Registro de Roedores",
+                    url: "#",
                 },
                 {
                     title: "Certificados",
-                    url: "/projects/ver/certificado",
+                    url: "/projects/tablas/certificado",
                 },
             ],
         },

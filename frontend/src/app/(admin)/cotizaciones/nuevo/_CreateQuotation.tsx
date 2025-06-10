@@ -607,11 +607,11 @@ export function CreateQuotation({ terms, clients, services }: {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Accesorios
+                                                Equipos a utilizar
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Accesorios a utilizar en el servicio"
+                                                    placeholder="Equipos a utilizar en el servicio"
                                                     className="resize-none"
                                                     {...field}
                                                 />
@@ -633,7 +633,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Desinsectante
+                                        Insecticida
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
@@ -653,11 +653,11 @@ export function CreateQuotation({ terms, clients, services }: {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Derodentizante
+                                        Rodenticida
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="Derodentizante"
+                                            placeholder="Rodenticida"
                                             className="resize-none"
                                             {...field}
                                         />

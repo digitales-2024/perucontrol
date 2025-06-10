@@ -95,7 +95,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
         <div className="container mx-auto md:p-4 p-0 space-y-6">
 
             {/* Tarjeta principal de información */}
-            <Card>
+            <Card className="bg-transparent">
                 <CardHeader className="pb-2">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
@@ -412,7 +412,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                                     )}
                                                     {service.accesories && (
                                                         <p>
-                                                            Accesorios:
+                                                            Equipos:
                                                             {service.accesories}
                                                         </p>
                                                     )}
@@ -434,7 +434,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                 <div className="flex flex-col">
                                     <div className="flex flex-col mb-2">
                                         <h5 className="font-bold">
-                                            Desinsectante:
+                                            Insecticida:
                                         </h5>
                                         <div className="flex items-baseline gap-2">
                                             <div className="h-2 w-2 rounded-full bg-blue-500" />
@@ -446,7 +446,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
 
                                     <div className="flex flex-col mb-2">
                                         <h5 className="font-bold">
-                                            Derodentizante:
+                                            Rodenticida:
                                         </h5>
                                         <div className="flex items-baseline gap-2">
                                             <div className="h-2 w-2 rounded-full bg-blue-500" />

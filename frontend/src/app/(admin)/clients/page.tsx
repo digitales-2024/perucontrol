@@ -1,4 +1,3 @@
-import { HeaderPage } from "@/components/common/HeaderPage";
 import { ClientsDataTable } from "./_components/ClientsDataTable";
 import { columns } from "./_components/ClientsColumns";
 import { backend, wrapper } from "@/types/backend";
@@ -9,6 +8,7 @@ import {
     BreadcrumbLink,
     BreadcrumbList,
 } from "@/components/ui/breadcrumb";
+import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorPage from "@/components/ErrorPage";
 
 export default async function ClientsPage()

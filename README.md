@@ -13,7 +13,7 @@ para el proyecto Perucontrol.
 
 ---
 
-- `staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/view/perucontrol/job/perucontrol-ci/job/staging/)
+- `staging`: [![Build Status](https://jenkins.araozu.dev/buildStatus/icon?job=perucontrol%2Fperucontrol-ci%2Fstaging)](https://jenkins.araozu.dev/job/perucontrol/job/perucontrol-ci/job/staging/)
 
 
 

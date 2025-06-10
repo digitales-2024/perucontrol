@@ -114,6 +114,7 @@ var modules = new IModule[]
     new AppointmentModule(),
     new PeruControl.Controllers.Product.ProductModule(),
     new TreatmentProductModule(),
+    new OperationSheetModule(),
     new PeruControl.Controllers.TreatmentArea.TreatmentAreaModule(),
 };
 foreach (var module in modules)
