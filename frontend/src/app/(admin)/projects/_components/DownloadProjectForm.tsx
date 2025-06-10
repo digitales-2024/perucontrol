@@ -175,7 +175,7 @@ export function DownloadProjectForm({
         onOpenChange(false);
     };
 
-    const handleSubmit = async(input: components["schemas"]["ProjectOperationSheetCreateDTO"]) =>
+    const handleSubmit = async(input: components["schemas"]["OperationSheetCreateDTO"]) =>
     {
         const [result, error] = await toastWrapper(
             SaveProjectOperationSheetData(appointment.id!, input),

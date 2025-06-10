@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, Calendar, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Search, X, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -9,7 +9,6 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
     flexRender,
     getCoreRowModel,
@@ -28,14 +27,6 @@ export type StatusOption = {
     value: string
     label: string
     count: number
-}
-
-type ActionButton<T> = {
-    label: string
-    icon?: React.ReactNode
-    onClick: (row: T) => void
-    disabled?: (row: T) => boolean
-    className?: string
 }
 
 type DropdownAction<T> = {
@@ -351,7 +342,7 @@ export function OperationSheetTable<T extends object>({
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={columns.length + (actionButtons?.length || dropdownActions?.length ? 1 : 0)}
+                                    colSpan={columns.length + (dropdownActions?.length ? 1 : 0)}
                                     className="px-4 py-6 text-center text-gray-500"
                                 >
                                     {emptyMessage}

@@ -51,7 +51,6 @@ export default function CertificationList({ columns, data }: CertificateListProp
 
     return (
         <div className="space-y-4">
-
             <OperationSheetTable
                 columns={columns}
                 data={data}

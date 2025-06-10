@@ -163,11 +163,12 @@ export const columns: Array<ColumnDef<OperationSheetProp>> = [
                         Excel
                     </Badge>
                 </button>
-                <button onClick={(ev) =>
-                {
-                    ev.stopPropagation();
-                    downloadPdf(row.original.appointmentId);
-                }}
+                <button
+                    onClick={(ev) =>
+                    {
+                        ev.stopPropagation();
+                        downloadPdf(row.original.appointmentId);
+                    }}
                 >
                     <Badge variant="pdf">
                         PDF
@@ -181,16 +182,20 @@ export const columns: Array<ColumnDef<OperationSheetProp>> = [
                             className="flex py-0 data-[state=open]:bg-muted
                                     border border-blue-500 text-blue-500
                                     hover:text-blue-700 rounded-xl"
+                            onClick={(ev) => ev.stopPropagation()}
                         >
                             <Ellipsis />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem>
+                    <DropdownMenuContent
+                        align="end" className="w-40"
+                        onClick={(ev) => ev.stopPropagation()}
+                    >
+                        <DropdownMenuItem >
                             Ver
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem >
                             Enviar
                             <DropdownMenuShortcut>
                                 <Send
