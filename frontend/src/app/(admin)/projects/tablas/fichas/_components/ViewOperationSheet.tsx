@@ -4,7 +4,7 @@ import { OperationSheetTable } from "@/components/data-table/OperationSheetDataT
 import { components } from "@/types/api";
 import { useMemo, useState } from "react";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
-import { GenerateOperationSheetPdf } from "../actions";
+import { GenerateOperationSheetPdf, MarkOperationSheetAsStarted } from "../actions";
 import { SendOperationSheetPDFViaEmail, SendOperationSheetPDFViaWhatsapp } from "../../../actions";
 import { columns } from "../_components/OperationSheetColumns";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,12 @@ import {
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { toastWrapper } from "@/types/toasts";
 
 export type OperationSheetProp = components["schemas"]["GetOperationSheetsForTableOutDto"]
 type OperationSheetAvailable = components["schemas"]["GetOperationSheetsForCreationOutDto"]
 type AvailableOperationSheetAppointment = components["schemas"]["GetOperationSheetsForCreationOutDto"]["availableSheets"][number]
+import { redirect } from "next/navigation";
 
 interface OperationRecordsListProps {
     data: Array<OperationSheetProp>
@@ -79,6 +81,7 @@ function OperationSheetTableActions({ availableSheets }: { availableSheets: Arra
 {
     const [selectedService, setSelectedService] = useState<OperationSheetAvailable | null>(null);
     const [selectedAppointment, setSelectedAppointment] = useState<AvailableOperationSheetAppointment | null>(null);
+    const [errorMsg, setErrorMsg] = useState("");
 
     const serviceOptions: Array<Option> = useMemo(
         () => availableSheets.map((available) => ({
@@ -100,6 +103,33 @@ function OperationSheetTableActions({ availableSheets }: { availableSheets: Arra
         },
         [selectedService],
     );
+
+    async function CreateOperationSheet()
+    {
+        if (selectedService === null)
+        {
+            setErrorMsg("Error: Selecciona un servicio");
+            return;
+        }
+        if (selectedAppointment === null)
+        {
+            setErrorMsg("Error: Selecciona una fecha");
+            return;
+        }
+        setErrorMsg("");
+
+        const [, error] = await toastWrapper(MarkOperationSheetAsStarted(selectedAppointment.operationSheetId), {
+            loading: "Creando Ficha de Operaciones",
+            success: "Ficha de Operaciones creada",
+        });
+
+        if (!!error)
+        {
+            return;
+        }
+
+        redirect(`/projects/${selectedService.serviceId}/evento/${selectedAppointment.appoinmentId}/ficha`);
+    }
 
     return (
         <div>
@@ -157,8 +187,14 @@ function OperationSheetTableActions({ availableSheets }: { availableSheets: Arra
                         />
                     </div>
 
+                    <p className="text-red-400">
+                        {errorMsg}
+                    </p>
+
                     <div className="text-right">
-                        <Button>
+                        <Button
+                            onClick={CreateOperationSheet}
+                        >
                             <Plus />
                             Crear Ficha de Operaciones
                         </Button>

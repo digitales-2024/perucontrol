@@ -58,4 +58,15 @@ public class ProjectOperationSheetController(
         var list = await operationSheetService.GetOperationSheetsForCreation();
         return list;
     }
+
+    [EndpointSummary("Mark an Operation Sheet as 'Started'")]
+    [EndpointDescription(
+        "Marks the selected operation sheet as 'Started', thus showing it in its table UI"
+    )]
+    [HttpPatch("{operationSheetId}/mark-started")]
+    public async Task<ActionResult> MarkOperationSheetCreated(Guid operationSheetId)
+    {
+        await operationSheetService.MarkOperationSheetCreated(operationSheetId);
+        return Ok();
+    }
 }

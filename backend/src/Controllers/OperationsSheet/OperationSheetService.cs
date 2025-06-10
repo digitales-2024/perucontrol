@@ -74,4 +74,10 @@ public class OperationSheetService(DatabaseContext db)
             })
             .ToList();
     }
+
+    public async Task MarkOperationSheetCreated(Guid operationSheetId)
+    {
+
+        return;
+    }
 }
