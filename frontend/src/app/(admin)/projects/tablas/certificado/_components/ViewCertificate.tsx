@@ -3,7 +3,6 @@
 import { OperationSheetTable } from "@/components/data-table/OperationSheetDataTable";
 import { components } from "@/types/api";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { toastWrapper } from "@/types/toasts";
 import { GenerateCertificatePDF, GenerateCertificateWord } from "../../../actions";
 
@@ -21,34 +20,6 @@ export default function CertificationList({ columns, data }: CertificateListProp
         { value: "todos", label: "Todos", count: data.length },
     ];
 
-    // Botones de acción para cada fila
-    const actionButtons = [
-        {
-            label: "Descargar",
-            icon: (
-                <Badge variant="word">
-                    Word
-                </Badge>),
-            onClick: (row: CertificateProp) =>
-            {
-                downloadWord(row.projectAppointmentId!);
-            },
-            disabled: (row: CertificateProp) => !row.isActive,
-        },
-        {
-            label: "Descargar",
-            icon: (
-                <Badge variant="pdf">
-                    PDF
-                </Badge>),
-            onClick: (row: CertificateProp) =>
-            {
-                downloadPdf(row.projectAppointmentId!);
-            },
-            disabled: (row: CertificateProp) => !row.isActive,
-        },
-    ];
-
     return (
         <div className="space-y-4">
             <OperationSheetTable
@@ -57,7 +28,6 @@ export default function CertificationList({ columns, data }: CertificateListProp
                 statusOptions={statusOptions}
                 statusField="statusType"
                 searchFields={["treatedAreas", "insects", "rodents", "otherPlagues", "staff1", "staff2", "observations"]}
-                actionButtons={actionButtons}
                 dateRangeField={{
                     field: "operationDate",
                     format: "yyyy-MM-dd",
@@ -68,7 +38,8 @@ export default function CertificationList({ columns, data }: CertificateListProp
     );
 }
 
-const downloadPdf = async(id: string) =>
+// TODO: not used... yet
+export const downloadPdf = async(id: string) =>
 {
     const [blob, err] = await toastWrapper(GenerateCertificatePDF(id), {
         loading: "Generando archivo",
@@ -88,7 +59,7 @@ const downloadPdf = async(id: string) =>
     URL.revokeObjectURL(url);
 };
 
-const downloadWord = async(id: string) =>
+export const downloadWord = async(id: string) =>
 {
     const [blob, err] = await toastWrapper(GenerateCertificateWord(id), {
         loading: "Generando archivo",
