@@ -1,6 +1,7 @@
 services:
   aspnet-acide-dev:
     container_name: aspnet-acide-dev
+    restart: unless-stopped
     build:
       context: ..
       dockerfile: ./Deployment/Dockerfile.dev
@@ -19,7 +20,7 @@ services:
   postgres-aspnet-acide:
     image: postgres:latest
     container_name: postgres-aspnet-acide
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: root
@@ -33,15 +34,13 @@ services:
   pgadmin4-aspnet-acide:
     image: elestio/pgadmin:latest
     container_name: pgadmin-aspnet-acide
-    restart: always
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_LISTEN_PORT: 8080
     ports:
       - "8088:8080"
-    volumes:
-      - ./servers.json:/pgadmin4/servers.json
     networks:
       - aspnet-acide-network
 

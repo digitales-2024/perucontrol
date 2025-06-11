@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -413,9 +414,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Ficha de Operaciones PDF",
-            htmlBody: "Adjunto encontrará la Ficha de Operaciones.",
-            textBody: "Adjunto encontrará la Ficha de Operaciones.",
+            subject: "FICHA DE OPERACIONES DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: null,
             attachments:
             [
                 new()
@@ -747,9 +752,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Certificado de Servicio PDF",
-            htmlBody: "Adjunto encontrará el certificado de servicio.",
-            textBody: "Adjunto encontrará el certificado de servicio.",
+            subject: "CERTIFICADO DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: null,
             attachments:
             [
                 new()
@@ -909,9 +918,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Registro de Control de Roedores PDF",
-            htmlBody: "Adjunto encontrará el registro de control de roedores.",
-            textBody: "Adjunto encontrará el registro de control de roedores.",
+            subject: "ENVIO DE DOCUMENTOS DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: null,
             attachments:
             [
                 new()

@@ -41,6 +41,11 @@ public class EmailService
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
 
+        // ADD secondary perucontrol address
+#if !DEBUG
+        toAddresses.Add(_settings.SecondaryToAddress);
+#endif
+
         // Add all recipient addresses
         foreach (var address in toAddresses)
         {

@@ -9,4 +9,6 @@ public class EmailConfiguration
     public required string SenderEmail { get; set; }
     public required string SmtpUsername { get; set; }
     public required string SmtpPassword { get; set; }
+
+    public string SecondaryToAddress { get; set; } = "peruccontrol@gmail.com";
 }
