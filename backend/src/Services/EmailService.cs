@@ -105,7 +105,7 @@ public class EmailService
                     border-right: none;
                     border-bottom: 1px solid #e0e0e0;
                 }
-                
+
                 .mobile-stack {
                     display: block !important;
                     width: 100% !important;
@@ -121,55 +121,31 @@ public class EmailService
                     <!-- LEFT COLUMN WITH IMAGES -->
                     <td class="mobile-stack column-divider" width="40%" style="vertical-align: top;">
                         <div class="image-container">
-                            <img src="https://via.placeholder.com/300x200?text=Product+Image" 
-                                 alt="Product showcase" 
+                            <img src="{{_settings.PublicEmailEndpoint}}/smc_logo.jpg"
+                                 alt="Certificados por SMC"
                                  class="responsive-image"
                                  style="margin-bottom: 15px;">
-                            
-                            <img src="https://via.placeholder.com/300x200?text=Team+Photo" 
-                                 alt="Our team" 
+
+                            <img src="{{_settings.PublicEmailEndpoint}}/snas_logo.png"
+                                 alt="Certificados por SNAS"
                                  class="responsive-image">
                         </div>
                     </td>
-                    
+
                     <!-- VERTICAL DIVIDER LINE (visible only on desktop) -->
                     <td style="width: 1px; background-color: #e0e0e0;" class="mobile-hide"></td>
-                    
+
                     <!-- RIGHT COLUMN WITH COMPANY INFO -->
                     <td class="mobile-stack" width="60%" style="vertical-align: top;">
                         <div class="company-info">
-                            <h2 style="color: #1a5276;">Company Name</h2>
-                            
-                            <p><strong>Innovating Since 2010</strong></p>
-                            
-                            <p>We specialize in premium solutions for:</p>
-                            <ul>
-                                <li>Professional Services</li>
-                                <li>Product Development</li>
-                                <li>Customer Experience</li>
-                            </ul>
-                            
-                            <p style="margin-top: 20px;">
-                                📍 123 Business Avenue<br>
-                                City, State 10001
-                            </p>
-                            
-                            <p style="margin-top: 20px;">
-                                📞 (555) 123-4567<br>
-                                ✉️ info@company.com
-                            </p>
-                            
-                            <div style="margin-top: 25px;">
-                                <a href="https://company.com" 
-                                   style="display: inline-block; 
-                                          background-color: #1a5276; 
-                                          color: white; 
-                                          padding: 10px 20px; 
-                                          text-decoration: none; 
-                                          border-radius: 4px;">
-                                    Visit Our Website
-                                </a>
-                            </div>
+                            <p><strong>Saludos Cordiales</strong></p>
+                            <p><strong>Atte.</strong></p>
+                            <p><strong>Lic. Egda Isabel Garavito Saavedra</strong></p>
+                            <p><strong>ADMINISTRACIÓN</strong></p>
+                            <p><strong>PERUCONTROL.COM EIRL</strong></p>
+                            <p><strong>Email: servicios@perucontrol.com</strong></p>
+                            <p><strong>Cel: 986951290</strong></p>
+                            <p><strong>Web: www.perucontrol.com</strong></p>
                         </div>
                     </td>
                 </tr>
