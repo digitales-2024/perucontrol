@@ -121,14 +121,18 @@ public class EmailService
                     <!-- LEFT COLUMN WITH IMAGES -->
                     <td class="mobile-stack column-divider" width="40%" style="vertical-align: top;">
                         <div class="image-container">
-                            <img src="{{_settings.PublicEmailEndpoint}}/smc_logo.jpg"
-                                 alt="Certificados por SMC"
-                                 class="responsive-image"
-                                 style="margin-bottom: 15px;">
+                            <img src="{{_settings.PublicEmailEndpoint}}/icons/smc_logo.jpg"
+                                width="250"
+                                height="153"
+                                alt="Certificados por SMC"
+                                class="responsive-image"
+                                style="margin-bottom: 15px;">
 
-                            <img src="{{_settings.PublicEmailEndpoint}}/snas_logo.png"
-                                 alt="Certificados por SNAS"
-                                 class="responsive-image">
+                            <img src="{{_settings.PublicEmailEndpoint}}/icons/snas_logo.png"
+                                width="250"
+                                height="115"
+                                alt="Certificados por SNAS"
+                                class="responsive-image">
                         </div>
                     </td>
 
