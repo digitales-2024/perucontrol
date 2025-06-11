@@ -420,7 +420,7 @@ public class AppointmentController(
                 <br />
                 <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
             """,
-            textBody: null,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -758,7 +758,7 @@ public class AppointmentController(
                 <br />
                 <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
             """,
-            textBody: null,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -924,7 +924,7 @@ public class AppointmentController(
                 <br />
                 <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
             """,
-            textBody: null,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()

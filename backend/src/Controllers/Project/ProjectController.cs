@@ -639,7 +639,7 @@ public class ProjectController(
                 <br />
                 <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
             """,
-            textBody: null,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
