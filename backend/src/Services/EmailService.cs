@@ -54,7 +54,131 @@ public class EmailService
 
         message.Subject = subject;
 
-        var builder = new BodyBuilder { HtmlBody = htmlBody, TextBody = textBody };
+        var finalMessageHtml =
+    $$"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>{{subject}}</title>
+        <style>
+            /* Reset styles for email clients */
+            .email-body {
+                margin: 0;
+                padding: 0;
+                min-width: 100%;
+                background-color: #f7f7f7;
+                font-family: Arial, sans-serif;
+            }
+
+            .email-container {max - width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff;
+            }
+
+            .content-table {width: 100%;
+                border-collapse: collapse;
+            }
+
+            .column-divider {border - right: 1px solid #e0e0e0;
+            }
+
+            .image-container {padding: 15px;
+                text-align: center;
+            }
+
+            .company-info {padding: 20px;
+                line-height: 1.6;
+                color: #333333;
+            }
+
+            .responsive-image {max - width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+
+            /* Mobile responsiveness */
+            @media screen and (max-width: 480px) {
+                .column - divider {
+                    border-right: none;
+                    border-bottom: 1px solid #e0e0e0;
+                }
+                
+                .mobile-stack {
+                    display: block !important;
+                    width: 100% !important;
+                }
+            }
+        </style>
+    </head>
+    <body class="email-body">
+        <div class="email-container">
+            {{htmlBody}}
+            <table class="content-table">
+                <tr>
+                    <!-- LEFT COLUMN WITH IMAGES -->
+                    <td class="mobile-stack column-divider" width="40%" style="vertical-align: top;">
+                        <div class="image-container">
+                            <img src="https://via.placeholder.com/300x200?text=Product+Image" 
+                                 alt="Product showcase" 
+                                 class="responsive-image"
+                                 style="margin-bottom: 15px;">
+                            
+                            <img src="https://via.placeholder.com/300x200?text=Team+Photo" 
+                                 alt="Our team" 
+                                 class="responsive-image">
+                        </div>
+                    </td>
+                    
+                    <!-- VERTICAL DIVIDER LINE (visible only on desktop) -->
+                    <td style="width: 1px; background-color: #e0e0e0;" class="mobile-hide"></td>
+                    
+                    <!-- RIGHT COLUMN WITH COMPANY INFO -->
+                    <td class="mobile-stack" width="60%" style="vertical-align: top;">
+                        <div class="company-info">
+                            <h2 style="color: #1a5276;">Company Name</h2>
+                            
+                            <p><strong>Innovating Since 2010</strong></p>
+                            
+                            <p>We specialize in premium solutions for:</p>
+                            <ul>
+                                <li>Professional Services</li>
+                                <li>Product Development</li>
+                                <li>Customer Experience</li>
+                            </ul>
+                            
+                            <p style="margin-top: 20px;">
+                                📍 123 Business Avenue<br>
+                                City, State 10001
+                            </p>
+                            
+                            <p style="margin-top: 20px;">
+                                📞 (555) 123-4567<br>
+                                ✉️ info@company.com
+                            </p>
+                            
+                            <div style="margin-top: 25px;">
+                                <a href="https://company.com" 
+                                   style="display: inline-block; 
+                                          background-color: #1a5276; 
+                                          color: white; 
+                                          padding: 10px 20px; 
+                                          text-decoration: none; 
+                                          border-radius: 4px;">
+                                    Visit Our Website
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    </html>
+    """;
+        var builder = new BodyBuilder { HtmlBody = finalMessageHtml, TextBody = textBody };
 
         // Add attachments if any
         if (attachments != null)
