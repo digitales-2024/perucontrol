@@ -13,7 +13,6 @@ import {
     CheckCircle2,
     Clock,
     CreditCard,
-    DollarSign,
     Edit,
     FileText,
     MapPin,
@@ -30,6 +29,7 @@ import { ViewClientDetails } from "../../clients/_components/ViewClientsDetail";
 import { components } from "@/types/api";
 import { GeneratePdf, SendQuotationPdfViaMail, SendQuotationPdfViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
+import { PenCurrencyIcon } from "@/components/PenCurrencyIcon";
 
 export function ViewQuotationDetails({ quotation }: { quotation: components["schemas"]["Quotation2"] })
 {
@@ -313,7 +313,7 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                     {/* Información de pago */}
                     <div className="space-y-2">
                         <h3 className="text-sm md:text-lg font-medium flex items-center gap-2">
-                            <DollarSign className="h-5 w-5 text-blue-500" />
+                            <PenCurrencyIcon width={26} height={26} fill="var(--color-blue-500)" />
                             Información de Pago
                         </h3>
                         <Separator />

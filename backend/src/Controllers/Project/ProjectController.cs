@@ -633,9 +633,13 @@ public class ProjectController(
 
         var (ok, serviceError) = await emailService.SendEmailAsync(
             to: email,
-            subject: "Cronograma de Proyecto PDF",
-            htmlBody: "",
-            textBody: "",
+            subject: "ENVIO DE CRONOGRAMA DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -663,7 +667,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);

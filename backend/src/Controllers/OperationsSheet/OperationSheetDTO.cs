@@ -86,6 +86,8 @@ public class OperationSheetPatchDTO : IEntityPatcher<ProjectOperationSheet>
     public Guid ProjectAppointmentId { get; set; }
     public DateTime? OperationDate { get; set; }
     public string? TreatedAreas { get; set; }
+    public TimeOnly? EnterTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
     public string? Insects { get; set; }
     public string? Rodents { get; set; } = string.Empty;
     public string? OtherPlagues { get; set; }

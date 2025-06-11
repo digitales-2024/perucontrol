@@ -109,7 +109,7 @@ export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob
 
 export async function SaveProjectOperationSheetData(
     id: string,
-    body: components["schemas"]["OperationSheetCreateDTO"],
+    body: components["schemas"]["OperationSheetPatchDTO"],
 ): Promise<Result<null, FetchError>>
 {
     const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/operation-sheet", {

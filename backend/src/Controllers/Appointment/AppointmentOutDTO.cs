@@ -9,14 +9,15 @@ public class AppointmentGetOutDTO
     public required Guid Id { get; init; }
     public required int AppointmentNumber { get; init; }
     public int? CertificateNumber { get; init; }
-    public TimeSpan? EnterTime { get; init; }
-    public TimeSpan? LeaveTime { get; init; }
+    public TimeOnly? EnterTime { get; init; }
+    public TimeOnly? LeaveTime { get; init; }
     public required DateTime DueDate { get; init; }
     public DateTime? ActualDate { get; init; }
     public required bool Cancelled { get; init; }
     public required DateTime CreatedAt { get; init; }
     public DateTime? ModifiedAt { get; init; }
     public required bool IsActive { get; init; }
+    public required ProjectOperationSheet OperationSheet { get; init; }
 
     // Ordered number within the project (based on due date)
     public required int OrderedNumber { get; init; }
@@ -51,6 +52,7 @@ public class AppointmentGetOutDTO
             CreatedAt = appointment.CreatedAt,
             ModifiedAt = appointment.ModifiedAt,
             OrderedNumber = orderedNumber,
+            OperationSheet = appointment.ProjectOperationSheet,
             Project = new ProjectBasicInfoDTO
             {
                 Id = appointment.Project.Id,

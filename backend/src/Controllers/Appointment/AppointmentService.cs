@@ -11,6 +11,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
     {
         var appointment = await db
             .ProjectAppointments.Include(app => app.Services)
+            .Include(app => app.ProjectOperationSheet)
             .Include(app => app.Project)
             .ThenInclude(proj => proj.Services)
             .Include(app => app.TreatmentAreas)

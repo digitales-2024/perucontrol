@@ -6044,7 +6044,9 @@ export interface components {
             /** Format: date-time */
             dueDate?: string;
             serviceIds?: Array<string>;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
@@ -6071,7 +6073,9 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             modifiedAt: string;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
@@ -6088,7 +6092,9 @@ export interface components {
             services?: Array<components["schemas"]["Service"]>;
             project?: components["schemas"]["Project"];
             client?: components["schemas"]["Client"];
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
@@ -6107,7 +6113,9 @@ export interface components {
             appointmentNumber: number;
             /** Format: int32 */
             certificateNumber?: number | null;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             /** Format: date-time */
             dueDate: string;
@@ -6119,6 +6127,7 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string | null;
             isActive: boolean;
+            operationSheet: components["schemas"]["ProjectOperationSheet"];
             /** Format: int32 */
             orderedNumber: number;
             project: components["schemas"]["ProjectBasicInfoDTO"];
@@ -6133,7 +6142,9 @@ export interface components {
             dueDate?: string | null;
             /** Format: date-time */
             actualDate?: string | null;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             murinoMapKey?: string | null;
             murinoMapUrl?: string | null;
@@ -6435,6 +6446,10 @@ export interface components {
             /** Format: date-time */
             operationDate?: string | null;
             treatedAreas?: string | null;
+            /** Format: time */
+            enterTime?: string | null;
+            /** Format: time */
+            leaveTime?: string | null;
             insects?: string | null;
             rodents?: string | null;
             otherPlagues?: string | null;
@@ -6539,7 +6554,9 @@ export interface components {
             appointmentNumber: number;
             /** Format: int32 */
             certificateNumber?: number | null;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             /** Format: date-time */
             dueDate: string;
@@ -6572,7 +6589,9 @@ export interface components {
             /** Format: int32 */
             appointmentNumber?: number | null;
             cancelled?: boolean | null;
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
             servicesIds: Array<string>;
             projectOperationSheet: components["schemas"]["ProjectOperationSheet"];
@@ -7192,7 +7211,9 @@ export interface components {
             appliedTime?: string | null;
         };
         UpdateAppointmentTimesDto: {
+            /** Format: time */
             enterTime?: string | null;
+            /** Format: time */
             leaveTime?: string | null;
         };
         UpdateCompleteReportDTO: {

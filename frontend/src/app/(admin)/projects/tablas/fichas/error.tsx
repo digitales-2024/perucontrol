@@ -9,13 +9,13 @@ export default function Error()
     return (
         <>
             <HeaderPage
-                title="Gestión de clientes" description="Gestiona los clientes de tu empresa"
+                title="Error" description="Error en el sistema"
                 breadcrumbs={(
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href="/clients">
-                                    Todos los clientes
+                                    Error en el sistema
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         </BreadcrumbList>

@@ -12,6 +12,7 @@ public class OperationSheetService(DatabaseContext db)
             .Include(sheet => sheet.ProjectAppointment)
             .ThenInclude(appt => appt.Project)
             .ThenInclude(proj => proj.Client)
+            .OrderByDescending(sheet => sheet.ProjectAppointment.DueDate)
             .ToListAsync();
 
         if (sheets is null)
@@ -29,11 +30,9 @@ public class OperationSheetService(DatabaseContext db)
                 ClientName = sheet.ProjectAppointment.Project.Client.Name,
                 ActualDate = sheet.ProjectAppointment.ActualDate,
                 EnterLeaveTime =
-                    sheet.ProjectAppointment.EnterTime?.ToString("hh:mm")
-                    ?? "Sin hora de entrada"
+                    (sheet.ProjectAppointment.EnterTime?.ToString("hh:mm tt") ?? "Sin hora de entrada")
                         + " - "
-                        + sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm")
-                    ?? "Sin hora de salida",
+                        + (sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm tt") ?? "Sin hora de salida"),
                 Status = sheet.Status,
             })
             .ToList();
@@ -59,17 +58,17 @@ public class OperationSheetService(DatabaseContext db)
                 ClientName = service.Client.Name,
                 ServiceNumber = service.ProjectNumber,
                 AvailableSheets = service
-                    .Appointments
-                    .Where(s => s.ProjectOperationSheet.Status == OperationSheetStatus.Created)
-                    .Select(
-                        appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
-                        {
-                            AppoinmentId = appt.Id,
-                            OperationSheetId = appt.ProjectOperationSheet.Id,
-                            DueDate = appt.DueDate,
-                            Status = appt.ProjectOperationSheet.Status,
-                        }
+                    .Appointments.Where(s =>
+                        s.ProjectOperationSheet.Status == OperationSheetStatus.Created
                     )
+                    .OrderBy(s => s.DueDate)
+                    .Select(appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
+                    {
+                        AppoinmentId = appt.Id,
+                        OperationSheetId = appt.ProjectOperationSheet.Id,
+                        DueDate = appt.DueDate,
+                        Status = appt.ProjectOperationSheet.Status,
+                    })
                     .ToList(),
             })
             .ToList();

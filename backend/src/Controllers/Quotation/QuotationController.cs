@@ -320,7 +320,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery] [Required] [EmailAddress] string email
+        [FromQuery][Required][EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -356,9 +356,13 @@ public class QuotationController(
         // send email
         var (ok, error) = await emailService.SendEmailAsync(
             to: email,
-            subject: "Cotización PDF",
-            htmlBody: "",
-            textBody: "",
+            subject: "PROPUESTA ECONÓMICA DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -382,7 +386,7 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery] [Required] string phoneNumber
+        [FromQuery][Required] string phoneNumber
     )
     {
         var quotation = await _dbSet

@@ -22,8 +22,6 @@ export function OperationsSheetForm({
                 project={project}
                 appointment={appointment}
                 client={client}
-                onOpenChange={() =>
-                { }}
             />
         </div>
     );

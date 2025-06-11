@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Activity, Calendar as CalendarIcon, DollarSign, Users } from "lucide-react";
+import { Activity, Calendar as CalendarIcon, Users } from "lucide-react";
 import { ServiceChartCircle, ServiceChartCircleInput } from "./_ServiceChartCircle";
 import { ServiceChartLine, ServiceChartLineInput } from "./_ServiceChartLine";
 import { components } from "@/types/api";
@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { LoadDashboardData } from "../actions";
 import { toast } from "sonner";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { PenCurrencyIcon } from "@/components/PenCurrencyIcon";
 
 type StatsData = components["schemas"]["StatsGet"]
 
@@ -193,7 +194,7 @@ export function TopMetrics()
                 <h3>
                     Total de ingresos
                     <span className="float-right">
-                        <DollarSign />
+                        <PenCurrencyIcon width={26} height={26} />
                     </span>
                 </h3>
                 <p className="text-xl font-bold">
@@ -268,7 +269,7 @@ function Graphics1({ chartData, quotationData }: { chartData: StatsData["monthly
                 <h3>
                     Ingresos por mes
                     <span className="float-right">
-                        <DollarSign />
+                        <PenCurrencyIcon width={26} height={26} />
                     </span>
                 </h3>
                 <p className="text-muted-foreground text-xs">

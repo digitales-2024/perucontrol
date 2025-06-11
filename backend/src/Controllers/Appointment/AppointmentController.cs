@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -413,9 +414,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Ficha de Operaciones PDF",
-            htmlBody: "Adjunto encontrará la Ficha de Operaciones.",
-            textBody: "Adjunto encontrará la Ficha de Operaciones.",
+            subject: "FICHA DE OPERACIONES DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -446,7 +451,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
@@ -481,8 +486,18 @@ public class AppointmentController(
 
         if (operationSheet == null)
         {
-            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la fecha especificada.");
         }
+
+        if (updateDTO.EnterTime is not null)
+        {
+            operationSheet.ProjectAppointment.EnterTime = updateDTO.EnterTime;
+        }
+        if (updateDTO.LeaveTime is not null)
+        {
+            operationSheet.ProjectAppointment.LeaveTime = updateDTO.LeaveTime;
+        }
+        if (operationSheet.Status == OperationSheetStatus.Created) operationSheet.Status = OperationSheetStatus.Started;
 
         // Aplicar los cambios al objeto existente
         updateDTO.ApplyPatch(operationSheet);
@@ -532,7 +547,7 @@ public class AppointmentController(
 
         if (certificate == null)
         {
-            return NotFound("No se encontró una ficha de operaciones para la cita especificada.");
+            return NotFound("No se encontró una ficha de operaciones para la fecha especificada.");
         }
 
         // Aplicar los cambios al objeto existente
@@ -556,7 +571,7 @@ public class AppointmentController(
             .FirstOrDefaultAsync(a => a.Id == appointmentid);
 
         if (appointment == null)
-            return NotFound("No se encontró la Cita para el Certificado");
+            return NotFound("No se encontró la fecha para el Certificado");
 
         return Ok(appointment.Certificate);
     }
@@ -737,9 +752,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Certificado de Servicio PDF",
-            htmlBody: "Adjunto encontrará el certificado de servicio.",
-            textBody: "Adjunto encontrará el certificado de servicio.",
+            subject: "CERTIFICADO DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -767,7 +786,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateCertificatePdfBytes(id);
@@ -899,9 +918,13 @@ public class AppointmentController(
 
         var (ok, serviceError) = await _emailService.SendEmailAsync(
             to: email,
-            subject: "Registro de Control de Roedores PDF",
-            htmlBody: "Adjunto encontrará el registro de control de roedores.",
-            textBody: "Adjunto encontrará el registro de control de roedores.",
+            subject: "ENVIO DE DOCUMENTOS DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -932,7 +955,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);
@@ -1083,7 +1106,7 @@ public class AppointmentController(
             .FirstOrDefaultAsync(p => p.Id == appointmentid);
 
         if (appointment == null)
-            return NotFound("No se encontró la Cita para el registro de roedores");
+            return NotFound("No se encontró la fecha para el registro de roedores");
 
         return Ok(appointment.RodentRegister);
     }

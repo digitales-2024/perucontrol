@@ -28,10 +28,10 @@ public class ProjectAppointment : BaseModel
     public RodentRegister RodentRegister { get; set; } = null!;
 
     // hora_ingreso
-    public TimeSpan? EnterTime { get; set; }
+    public TimeOnly? EnterTime { get; set; }
 
     // hora_salida
-    public TimeSpan? LeaveTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
 
     /// The date by which the appointment should be performed
     public required DateTime DueDate { get; set; }

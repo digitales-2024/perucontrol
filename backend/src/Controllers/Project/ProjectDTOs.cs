@@ -286,8 +286,8 @@ public class ProjectAppointmentDTO : BaseModel
     public DateTime? ActualDate { get; set; }
     public int? AppointmentNumber { get; set; } = null;
     public bool? Cancelled { get; set; } = false;
-    public TimeSpan? EnterTime { get; set; }
-    public TimeSpan? LeaveTime { get; set; }
+    public TimeOnly? EnterTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
     public required ICollection<Guid> ServicesIds { get; set; }
     public required ProjectOperationSheet ProjectOperationSheet { get; set; }
 }
