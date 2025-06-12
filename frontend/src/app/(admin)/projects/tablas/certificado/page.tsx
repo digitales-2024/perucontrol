@@ -22,8 +22,8 @@ export default async function ProjectDetail()
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/projects/ver/certificado">
-                                    Todas las Fichas de Operaciones
+                                <BreadcrumbLink href="/projects/tablas/fichas">
+                                    Todas las Fichas de Operacion
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         </BreadcrumbList>

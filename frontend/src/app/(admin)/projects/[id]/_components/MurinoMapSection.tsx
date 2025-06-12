@@ -90,7 +90,7 @@ export function MurinoMapSection({ murinoMapBase64, appointmentId }: MurinoMapSe
     const hasChange = !!murinoMapFile;
 
     return (
-        <div className="mt-8 space-y-4">
+        <div className="mt-8 space-y-4 bg-white p-4 border rounded-lg shadow-sm">
             <h3 className="text-base md:text-lg font-medium flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-blue-500" />
                 Mapa Murino
