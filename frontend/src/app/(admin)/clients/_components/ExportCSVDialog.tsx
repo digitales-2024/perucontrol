@@ -77,7 +77,7 @@ export function ExportCSVDialog({ trigger }: ExportCSVDialogProps)
             })(),
             {
                 loading: "Exportando clientes...",
-                success: "CSV exportado exitosamente",
+                success: "Excel exportado exitosamente",
             },
         );
 
