@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-namespace PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 public static class DatabaseSeeder
 {
@@ -346,3 +345,4 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {count} products", defaultEntities.Count);
     }
 }
+

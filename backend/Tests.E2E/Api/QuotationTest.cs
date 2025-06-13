@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers;
 using PeruControl.Model;
-using Tests.E2E.Api;
 
 namespace Tests.E2E.Api;
 
@@ -24,7 +23,7 @@ public class QuotationTest
 
         var quotationService = new QuotationServiceCreateDTO
         {
-            Amount = 1,
+            Amount = "1",
             NameDescription = service.Name,
             Price = 100m,
             Accesories = "N/A",
@@ -159,7 +158,7 @@ public class QuotationTest
         var newService = new QuotationServicePatchDTO
         {
             Id = Guid.NewGuid(), // Assuming the backend ignores this for new items
-            Amount = 2,
+            Amount = "2",
             NameDescription = "Servicio adicional",
             Price = 200m,
             Accesories = "Accesorio X",

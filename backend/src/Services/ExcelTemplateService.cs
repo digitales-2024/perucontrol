@@ -2,7 +2,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PeruControl.Controllers;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 
@@ -233,7 +233,7 @@ public class ExcelTemplateService
     public byte[] GenerateMultiMonthSchedule(
         string templatePath,
         Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth,
-        Project project
+        Infrastructure.Model.Project project
     )
     {
         // Load the template excel

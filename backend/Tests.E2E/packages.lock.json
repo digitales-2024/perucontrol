@@ -1495,11 +1495,17 @@
           "HtmlAgilityPack": "[1.11.72, )",
           "MailKit": "[4.11.0, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.1, )",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.1, )",
           "Microsoft.AspNetCore.OpenApi": "[9.0.4, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )",
+          "PeruControl.Infrastructure": "[1.0.0, )",
           "Scalar.AspNetCore": "[2.0.*, )",
           "Twilio": "[7.11.1, )"
+        }
+      },
+      "perucontrol.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.1, )"
         }
       }
     }

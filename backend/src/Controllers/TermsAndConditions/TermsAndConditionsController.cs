@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 

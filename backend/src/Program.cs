@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+
 using PeruControl.Configuration;
 using PeruControl.Controllers;
-using PeruControl.Model;
 using PeruControl.Services;
 using PeruControl.Utils;
 using Scalar.AspNetCore;
+
+using PeruControl.Infrastructure.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
