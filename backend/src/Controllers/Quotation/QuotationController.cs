@@ -11,7 +11,7 @@ namespace PeruControl.Controllers;
 public class QuotationController(
     DatabaseContext db,
     OdsTemplateService odsTemplateService,
-    LibreOfficeConverterService pDFConverterService,
+    LibreOfficeConverterService libreOfficeConverterService,
     EmailService emailService,
     WhatsappService whatsappService,
     CsvExportService csvExportService
@@ -301,7 +301,7 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -320,7 +320,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery] [Required] [EmailAddress] string email
+        [FromQuery][Required][EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -342,7 +342,7 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -386,7 +386,7 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery] [Required] string phoneNumber
+        [FromQuery][Required] string phoneNumber
     )
     {
         var quotation = await _dbSet
@@ -408,7 +408,7 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = pDFConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -451,15 +451,21 @@ public class QuotationController(
         if (business == null)
             return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
 
-        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+        var (odsBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        if (!string.IsNullOrEmpty(errorStr) || fileBytes == null)
+        if (!string.IsNullOrEmpty(errorStr) || odsBytes == null)
         {
-            return BadRequest(errorStr ?? "Error generando archivo ODS");
+            return BadRequest(errorStr ?? "Error generando archivo Excel intermedio");
         }
 
-        // send ODS file
-        return File(fileBytes, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
+        var (xlsxBytes, xlsxErr) = libreOfficeConverterService.convertTo(odsBytes, "ods", "xlsx");
+        if (!string.IsNullOrEmpty(xlsxErr) || xlsxBytes == null)
+        {
+            return BadRequest(errorStr ?? "Error generando cotización en Excel");
+        }
+
+        // send xlsx file
+        return File(odsBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
     }
 
     [HttpDelete("{id}")]
