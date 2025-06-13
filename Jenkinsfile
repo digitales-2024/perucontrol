@@ -45,10 +45,9 @@ pipeline {
 			steps {
 				// Give time for backend/frontend to start
 				sh 'sleep 5'
-				dir("backend/Tests.E2E") {
-					sh "mkdir reports || true"
+				dir("backend") {
 					catchError(buildResult: "UNSTABLE", stageResult: "FAILURE") {
-						sh "docker run --network perucontrol-network-ci-${BUILD_REF} -e BASE_URL=${BASE_URL} -e API_URL=${API_URL} -v \$(pwd)/../:/tests digitalesacide/playwright-dotnet9-noble:latest bash -c 'cd /tests/Tests.E2E && dotnet test --logger \"xunit;LogFilePath=reports/testresults.xml\"'"
+						sh "docker run --network perucontrol-network-ci-${BUILD_REF} -e BASE_URL=${BASE_URL} -e API_URL=${API_URL} -v \$(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest bash -c 'cd /tests && dotnet test"
 					}
 				}
 			}

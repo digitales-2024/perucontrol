@@ -343,7 +343,7 @@ public class QuotationTest
         var newService = new
         {
             Id = Guid.NewGuid(),
-            Amount = 3,
+            Amount = "3",
             NameDescription = "Nuevo servicio combinado",
             Price = 300m,
             Accesories = "Accesorio nuevo",
