@@ -465,7 +465,7 @@ public class QuotationController(
         }
 
         // send xlsx file
-        return File(odsBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
+        return File(xlsxBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
     }
 
     [HttpDelete("{id}")]
