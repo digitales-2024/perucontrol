@@ -41,9 +41,6 @@ pipeline {
 			environment {
 				BASE_URL = "http://perucontrol-frontend-ci-${BUILD_REF}:3000"
 				API_URL = "http://perucontrol-backend-ci-${BUILD_REF}:8080"
-				R2Config__AccountId = "your-cloudflare-account-id"
-				R2Config__AccessKey = "your-access-key"
-				R2Config__SecretKey = "your-secret-key"
 			}
 			steps {
 				// Give time for backend/frontend to start
@@ -54,9 +51,6 @@ pipeline {
 							--network perucontrol-network-ci-${BUILD_REF} \
 							-e BASE_URL=${BASE_URL} \
 							-e API_URL=${API_URL} \
-							-e R2Config__AccountId=${R2Config__AccountId} \
-							-e R2Config__AccessKey=${R2Config__AccessKey} \
-							-e R2Config__SecretKey=${R2Config__SecretKey} \
 							-v \$(pwd):/tests digitalesacide/playwright-dotnet9-noble:latest \
 							bash -c 'cd /tests && dotnet test'"""
 					}
