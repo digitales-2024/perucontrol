@@ -30,9 +30,15 @@ public class OperationSheetService(DatabaseContext db)
                 ClientName = sheet.ProjectAppointment.Project.Client.Name,
                 ActualDate = sheet.ProjectAppointment.ActualDate,
                 EnterLeaveTime =
-                    (sheet.ProjectAppointment.EnterTime?.ToString("hh:mm tt") ?? "Sin hora de entrada")
-                        + " - "
-                        + (sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm tt") ?? "Sin hora de salida"),
+                    (
+                        sheet.ProjectAppointment.EnterTime?.ToString("hh:mm tt")
+                        ?? "Sin hora de entrada"
+                    )
+                    + " - "
+                    + (
+                        sheet.ProjectAppointment.LeaveTime?.ToString("hh:mm tt")
+                        ?? "Sin hora de salida"
+                    ),
                 Status = sheet.Status,
             })
             .ToList();

@@ -137,7 +137,7 @@ export default function EditQuotation({
         {
             append({
                 id: null,
-                amount: 1,
+                amount: "1",
                 nameDescription: service.name,
                 price: 0,
                 accesories: "",

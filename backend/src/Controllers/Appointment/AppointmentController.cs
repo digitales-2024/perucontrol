@@ -451,7 +451,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
@@ -497,7 +497,8 @@ public class AppointmentController(
         {
             operationSheet.ProjectAppointment.LeaveTime = updateDTO.LeaveTime;
         }
-        if (operationSheet.Status == OperationSheetStatus.Created) operationSheet.Status = OperationSheetStatus.Started;
+        if (operationSheet.Status == OperationSheetStatus.Created)
+            operationSheet.Status = OperationSheetStatus.Started;
 
         // Aplicar los cambios al objeto existente
         updateDTO.ApplyPatch(operationSheet);
@@ -786,7 +787,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateCertificatePdfBytes(id);
@@ -955,7 +956,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);

@@ -249,13 +249,13 @@ public static class DatabaseSeeder
                 {
                     new()
                     {
-                        Amount = 1,
+                        Amount = "1",
                         NameDescription = "DESINSECTACION",
                         Price = 150,
                     },
                     new()
                     {
-                        Amount = 1,
+                        Amount = "1",
                         NameDescription = "DESRATIZACION",
                         Price = 150,
                     },

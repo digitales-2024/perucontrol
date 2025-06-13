@@ -192,7 +192,7 @@ export function CreateQuotation({ terms, clients, services }: {
                     if (!currentServices.some((s) => s.nameDescription === service.name))
                     {
                         append({
-                            amount: 1,
+                            amount: "1",
                             nameDescription: service.name,
                             price: 0,
                             accesories: "",

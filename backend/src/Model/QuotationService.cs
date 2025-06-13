@@ -9,7 +9,7 @@ public class QuotationService : BaseModel
     public Quotation Quotation { get; set; } = null!;
 
     [Description("Amount of items")]
-    public required int Amount { get; set; }
+    public required string Amount { get; set; }
 
     [Description("Name and description of the service")]
     public required string NameDescription { get; set; }

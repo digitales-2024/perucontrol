@@ -158,7 +158,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 public class QuotationServiceCreateDTO
 {
     [Description("Amount of items")]
-    public required int Amount { get; set; }
+    public required string Amount { get; set; }
 
     [Description("Name and description of the service")]
     public required string NameDescription { get; set; }
@@ -234,7 +234,7 @@ public class QuotationServicePatchDTO
     public required Guid? Id { get; set; }
 
     [Description("Amount of items")]
-    public required int Amount { get; set; }
+    public required string Amount { get; set; }
 
     [Description("Name and description of the service")]
     public required string NameDescription { get; set; }

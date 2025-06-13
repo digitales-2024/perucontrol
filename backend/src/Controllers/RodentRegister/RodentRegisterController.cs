@@ -8,9 +8,7 @@ namespace PeruControl.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RodentRegisterController(
-        RodentRegisterService service
-) : ControllerBase
+public class RodentRegisterController(RodentRegisterService service) : ControllerBase
 {
     [HttpGet]
     public IActionResult Do()

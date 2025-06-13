@@ -667,7 +667,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
