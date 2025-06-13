@@ -121,6 +121,7 @@ foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
 }
+builder.Services.AddScoped<RodentRegisterService>();
 
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();

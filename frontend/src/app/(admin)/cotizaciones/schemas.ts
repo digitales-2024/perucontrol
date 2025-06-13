@@ -17,9 +17,8 @@ export const quotationSchema = z.object({
     quotationServices: z.array(z.object({
         id: z.string().nullable()
             .optional(),
-        amount: z.number().int()
-            .min(1),
-        nameDescription: z.string().min(1, "Name and description of the service"),
+        amount: z.string().min(1, { message: "La cantidad no puede estar vacía" }),
+        nameDescription: z.string().min(1, "La descripción del servicio no puede estar vacía"),
         price: z.number().optional(),
         accesories: z.string().optional(),
     })),
