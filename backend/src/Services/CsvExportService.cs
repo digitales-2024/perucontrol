@@ -1,5 +1,5 @@
 using System.Text;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 

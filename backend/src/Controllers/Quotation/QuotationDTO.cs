@@ -1,11 +1,11 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
-public class QuotationGetDTO : PeruControl.Model.BaseModel
+public class QuotationGetDTO : PeruControl.Infrastructure.Model.BaseModel
 {
     public int QuotationNumber { get; set; }
     public virtual ClientGetDTO Client { get; set; } = null!;
@@ -41,7 +41,7 @@ public class QuotationGetDTO : PeruControl.Model.BaseModel
     public string? CustomField10 { get; set; }
 }
 
-public class ClientGetDTO : PeruControl.Model.BaseModel
+public class ClientGetDTO : PeruControl.Infrastructure.Model.BaseModel
 {
     public required string TypeDocument { get; set; }
     public required string TypeDocumentValue { get; set; }
@@ -56,7 +56,7 @@ public class ClientGetDTO : PeruControl.Model.BaseModel
         new List<ClientLocation>();
 }
 
-public class ServiceGetDTO : PeruControl.Model.BaseModel
+public class ServiceGetDTO : PeruControl.Infrastructure.Model.BaseModel
 {
     public required string Name { get; set; }
 }
@@ -158,7 +158,7 @@ public class QuotationCreateDTO : IMapToEntity<Quotation>
 public class QuotationServiceCreateDTO
 {
     [Description("Amount of items")]
-    public required int Amount { get; set; }
+    public required string Amount { get; set; }
 
     [Description("Name and description of the service")]
     public required string NameDescription { get; set; }
@@ -234,7 +234,7 @@ public class QuotationServicePatchDTO
     public required Guid? Id { get; set; }
 
     [Description("Amount of items")]
-    public required int Amount { get; set; }
+    public required string Amount { get; set; }
 
     [Description("Name and description of the service")]
     public required string NameDescription { get; set; }

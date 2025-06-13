@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model.Reports;
 
 namespace PeruControl.Controllers.Reports;
 

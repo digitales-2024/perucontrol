@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers;
-using PeruControl.Model;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model;
+using PeruControl.Infrastructure.Model.Reports;
 
 namespace Tests.E2E.Api;
 

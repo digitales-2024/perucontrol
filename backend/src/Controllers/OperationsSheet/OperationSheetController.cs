@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
@@ -32,7 +32,8 @@ public class ProjectOperationSheetController(
         }
 
         patchDTO.ApplyPatch(entity);
-        if (entity.Status == OperationSheetStatus.Created) entity.Status = OperationSheetStatus.Started;
+        if (entity.Status == OperationSheetStatus.Created)
+            entity.Status = OperationSheetStatus.Started;
         await _context.SaveChangesAsync();
 
         return NoContent();

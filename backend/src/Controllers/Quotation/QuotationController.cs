@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers;
@@ -320,7 +320,7 @@ public class QuotationController(
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery][Required][EmailAddress] string email
+        [FromQuery] [Required] [EmailAddress] string email
     )
     {
         var quotation = await _dbSet
@@ -386,7 +386,7 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery][Required] string phoneNumber
+        [FromQuery] [Required] string phoneNumber
     )
     {
         var quotation = await _dbSet

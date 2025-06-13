@@ -1,7 +1,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model.Reports;
 
 namespace PeruControl.Services;
 
@@ -206,7 +206,7 @@ public class WordTemplateService
     }
 
     public byte[] GenerateReportComplete(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         string templatePath = "Templates/nuevos_informes/informe_01.docx"
     )
     {
@@ -214,7 +214,7 @@ public class WordTemplateService
     }
 
     public byte[] GenerateReport1(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         string templatePath = "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
     )
     {
@@ -222,7 +222,7 @@ public class WordTemplateService
     }
 
     public byte[] GenerateReport2(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         string templatePath = "Templates/nuevos_informes/informe_02.docx"
     )
     {
@@ -230,7 +230,7 @@ public class WordTemplateService
     }
 
     public byte[] GenerateReport3(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         string templatePath = "Templates/nuevos_informes/informe_03.docx"
     )
     {
@@ -238,7 +238,7 @@ public class WordTemplateService
     }
 
     public byte[] GenerateReport4(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         string templatePath = "Templates/nuevos_informes/informe_sostenimiento_desratizacion.docx"
     )
     {
@@ -246,7 +246,7 @@ public class WordTemplateService
     }
 
     private byte[] GenerateReport(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         object reportData,
         string templatePath
     )
@@ -422,7 +422,7 @@ public class WordTemplateService
     }
 
     private byte[] GenerateRodenticideReport(
-        Model.ProjectAppointment appointment,
+        Infrastructure.Model.ProjectAppointment appointment,
         object reportData,
         string templatePath
     )

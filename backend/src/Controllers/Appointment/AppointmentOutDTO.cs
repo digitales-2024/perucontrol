@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
@@ -92,7 +92,7 @@ public class TreatmentAreaDTO
     public string? PerformedService { get; init; }
     public string? AppliedTechnique { get; init; }
 
-    public static TreatmentAreaDTO FromEntity(Model.TreatmentArea area)
+    public static TreatmentAreaDTO FromEntity(Infrastructure.Model.TreatmentArea area)
     {
         return new TreatmentAreaDTO
         {

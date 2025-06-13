@@ -59,8 +59,8 @@ export function DownloadProjectForm({
         resolver: zodResolver(downloadProjectSchema),
         defaultValues: {
             projectAppointmentId: appointment.id!,
-            enterTime: appointment.enterTime ?? "",
-            leaveTime: appointment.leaveTime ?? "",
+            enterTime: !!appointment.enterTime ? appointment.enterTime : undefined,
+            leaveTime: !!appointment.leaveTime ? appointment.leaveTime : undefined,
             operationDate: operationSheet.operationDate ?? appointment.actualDate!,
             razonSocial: client.razonSocial ?? client.name,
             address: project.address,

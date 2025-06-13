@@ -11,5 +11,6 @@ public class EmailConfiguration
     public required string SmtpPassword { get; set; }
 
     public string SecondaryToAddress { get; set; } = "peruccontrol@gmail.com";
-    public string PublicEmailEndpoint { get; set; } = "https://perucontrol-frontend-develop.acide.win";
+    public string PublicEmailEndpoint { get; set; } =
+        "https://perucontrol-frontend-develop.acide.win";
 }

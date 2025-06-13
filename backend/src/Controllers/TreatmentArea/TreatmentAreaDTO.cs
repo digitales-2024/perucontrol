@@ -14,7 +14,7 @@ public class TreatmentAreaGetDTO
     /// </summary>
     public required IEnumerable<Guid> ProductsList { get; init; }
 
-    public static TreatmentAreaGetDTO FromEntity(Model.TreatmentArea area)
+    public static TreatmentAreaGetDTO FromEntity(Infrastructure.Model.TreatmentArea area)
     {
         return new TreatmentAreaGetDTO
         {

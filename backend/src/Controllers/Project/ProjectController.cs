@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers;
@@ -667,7 +667,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);

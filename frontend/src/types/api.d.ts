@@ -4414,6 +4414,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/RodentRegister": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Service": {
         parameters: {
             query?: never;
@@ -6888,11 +6921,8 @@ export interface components {
             disinfectant?: string | null;
         };
         QuotationService: {
-            /**
-             * Format: int32
-             * @description Amount of items
-             */
-            amount: number;
+            /** @description Amount of items */
+            amount: string;
             /** @description Name and description of the service */
             nameDescription: string;
             /**
@@ -6911,11 +6941,8 @@ export interface components {
             modifiedAt?: string;
         };
         QuotationServiceCreateDTO: {
-            /**
-             * Format: int32
-             * @description Amount of items
-             */
-            amount: number;
+            /** @description Amount of items */
+            amount: string;
             /** @description Name and description of the service */
             nameDescription: string;
             /**
@@ -6929,11 +6956,8 @@ export interface components {
         QuotationServicePatchDTO: {
             /** Format: uuid */
             id: string | null;
-            /**
-             * Format: int32
-             * @description Amount of items
-             */
-            amount: number;
+            /** @description Amount of items */
+            amount: string;
             /** @description Name and description of the service */
             nameDescription: string;
             /**

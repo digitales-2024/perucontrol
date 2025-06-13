@@ -1,4 +1,4 @@
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
@@ -43,7 +43,7 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     }
 }
 
-public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
+public class AppointmentGetDTO2 : PeruControl.Infrastructure.Model.BaseModel
 {
     public int AppointmentNumber { get; set; }
     public int? CertificateNumber { get; set; }
