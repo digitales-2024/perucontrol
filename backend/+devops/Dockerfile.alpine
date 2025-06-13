@@ -26,29 +26,18 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 COPY PeruControl.csproj .
 RUN HUSKY=0 dotnet restore --locked-mode
 
-COPY Configuration ./Configuration
-COPY Controllers ./Controllers
-COPY Images ./Images
-COPY Migrations ./Migrations
-COPY Model ./Model
-COPY Properties ./Properties
-COPY Services ./Services
-COPY Utils ./Utils
-COPY Program.cs .
-COPY PeruControl.csproj .
-COPY appsettings.json .
+COPY Domain ./Domain
+COPY Infrastructure ./Infrastructure
+COPY src ./src
+COPY backend.sln .
+
 
 # Build binary
-RUN HUSKY=0 dotnet publish PeruControl.csproj -c Release -r linux-musl-x64 -o out
+RUN HUSKY=0 dotnet publish src/PeruControl.csproj -c Release -r linux-musl-x64 -o out
 # Create a EF bundle for migrating the db
-RUN HUSKY=0 dotnet-ef migrations bundle -r linux-musl-x64
+RUN HUSKY=0 dotnet-ef migrations bundle --project src/PeruControl.csproj -r linux-musl-x64
 
-# FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
-# WORKDIR /app
-# COPY --from=build /app/out ./
-# COPY --from=build /app/efbundle ./efbundle
-# COPY --from=build /app/appsettings.json ./appsettings.json
-COPY Deployment/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY +devops/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY Templates ./Templates
 
 CMD ["./docker-entrypoint.sh"]

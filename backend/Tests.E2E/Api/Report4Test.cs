@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers;
 using PeruControl.Controllers.Reports; // For Report4DTO, UpdateReport4DTO
-using PeruControl.Model.Reports; // For ContentSection, TextArea
+using PeruControl.Infrastructure.Model.Reports; // For ContentSection, TextArea
 
 namespace Tests.E2E.Api;
 

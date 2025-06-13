@@ -16,9 +16,9 @@ pipeline {
 				}
 				stage('Build backend') {
 					steps {
-						dir("backend/src") {
+						dir("backend") {
 							// Just use the docker image to build the frontend
-							sh "docker build -t perucontrol-backend-ci-${BUILD_REF} -f Deployment/Dockerfile.alpine ."
+							sh "docker build -t perucontrol-backend-ci-${BUILD_REF} -f +devops/Dockerfile.alpine ."
 						}
 					}
 				}

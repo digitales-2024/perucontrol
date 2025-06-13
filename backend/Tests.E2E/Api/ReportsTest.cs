@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PeruControl.Controllers; // For ProjectCreateDTO, ProjectSummary, ProjectSummarySingle etc.
 using PeruControl.Controllers.Reports; // For First() and Any()
-using PeruControl.Model;
-using PeruControl.Model.Reports; // For CompleteReportDTO
+using PeruControl.Infrastructure.Model;
+using PeruControl.Infrastructure.Model.Reports; // For CompleteReportDTO
 
 namespace Tests.E2E.Api;
 
