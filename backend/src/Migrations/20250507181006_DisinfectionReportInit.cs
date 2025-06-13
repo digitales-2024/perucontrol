@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model.Reports;
 
 #nullable disable
 

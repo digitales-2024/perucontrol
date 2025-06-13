@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model.Reports;
 
 #nullable disable
 

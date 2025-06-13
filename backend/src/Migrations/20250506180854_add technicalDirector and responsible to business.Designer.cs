@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 #nullable disable
 
@@ -155,7 +155,7 @@ namespace PeruControl.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Business", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Business", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,7 +243,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Businesses");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Certificate", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Certificate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,7 +276,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Certificates");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Client", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,7 +351,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ClientLocation", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ClientLocation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -384,7 +384,7 @@ namespace PeruControl.Migrations
                     b.ToTable("ClientLocations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Project", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Project", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -444,7 +444,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectAppointment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -503,7 +503,7 @@ namespace PeruControl.Migrations
                     b.ToTable("ProjectAppointment");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectOperationSheet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -670,7 +670,7 @@ namespace PeruControl.Migrations
                     b.ToTable("ProjectOperationSheet");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectOrderNumber", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectOrderNumber", b =>
                 {
                     b.Property<int>("ProjectOrderNumberId")
                         .ValueGeneratedOnAdd()
@@ -686,7 +686,7 @@ namespace PeruControl.Migrations
                     b.ToTable("ProjectOrderNumbers");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Quotation", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Quotation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -770,7 +770,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Quotations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.QuotationService", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.QuotationService", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -808,7 +808,7 @@ namespace PeruControl.Migrations
                     b.ToTable("QuotationServices");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.RodentArea", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentArea", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -860,7 +860,7 @@ namespace PeruControl.Migrations
                     b.ToTable("RodentAreas");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentRegister", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -898,7 +898,7 @@ namespace PeruControl.Migrations
                     b.ToTable("RodentRegisters");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Service", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Service", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -927,7 +927,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Supply", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Supply", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -961,7 +961,7 @@ namespace PeruControl.Migrations
                     b.ToTable("Supplies");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.TermsAndConditions", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.TermsAndConditions", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -995,7 +995,7 @@ namespace PeruControl.Migrations
                     b.ToTable("TermsAndConditions");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.User", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1120,7 +1120,7 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("PeruControl.Model.User", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1129,7 +1129,7 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("PeruControl.Model.User", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1144,7 +1144,7 @@ namespace PeruControl.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeruControl.Model.User", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1153,27 +1153,27 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("PeruControl.Model.User", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Certificate", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Certificate", b =>
                 {
-                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
+                    b.HasOne("PeruControl.Infrastructure.Model.ProjectAppointment", "ProjectAppointment")
                         .WithOne("Certificate")
-                        .HasForeignKey("PeruControl.Model.Certificate", "ProjectAppointmentId")
+                        .HasForeignKey("PeruControl.Infrastructure.Model.Certificate", "ProjectAppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ProjectAppointment");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ClientLocation", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ClientLocation", b =>
                 {
-                    b.HasOne("PeruControl.Model.Client", "Client")
+                    b.HasOne("PeruControl.Infrastructure.Model.Client", "Client")
                         .WithMany("ClientLocations")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1182,15 +1182,15 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Project", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Project", b =>
                 {
-                    b.HasOne("PeruControl.Model.Client", "Client")
+                    b.HasOne("PeruControl.Infrastructure.Model.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeruControl.Model.Quotation", "Quotation")
+                    b.HasOne("PeruControl.Infrastructure.Model.Quotation", "Quotation")
                         .WithMany()
                         .HasForeignKey("QuotationId");
 
@@ -1199,9 +1199,9 @@ namespace PeruControl.Migrations
                     b.Navigation("Quotation");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectAppointment", b =>
                 {
-                    b.HasOne("PeruControl.Model.Project", "Project")
+                    b.HasOne("PeruControl.Infrastructure.Model.Project", "Project")
                         .WithMany("Appointments")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1210,20 +1210,20 @@ namespace PeruControl.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectOperationSheet", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectOperationSheet", b =>
                 {
-                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
+                    b.HasOne("PeruControl.Infrastructure.Model.ProjectAppointment", "ProjectAppointment")
                         .WithOne("ProjectOperationSheet")
-                        .HasForeignKey("PeruControl.Model.ProjectOperationSheet", "ProjectAppointmentId")
+                        .HasForeignKey("PeruControl.Infrastructure.Model.ProjectOperationSheet", "ProjectAppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ProjectAppointment");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Quotation", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Quotation", b =>
                 {
-                    b.HasOne("PeruControl.Model.Client", "Client")
+                    b.HasOne("PeruControl.Infrastructure.Model.Client", "Client")
                         .WithMany("ClientToQuotations")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1232,9 +1232,9 @@ namespace PeruControl.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.QuotationService", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.QuotationService", b =>
                 {
-                    b.HasOne("PeruControl.Model.Quotation", "Quotation")
+                    b.HasOne("PeruControl.Infrastructure.Model.Quotation", "Quotation")
                         .WithMany("QuotationServices")
                         .HasForeignKey("QuotationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1243,9 +1243,9 @@ namespace PeruControl.Migrations
                     b.Navigation("Quotation");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.RodentArea", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentArea", b =>
                 {
-                    b.HasOne("PeruControl.Model.RodentRegister", "RodentRegister")
+                    b.HasOne("PeruControl.Infrastructure.Model.RodentRegister", "RodentRegister")
                         .WithMany("RodentAreas")
                         .HasForeignKey("RodentRegisterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1254,11 +1254,11 @@ namespace PeruControl.Migrations
                     b.Navigation("RodentRegister");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentRegister", b =>
                 {
-                    b.HasOne("PeruControl.Model.ProjectAppointment", "ProjectAppointment")
+                    b.HasOne("PeruControl.Infrastructure.Model.ProjectAppointment", "ProjectAppointment")
                         .WithOne("RodentRegister")
-                        .HasForeignKey("PeruControl.Model.RodentRegister", "ProjectAppointmentId")
+                        .HasForeignKey("PeruControl.Infrastructure.Model.RodentRegister", "ProjectAppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1267,13 +1267,13 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("ProjectAppointmentService", b =>
                 {
-                    b.HasOne("PeruControl.Model.ProjectAppointment", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.ProjectAppointment", null)
                         .WithMany()
                         .HasForeignKey("AppointmentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeruControl.Model.Service", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.Service", null)
                         .WithMany()
                         .HasForeignKey("ServicesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1282,13 +1282,13 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("ProjectService", b =>
                 {
-                    b.HasOne("PeruControl.Model.Project", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeruControl.Model.Service", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.Service", null)
                         .WithMany()
                         .HasForeignKey("ServicesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1297,32 +1297,32 @@ namespace PeruControl.Migrations
 
             modelBuilder.Entity("QuotationService", b =>
                 {
-                    b.HasOne("PeruControl.Model.Quotation", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.Quotation", null)
                         .WithMany()
                         .HasForeignKey("QuotationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeruControl.Model.Service", null)
+                    b.HasOne("PeruControl.Infrastructure.Model.Service", null)
                         .WithMany()
                         .HasForeignKey("ServicesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Client", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Client", b =>
                 {
                     b.Navigation("ClientLocations");
 
                     b.Navigation("ClientToQuotations");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Project", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Project", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.ProjectAppointment", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.ProjectAppointment", b =>
                 {
                     b.Navigation("Certificate")
                         .IsRequired();
@@ -1334,12 +1334,12 @@ namespace PeruControl.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeruControl.Model.Quotation", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Quotation", b =>
                 {
                     b.Navigation("QuotationServices");
                 });
 
-            modelBuilder.Entity("PeruControl.Model.RodentRegister", b =>
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentRegister", b =>
                 {
                     b.Navigation("RodentAreas");
                 });
