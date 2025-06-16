@@ -170,7 +170,7 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
     return ok(null);
 }
 
-export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError>>
+export async function GenerateExcel(id: string): Promise<Result<[Blob, string], FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -208,7 +208,19 @@ export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError
         }
 
         const blob = await response.blob();
-        return ok(blob);
+        
+        // Extract filename from Content-Disposition header
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = `quotation-${id}.xlsx`; // fallback filename
+        
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch) {
+                filename = filenameMatch[1].replace(/['"]/g, '');
+            }
+        }
+        
+        return ok([blob, filename]);
     }
     catch (e)
     {
@@ -221,7 +233,7 @@ export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError
     }
 }
 
-export async function GeneratePdf(id: string): Promise<Result<Blob, FetchError>>
+export async function GeneratePdf(id: string): Promise<Result<[Blob, string], FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -259,7 +271,19 @@ export async function GeneratePdf(id: string): Promise<Result<Blob, FetchError>>
         }
 
         const blob = await response.blob();
-        return ok(blob);
+        
+        // Extract filename from Content-Disposition header
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = `quotation-${id}.pdf`; // fallback filename
+        
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch) {
+                filename = filenameMatch[1].replace(/['"]/g, '');
+            }
+        }
+        
+        return ok([blob, filename]);
     }
     catch (e)
     {
