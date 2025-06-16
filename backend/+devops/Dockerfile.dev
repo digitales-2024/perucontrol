@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     libreoffice-lang-es
 
 # Copy fonts
-COPY Fonts /usr/local/share/fonts/
+COPY ./src/Fonts /usr/local/share/fonts/
 # Update font cache
 RUN fc-cache -f -v
 

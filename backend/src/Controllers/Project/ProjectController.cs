@@ -516,7 +516,7 @@ public class ProjectController(
         }
 
         // send
-        return File(excelBytes, "application/vnd.ms-excel", "schedule.xlsx");
+        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "schedule.xlsx");
     }
 
     [EndpointSummary("Generate Schedule PDF")]
