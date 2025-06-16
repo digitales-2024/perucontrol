@@ -208,18 +208,20 @@ export async function GenerateExcel(id: string): Promise<Result<[Blob, string], 
         }
 
         const blob = await response.blob();
-        
+
         // Extract filename from Content-Disposition header
         const contentDisposition = response.headers.get("Content-Disposition");
         let filename = `quotation-${id}.xlsx`; // fallback filename
-        
-        if (contentDisposition) {
+
+        if (contentDisposition)
+        {
             const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-            if (filenameMatch) {
-                filename = filenameMatch[1].replace(/['"]/g, '');
+            if (filenameMatch)
+            {
+                filename = filenameMatch[1].replace(/['"]/g, "");
             }
         }
-        
+
         return ok([blob, filename]);
     }
     catch (e)
@@ -271,18 +273,20 @@ export async function GeneratePdf(id: string): Promise<Result<[Blob, string], Fe
         }
 
         const blob = await response.blob();
-        
+
         // Extract filename from Content-Disposition header
         const contentDisposition = response.headers.get("Content-Disposition");
         let filename = `quotation-${id}.pdf`; // fallback filename
-        
-        if (contentDisposition) {
+
+        if (contentDisposition)
+        {
             const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-            if (filenameMatch) {
-                filename = filenameMatch[1].replace(/['"]/g, '');
+            if (filenameMatch)
+            {
+                filename = filenameMatch[1].replace(/['"]/g, "");
             }
         }
-        
+
         return ok([blob, filename]);
     }
     catch (e)

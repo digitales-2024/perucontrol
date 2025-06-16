@@ -4234,10 +4234,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
         /** Generate Excel */
-        post: {
+        get: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -4272,6 +4270,8 @@ export interface paths {
                 };
             };
         };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
