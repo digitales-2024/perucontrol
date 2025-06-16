@@ -377,7 +377,7 @@ public class AppointmentController(
             );
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, new BadRequestObjectResult(pdfErr));
@@ -718,7 +718,7 @@ public class AppointmentController(
             "Templates/certificado_plantilla_ok.svg"
         );
 
-        var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(svgBytes, "svg");
+        var (pdfBytes, errorStr) = pdfConverterService.ConvertToPdf(svgBytes, "svg");
 
         if (!string.IsNullOrEmpty(errorStr))
         {
@@ -871,7 +871,7 @@ public class AppointmentController(
             return BadRequest(errormsg);
         }
 
-        var (pdfBytes, errorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, errorStr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
 
         if (errorStr != "")
         {
@@ -906,7 +906,7 @@ public class AppointmentController(
             return BadRequest(errormsg);
         }
 
-        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -965,7 +965,7 @@ public class AppointmentController(
             return BadRequest(errormsg);
         }
 
-        var (pdfBytes, pdfErrorStr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {

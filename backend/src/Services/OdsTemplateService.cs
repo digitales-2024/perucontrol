@@ -355,7 +355,7 @@ public class OdsTemplateService
             { "{footer_contact}", quotation.FooterContact ?? "" },
         };
 
-        var templatePath = "Templates/cotizacion_plantilla.ods";
+        var templatePath = "Templates/cotizacion_final.ods";
         using var ms = new MemoryStream();
         using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
         {
@@ -748,6 +748,59 @@ public class OdsTemplateService
             }
         }
         return (outputMs.ToArray(), null);
+    }
+
+    public byte[] ScaleOds(byte[] odsBytes, int scalePercentage)
+    {
+        using var inputMs = new MemoryStream(odsBytes);
+        using var outputMs = new MemoryStream();
+
+        using (var inputArchive = new ZipArchive(inputMs, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "styles.xml")
+                {
+                    // Copy all other entries as-is
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else
+                {
+                    // Modify styles.xml to set scaling to the specified percentage
+                    var stylesEntry = outputArchive.CreateEntry("styles.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
+                    XNamespace fons = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0";
+
+                    // Find all page-layout elements and set scale-to to the specified percentage and page size to A4
+                    var pageLayouts = xmlDoc.Descendants(stylens + "page-layout").ToList();
+                    foreach (var pageLayout in pageLayouts)
+                    {
+                        var pageLayoutProperties = pageLayout.Element(stylens + "page-layout-properties");
+                        if (pageLayoutProperties != null)
+                        {
+                            pageLayoutProperties.SetAttributeValue(stylens + "scale-to", $"{scalePercentage}%");
+                            pageLayoutProperties.SetAttributeValue(fons + "page-width", "21cm");
+                            pageLayoutProperties.SetAttributeValue(fons + "page-height", "29.7cm");
+                        }
+                    }
+
+                    // Write the modified XML back to the entry
+                    using var newEntryStream = stylesEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+
+        return outputMs.ToArray();
     }
 }
 
