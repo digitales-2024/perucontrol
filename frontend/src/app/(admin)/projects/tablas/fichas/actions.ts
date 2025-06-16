@@ -6,8 +6,7 @@ import { revalidatePath } from "next/cache";
 
 export async function GenerateOperationSheetPdf(appointmentId: string): Promise<Result<Blob, FetchError>>
 {
-    const url = `/api/Appointment/${appointmentId}/gen-operations-sheet/pdf`;
-    return DownloadFile(url, "POST");
+    return DownloadFile(`/api/OperationSheet/${appointmentId}/pdf`, "GET");
 }
 
 export async function MarkOperationSheetAsStarted(operationSheetId: string):

@@ -99,12 +99,12 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
 
 export async function GenerateOperationSheetExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
+    return DownloadFile(`/api/OperationSheet/${id}/excel`, "GET", "");
 }
 
 export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
+    return DownloadFile(`/api/OperationSheet/${id}/pdf`, "GET", "");
 }
 
 export async function SaveProjectOperationSheetData(
