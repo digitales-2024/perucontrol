@@ -132,7 +132,7 @@ public class ExcelTemplateService
         foreach (var cell in cells)
         {
             var stringId = int.Parse(cell.InnerText);
-            
+
             // Skip if we've already processed this shared string index for this worksheet
             if (processedIndices.Contains(stringId))
                 continue;
@@ -536,4 +536,3 @@ public class ListComparer<T> : IEqualityComparer<List<T>>
         return hash;
     }
 }
-

@@ -1,8 +1,6 @@
 namespace PeruControl.Services;
 
-public class LibreOfficeConverterService(
-    ILogger<LibreOfficeConverterService> logger
-)
+public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> logger)
 {
     // writes to a temp file, invokes soffice on it, returns the
     // converted bytes, and cleans up

@@ -1,6 +1,3 @@
 ﻿namespace PeruControl.Domain;
 
-public class Class1
-{
-
-}
+public class Class1 { }

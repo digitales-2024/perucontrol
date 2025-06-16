@@ -10,11 +10,10 @@ namespace PeruControl.Controllers;
 [Authorize]
 public class QuotationController(
     DatabaseContext db,
-    OdsTemplateService odsTemplateService,
-    LibreOfficeConverterService libreOfficeConverterService,
     EmailService emailService,
     WhatsappService whatsappService,
-    CsvExportService csvExportService
+    CsvExportService csvExportService,
+    QuotationService quotationService
 ) : AbstractCrudController<Quotation, QuotationCreateDTO, QuotationPatchDTO>(db)
 {
     [EndpointSummary("Create a Quotation")]
@@ -50,7 +49,7 @@ public class QuotationController(
         // set services
         entity.QuotationServices =
         [
-            .. createDto.QuotationServices.Select(qs => new QuotationService
+            .. createDto.QuotationServices.Select(qs => new Infrastructure.Model.QuotationService
             {
                 Amount = qs.Amount,
                 NameDescription = qs.NameDescription,
@@ -184,7 +183,7 @@ public class QuotationController(
                         // ID specified but not found - create new with specific ID
                         // Note: This might not work if ID is auto-generated
                         // Alternative: Ignore the ID and just create new
-                        var newQuotationService = new QuotationService
+                        var newQuotationService = new Infrastructure.Model.QuotationService
                         {
                             Quotation = trackedQuotation,
                             Amount = patchQs.Amount,
@@ -200,7 +199,7 @@ public class QuotationController(
                 else
                 {
                     // Create new without specified ID
-                    var newQuotationService = new QuotationService
+                    var newQuotationService = new Infrastructure.Model.QuotationService
                     {
                         Quotation = trackedQuotation,
                         Amount = patchQs.Amount,
@@ -276,84 +275,46 @@ public class QuotationController(
         return NoContent();
     }
 
-    [EndpointSummary("Generate PDF")]
+    [EndpointSummary("Generate Quotation PDF")]
     [HttpPost("{id:guid}/gen-pdf")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GeneratePDF(Guid id)
+    public async Task<IActionResult> GeneratePDF(Guid id)
     {
-        var quotation = _dbSet
-            .Include(q => q.QuotationServices)
-            .Include(q => q.Client)
-            .Include(q => q.Services)
-            .FirstOrDefault(q => q.Id == id);
+        var (pdfBytes, error) = await quotationService.GeneratePdfAsync(id);
 
-        if (quotation == null)
+        if (!string.IsNullOrEmpty(error))
         {
-            return NotFound(
-                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
-            );
+            return BadRequest(error);
         }
 
-        var business = _context.Businesses.FirstOrDefault();
-        if (business == null)
-            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
+        return File(pdfBytes!, "application/pdf", "quotation.pdf");
+    }
 
-        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
+    [EndpointSummary("Generate Excel")]
+    [HttpGet("{id:guid}/gen-excel")]
+    public async Task<IActionResult> GenerateExcel(Guid id)
+    {
+        var (odsBytes, error) = await quotationService.GenerateExcelAsync(id);
 
-        // Scale the ODS before converting to PDF to fix layout issues
-        var scaledFileBytes = odsTemplateService.ScaleOds(fileBytes, 105);
-
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(scaledFileBytes, "ods");
-
-        if (!string.IsNullOrEmpty(pdfErrorStr))
+        if (!string.IsNullOrEmpty(error))
         {
-            return BadRequest(pdfErrorStr);
-        }
-        if (pdfBytes == null)
-        {
-            return BadRequest("Error generando PDF");
+            return BadRequest(error);
         }
 
-        // send
-        return File(pdfBytes, "application/pdf", "quotation.pdf");
+        return File(odsBytes!, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
     }
 
     [EndpointSummary("Send Quotation PDF via Email")]
     [HttpPost("{id}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery][Required][EmailAddress] string email
+        [FromQuery] [Required] [EmailAddress] string email
     )
     {
-        var quotation = await _dbSet
-            .Include(q => q.QuotationServices)
-            .Include(q => q.Client)
-            .Include(q => q.Services)
-            .FirstOrDefaultAsync(q => q.Id == id);
+        var (pdfBytes, generationError) = await quotationService.GeneratePdfAsync(id);
 
-        if (quotation == null)
+        if (!string.IsNullOrEmpty(generationError) || pdfBytes == null)
         {
-            return NotFound(
-                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
-            );
-        }
-
-        var business = _context.Businesses.FirstOrDefault();
-        if (business == null)
-            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
-
-        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
-
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(fileBytes, "ods");
-
-        if (!string.IsNullOrEmpty(pdfErrorStr))
-        {
-            return BadRequest(pdfErrorStr);
-        }
-        if (pdfBytes == null)
-        {
-            return BadRequest("Error generando PDF");
+            return BadRequest(generationError ?? "Error generando el PDF");
         }
 
         // send email
@@ -389,87 +350,23 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery][Required] string phoneNumber
+        [FromQuery] [Required] string phoneNumber
     )
     {
-        var quotation = await _dbSet
-            .Include(q => q.QuotationServices)
-            .Include(q => q.Client)
-            .Include(q => q.Services)
-            .FirstOrDefaultAsync(q => q.Id == id);
+        var (pdfBytes, error) = await quotationService.GeneratePdfAsync(id);
 
-        if (quotation == null)
+        if (!string.IsNullOrEmpty(error))
         {
-            return NotFound(
-                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
-            );
-        }
-
-        var business = _context.Businesses.FirstOrDefault();
-        if (business == null)
-            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
-
-        var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
-
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(fileBytes, "ods");
-
-        if (!string.IsNullOrEmpty(pdfErrorStr))
-        {
-            return BadRequest(pdfErrorStr);
-        }
-        if (pdfBytes == null)
-        {
-            return BadRequest("Error generando PDF");
+            return BadRequest(error);
         }
 
         await whatsappService.SendWhatsappServiceMessageAsync(
-            fileBytes: pdfBytes,
+            fileBytes: pdfBytes!,
             contentSid: "HXc9bee467c02d529435b97f7694ad3b87",
             fileName: "quotation.pdf",
             phoneNumber: phoneNumber
         );
         return Ok();
-    }
-
-    [EndpointSummary("Generate Excel")]
-    [HttpGet("{id:guid}/gen-excel")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GenerateExcel(Guid id)
-    {
-        var quotation = _dbSet
-            .Include(q => q.QuotationServices)
-            .Include(q => q.Client)
-            .Include(q => q.Services)
-            .FirstOrDefault(q => q.Id == id);
-
-        if (quotation == null)
-        {
-            return NotFound(
-                $"Cotización no encontrada (${id}). Actualize la página y regrese a la lista de cotizaciones."
-            );
-        }
-
-        var business = _context.Businesses.FirstOrDefault();
-        if (business == null)
-            return StatusCode(500, "Estado del sistema invalido, no se encontro la empresa");
-
-        var (odsBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
-
-        if (!string.IsNullOrEmpty(errorStr))
-        {
-            return BadRequest(errorStr);
-        }
-
-        // var (xlsxBytes, xlsxErr) = libreOfficeConverterService.convertTo(odsBytes, "ods", "xlsx");
-        // if (!string.IsNullOrEmpty(xlsxErr) || xlsxBytes == null)
-        // {
-        //     return BadRequest(errorStr ?? "Error generando cotización en Excel");
-        // }
-
-        // send xlsx file
-        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
-        // return File(odsBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
     }
 
     [HttpDelete("{id}")]

@@ -312,6 +312,12 @@ public class OdsTemplateService
         return (outputMs.ToArray(), null);
     }
 
+    /// <summary>
+    /// Generates a quotation ODS file, from a ODS template.
+    /// </summary>
+    /// <param name="quotation"></param>
+    /// <param name="business"></param>
+    /// <returns></returns>
     public (byte[], string?) GenerateQuotation(Quotation quotation, Business business)
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
@@ -782,10 +788,15 @@ public class OdsTemplateService
                     var pageLayouts = xmlDoc.Descendants(stylens + "page-layout").ToList();
                     foreach (var pageLayout in pageLayouts)
                     {
-                        var pageLayoutProperties = pageLayout.Element(stylens + "page-layout-properties");
+                        var pageLayoutProperties = pageLayout.Element(
+                            stylens + "page-layout-properties"
+                        );
                         if (pageLayoutProperties != null)
                         {
-                            pageLayoutProperties.SetAttributeValue(stylens + "scale-to", $"{scalePercentage}%");
+                            pageLayoutProperties.SetAttributeValue(
+                                stylens + "scale-to",
+                                $"{scalePercentage}%"
+                            );
                             pageLayoutProperties.SetAttributeValue(fons + "page-width", "21cm");
                             pageLayoutProperties.SetAttributeValue(fons + "page-height", "29.7cm");
                         }
