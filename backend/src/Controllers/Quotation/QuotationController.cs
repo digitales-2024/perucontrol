@@ -277,7 +277,7 @@ public class QuotationController(
     }
 
     [EndpointSummary("Generate PDF")]
-    [HttpPost("{id}/gen-pdf")]
+    [HttpPost("{id:guid}/gen-pdf")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GeneratePDF(Guid id)
@@ -301,7 +301,10 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
+        // Scale the ODS before converting to PDF to fix layout issues
+        var scaledFileBytes = odsTemplateService.ScaleOds(fileBytes, 105);
+
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(scaledFileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -342,7 +345,7 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(fileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -408,7 +411,7 @@ public class QuotationController(
 
         var (fileBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.convertToPdf(fileBytes, "ods");
+        var (pdfBytes, pdfErrorStr) = libreOfficeConverterService.ConvertToPdf(fileBytes, "ods");
 
         if (!string.IsNullOrEmpty(pdfErrorStr))
         {
@@ -429,7 +432,7 @@ public class QuotationController(
     }
 
     [EndpointSummary("Generate Excel")]
-    [HttpPost("{id}/gen-excel")]
+    [HttpGet("{id:guid}/gen-excel")]
     [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GenerateExcel(Guid id)
@@ -453,19 +456,20 @@ public class QuotationController(
 
         var (odsBytes, errorStr) = odsTemplateService.GenerateQuotation(quotation, business);
 
-        if (!string.IsNullOrEmpty(errorStr) || odsBytes == null)
+        if (!string.IsNullOrEmpty(errorStr))
         {
-            return BadRequest(errorStr ?? "Error generando archivo Excel intermedio");
+            return BadRequest(errorStr);
         }
 
-        var (xlsxBytes, xlsxErr) = libreOfficeConverterService.convertTo(odsBytes, "ods", "xlsx");
-        if (!string.IsNullOrEmpty(xlsxErr) || xlsxBytes == null)
-        {
-            return BadRequest(errorStr ?? "Error generando cotización en Excel");
-        }
+        // var (xlsxBytes, xlsxErr) = libreOfficeConverterService.convertTo(odsBytes, "ods", "xlsx");
+        // if (!string.IsNullOrEmpty(xlsxErr) || xlsxBytes == null)
+        // {
+        //     return BadRequest(errorStr ?? "Error generando cotización en Excel");
+        // }
 
         // send xlsx file
-        return File(xlsxBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "quotation.ods");
+        // return File(odsBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "quotation.xlsx");
     }
 
     [HttpDelete("{id}")]

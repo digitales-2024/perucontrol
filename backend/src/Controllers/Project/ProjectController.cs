@@ -586,7 +586,7 @@ public class ProjectController(
             return NotFound("Error generando excel");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (pdfErr != "")
         {
             return BadRequest(pdfErr);
@@ -728,7 +728,7 @@ public class ProjectController(
             return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, $"Error convirtiendo a PDF: {pdfErr}");
