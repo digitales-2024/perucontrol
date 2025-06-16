@@ -112,11 +112,11 @@ export async function SaveProjectOperationSheetData(
     body: components["schemas"]["OperationSheetPatchDTO"],
 ): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/operation-sheet", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/OperationSheet/{id}", {
         ...auth,
         params: {
             path: {
-                appointmentid: id,
+                id,
             },
         },
         body,
@@ -132,7 +132,7 @@ export async function SaveProjectOperationSheetData(
 export async function GetProjectOperationSheet(projectId: string)
     : Promise<Result<components["schemas"]["ProjectOperationSheet"] | null, FetchError>>
 {
-    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/operation-sheet/by-project/{projectId}", {
+    const [data, error] = await wrapper((auth) => backend.GET("/api/OperationSheet/by-project/{projectId}", {
         ...auth,
         params: {
             path: {
@@ -613,7 +613,7 @@ export async function SendCertificatePDFViaWhatsapp(appointmentId: string, phone
 
 export async function SendOperationSheetPDFViaEmail(appointmentId: string, email: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/gen-operations-sheet/email-pdf", {
+    const [, error] = await wrapper((auth) => backend.POST("/api/OperationSheet/{id}/email-pdf", {
         ...auth,
         params: {
             path: {
@@ -635,7 +635,7 @@ export async function SendOperationSheetPDFViaEmail(appointmentId: string, email
 
 export async function SendOperationSheetPDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/gen-operations-sheet/whatsapp-pdf", {
+    const [, error] = await wrapper((auth) => backend.POST("/api/OperationSheet/{id}/whatsapp-pdf", {
         ...auth,
         params: {
             path: {
