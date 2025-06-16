@@ -1,10 +1,10 @@
 namespace PeruControl.Services;
 
-public class LibreOfficeConverterService
+public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> logger)
 {
     // writes to a temp file, invokes soffice on it, returns the
     // converted bytes, and cleans up
-    public (byte[]?, string) convertToPdf(byte[] inputBytes, string extension)
+    public (byte[]?, string) ConvertToPdf(byte[] inputBytes, string extension)
     {
         var unixms = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var tempDir = Path.Combine(Path.GetTempPath(), "gen_files");
@@ -14,7 +14,7 @@ public class LibreOfficeConverterService
         var pdfFilePath = Path.Combine(tempDir, $"file_{unixms}.pdf");
         try
         {
-            System.IO.File.WriteAllBytes(tempFilePath, inputBytes);
+            File.WriteAllBytes(tempFilePath, inputBytes);
 
             // Call LibreOffice to convert to PDF
             var process = new System.Diagnostics.Process
@@ -35,21 +35,28 @@ public class LibreOfficeConverterService
 
             if (process.ExitCode != 0)
             {
+                logger.LogError(process.ExitCode, "Error generating PDF");
+                logger.LogError(process.StandardError.ReadToEnd(), "Error generating PDF (stderr)");
                 var error = process.StandardError.ReadToEnd();
                 return (null, $"Error generating PDF: {error}");
             }
 
             // read pdf file
-            var pdfBytes = System.IO.File.ReadAllBytes(pdfFilePath);
+            var pdfBytes = File.ReadAllBytes(pdfFilePath);
 
             return (pdfBytes, "");
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception during conversion");
+            return (null, $"Exception during conversion: {ex.Message}");
+        }
         finally
         {
-            if (System.IO.File.Exists(tempFilePath))
-                System.IO.File.Delete(tempFilePath);
-            if (System.IO.File.Exists(pdfFilePath))
-                System.IO.File.Delete(pdfFilePath);
+            if (File.Exists(tempFilePath))
+                File.Delete(tempFilePath);
+            if (File.Exists(pdfFilePath))
+                File.Delete(pdfFilePath);
         }
     }
 

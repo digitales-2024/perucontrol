@@ -148,7 +148,11 @@ public class S3Service
 
         // Store the file in temp storage
         _dbContext.WhatsappTemps.Add(
-            new Infrastructure.Model.Whatsapp.WhatsappTemp { FileKey = result.Key, BucketName = result.BucketName }
+            new Infrastructure.Model.Whatsapp.WhatsappTemp
+            {
+                FileKey = result.Key,
+                BucketName = result.BucketName,
+            }
         );
         await _dbContext.SaveChangesAsync();
 

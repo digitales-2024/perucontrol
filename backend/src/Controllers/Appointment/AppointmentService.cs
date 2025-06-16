@@ -437,17 +437,19 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
     {
         return section switch
         {
-            PeruControl.Infrastructure.Model.Reports.TextBlock textBlock => new PeruControl.Infrastructure.Model.Reports.TextBlock
-            {
-                Title = textBlock.Title,
-                Numbering = textBlock.Numbering,
-                Level = textBlock.Level,
-                Sections = textBlock.Sections.Select(CloneContentSection).ToArray(),
-            },
-            PeruControl.Infrastructure.Model.Reports.TextArea textArea => new PeruControl.Infrastructure.Model.Reports.TextArea
-            {
-                Content = textArea.Content,
-            },
+            PeruControl.Infrastructure.Model.Reports.TextBlock textBlock =>
+                new PeruControl.Infrastructure.Model.Reports.TextBlock
+                {
+                    Title = textBlock.Title,
+                    Numbering = textBlock.Numbering,
+                    Level = textBlock.Level,
+                    Sections = textBlock.Sections.Select(CloneContentSection).ToArray(),
+                },
+            PeruControl.Infrastructure.Model.Reports.TextArea textArea =>
+                new PeruControl.Infrastructure.Model.Reports.TextArea
+                {
+                    Content = textArea.Content,
+                },
             _ => throw new ArgumentException($"Unknown content section type: {section.GetType()}"),
         };
     }

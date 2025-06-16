@@ -99,9 +99,15 @@ public class ProjectService(
                                 Name = ambientName,
                                 CebaderoTrampa = 0,
                                 Frequency = Infrastructure.Model.QuotationFrequency.Monthly,
-                                RodentConsumption = Infrastructure.Model.RodentConsumption.NoConsumption,
+                                RodentConsumption = Infrastructure
+                                    .Model
+                                    .RodentConsumption
+                                    .NoConsumption,
                                 RodentResult = Infrastructure.Model.RodentResult.Inactive,
-                                RodentMaterials = Infrastructure.Model.RodentMaterials.RodenticideOrBait,
+                                RodentMaterials = Infrastructure
+                                    .Model
+                                    .RodentMaterials
+                                    .RodenticideOrBait,
                                 ProductName = "",
                                 ProductDose = "",
                             })

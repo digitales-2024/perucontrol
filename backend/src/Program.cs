@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
-
 using PeruControl.Configuration;
 using PeruControl.Controllers;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 using PeruControl.Utils;
 using Scalar.AspNetCore;
-
-using PeruControl.Infrastructure.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -124,6 +122,7 @@ foreach (var module in modules)
     module.SetupModule(builder.Services, builder.Configuration);
 }
 builder.Services.AddScoped<RodentRegisterService>();
+builder.Services.AddScoped<PeruControl.Controllers.QuotationService>();
 
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();

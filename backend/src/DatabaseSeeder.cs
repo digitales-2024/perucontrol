@@ -345,4 +345,3 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {count} products", defaultEntities.Count);
     }
 }
-

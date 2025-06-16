@@ -145,7 +145,11 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         documentName="Cotización"
                                         startingEmail={quotation.client.email}
                                         startingNumber={quotation.client.phoneNumber}
-                                        pdfLoadAction={async() => GeneratePdf(quotation.id!)}
+                                        pdfLoadAction={async() =>
+                                        {
+                                            const [[data], err] = await GeneratePdf(quotation.id!);
+                                            return [data, err];
+                                        }}
                                         emailSendAction={async(email) => SendQuotationPdfViaMail(quotation.id!, email)}
                                         whatsappSendAction={async(number) => SendQuotationPdfViaWhatsapp(quotation.id!, number)}
                                     />

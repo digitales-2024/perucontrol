@@ -6,7 +6,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 export default async function ProjectDetail()
 {
     // Obtener todas las fichas de operaciones
-    const [data, err] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-table", auth));
+    const [data, err] = await wrapper((auth) => backend.GET("/api/OperationSheet/for-table", auth));
     if (err)
     {
         console.error(`error ${err.message}`);
@@ -14,7 +14,7 @@ export default async function ProjectDetail()
     }
 
     // Get available sheets for creation
-    const [availableSheets, availableSheetsErr] = await wrapper((auth) => backend.GET("/api/ProjectOperationSheet/for-creation", auth));
+    const [availableSheets, availableSheetsErr] = await wrapper((auth) => backend.GET("/api/OperationSheet/for-creation", auth));
     if (availableSheetsErr)
     {
         console.error(`error ${availableSheetsErr.message}`);

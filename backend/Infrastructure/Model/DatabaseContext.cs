@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
 using PeruControl.Infrastructure.Model.Reports;
 using PeruControl.Infrastructure.Model.Whatsapp;
 
@@ -54,7 +53,9 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Infrastructure.Model.Product.SetUp<Product>(builder);
         PeruControl.Infrastructure.Model.Project.SetUp<Project>(builder);
         PeruControl.Infrastructure.Model.ProjectAppointment.SetUp<ProjectAppointment>(builder);
-        PeruControl.Infrastructure.Model.ProjectOperationSheet.SetUp<ProjectOperationSheet>(builder);
+        PeruControl.Infrastructure.Model.ProjectOperationSheet.SetUp<ProjectOperationSheet>(
+            builder
+        );
         PeruControl.Infrastructure.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
         PeruControl.Infrastructure.Model.TreatmentArea.SetUp<TreatmentArea>(builder);
         PeruControl.Infrastructure.Model.TreatmentProduct.SetUp<TreatmentProduct>(builder);

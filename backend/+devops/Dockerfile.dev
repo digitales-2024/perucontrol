@@ -5,10 +5,11 @@ RUN apk add --no-cache \
     fontconfig \
     libreoffice \
     libreoffice-lang-en_us \
-    libreoffice-lang-es
+    libreoffice-lang-es \
+    openjdk11-jre
 
 # Copy fonts
-COPY Fonts /usr/local/share/fonts/
+COPY ./src/Fonts /usr/local/share/fonts/
 # Update font cache
 RUN fc-cache -f -v
 

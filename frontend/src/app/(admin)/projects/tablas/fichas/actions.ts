@@ -13,7 +13,7 @@ export async function GenerateOperationSheetPdf(appointmentId: string): Promise<
 export async function MarkOperationSheetAsStarted(operationSheetId: string):
     Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/ProjectOperationSheet/{operationSheetId}/mark-started", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/OperationSheet/{operationSheetId}/mark-started", {
         ...auth,
         params: {
             path: {

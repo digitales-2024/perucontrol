@@ -516,7 +516,11 @@ public class ProjectController(
         }
 
         // send
-        return File(excelBytes, "application/vnd.ms-excel", "schedule.xlsx");
+        return File(
+            excelBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "schedule.xlsx"
+        );
     }
 
     [EndpointSummary("Generate Schedule PDF")]
@@ -586,7 +590,7 @@ public class ProjectController(
             return NotFound("Error generando excel");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (pdfErr != "")
         {
             return BadRequest(pdfErr);
@@ -728,7 +732,7 @@ public class ProjectController(
             return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, $"Error convirtiendo a PDF: {pdfErr}");

@@ -35,7 +35,7 @@ Para ejecutarlo:
 - Dentro de la carpeta `src` ejecutar (nótese que no hay parametro -d):
 
 ```sh
-docker-compose -f Deployment/docker-compose.local.yml up
+docker compose -f +devops/docker-compose.local.yml up
 ```
 
 - Esto levantará el backend, postgres y pgadmin.
