@@ -115,8 +115,6 @@ public class AppointmentController(
         return Ok(result);
     }
 
-
-
     private (
         ProjectAppointment? appointment,
         Business? business,
@@ -220,8 +218,6 @@ public class AppointmentController(
 
         return (projectAppointment, business, null, fum, inse, ratiz, infec, cis1, cis2);
     }
-
-
 
     [EndpointSummary("Update a certificate")]
     [HttpPatch("{appointmentid}/certificate")]

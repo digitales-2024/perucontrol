@@ -24,6 +24,7 @@ public class OperationSheetController(
 {
     private readonly EmailService _emailService = emailService;
     private readonly WhatsappService _whatsappService = whatsappService;
+
     [EndpointSummary("Partial edit one by id")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
