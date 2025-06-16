@@ -5,7 +5,7 @@ using PeruControl.Infrastructure.Model;
 namespace PeruControl.Controllers;
 
 [Authorize]
-public class ProjectOperationSheetController(
+public class OperationSheetController(
     DatabaseContext db,
     OperationSheetService operationSheetService
 )

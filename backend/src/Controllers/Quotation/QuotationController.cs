@@ -89,6 +89,7 @@ public class QuotationController(
         return entity == null ? NotFound() : Ok(entity);
     }
 
+    [EndpointSummary("Patch a Quotation by ID")]
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -289,7 +290,7 @@ public class QuotationController(
         return File(pdfBytes!, "application/pdf", "quotation.pdf");
     }
 
-    [EndpointSummary("Generate Excel")]
+    [EndpointSummary("Generate Quotation Excel")]
     [HttpGet("{id:guid}/gen-excel")]
     public async Task<IActionResult> GenerateExcel(Guid id)
     {
@@ -304,10 +305,10 @@ public class QuotationController(
     }
 
     [EndpointSummary("Send Quotation PDF via Email")]
-    [HttpPost("{id}/email-pdf")]
+    [HttpPost("{id:guid}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery] [Required] [EmailAddress] string email
+        [FromQuery][Required][EmailAddress] string email
     )
     {
         var (pdfBytes, generationError) = await quotationService.GeneratePdfAsync(id);
@@ -350,7 +351,7 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery] [Required] string phoneNumber
+        [FromQuery][Required] string phoneNumber
     )
     {
         var (pdfBytes, error) = await quotationService.GeneratePdfAsync(id);
@@ -369,6 +370,7 @@ public class QuotationController(
         return Ok();
     }
 
+    [EndpointSummary("Deactivate a Quotation by ID")]
     [HttpDelete("{id}")]
     public override async Task<IActionResult> Delete(Guid id)
     {
@@ -428,7 +430,7 @@ public class QuotationController(
         return Ok(approvedQuotations);
     }
 
-    [EndpointSummary("Export all quotations to CSV with optional date range filtering")]
+    [EndpointSummary("Export all quotations to CSV")]
     [EndpointDescription(
         "Export quotations to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time."
     )]
