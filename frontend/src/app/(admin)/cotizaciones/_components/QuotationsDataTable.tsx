@@ -254,7 +254,7 @@ const downloadExcel = async(id: string) =>
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `cotizacion_${id}.xlsx`;
+    a.download = `cotizacion_${id}.ods`;
     a.click();
     URL.revokeObjectURL(url);
 };

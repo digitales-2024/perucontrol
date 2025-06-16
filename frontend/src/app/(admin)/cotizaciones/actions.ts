@@ -186,7 +186,7 @@ export async function GenerateExcel(id: string): Promise<Result<Blob, FetchError
     try
     {
         const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}/api/Quotation/${id}/gen-excel`, {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt.value}`,
