@@ -299,7 +299,7 @@ public class AppointmentTest
         };
 
         var operationSheetResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/appointment/{appointmentId}/operation-sheet",
+            $"{ApiUrl}/api/OperationSheet/by-appointment/{appointmentId}",
             operationSheetData
         );
         Assert.AreEqual(
@@ -392,7 +392,7 @@ public class AppointmentTest
     )
     {
         var response = await httpClient.GetAsync(
-            $"{ApiUrl}/api/appointment/operation-sheet/by-project/{projectId}"
+            $"{ApiUrl}/api/OperationSheet/by-project/{projectId}"
         );
         if (response.StatusCode == HttpStatusCode.NotFound)
             return null;
