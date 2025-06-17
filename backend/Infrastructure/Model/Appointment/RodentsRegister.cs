@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Infrastructure.Model;
@@ -18,6 +19,9 @@ public class RodentRegister : BaseModel
 
     /// Medidas correctivas
     public string? CorrectiveMeasures { get; set; }
+
+    [Required]
+    public ResourceStatus Status { get; set; } = ResourceStatus.Created;
 }
 
 public class RodentArea : BaseModel

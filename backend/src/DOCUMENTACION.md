@@ -75,7 +75,7 @@ Se establecen en el seeder, archivo `Model/DatabaseSeeder.cs`
 Luego de crear entitades en la carpeta `Model`, crea una migración con
 el comando:
 ```sh
-dotnet ef migrations add NombreDeLaMigracion
+dotnet ef migrations add "MigrationsName" --project Infrastructure/PeruControl.Infrastructure.csproj --startup-project src/PeruControl.csproj
 ```
 
 ## Aplicar Migraciones
