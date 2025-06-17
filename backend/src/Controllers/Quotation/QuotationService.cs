@@ -38,7 +38,7 @@ public class QuotationService(
             return (null, "Estado del sistema invalido, no se encontro la empresa");
         }
 
-        var (odsBytes, odsError) = odsTemplateService.GenerateQuotation(quotation, business);
+        var (odsBytes, odsError) = odsTemplateService.GenerateQuotation(quotation, business, "Templates/cotizacion_plantilla.pdf.ods");
         if (!string.IsNullOrEmpty(odsError))
         {
             return (null, odsError);
@@ -89,7 +89,7 @@ public class QuotationService(
             return (null, "Estado del sistema invalido, no se encontro la empresa");
         }
 
-        var (odsBytes, error) = odsTemplateService.GenerateQuotation(quotation, business);
+        var (odsBytes, error) = odsTemplateService.GenerateQuotation(quotation, business, "Templates/cotizacion_plantilla.excel.ods");
         if (!string.IsNullOrEmpty(error))
         {
             return (null, error);

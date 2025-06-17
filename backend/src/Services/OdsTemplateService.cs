@@ -318,7 +318,7 @@ public class OdsTemplateService
     /// <param name="quotation"></param>
     /// <param name="business"></param>
     /// <returns></returns>
-    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business)
+    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business, string templatePath)
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
         var quotationNumber =
@@ -361,7 +361,6 @@ public class OdsTemplateService
             { "{footer_contact}", quotation.FooterContact ?? "" },
         };
 
-        var templatePath = "Templates/cotizacion_plantilla.ods";
         using var ms = new MemoryStream();
         using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
         {
