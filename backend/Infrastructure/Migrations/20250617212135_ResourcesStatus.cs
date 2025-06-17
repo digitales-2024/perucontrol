@@ -15,26 +15,24 @@ namespace PeruControl.Migrations
                 table: "RodentRegisters",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
 
             migrationBuilder.AddColumn<int>(
                 name: "Status",
                 table: "Certificates",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "RodentRegisters");
+            migrationBuilder.DropColumn(name: "Status", table: "RodentRegisters");
 
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Certificates");
+            migrationBuilder.DropColumn(name: "Status", table: "Certificates");
         }
     }
 }

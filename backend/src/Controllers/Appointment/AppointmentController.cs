@@ -473,7 +473,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateCertificatePdfBytes(id);
@@ -642,7 +642,7 @@ public class AppointmentController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendRodentsPdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (odsBytes, errormsg) = await appointmentService.FillRodentsExcel(id);

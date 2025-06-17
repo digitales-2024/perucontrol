@@ -48,7 +48,7 @@ public class OperationSheetController(
         return NoContent();
     }
 
-    [EndpointSummary("Get Operation Sheets by table")]
+    [EndpointSummary("Get Operation Sheets for table")]
     [EndpointDescription(
         "This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created"
     )]
@@ -371,7 +371,7 @@ public class OperationSheetController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);

@@ -318,7 +318,11 @@ public class OdsTemplateService
     /// <param name="quotation"></param>
     /// <param name="business"></param>
     /// <returns></returns>
-    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business, string templatePath)
+    public (byte[], string?) GenerateQuotation(
+        Quotation quotation,
+        Business business,
+        string templatePath
+    )
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
         var quotationNumber =
