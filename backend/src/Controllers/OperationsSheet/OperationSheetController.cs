@@ -285,9 +285,7 @@ public class OperationSheetController(
     }
 
     [EndpointSummary("Generate Operations Sheet excel")]
-    [HttpPost("{id}/excel")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet("{id}/excel")]
     public IActionResult GenerateOperationsSheetExcel(Guid id)
     {
         var (fileBytes, err) = OperationSheetSpreadsheetTemplate(id);
@@ -304,9 +302,7 @@ public class OperationSheetController(
     }
 
     [EndpointSummary("Generate Operations Sheet pdf")]
-    [HttpPost("{id}/pdf")]
-    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet("{id}/pdf")]
     public ActionResult GenerateOperationsSheetPdf(Guid id)
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
@@ -376,7 +372,7 @@ public class OperationSheetController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);

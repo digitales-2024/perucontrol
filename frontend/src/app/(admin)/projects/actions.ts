@@ -99,12 +99,12 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
 
 export async function GenerateOperationSheetExcel(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/excel`, "POST", "");
+    return DownloadFile(`/api/OperationSheet/${id}/excel`, "GET", null);
 }
 
 export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob, FetchError>>
 {
-    return DownloadFile(`/api/Appointment/${id}/gen-operations-sheet/pdf`, "POST", "");
+    return DownloadFile(`/api/OperationSheet/${id}/pdf`, "GET", null);
 }
 
 export async function SaveProjectOperationSheetData(
@@ -112,11 +112,11 @@ export async function SaveProjectOperationSheetData(
     body: components["schemas"]["OperationSheetPatchDTO"],
 ): Promise<Result<null, FetchError>>
 {
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/OperationSheet/{id}", {
+    const [, error] = await wrapper((auth) => backend.PATCH("/api/OperationSheet/by-appointment/{appointmentid}", {
         ...auth,
         params: {
             path: {
-                id,
+                appointmentid: body.projectAppointmentId!,
             },
         },
         body,

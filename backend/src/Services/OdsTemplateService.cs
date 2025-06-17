@@ -318,7 +318,7 @@ public class OdsTemplateService
     /// <param name="quotation"></param>
     /// <param name="business"></param>
     /// <returns></returns>
-    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business)
+    public (byte[], string?) GenerateQuotation(Quotation quotation, Business business, string templatePath)
     {
         var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
         var quotationNumber =
@@ -354,14 +354,13 @@ public class OdsTemplateService
             { "{{frecuencia_servicio}}", quotation.Frequency.ToSpanishString() },
             { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
             { "{{tiene_igv_2}}", quotation.HasTaxes ? "SI" : "NO" },
-            { "{costo_total}", $"S/. {totalCost.ToString("0.00")}" },
+            { "{costo_total}", $"S/. {totalCost:0.00}" },
             { "{productos_desinsectacion}", quotation.Desinsectant ?? "" },
             { "{productos_desratizacion}", quotation.Derodent ?? "" },
             { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
             { "{footer_contact}", quotation.FooterContact ?? "" },
         };
 
-        var templatePath = "Templates/cotizacion_final.ods";
         using var ms = new MemoryStream();
         using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
         {
