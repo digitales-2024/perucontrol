@@ -135,7 +135,7 @@ export const certificateTableColumns: Array<ColumnDef<GetCertificateForTableOutD
                     onClick={(ev) =>
                     {
                         ev.stopPropagation();
-                        downloadPdf(row.original.appointmentId);
+                        downloadPdf(row.original.certificateId);
                     }}
                 >
                     <Badge variant="pdf">

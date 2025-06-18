@@ -32,6 +32,17 @@ public class CertificateController(CertificateService certificateService) : Cont
         return list;
     }
 
+    [EndpointSummary("Mark a Certificate as 'Started'")]
+    [EndpointDescription(
+        "Marks the selected certificate as 'Started', thus showing it in its table UI"
+    )]
+    [HttpPatch("[controller]/{certificateId:guid}/mark-started")]
+    public async Task<ActionResult> MarkOperationSheetCreated(Guid certificateId)
+    {
+        await certificateService.MarkCertificateCreated(certificateId);
+        return Ok();
+    }
+
     [EndpointSummary("Get all certificates")]
     [HttpGet("[controller]")]
     [ProducesResponseType<IEnumerable<CertificateGet>>(StatusCodes.Status200OK)]

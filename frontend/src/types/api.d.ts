@@ -1291,6 +1291,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Certificate/{certificateId}/mark-started": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark a Certificate as 'Started'
+         * @description Marks the selected certificate as 'Started', thus showing it in its table UI
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/Certificate": {
         parameters: {
             query?: never;

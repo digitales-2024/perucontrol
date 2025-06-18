@@ -71,6 +71,21 @@ public class CertificateService(
             .ToList();
     }
 
+    public async Task MarkCertificateCreated(Guid certificateId)
+    {
+        var certificate = await db.Certificates.FindAsync(certificateId);
+
+        if (certificate is null)
+        {
+            throw new Exception("No encontrado");
+        }
+
+        certificate.Status = ResourceStatus.Started;
+        await db.SaveChangesAsync();
+
+        return;
+    }
+
     public async Task<Result<Certificate>> GetByAppointmentId(Guid appointmentId)
     {
         var appointment = await db.Set<ProjectAppointment>()

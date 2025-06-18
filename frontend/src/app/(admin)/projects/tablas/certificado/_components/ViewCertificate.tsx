@@ -104,7 +104,7 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
         [selectedService],
     );
 
-    async function CreateOperationSheet()
+    async function CreateCertificate()
     {
         if (selectedService === null)
         {
@@ -193,7 +193,7 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
 
                     <div className="text-right">
                         <Button
-                            onClick={CreateOperationSheet}
+                            onClick={CreateCertificate}
                         >
                             <Plus />
                             Crear Certificado
