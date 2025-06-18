@@ -103,8 +103,8 @@ public class CertificateService(
         AppointmentCertificatePatchDTO updateDTO
     )
     {
-        var certificate = await db.Certificates
-            .Include(c => c.ProjectAppointment)
+        var certificate = await db
+            .Certificates.Include(c => c.ProjectAppointment)
             .FirstOrDefaultAsync(cert => cert.Id == certificateId);
 
         if (certificate == null)

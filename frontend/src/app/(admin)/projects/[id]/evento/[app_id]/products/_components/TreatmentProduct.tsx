@@ -33,9 +33,9 @@ export function TreatmentProductForm({
     appointmentId,
     treatmentProducts,
 }: {
-  products: Array<Product>;
-  appointmentId: string;
-  treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
+    products: Array<Product>;
+    appointmentId: string;
+    treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
 })
 {
     const [productSolventsOptionsMap, setProductSolventsOptionsMap] = useState<Record<number, Array<Option>>>({});
@@ -84,7 +84,6 @@ export function TreatmentProductForm({
                     equipmentUsed: tp.equipmentUsed,
                     appliedTechnique: tp.appliedTechnique,
                     appliedService: tp.appliedService,
-                    appliedTime: tp.appliedTime,
                 }))
                 : [{
                     id: null,
@@ -93,7 +92,6 @@ export function TreatmentProductForm({
                     equipmentUsed: null,
                     appliedTechnique: null,
                     appliedService: null,
-                    appliedTime: null,
                 }],
         },
     });
@@ -185,7 +183,6 @@ export function TreatmentProductForm({
                                             equipmentUsed: null,
                                             appliedTechnique: null,
                                             appliedService: null,
-                                            appliedTime: null,
                                         })
                                         }
                                     >
@@ -322,23 +319,6 @@ export function TreatmentProductForm({
                                             </FormItem>
                                         )}
                                     />
-
-                                    {/* Tiempo Aplicado */}
-                                    <FormField
-                                        name={`products.${idx}.appliedTime`}
-                                        control={form.control}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Tiempo Aplicado
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder="14:40" value={field.value ?? ""} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                 </div>
                             </Card>
                         ))}
@@ -356,7 +336,6 @@ export function TreatmentProductForm({
                                     equipmentUsed: null,
                                     appliedTechnique: null,
                                     appliedService: null,
-                                    appliedTime: null,
                                 })
                                 }
                             >

@@ -7354,7 +7354,6 @@ export interface components {
             equipmentUsed?: string | null;
             appliedTechnique?: string | null;
             appliedService?: string | null;
-            appliedTime?: string | null;
         };
         TreatmentProductInDTO: {
             /** Format: uuid */
@@ -7366,7 +7365,6 @@ export interface components {
             equipmentUsed?: string | null;
             appliedTechnique?: string | null;
             appliedService?: string | null;
-            appliedTime?: string | null;
         };
         UpdateAppointmentTimesDto: {
             /** Format: time */
