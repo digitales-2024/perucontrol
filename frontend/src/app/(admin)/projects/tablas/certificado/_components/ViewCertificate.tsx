@@ -1,20 +1,42 @@
 "use client";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { OperationSheetTable } from "@/components/data-table/OperationSheetDataTable";
 import { components } from "@/types/api";
-import { type ColumnDef } from "@tanstack/react-table";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateCertificatePDF, GenerateCertificateWord } from "../../../actions";
+import { certificateTableColumns } from "./CertificateColumns";
+import { useMemo, useState } from "react";
+import { format, parseISO } from "date-fns";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
+import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { es } from "date-fns/locale";
+import { MarkCertificateAsStarted } from "../actions";
+import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
+import { SendCertificatePDFViaEmail, GenerateCertificatePDF, SendCertificatePDFViaWhatsapp } from "../../../[id]/evento/[app_id]/certificado/actions";
 
-export type CertificateProp = components["schemas"]["CertificateGet"]
+export type GetCertificateForTableOutDto = components["schemas"]["GetCertificateForTableOutDto"]
+type GetCertificateForCreationOutDtoSingle = components["schemas"]["GetCertificateForCreationOutDto"]
+type GetCertificateForTableOutDtoSingle = components["schemas"]["GetCertificateForCreationOutDto"]["availableCerts"][number]
 
 export interface CertificateListProps {
-    columns: Array<ColumnDef<CertificateProp, unknown>>;
-    data: Array<CertificateProp>
+    data: Array<GetCertificateForTableOutDto>
+    availableForCreation: Array<GetCertificateForCreationOutDtoSingle>
 }
 
-export default function CertificationList({ columns, data }: CertificateListProps)
+export default function CertificationList({ data, availableForCreation }: CertificateListProps)
 {
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+    const [certificateId, setCertificateId] = useState<string | null>(null);
+
     // Status options for filtering
     const statusOptions = [
         { value: "todos", label: "Todos", count: data.length },
@@ -22,8 +44,19 @@ export default function CertificationList({ columns, data }: CertificateListProp
 
     return (
         <div className="space-y-4">
+            <DocumentSenderDialog
+                open={detailsDialogOpen}
+                setOpen={setDetailsDialogOpen}
+                documentName="Certificado"
+                startingEmail=""
+                startingNumber=""
+                pdfLoadAction={async() => GenerateCertificatePDF(certificateId ?? "")}
+                emailSendAction={async(email) => SendCertificatePDFViaEmail(certificateId ?? "", email)}
+                whatsappSendAction={async(number) => SendCertificatePDFViaWhatsapp(certificateId ?? "", number)}
+            />
+
             <OperationSheetTable
-                columns={columns}
+                columns={certificateTableColumns}
                 data={data}
                 statusOptions={statusOptions}
                 statusField="statusType"
@@ -32,49 +65,142 @@ export default function CertificationList({ columns, data }: CertificateListProp
                     field: "operationDate",
                     format: "yyyy-MM-dd",
                 }}
+                onRowClick={(record) =>
+                {
+                    setCertificateId(record.certificateId);
+                    setDetailsDialogOpen(true);
+                }}
                 emptyMessage="No se encontraron certificados"
+                toolbarActions={<CertificateTableActions availableForCreation={availableForCreation} />}
             />
         </div>
     );
 }
 
-// TODO: not used... yet
-export const downloadPdf = async(id: string) =>
+function CertificateTableActions({ availableForCreation }: { availableForCreation: Array<GetCertificateForCreationOutDtoSingle> })
 {
-    const [blob, err] = await toastWrapper(GenerateCertificatePDF(id), {
-        loading: "Generando archivo",
-        success: "Excel generado",
-    });
+    const [selectedService, setSelectedService] = useState<GetCertificateForCreationOutDtoSingle | null>(null);
+    const [selectedAppointment, setSelectedAppointment] = useState<GetCertificateForTableOutDtoSingle | null>(null);
+    const [errorMsg, setErrorMsg] = useState("");
 
-    if (err)
+    const serviceOptions: Array<Option> = useMemo(
+        () => availableForCreation.map((available) => ({
+            value: available.serviceId,
+            label: `#${available.serviceNumber} - ${available.clientName}`,
+        })),
+        [availableForCreation],
+    );
+
+    const appointmentOptions: Array<Option> = useMemo(
+        () =>
+        {
+            if (selectedService === null) return [];
+
+            return selectedService.availableCerts.map((available) => ({
+                value: available.appoinmentId,
+                label: `Fecha: ${format(parseISO(available.dueDate), "dd 'de' MMMM  'de' yyyy", { locale: es })}`,
+            }));
+        },
+        [selectedService],
+    );
+
+    async function CreateCertificate()
     {
-        return;
+        if (selectedService === null)
+        {
+            setErrorMsg("Error: Selecciona un servicio");
+            return;
+        }
+        if (selectedAppointment === null)
+        {
+            setErrorMsg("Error: Selecciona una fecha");
+            return;
+        }
+        setErrorMsg("");
+
+        const [, error] = await toastWrapper(MarkCertificateAsStarted(selectedAppointment.certificateId), {
+            loading: "Creando Certificado",
+            success: "Certificado creado",
+        });
+
+        if (!!error)
+        {
+            return;
+        }
+
+        redirect(`/projects/${selectedService.serviceId}/evento/${selectedAppointment.appoinmentId}/certificado`);
     }
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `cotizacion_${id}.pdf`;
-    a.click();
-    URL.revokeObjectURL(url);
-};
+    return (
+        <div>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus />
+                        Nuevo Certificado
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Nuevo Certificado
+                        </DialogTitle>
+                        <DialogDescription>
+                            Selecciona un servicio y una fecha
+                        </DialogDescription>
+                    </DialogHeader>
 
-export const downloadWord = async(id: string) =>
-{
-    const [blob, err] = await toastWrapper(GenerateCertificateWord(id), {
-        loading: "Generando archivo",
-        success: "Word generado",
-    });
+                    <div>
+                        <label htmlFor="">
+                            Servicio:
+                        </label>
+                        <AutoComplete
+                            options={serviceOptions}
+                            placeholder="Selecciona un servicio"
+                            emptyMessage="No se encontraron servicios con certificados pendientes"
+                            value={
+                                serviceOptions.find((option) => option.value === selectedService?.serviceId) ?? undefined
+                            }
+                            onValueChange={(option) =>
+                            {
+                                setSelectedService(availableForCreation.find((opt) => opt.serviceId === option.value) ?? null);
+                                setSelectedAppointment(null);
+                            }}
+                        />
+                    </div>
 
-    if (err)
-    {
-        return;
-    }
+                    <div>
+                        <label htmlFor="">
+                            Fecha:
+                        </label>
+                        <AutoComplete
+                            options={appointmentOptions}
+                            placeholder="Selecciona una fecha"
+                            emptyMessage="No se encontraron fechas pendientes"
+                            value={
+                                appointmentOptions.find((option) => option.value === selectedAppointment?.appoinmentId) ?? undefined
+                            }
+                            onValueChange={(option) =>
+                            {
+                                setSelectedAppointment(selectedService?.availableCerts?.find((appt) => appt.appoinmentId === option.value) ?? null);
+                            }}
+                        />
+                    </div>
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `cotizacion_${id}.docx`;
-    a.click();
-    URL.revokeObjectURL(url);
-};
+                    <p className="text-red-400">
+                        {errorMsg}
+                    </p>
+
+                    <div className="text-right">
+                        <Button
+                            onClick={CreateCertificate}
+                        >
+                            <Plus />
+                            Crear Certificado
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}

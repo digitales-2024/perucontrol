@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers;
 using PeruControl.Infrastructure.Model;
-using PeruControl.Infrastructure.Model.Reports;
 
 namespace Tests.E2E.Api;
 
@@ -356,16 +355,6 @@ public class AppointmentTest
         {
             ExpirationDate = DateTime.UtcNow.AddMonths(6),
         };
-
-        var certificateResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/appointment/{appointmentId}/certificate",
-            certificateData
-        );
-        Assert.AreEqual(
-            HttpStatusCode.OK,
-            certificateResponse.StatusCode,
-            "Certificate should be updated"
-        );
     }
 
     private async Task<AppointmentGetOutDTO> GetAppointmentData(

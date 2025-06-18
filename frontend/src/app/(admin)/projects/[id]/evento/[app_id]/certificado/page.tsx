@@ -1,8 +1,8 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
 import { CertificateForm } from "./_CertificateForm";
-import { GetCertificateOfAppointmentById } from "@/app/(admin)/projects/actions";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { GetCertificateOfAppointmentById } from "./actions";
 
 interface Props {
     params: Promise<{
@@ -23,6 +23,12 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
+    if (projectError)
+    {
+        console.error("Error getting project:", projectError);
+        return null;
+    }
+
     const [appointmentCrumb, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
         ...auth,
         params: {
@@ -31,10 +37,9 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
-
-    if (projectError || appointmentError)
+    if (appointmentError)
     {
-        console.error("Error getting project:", projectError);
+        console.error("Error getting appointment:", appointmentError);
         return null;
     }
 

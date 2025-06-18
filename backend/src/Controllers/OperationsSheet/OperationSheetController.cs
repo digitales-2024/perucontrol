@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
-using PeruControl.Utils;
 
 namespace PeruControl.Controllers;
 
@@ -42,14 +41,14 @@ public class OperationSheetController(
         }
 
         patchDTO.ApplyPatch(entity);
-        if (entity.Status == OperationSheetStatus.Created)
-            entity.Status = OperationSheetStatus.Started;
+        if (entity.Status == ResourceStatus.Created)
+            entity.Status = ResourceStatus.Started;
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    [EndpointSummary("Get Operation Sheets by table")]
+    [EndpointSummary("Get Operation Sheets for table")]
     [EndpointDescription(
         "This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created"
     )]
@@ -109,8 +108,8 @@ public class OperationSheetController(
         {
             operationSheet.ProjectAppointment.LeaveTime = updateDTO.LeaveTime;
         }
-        if (operationSheet.Status == OperationSheetStatus.Created)
-            operationSheet.Status = OperationSheetStatus.Started;
+        if (operationSheet.Status == ResourceStatus.Created)
+            operationSheet.Status = ResourceStatus.Started;
 
         // Aplicar los cambios al objeto existente
         updateDTO.ApplyPatch(operationSheet);
@@ -372,7 +371,7 @@ public class OperationSheetController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);

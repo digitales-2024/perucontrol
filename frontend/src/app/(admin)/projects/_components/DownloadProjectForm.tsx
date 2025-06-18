@@ -245,11 +245,6 @@ export function DownloadProjectForm({
                                             Información General
                                         </OperationsCardHeader>
                                         <Separator />
-                                        {/*
-                                            FIXME: place enter/leave time here as well. have it brought from the backend.
-                                            When the form is saved,.the backend endpoint should receive those times as well,
-                                            and update the parent apppointment.
-                                        */}
                                         <CardContent className="pt-4">
                                             <div className="grid grid-cols-1 gap-6">
                                                 <FormField

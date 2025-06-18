@@ -209,7 +209,7 @@ public class GetOperationSheetsForTableOutDto
     public required string ClientName { get; set; }
     public DateTime? ActualDate { get; set; } = null;
     public required string EnterLeaveTime { get; set; }
-    public required OperationSheetStatus Status { get; set; }
+    public required ResourceStatus Status { get; set; }
 }
 
 public class GetOperationSheetsForCreationOutDto
@@ -224,6 +224,6 @@ public class GetOperationSheetsForCreationOutDto
         public required Guid AppoinmentId { get; set; }
         public required Guid OperationSheetId { get; set; }
         public required DateTime DueDate { get; set; }
-        public required OperationSheetStatus Status { get; set; }
+        public required ResourceStatus Status { get; set; }
     }
 }
