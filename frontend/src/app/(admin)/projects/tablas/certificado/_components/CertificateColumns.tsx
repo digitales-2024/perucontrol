@@ -11,12 +11,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { components } from "@/types/api";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Calendar1, CircleUserRound, Clock1, Ellipsis, FileText, Hash, Minus, Pencil } from "lucide-react";
+import { Calendar1, CircleUserRound, Ellipsis, Hash, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toastWrapper } from "@/types/toasts";
-import { GenerateCertificatePDF } from "../../../actions";
+import { GenerateCertificatePDF } from "../../../[id]/evento/[app_id]/certificado/actions";
 
 export type GetCertificateForTableOutDto = components["schemas"]["GetCertificateForTableOutDto"]
 

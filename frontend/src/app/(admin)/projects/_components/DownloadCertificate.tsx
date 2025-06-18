@@ -26,9 +26,9 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
-import { GenerateCertificateWord, GenerateCertificatePDF, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 import { useState } from "react";
+import { GenerateCertificatePDF, GenerateCertificateWord, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../[id]/evento/[app_id]/certificado/actions";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -91,7 +91,7 @@ export function DownloadCertificateForm({
             };
 
             const [, error] = await toastWrapper(
-                SaveCertificateData(appointment.id!, body),
+                SaveCertificateData(certificate.id!, body),
                 {
                     loading: "Guardando datos...",
                     success: "Datos guardados correctamente",
@@ -115,7 +115,7 @@ export function DownloadCertificateForm({
 
     const downloadPDF = async() =>
     {
-        const [blob, err] = await toastWrapper(GenerateCertificatePDF(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateCertificatePDF(certificate.id!), {
             loading: "Generando archivo",
             success: "PDF generado",
             error: (e) => `Error al generar el PDF: ${e.message}`,
@@ -139,7 +139,7 @@ export function DownloadCertificateForm({
     const downloadWord = async() =>
     {
         // Genera el Word
-        const [blob, err] = await toastWrapper(GenerateCertificateWord(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateCertificateWord(certificate.id!), {
             loading: "Generando archivo",
             success: "Word generado",
             error: (e) => `Error al generar el Word: ${e.message}`,
@@ -539,9 +539,9 @@ export function DownloadCertificateForm({
                             documentName="Certificado"
                             startingEmail={project.client?.email ?? ""}
                             startingNumber={project.client.phoneNumber}
-                            pdfLoadAction={async() => GenerateCertificatePDF(appointment.id!)}
-                            emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)}
-                            whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)}
+                            pdfLoadAction={async() => GenerateCertificatePDF(certificate.id!)}
+                            emailSendAction={async(d) => SendCertificatePDFViaEmail(certificate.id!, d)}
+                            whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(certificate.id!, d)}
                         />
                     </div>
 

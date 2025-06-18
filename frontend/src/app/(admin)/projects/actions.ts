@@ -298,33 +298,6 @@ export async function DesactivateAppointment(
     return ok(null);
 }
 
-export async function SaveCertificateData(
-    id: string,
-    body: components["schemas"]["Certificate"],
-): Promise<Result<null, FetchError>>
-{
-    const [, error] = await wrapper((auth) => backend.PATCH("/api/Appointment/{appointmentid}/certificate", {
-        ...auth,
-        params: {
-            path: {
-                appointmentid: id,
-            },
-        },
-        body,
-    }));
-
-    if (error)
-    {
-        return err(error);
-    }
-    return ok(null);
-}
-
-export async function GenerateCertificatePDF(id: string): Promise<Result<Blob, FetchError>>
-{
-    return DownloadFile(`/api/Appointment/${id}/certificate/pdf`, "POST", "");
-}
-
 export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/rodents/pdf`, "POST", "");
@@ -333,30 +306,6 @@ export async function GenerateRodentsPDF(id: string): Promise<Result<Blob, Fetch
 export async function GenerateRodentExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Appointment/${id}/rodents/excel`, "POST", "");
-}
-
-export async function GetCertificateOfAppointmentById(id: string): Promise<Result<components["schemas"]["Certificate"], FetchError>>
-{
-    const [data, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/certificate", {
-        ...auth,
-        params: {
-            path: {
-                appointmentid: id,
-            },
-        },
-    }));
-
-    if (error)
-    {
-        console.log("Error fetching certificate client:", error);
-        return err(error);
-    }
-    return ok(data);
-}
-
-export async function GenerateCertificateWord(id: string): Promise<Result<Blob, FetchError>>
-{
-    return DownloadFile(`/api/Appointment/${id}/certificate/word`, "POST", "");
 }
 
 export async function SaveRodentData(
@@ -562,50 +511,6 @@ export async function SendRodentPDFViaWhatsapp(appointmentId: string, phoneNumbe
     if (error)
     {
         console.error("Error sending rodent PDF via WhatsApp:", error);
-        return err(error);
-    }
-    return ok(null);
-}
-
-export async function SendCertificatePDFViaEmail(appointmentId: string, email: string): Promise<Result<null, FetchError>>
-{
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/certificate/email-pdf", {
-        ...auth,
-        params: {
-            path: {
-                id: appointmentId,
-            },
-            query: {
-                email,
-            },
-        },
-    }));
-
-    if (error)
-    {
-        console.error("Error sending certificate PDF via email:", error);
-        return err(error);
-    }
-    return ok(null);
-}
-
-export async function SendCertificatePDFViaWhatsapp(appointmentId: string, phoneNumber: string): Promise<Result<null, FetchError>>
-{
-    const [, error] = await wrapper((auth) => backend.POST("/api/Appointment/{id}/certificate/whatsapp-pdf", {
-        ...auth,
-        params: {
-            path: {
-                id: appointmentId,
-            },
-            query: {
-                phoneNumber,
-            },
-        },
-    }));
-
-    if (error)
-    {
-        console.error("Error sending certificate PDF via WhatsApp:", error);
         return err(error);
     }
     return ok(null);

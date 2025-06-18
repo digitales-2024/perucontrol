@@ -19,6 +19,9 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { es } from "date-fns/locale";
+import { MarkCertificateAsStarted } from "../actions";
+import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
+import { SendCertificatePDFViaEmail, GenerateCertificatePDF, SendCertificatePDFViaWhatsapp } from "../../../[id]/evento/[app_id]/certificado/actions";
 
 export type GetCertificateForTableOutDto = components["schemas"]["GetCertificateForTableOutDto"]
 type GetCertificateForCreationOutDtoSingle = components["schemas"]["GetCertificateForCreationOutDto"]
@@ -31,6 +34,9 @@ export interface CertificateListProps {
 
 export default function CertificationList({ data, availableForCreation }: CertificateListProps)
 {
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+    const [certificateId, setCertificateId] = useState<string | null>(null);
+
     // Status options for filtering
     const statusOptions = [
         { value: "todos", label: "Todos", count: data.length },
@@ -38,6 +44,17 @@ export default function CertificationList({ data, availableForCreation }: Certif
 
     return (
         <div className="space-y-4">
+            <DocumentSenderDialog
+                open={detailsDialogOpen}
+                setOpen={setDetailsDialogOpen}
+                documentName="Certificado"
+                startingEmail=""
+                startingNumber=""
+                pdfLoadAction={async() => GenerateCertificatePDF(certificateId ?? "")}
+                emailSendAction={async(email) => SendCertificatePDFViaEmail(certificateId ?? "", email)}
+                whatsappSendAction={async(number) => SendCertificatePDFViaWhatsapp(certificateId ?? "", number)}
+            />
+
             <OperationSheetTable
                 columns={certificateTableColumns}
                 data={data}
@@ -47,6 +64,11 @@ export default function CertificationList({ data, availableForCreation }: Certif
                 dateRangeField={{
                     field: "operationDate",
                     format: "yyyy-MM-dd",
+                }}
+                onRowClick={(record) =>
+                {
+                    setCertificateId(record.certificateId);
+                    setDetailsDialogOpen(true);
                 }}
                 emptyMessage="No se encontraron certificados"
                 toolbarActions={<CertificateTableActions availableForCreation={availableForCreation} />}
@@ -96,9 +118,9 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
         }
         setErrorMsg("");
 
-        const [, error] = await toastWrapper(MarkOperationSheetAsStarted(selectedAppointment.certificateId), {
-            loading: "Creando Ficha de Operaciones",
-            success: "Ficha de Operaciones creada",
+        const [, error] = await toastWrapper(MarkCertificateAsStarted(selectedAppointment.certificateId), {
+            loading: "Creando Certificado",
+            success: "Certificado creado",
         });
 
         if (!!error)
@@ -106,7 +128,7 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
             return;
         }
 
-        redirect(`/projects/${selectedService.serviceId}/evento/${selectedAppointment.appoinmentId}/ficha`);
+        redirect(`/projects/${selectedService.serviceId}/evento/${selectedAppointment.appoinmentId}/certificado`);
     }
 
     return (
@@ -115,13 +137,13 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
                 <DialogTrigger asChild>
                     <Button>
                         <Plus />
-                        Nueva ficha
+                        Nuevo Certificado
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            Nueva Ficha de Operaciones
+                            Nuevo Certificado
                         </DialogTitle>
                         <DialogDescription>
                             Selecciona un servicio y una fecha
@@ -135,7 +157,7 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
                         <AutoComplete
                             options={serviceOptions}
                             placeholder="Selecciona un servicio"
-                            emptyMessage="No se encontraron servicios con fichas pendientes"
+                            emptyMessage="No se encontraron servicios con certificados pendientes"
                             value={
                                 serviceOptions.find((option) => option.value === selectedService?.serviceId) ?? undefined
                             }
@@ -174,7 +196,7 @@ function CertificateTableActions({ availableForCreation }: { availableForCreatio
                             onClick={CreateOperationSheet}
                         >
                             <Plus />
-                            Crear Ficha de Operaciones
+                            Crear Certificado
                         </Button>
                     </div>
                 </DialogContent>

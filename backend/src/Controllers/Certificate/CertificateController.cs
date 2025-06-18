@@ -157,7 +157,7 @@ public class CertificateController(CertificateService certificateService) : Cont
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendCertificatePdfViaWhatsapp(
         Guid certificateId,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var result = await certificateService.SendCertificatePdfViaWhatsapp(
