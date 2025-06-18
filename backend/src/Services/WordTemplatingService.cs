@@ -317,6 +317,7 @@ public class WordTemplateService
             { "{client_address}", appointment.Project.Address },
             { "{client_supervisor}", appointment.CompanyRepresentative ?? "" },
             { "{service_date}", appointment.DueDate.ToString("dd/MM/yyyy") },
+                    { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
         };
         foreach (var text in body.Descendants<Text>())
         {
@@ -329,6 +330,8 @@ public class WordTemplateService
             }
         }
 
+        var service_hour_str = (appointment.EnterTime?.ToString("hh:mm tt") ?? "") + " - " +
+            (appointment.LeaveTime?.ToString("hh:mm tt") ?? "");
         var dataForTable1 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
@@ -338,8 +341,7 @@ public class WordTemplateService
                 // No explicit order mentioned for table 1, process as is or add .OrderBy if needed.
                 .Select(tp => new Dictionary<string, string>
                 {
-                    { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
-                    { "{service_hour}", appointment.EnterTime?.ToString("hh:mm tt") ?? "-" },
+                    { "{service_hour}", service_hour_str },
                     {
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
@@ -505,6 +507,8 @@ public class WordTemplateService
             }
         }
 
+        var service_hour_str = (appointment.EnterTime?.ToString("hh:mm tt") ?? "") + " - " +
+            (appointment.LeaveTime?.ToString("hh:mm tt") ?? "");
         var dataForTable1 = new List<Dictionary<string, string>>();
         if (appointment.TreatmentProducts != null && appointment.TreatmentProducts.Any())
         {
@@ -515,7 +519,7 @@ public class WordTemplateService
                 .Select(tp => new Dictionary<string, string>
                 {
                     { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
-                    { "{service_hour}", appointment.EnterTime?.ToString("hh:mm tt") ?? "-" },
+                    { "{service_hour}", service_hour_str },
                     {
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
