@@ -88,9 +88,9 @@ public class CertificateService(
         AppointmentCertificatePatchDTO updateDTO
     )
     {
-        var certificate = await db.Set<Certificate>()
+        var certificate = await db.Certificates
             .Include(c => c.ProjectAppointment)
-            .FirstOrDefaultAsync(c => c.Id == certificateId);
+            .FirstOrDefaultAsync(cert => cert.Id == certificateId);
 
         if (certificate == null)
         {
@@ -177,19 +177,6 @@ public class CertificateService(
                 projectAppointment,
                 business,
                 "La fecha de vencimiento no está establecida.",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            );
-
-        if (projectAppointment.ActualDate is null)
-            return (
-                projectAppointment,
-                business,
-                "Este servicio no ha sido terminado.",
                 "",
                 "",
                 "",

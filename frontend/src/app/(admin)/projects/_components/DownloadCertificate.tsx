@@ -170,7 +170,7 @@ export function DownloadCertificateForm({
             expirationDate,
         };
         const [result, error] = await toastWrapper(
-            SaveCertificateData(appointment.id!, body),
+            SaveCertificateData(certificate.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",

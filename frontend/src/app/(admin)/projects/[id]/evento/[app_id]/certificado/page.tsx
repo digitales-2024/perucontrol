@@ -23,6 +23,12 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
+    if (projectError)
+    {
+        console.error("Error getting project:", projectError);
+        return null;
+    }
+
     const [appointmentCrumb, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
         ...auth,
         params: {
@@ -31,10 +37,9 @@ export default async function ProjectsPage({ params }: Props)
             },
         },
     }));
-
-    if (projectError || appointmentError)
+    if (appointmentError)
     {
-        console.error("Error getting project:", projectError);
+        console.error("Error getting appointment:", appointmentError);
         return null;
     }
 

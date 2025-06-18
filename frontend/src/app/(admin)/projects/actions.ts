@@ -108,7 +108,7 @@ export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob
 }
 
 export async function SaveProjectOperationSheetData(
-    id: string,
+    appointmentid: string,
     body: components["schemas"]["OperationSheetPatchDTO"],
 ): Promise<Result<null, FetchError>>
 {
@@ -116,7 +116,7 @@ export async function SaveProjectOperationSheetData(
         ...auth,
         params: {
             path: {
-                appointmentid: body.projectAppointmentId!,
+                appointmentid,
             },
         },
         body,

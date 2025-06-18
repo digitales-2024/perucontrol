@@ -159,7 +159,7 @@ export const certificateTableColumns: Array<ColumnDef<GetCertificateForTableOutD
                         align="end" className="w-40"
                         onClick={(ev) => ev.stopPropagation()}
                     >
-                        <Link href={`/projects/${row.original.projectId}/evento/${row.original.appointmentId}/ficha`}>
+                        <Link href={`/projects/${row.original.projectId}/evento/${row.original.appointmentId}/certificado`}>
                             <DropdownMenuItem >
                                 Editar
                                 <DropdownMenuShortcut>
