@@ -14,7 +14,6 @@ public class TreatmentProduct : BaseModel
 
     // "Desinsectacion", "Desinfeccion", etc. To be used in the first table
     public string? AppliedService { get; set; }
-    public string? AppliedTime { get; set; }
 
     //
     // Relationships

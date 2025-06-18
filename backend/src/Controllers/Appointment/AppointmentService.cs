@@ -393,7 +393,6 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                     EquipmentUsed = treatmentProduct.EquipmentUsed,
                     AppliedTechnique = treatmentProduct.AppliedTechnique,
                     AppliedService = treatmentProduct.AppliedService,
-                    AppliedTime = treatmentProduct.AppliedTime,
                 };
                 db.Add(newTreatmentProduct);
             }

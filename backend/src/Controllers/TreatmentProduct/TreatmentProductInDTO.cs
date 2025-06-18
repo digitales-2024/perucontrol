@@ -8,5 +8,4 @@ public class TreatmentProductInDTO
     public string? EquipmentUsed { get; init; }
     public string? AppliedTechnique { get; init; }
     public string? AppliedService { get; init; }
-    public string? AppliedTime { get; init; }
 }

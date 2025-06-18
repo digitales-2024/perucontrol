@@ -339,7 +339,7 @@ public class WordTemplateService
                 .Select(tp => new Dictionary<string, string>
                 {
                     { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
-                    { "{service_hour}", tp.AppliedTime ?? "-" },
+                    { "{service_hour}", appointment.EnterTime?.ToString("hh:mm tt") ?? "-" },
                     {
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
@@ -515,7 +515,7 @@ public class WordTemplateService
                 .Select(tp => new Dictionary<string, string>
                 {
                     { "{service_date_table}", appointment.DueDate.ToString("dd/MM/yyyy") },
-                    { "{service_hour}", tp.AppliedTime ?? "-" },
+                    { "{service_hour}", appointment.EnterTime?.ToString("hh:mm tt") ?? "-" },
                     {
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"

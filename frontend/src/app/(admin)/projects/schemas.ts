@@ -200,7 +200,6 @@ export const TreatmentProductSchema = z.object({
             equipmentUsed: z.string().nullable(),
             appliedTechnique: z.string().nullable(),
             appliedService: z.string().nullable(),
-            appliedTime: z.string().nullable(),
         }))
         .min(1, "Debe haber al menos un producto"),
 });
