@@ -30,7 +30,7 @@ public class UpdateClientInformationUseCase
             if (clientResult.IsFailure)
                 return Result.Failure<Unit>(clientResult.Error);
 
-            var client = clientResult.Value;
+            var client = clientResult.Value!;
 
             // Update basic client information
             if (!string.IsNullOrWhiteSpace(request.Name))

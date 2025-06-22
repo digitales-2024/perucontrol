@@ -1,5 +1,4 @@
 using PeruControl.Domain.Common;
-using PeruControl.Domain.Entities;
 using PeruControl.Domain.Repositories;
 
 namespace PeruControl.Application.UseCases.Clients.GetAllActiveClients;

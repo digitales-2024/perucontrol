@@ -11,10 +11,15 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         // Register Use Cases
+
+        //
+        // Client use cases
+        //
         services.AddScoped<GetAllActiveClientsUseCase>();
         services.AddScoped<GetClientByIdUseCase>();
         services.AddScoped<CreateClientUseCase>();
         services.AddScoped<UpdateClientInformationUseCase>();
+        services.AddScoped<DeactivateCLientUseCase>();
 
         return services;
     }

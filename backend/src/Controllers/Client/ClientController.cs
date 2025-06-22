@@ -9,18 +9,19 @@ namespace PeruControl.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/clients")]
+[Route("api/[Controller]")]
 public class ClientController(
     GetAllActiveClientsUseCase _getAllActiveClientsUseCase,
     GetClientByIdUseCase _getClientByIdUseCase,
     CreateClientUseCase _createClientUseCase,
-    UpdateClientInformationUseCase _updateClientInformationUseCase
+    UpdateClientInformationUseCase _updateClientInformationUseCase,
+    DeactivateCLientUseCase deactivateCLientUseCase
 ) : ControllerBase
 {
     /// <summary>
     /// Get all active clients using Clean Architecture Use Case pattern
     /// </summary>
-    [HttpGet("active")]
+    [HttpGet]
     [EndpointSummary("Get all active clients")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<GetAllActiveClientsResponse>> GetAllActiveClients(
@@ -70,7 +71,7 @@ public class ClientController(
 
         return CreatedAtAction(
             nameof(GetClientById),
-            new { id = result.Value.ClientId },
+            new { id = result.Value!.ClientId },
             result.Value
         );
     }
@@ -100,6 +101,17 @@ public class ClientController(
         }
 
         return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [EndpointSummary("Deactivate a client")]
+    public async Task<IActionResult> Delete(Guid id,
+        CancellationToken cancellationToken
+            )
+    {
+        var result = await deactivateCLientUseCase.ExecuteAsync(id, cancellationToken);
+        if (result.IsSuccess) return Ok();
+        else return BadRequest(result.Error!);
     }
 }
 
