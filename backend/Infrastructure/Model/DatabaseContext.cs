@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PeruControl.Infrastructure.Configurations;
 using PeruControl.Infrastructure.Model.Reports;
 using PeruControl.Infrastructure.Model.Whatsapp;
 
@@ -33,32 +34,40 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<TreatmentProduct> TreatmentProducts { get; set; }
     public required DbSet<WhatsappTemp> WhatsappTemps { get; set; }
 
+    // New Domain entities
+    public required DbSet<Domain.Entities.Client> DomainClients { get; set; }
+    public required DbSet<Domain.Entities.ClientLocation> DomainClientLocations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        PeruControl.Infrastructure.Model.Business.SetUp<Business>(builder);
-        PeruControl.Infrastructure.Model.Client.SetUp<Client>(builder);
-        PeruControl.Infrastructure.Model.Certificate.SetUp<Certificate>(builder);
-        PeruControl.Infrastructure.Model.ClientLocation.SetUp<ClientLocation>(builder);
-        PeruControl.Infrastructure.Model.Reports.CompleteReport.SetUp<CompleteReport>(builder);
-        PeruControl.Infrastructure.Model.Reports.Report1.SetUp<Report1>(builder);
-        PeruControl.Infrastructure.Model.Reports.Report2.SetUp<Report2>(builder);
-        PeruControl.Infrastructure.Model.Reports.Report3.SetUp<Report3>(builder);
-        PeruControl.Infrastructure.Model.Reports.Report4.SetUp<Report4>(builder);
-        PeruControl.Infrastructure.Model.Quotation.SetUp<Quotation>(builder);
-        PeruControl.Infrastructure.Model.QuotationService.SetUp<QuotationService>(builder);
-        PeruControl.Infrastructure.Model.RodentRegister.SetUp<RodentRegister>(builder);
-        PeruControl.Infrastructure.Model.RodentArea.SetUp<RodentArea>(builder);
-        PeruControl.Infrastructure.Model.Service.SetUp<Service>(builder);
-        PeruControl.Infrastructure.Model.Product.SetUp<Product>(builder);
-        PeruControl.Infrastructure.Model.Project.SetUp<Project>(builder);
-        PeruControl.Infrastructure.Model.ProjectAppointment.SetUp<ProjectAppointment>(builder);
-        PeruControl.Infrastructure.Model.ProjectOperationSheet.SetUp<ProjectOperationSheet>(
-            builder
-        );
-        PeruControl.Infrastructure.Model.TermsAndConditions.SetUp<TermsAndConditions>(builder);
-        PeruControl.Infrastructure.Model.TreatmentArea.SetUp<TreatmentArea>(builder);
-        PeruControl.Infrastructure.Model.TreatmentProduct.SetUp<TreatmentProduct>(builder);
+
+        // Old Infrastructure model configurations
+        BaseModel.SetUp<Business>(builder);
+        BaseModel.SetUp<Client>(builder);
+        BaseModel.SetUp<Certificate>(builder);
+        BaseModel.SetUp<ClientLocation>(builder);
+        BaseModel.SetUp<CompleteReport>(builder);
+        BaseModel.SetUp<Report1>(builder);
+        BaseModel.SetUp<Report2>(builder);
+        BaseModel.SetUp<Report3>(builder);
+        BaseModel.SetUp<Report4>(builder);
+        BaseModel.SetUp<Quotation>(builder);
+        BaseModel.SetUp<QuotationService>(builder);
+        BaseModel.SetUp<RodentRegister>(builder);
+        BaseModel.SetUp<RodentArea>(builder);
+        BaseModel.SetUp<Service>(builder);
+        BaseModel.SetUp<Product>(builder);
+        BaseModel.SetUp<Project>(builder);
+        BaseModel.SetUp<ProjectAppointment>(builder);
+        BaseModel.SetUp<ProjectOperationSheet>(builder);
+        BaseModel.SetUp<TermsAndConditions>(builder);
+        BaseModel.SetUp<TreatmentArea>(builder);
+        BaseModel.SetUp<TreatmentProduct>(builder);
+
+        // New Domain entity configurations
+        builder.ApplyConfiguration(new ClientConfiguration());
+        builder.ApplyConfiguration(new ClientLocationConfiguration());
     }
 
     public override int SaveChanges()

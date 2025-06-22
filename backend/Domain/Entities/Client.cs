@@ -5,14 +5,19 @@ namespace PeruControl.Domain.Entities;
 
 public class Client : BaseEntity, IAggregateRoot
 {
-    public ClientNumber ClientNumber { get; private set; }
-    public DocumentInfo DocumentInfo { get; private set; }
+    // ClientNumber is set by the database after insert
+    private int? _clientNumber;
+    public int ClientNumber =>
+        _clientNumber
+        ?? throw new InvalidOperationException("Client must be saved to database first");
+
+    public DocumentInfo DocumentInfo { get; private set; } = null!;
     public string? RazonSocial { get; private set; }
     public string? BusinessType { get; private set; }
-    public string Name { get; private set; }
-    public Address FiscalAddress { get; private set; }
-    public Email Email { get; private set; }
-    public PhoneNumber PhoneNumber { get; private set; }
+    public string Name { get; private set; } = null!;
+    public Address FiscalAddress { get; private set; } = null!;
+    public Email Email { get; private set; } = null!;
+    public PhoneNumber PhoneNumber { get; private set; } = null!;
     public string? ContactName { get; private set; }
 
     private readonly List<ClientLocation> _locations = [];
@@ -61,6 +66,7 @@ public class Client : BaseEntity, IAggregateRoot
             RazonSocial = razonSocial,
             BusinessType = businessType,
             ContactName = contactName,
+            // _clientNumber remains null until database assigns it
         };
 
         return Result.Success(client);

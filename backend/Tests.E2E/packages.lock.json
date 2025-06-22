@@ -1501,13 +1501,17 @@
           "Twilio": "[7.11.1, )"
         }
       },
+      "perucontrol.domain": {
+        "type": "Project"
+      },
       "perucontrol.infrastructure": {
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.1, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[9.0.6, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.6, )",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )",
+          "PeruControl.Domain": "[1.0.0, )"
         }
       }
     }
