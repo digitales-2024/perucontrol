@@ -23,6 +23,6 @@ public class CertificateGet : PeruControl.Infrastructure.Model.BaseModel
     public Guid ProjectAppointmentId { get; set; }
     public DateTime ExpirationDate { get; set; }
     public virtual Project Project { get; set; } = null!;
-    public virtual Client Client { get; set; } = null!;
+    public virtual Domain.Entities.Client Client { get; set; } = null!;
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
 }

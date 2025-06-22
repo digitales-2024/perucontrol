@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PeruControl.Application.UseCases.Clients.CreateClient;
+using PeruControl.Domain.Entities;
 using PeruControl.Infrastructure.Model;
 
 public static class DatabaseSeeder
@@ -162,6 +164,7 @@ public static class DatabaseSeeder
     public static async Task SeedClients(IServiceProvider serviceProvider, ILogger logger)
     {
         using var scope = serviceProvider.CreateScope();
+        var createClientUseCase = scope.ServiceProvider.GetRequiredService<CreateClientUseCase>();
         var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
         if (await context.Clients.AnyAsync())
         {
@@ -169,37 +172,49 @@ public static class DatabaseSeeder
             return;
         }
 
-        var defaultClients = new List<Client>
+        var createClientRequest1 = new CreateClientRequest
         {
-            new Client
-            {
-                TypeDocument = "dni",
-                TypeDocumentValue = "78923498",
-                BusinessType = "-",
-                Name = "Juan Perez",
-                FiscalAddress = "Av. Los Pinos 123",
-                Email = "juan@perez.com",
-                PhoneNumber = "987654321",
-                ClientLocations = new List<ClientLocation>(),
-            },
-            new Client
-            {
-                TypeDocument = "ruc",
-                TypeDocumentValue = "20485938492",
-                RazonSocial = "Pirotécnicos Recreativos ACME E.I.R.L.",
-                BusinessType = "Producción y Comercialización de Pirotécnicos",
-                Name = "ACME INC",
-                FiscalAddress = "Av. Los Pinos 123",
-                Email = "juan@perez.com",
-                PhoneNumber = "987654321",
-                ClientLocations = new List<ClientLocation>(),
-            },
+            DocumentType = "dni",
+            DocumentValue = "78923498",
+            Name = "Juan Perez",
+            FiscalAddress = "Av. Los Pinos 123",
+            Email = "juan@perez.com",
+            PhoneNumber = "987654321",
+            RazonSocial = "Juan Perez",
+            BusinessType = "Servicios",
+            ContactName = "Juan Perez",
+            Locations = ["Av. Los Pinos 123"],
         };
+        var createClientResponse = await createClientUseCase.ExecuteAsync(createClientRequest1);
 
-        await context.Clients.AddRangeAsync(defaultClients);
-        await context.SaveChangesAsync();
+        var createClientRequest2 = new CreateClientRequest
+        {
+            DocumentType = "ruc",
+            DocumentValue = "20485938492",
+            Name = "Pirotécnicos Recreativos ACME E.I.R.L.",
+            FiscalAddress = "Av. Los Pinos 123",
+            Email = "acme@acme.com",
+            PhoneNumber = "987654321",
+            RazonSocial = "ACME INC",
+            BusinessType = "Servicios",
+            ContactName = "Juan Perez",
+            Locations = ["Av. Los Pinos 123", "Av. Los Pinos 124"],
+        };
+        var createClientResponse2 = await createClientUseCase.ExecuteAsync(createClientRequest2);
 
-        logger.LogInformation("Seeded {count} services", defaultClients.Count);
+        if (createClientResponse.IsFailure)
+        {
+            logger.LogError("Failed to create client: {error}", createClientResponse.Error);
+            throw new Exception(createClientResponse.Error);
+        }
+
+        if (createClientResponse2.IsFailure)
+        {
+            logger.LogError("Failed to create client: {error}", createClientResponse2.Error);
+            throw new Exception(createClientResponse2.Error);
+        }
+
+        logger.LogInformation("Seeded 2 clients");
     }
 
     public static async Task SeedQuotations(IServiceProvider serviceProvider, ILogger logger)

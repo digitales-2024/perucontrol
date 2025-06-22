@@ -8,7 +8,7 @@ public class AppointmentGetDTO
     public int? CertificateNumber { get; set; } = null;
     public required DateTime DueDate { get; set; }
     public DateTime? ActualDate { get; set; }
-    public required Client Client { get; set; }
+    public required Domain.Entities.Client Client { get; set; }
 
     public required Guid Id { get; set; } = Guid.NewGuid();
     public required bool IsActive { get; set; } = true;

@@ -6,6 +6,10 @@ namespace PeruControl.Domain.Repositories;
 public interface IClientRepository
 {
     Task<Result<Client>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Result<Client>> GetByIdWithLocationsAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    );
     Task<Result<Client>> GetByDocumentAsync(
         string documentType,
         string documentValue,
@@ -17,6 +21,7 @@ public interface IClientRepository
     );
     void Add(Client client);
     void Update(Client client);
+    Task UpdateAsync(Client client, CancellationToken cancellationToken = default);
     void Delete(Client client);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsByDocumentAsync(

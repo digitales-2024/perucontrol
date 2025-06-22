@@ -15,7 +15,7 @@ public class ProjectService(
         var entity = createDTO.MapToEntity();
 
         // validate the client exists before creating the project
-        var client = await db.Set<Client>().FindAsync(createDTO.ClientId);
+        var client = await db.Set<Domain.Entities.Client>().FindAsync(createDTO.ClientId);
         if (client == null)
             return (404, "Cliente no encontrado");
 

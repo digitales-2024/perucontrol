@@ -37,7 +37,7 @@ public class QuotationTest
             HasTaxes = true,
             CreationDate = DateTime.UtcNow,
             ExpirationDate = DateTime.UtcNow.AddDays(30),
-            ServiceAddress = client.FiscalAddress,
+            ServiceAddress = client.FiscalAddress.Value,
             PaymentMethod = "Contado",
             Others = "Ninguno",
             Availability = "Inmediata",

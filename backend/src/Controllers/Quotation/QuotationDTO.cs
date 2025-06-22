@@ -1,14 +1,13 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
-public class QuotationGetDTO : PeruControl.Infrastructure.Model.BaseModel
+public class QuotationGetDTO : BaseModel
 {
     public int QuotationNumber { get; set; }
-    public virtual ClientGetDTO Client { get; set; } = null!;
+    public virtual Domain.Entities.Client Client { get; set; } = null!;
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
     public required QuotationFrequency Frequency { get; set; } = QuotationFrequency.Bimonthly;
     public required QuotationStatus Status { get; set; } = QuotationStatus.Pending;
@@ -52,8 +51,7 @@ public class ClientGetDTO : PeruControl.Infrastructure.Model.BaseModel
     public required string Email { get; set; }
     public required string PhoneNumber { get; set; }
     public required string ContactName { get; set; }
-    public required ICollection<ClientLocation> ClientLocations { get; set; } =
-        new List<ClientLocation>();
+    public required ICollection<Domain.Entities.ClientLocation> ClientLocations { get; set; } = [];
 }
 
 public class ServiceGetDTO : PeruControl.Infrastructure.Model.BaseModel
@@ -63,7 +61,7 @@ public class ServiceGetDTO : PeruControl.Infrastructure.Model.BaseModel
 
 public class QuotationSummary
 {
-    public virtual Client Client { get; set; } = null!;
+    public virtual Domain.Entities.Client Client { get; set; } = null!;
 
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
 

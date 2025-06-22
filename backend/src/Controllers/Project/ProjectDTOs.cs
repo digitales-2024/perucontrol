@@ -209,7 +209,7 @@ public class ProjectPatchDTO : IEntityPatcher<Project>
 
 public class ProjectSummary : BaseModel
 {
-    public required Client Client { get; set; } = null!;
+    public required Domain.Entities.Client Client { get; set; } = null!;
 
     public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
@@ -233,7 +233,7 @@ public class ProjectSummary : BaseModel
 
 public class ProjectSummarySingle : BaseModel
 {
-    public required Client Client { get; set; } = null!;
+    public required Domain.Entities.Client Client { get; set; } = null!;
 
     public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
 
@@ -258,7 +258,7 @@ public class ProjectSummarySingle : BaseModel
 
 public class ProjectSummarySingle2 : BaseModel
 {
-    public required Client Client { get; set; } = null!;
+    public required Domain.Entities.Client Client { get; set; } = null!;
 
     public required ICollection<Service> Services { get; set; } = new HashSet<Service>();
 

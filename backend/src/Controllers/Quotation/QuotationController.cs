@@ -24,7 +24,7 @@ public class QuotationController(
         [FromBody] QuotationCreateDTO createDto
     )
     {
-        var client = await _context.Set<Client>().FindAsync(createDto.ClientId);
+        var client = await _context.Set<Domain.Entities.Client>().FindAsync(createDto.ClientId);
         if (client == null)
             return NotFound("Cliente no encontrado");
 

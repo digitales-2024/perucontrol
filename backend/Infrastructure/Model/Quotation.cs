@@ -30,7 +30,7 @@ public class Quotation : BaseModel
     public int QuotationNumber { get; set; }
 
     [Required(ErrorMessage = "El cliente es obligatorio")]
-    public Client Client { get; set; } = null!;
+    public Domain.Entities.Client Client { get; set; } = null!;
 
     public ICollection<Service> Services { get; set; } = new HashSet<Service>();
 

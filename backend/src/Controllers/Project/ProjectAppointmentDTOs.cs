@@ -5,7 +5,7 @@ namespace PeruControl.Controllers;
 public class AppointmentCreateDTO
 {
     public DateTime DueDate { get; set; }
-    public List<Guid> ServiceIds { get; set; } = new List<Guid>();
+    public List<Guid> ServiceIds { get; set; } = [];
 
     public TimeOnly? EnterTime { get; set; }
     public TimeOnly? LeaveTime { get; set; }
@@ -51,7 +51,7 @@ public class AppointmentGetDTO2 : PeruControl.Infrastructure.Model.BaseModel
     public DateTime ActualDate { get; set; }
     public virtual ICollection<Service> Services { get; set; } = new HashSet<Service>();
     public virtual Project Project { get; set; } = null!;
-    public virtual Client Client { get; set; } = null!;
+    public virtual Domain.Entities.Client Client { get; set; } = null!;
 
     public TimeOnly? EnterTime { get; set; } // <-- Add this
     public TimeOnly? LeaveTime { get; set; } // <-- Add this

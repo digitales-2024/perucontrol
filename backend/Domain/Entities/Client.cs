@@ -102,4 +102,70 @@ public class Client : BaseEntity, IAggregateRoot
         BusinessType = businessType;
         UpdateModifiedAt();
     }
+
+    public void UpdateName(string name)
+    {
+        Name = name;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateRazonSocial(string? razonSocial)
+    {
+        RazonSocial = razonSocial;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateBusinessType(string? businessType)
+    {
+        BusinessType = businessType;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateContactName(string? contactName)
+    {
+        ContactName = contactName;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateDocumentInfo(DocumentInfo documentInfo)
+    {
+        DocumentInfo = documentInfo;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateFiscalAddress(Address fiscalAddress)
+    {
+        FiscalAddress = fiscalAddress;
+        UpdateModifiedAt();
+    }
+
+    public void UpdateEmail(Email email)
+    {
+        Email = email;
+        UpdateModifiedAt();
+    }
+
+    public void UpdatePhoneNumber(PhoneNumber phoneNumber)
+    {
+        PhoneNumber = phoneNumber;
+        UpdateModifiedAt();
+    }
+
+    public void ClearLocations()
+    {
+        _locations.Clear();
+        UpdateModifiedAt();
+    }
+
+    public void AddOrUpdateLocation(ClientLocation location)
+    {
+        var existingLocation = _locations.FirstOrDefault(l => l.Id == location.Id);
+        if (existingLocation != null)
+        {
+            _locations.Remove(existingLocation);
+        }
+
+        _locations.Add(location);
+        UpdateModifiedAt();
+    }
 }

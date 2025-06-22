@@ -11,9 +11,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
     public required DbSet<Business> Businesses { get; set; }
-    public required DbSet<Client> Clients { get; set; }
     public required DbSet<Certificate> Certificates { get; set; }
-    public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<CompleteReport> CompleteReports { get; set; }
     public required DbSet<Report1> Report1s { get; set; }
     public required DbSet<Report2> Report2s { get; set; }
@@ -35,8 +33,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<WhatsappTemp> WhatsappTemps { get; set; }
 
     // New Domain entities
-    public required DbSet<Domain.Entities.Client> DomainClients { get; set; }
-    public required DbSet<Domain.Entities.ClientLocation> DomainClientLocations { get; set; }
+    public required DbSet<Domain.Entities.Client> Clients { get; set; }
+    public required DbSet<Domain.Entities.ClientLocation> ClientLocations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -44,9 +42,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
 
         // Old Infrastructure model configurations
         BaseModel.SetUp<Business>(builder);
-        BaseModel.SetUp<Client>(builder);
         BaseModel.SetUp<Certificate>(builder);
-        BaseModel.SetUp<ClientLocation>(builder);
         BaseModel.SetUp<CompleteReport>(builder);
         BaseModel.SetUp<Report1>(builder);
         BaseModel.SetUp<Report2>(builder);

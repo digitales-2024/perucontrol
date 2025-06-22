@@ -25,6 +25,18 @@ public class ClientLocation : BaseEntity
         return Result.Success(new ClientLocation(addressResult.Value));
     }
 
+    public static Result<ClientLocation> Create(Address address, Client client)
+    {
+        var location = new ClientLocation(address);
+        return Result.Success(location);
+    }
+
+    public static Result<ClientLocation> Create(Guid id, Address address, Client client)
+    {
+        var location = new ClientLocation(address) { Id = id };
+        return Result.Success(location);
+    }
+
     public Result UpdateAddress(string newAddress)
     {
         var addressResult = Address.Create(newAddress);

@@ -15,7 +15,7 @@ public enum ProjectStatus
 public class Project : BaseModel
 {
     [JsonIgnore]
-    public Client Client { get; set; } = null!;
+    public Domain.Entities.Client Client { get; set; } = null!;
 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ProjectNumber { get; set; }

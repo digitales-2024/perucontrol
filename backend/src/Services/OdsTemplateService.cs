@@ -324,7 +324,8 @@ public class OdsTemplateService
         string templatePath
     )
     {
-        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
+        var areAddressesDifferent =
+            quotation.Client.FiscalAddress.Value != quotation.ServiceAddress;
         var quotationNumber =
             quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
         var totalCost = quotation.QuotationServices.Sum(s => s.Price ?? 0);
@@ -341,7 +342,7 @@ public class OdsTemplateService
             { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
             { "{{fecha_exp_cotizacion}}", quotation.ExpirationDate.ToString("dd/MM/yyyy") },
             { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
-            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
+            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress.Value },
             { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
             {
                 "{{direccion_servicio_cliente}}",

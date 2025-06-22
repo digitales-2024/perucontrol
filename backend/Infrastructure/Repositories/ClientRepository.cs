@@ -8,7 +8,7 @@ namespace PeruControl.Infrastructure.Repositories;
 
 public class ClientRepository(DatabaseContext context) : IClientRepository
 {
-    private readonly DbSet<DomainClient> _clients = context.DomainClients;
+    private readonly DbSet<DomainClient> _clients = context.Clients;
 
     public async Task<Result<DomainClient>> GetByIdAsync(
         Guid id,
@@ -30,6 +30,15 @@ public class ClientRepository(DatabaseContext context) : IClientRepository
         {
             return Result.Failure<DomainClient>($"Error retrieving client: {ex.Message}");
         }
+    }
+
+    public async Task<Result<DomainClient>> GetByIdWithLocationsAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        // This is the same as GetByIdAsync since we always include locations
+        return await GetByIdAsync(id, cancellationToken);
     }
 
     public async Task<Result<DomainClient>> GetByDocumentAsync(
@@ -111,6 +120,31 @@ public class ClientRepository(DatabaseContext context) : IClientRepository
     public void Update(DomainClient client)
     {
         _clients.Update(client);
+    }
+
+    public async Task UpdateAsync(
+        DomainClient client,
+        CancellationToken cancellationToken = default
+    )
+    {
+        try
+        {
+            _clients.Update(client);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new InvalidOperationException(
+                "Los datos fueron modificados por otro usuario. Por favor refresque e intente nuevamente."
+            );
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException(
+                "Error al guardar los cambios en la base de datos.",
+                ex
+            );
+        }
     }
 
     public void Delete(DomainClient client)
