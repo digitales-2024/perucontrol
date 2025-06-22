@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using PeruControl.Configuration;
 using PeruControl.Controllers;
+using PeruControl.Infrastructure;
 using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 using PeruControl.Utils;
@@ -31,6 +32,12 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(dataSource);
 });
+
+// Register Infrastructure services (repositories, Unit of Work)
+builder.Services.AddInfrastructure();
+
+// Register Application services
+builder.Services.AddScoped<PeruControl.Application.Services.ClientApplicationService>();
 
 // Configure Identity
 builder
