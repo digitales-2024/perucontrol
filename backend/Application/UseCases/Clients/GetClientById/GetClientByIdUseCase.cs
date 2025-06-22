@@ -1,6 +1,5 @@
 using PeruControl.Application.UseCases.Clients.GetAllActiveClients;
 using PeruControl.Domain.Common;
-using PeruControl.Domain.Entities;
 using PeruControl.Domain.Repositories;
 
 namespace PeruControl.Application.UseCases.Clients.GetClientById;
@@ -29,7 +28,7 @@ public class GetClientByIdUseCase
             if (clientResult.IsFailure)
                 return Result.Failure<GetClientByIdResponse>(clientResult.Error);
 
-            var client = clientResult.Value;
+            var client = clientResult.Value!;
 
             var response = new GetClientByIdResponse
             {
@@ -55,6 +54,7 @@ public class GetClientByIdUseCase
                         .ToList(),
                     CreatedAt = client.CreatedAt,
                     ModifiedAt = client.ModifiedAt,
+                    IsActive = client.IsActive,
                 },
             };
 

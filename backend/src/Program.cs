@@ -133,6 +133,7 @@ builder.Services.AddScoped<CertificateService>();
 builder.Services.AddScoped<PeruControl.Controllers.QuotationService>();
 
 // Register global services
+builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<OdsTemplateService>();
 builder.Services.AddScoped<WordTemplateService>();

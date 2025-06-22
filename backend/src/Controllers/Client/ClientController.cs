@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PeruControl.Application.UseCases.Clients;
 using PeruControl.Application.UseCases.Clients.CreateClient;
 using PeruControl.Application.UseCases.Clients.GetAllActiveClients;
 using PeruControl.Application.UseCases.Clients.GetClientById;
 using PeruControl.Application.UseCases.Clients.UpdateClientInformation;
+using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
@@ -15,7 +17,11 @@ public class ClientController(
     GetClientByIdUseCase _getClientByIdUseCase,
     CreateClientUseCase _createClientUseCase,
     UpdateClientInformationUseCase _updateClientInformationUseCase,
-    DeactivateCLientUseCase deactivateCLientUseCase
+    DeactivateClientUseCase deactivateClientUseCase,
+    ReactivateClientUseCase reactivateClientUseCase,
+    ClientService clientService,
+    CsvExportService csvExportService,
+    ILogger<ClientController> logger
 ) : ControllerBase
 {
     /// <summary>
@@ -24,7 +30,7 @@ public class ClientController(
     [HttpGet]
     [EndpointSummary("Get all active clients")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<GetAllActiveClientsResponse>> GetAllActiveClients(
+    public async Task<ActionResult<GetAllClientsResponse>> GetAllClients(
         CancellationToken cancellationToken
     )
     {
@@ -105,13 +111,96 @@ public class ClientController(
 
     [HttpDelete("{id:guid}")]
     [EndpointSummary("Deactivate a client")]
-    public async Task<IActionResult> Delete(Guid id,
+    public async Task<IActionResult> Deactivate(Guid id,
         CancellationToken cancellationToken
             )
     {
-        var result = await deactivateCLientUseCase.ExecuteAsync(id, cancellationToken);
+        var result = await deactivateClientUseCase.ExecuteAsync(id, cancellationToken);
         if (result.IsSuccess) return Ok();
         else return BadRequest(result.Error!);
+    }
+
+    [HttpPatch("{id:guid}/reactivate")]
+    [EndpointSummary("Reactivate a client")]
+    public async Task<IActionResult> Reactivate(Guid id,
+        CancellationToken cancellationToken
+            )
+    {
+        var result = await reactivateClientUseCase.ExecuteAsync(id, cancellationToken);
+        if (result.IsSuccess) return Ok();
+        else return BadRequest(result.Error!);
+    }
+
+    [HttpGet("search-by-ruc/{ruc}")]
+    [EndpointSummary("Get business data by RUC")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SunatQueryResponse>> SearchByRuc(string ruc)
+    {
+        try
+        {
+            // first check if the ruc is already in the db, to not hit SUNAT unnecessarily
+            // disabled due to: implementation speed
+            // var client = await _context.Clients.FirstOrDefaultAsync(c =>
+            //     c.TypeDocumentValue == ruc
+            // );
+            // if (client != null)
+            // {
+            //     return Ok(
+            //         new SunatQueryResponse
+            //         {
+            //             RazonSocial = client.RazonSocial,
+            //             Name = client.Name,
+            //             FiscalAddress = client.FiscalAddress,
+            //             BusinessType = client.BusinessType,
+            //             ContactName = client.ContactName,
+            //         }
+            //     );
+            // }
+
+            var data = await clientService.ScrapSunat(ruc);
+            return Ok(data);
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogDebug($"HTTP Error when fetching SUNAT: {ex.StatusCode} - {ex.Message}");
+            return NotFound();
+        }
+    }
+
+    [EndpointSummary("Export all clients to CSV with optional date range filtering")]
+    [EndpointDescription(
+        "Export clients to CSV. Use startDate and endDate query parameters to filter by creation date. If startDate is not specified, exports from Unix epoch start (1970-01-01). If endDate is not specified, exports until current time."
+    )]
+    [HttpGet("export/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    public async Task<IActionResult> ExportClientsCsv(
+        CancellationToken cancellationToken,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null
+    )
+    {
+        var allClientsResult = await _getAllActiveClientsUseCase.ExecuteAsync(new GetAllActiveClientsRequest(), cancellationToken);
+        if (allClientsResult.IsFailure)
+        {
+            return BadRequest(allClientsResult.Error);
+        }
+
+        var csvBytes = csvExportService.ExportClientsToCsv(allClientsResult.Value!.Clients, startDate, endDate);
+
+        // Create a more descriptive filename with date range info
+        var fileName = "clients_export";
+        if (startDate.HasValue || endDate.HasValue)
+        {
+            fileName += "_";
+            if (startDate.HasValue)
+                fileName += $"from_{startDate.Value:yyyyMMdd}";
+            if (endDate.HasValue)
+                fileName += $"_to_{endDate.Value:yyyyMMdd}";
+        }
+        fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+
+        return File(csvBytes, "text/csv", fileName);
     }
 }
 

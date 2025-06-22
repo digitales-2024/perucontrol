@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PeruControl.Application.UseCases.Clients;
 using PeruControl.Application.UseCases.Clients.CreateClient;
 using PeruControl.Application.UseCases.Clients.GetAllActiveClients;
 using PeruControl.Application.UseCases.Clients.GetClientById;
@@ -19,7 +20,8 @@ public static class DependencyInjection
         services.AddScoped<GetClientByIdUseCase>();
         services.AddScoped<CreateClientUseCase>();
         services.AddScoped<UpdateClientInformationUseCase>();
-        services.AddScoped<DeactivateCLientUseCase>();
+        services.AddScoped<DeactivateClientUseCase>();
+        services.AddScoped<ReactivateClientUseCase>();
 
         return services;
     }

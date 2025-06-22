@@ -3,7 +3,7 @@ using PeruControl.Domain.Repositories;
 
 namespace PeruControl.Application.UseCases.Clients;
 
-public class DeactivateClientUseCase(IClientRepository clientRepository)
+public class ReactivateClientUseCase(IClientRepository clientRepository)
 {
     public async Task<Result<Unit>> ExecuteAsync(
             Guid id,
@@ -17,7 +17,7 @@ public class DeactivateClientUseCase(IClientRepository clientRepository)
         }
 
         var client = clientResult.Value!;
-        client.Deactivate();
+        client.Reactivate();
         await clientRepository.UpdateAsync(client, cancellationToken);
 
         return Result.Success(Unit.Value);

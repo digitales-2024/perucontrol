@@ -1,4 +1,5 @@
 using System.Text;
+using PeruControl.Application.UseCases.Clients.GetAllActiveClients;
 using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
@@ -6,7 +7,7 @@ namespace PeruControl.Services;
 public class CsvExportService
 {
     public byte[] ExportClientsToCsv(
-        IEnumerable<Domain.Entities.Client> clients,
+        IEnumerable<ClientDto> clients,
         DateTime? startDate = null,
         DateTime? endDate = null
     )
@@ -51,14 +52,14 @@ public class CsvExportService
         {
             csv.AppendLine(
                 $"{client.ClientNumber},"
-                    + $"\"{EscapeCsvValue(client.DocumentInfo.Type)}\","
-                    + $"\"{EscapeCsvValue(client.DocumentInfo.Value)}\","
+                    + $"\"{EscapeCsvValue(client.DocumentType)}\","
+                    + $"\"{EscapeCsvValue(client.DocumentValue)}\","
                     + $"\"{EscapeCsvValue(client.RazonSocial)}\","
                     + $"\"{EscapeCsvValue(client.BusinessType)}\","
                     + $"\"{EscapeCsvValue(client.Name)}\","
-                    + $"\"{EscapeCsvValue(client.FiscalAddress.Value)}\","
-                    + $"\"{EscapeCsvValue(client.Email.Value)}\","
-                    + $"\"{EscapeCsvValue(client.PhoneNumber.Value)}\","
+                    + $"\"{EscapeCsvValue(client.FiscalAddress)}\","
+                    + $"\"{EscapeCsvValue(client.Email)}\","
+                    + $"\"{EscapeCsvValue(client.PhoneNumber)}\","
                     + $"\"{EscapeCsvValue(client.ContactName)}\","
                     + $"{client.IsActive},"
                     + $"{client.CreatedAt:yyyy-MM-dd HH:mm:ss},"

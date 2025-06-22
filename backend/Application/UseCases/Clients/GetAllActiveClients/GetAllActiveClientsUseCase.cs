@@ -12,19 +12,19 @@ public class GetAllActiveClientsUseCase
         _clientRepository = clientRepository;
     }
 
-    public async Task<Result<GetAllActiveClientsResponse>> ExecuteAsync(
+    public async Task<Result<GetAllClientsResponse>> ExecuteAsync(
         GetAllActiveClientsRequest request,
         CancellationToken cancellationToken = default
     )
     {
         try
         {
-            var clientsResult = await _clientRepository.GetActiveAsync(cancellationToken);
+            var clientsResult = await _clientRepository.GetAllAsync(cancellationToken);
 
             if (clientsResult.IsFailure)
-                return Result.Failure<GetAllActiveClientsResponse>(clientsResult.Error);
+                return Result.Failure<GetAllClientsResponse>(clientsResult.Error);
 
-            var clients = clientsResult.Value;
+            var clients = clientsResult.Value!;
 
             // Map domain entities to response DTOs
             var clientDtos = clients
@@ -50,10 +50,11 @@ public class GetAllActiveClientsUseCase
                         .ToList(),
                     CreatedAt = client.CreatedAt,
                     ModifiedAt = client.ModifiedAt,
+                    IsActive = client.IsActive,
                 })
                 .ToList();
 
-            var response = new GetAllActiveClientsResponse
+            var response = new GetAllClientsResponse
             {
                 Clients = clientDtos,
                 TotalCount = clientDtos.Count,
@@ -63,7 +64,7 @@ public class GetAllActiveClientsUseCase
         }
         catch (Exception ex)
         {
-            return Result.Failure<GetAllActiveClientsResponse>(
+            return Result.Failure<GetAllClientsResponse>(
                 $"Error retrieving active clients: {ex.Message}"
             );
         }
