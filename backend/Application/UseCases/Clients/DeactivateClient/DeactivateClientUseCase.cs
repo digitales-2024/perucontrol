@@ -6,7 +6,7 @@ namespace PeruControl.Application.UseCases.Clients;
 public class DeactivateClientUseCase(IClientRepository clientRepository)
 {
     public async Task<Result<Unit>> ExecuteAsync(
-            Guid id,
+        Guid id,
         CancellationToken cancellationToken = default
     )
     {

@@ -111,24 +111,24 @@ public class ClientController(
 
     [HttpDelete("{id:guid}")]
     [EndpointSummary("Deactivate a client")]
-    public async Task<IActionResult> Deactivate(Guid id,
-        CancellationToken cancellationToken
-            )
+    public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
     {
         var result = await deactivateClientUseCase.ExecuteAsync(id, cancellationToken);
-        if (result.IsSuccess) return Ok();
-        else return BadRequest(result.Error!);
+        if (result.IsSuccess)
+            return Ok();
+        else
+            return BadRequest(result.Error!);
     }
 
     [HttpPatch("{id:guid}/reactivate")]
     [EndpointSummary("Reactivate a client")]
-    public async Task<IActionResult> Reactivate(Guid id,
-        CancellationToken cancellationToken
-            )
+    public async Task<IActionResult> Reactivate(Guid id, CancellationToken cancellationToken)
     {
         var result = await reactivateClientUseCase.ExecuteAsync(id, cancellationToken);
-        if (result.IsSuccess) return Ok();
-        else return BadRequest(result.Error!);
+        if (result.IsSuccess)
+            return Ok();
+        else
+            return BadRequest(result.Error!);
     }
 
     [HttpGet("search-by-ruc/{ruc}")]
@@ -180,13 +180,20 @@ public class ClientController(
         [FromQuery] DateTime? endDate = null
     )
     {
-        var allClientsResult = await _getAllActiveClientsUseCase.ExecuteAsync(new GetAllActiveClientsRequest(), cancellationToken);
+        var allClientsResult = await _getAllActiveClientsUseCase.ExecuteAsync(
+            new GetAllActiveClientsRequest(),
+            cancellationToken
+        );
         if (allClientsResult.IsFailure)
         {
             return BadRequest(allClientsResult.Error);
         }
 
-        var csvBytes = csvExportService.ExportClientsToCsv(allClientsResult.Value!.Clients, startDate, endDate);
+        var csvBytes = csvExportService.ExportClientsToCsv(
+            allClientsResult.Value!.Clients,
+            startDate,
+            endDate
+        );
 
         // Create a more descriptive filename with date range info
         var fileName = "clients_export";
