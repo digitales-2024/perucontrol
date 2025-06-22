@@ -36,9 +36,6 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 // Register Infrastructure services (repositories, Unit of Work)
 builder.Services.AddInfrastructure();
 
-// Register Application services
-builder.Services.AddScoped<PeruControl.Application.Services.ClientApplicationService>();
-
 // Configure Identity
 builder
     .Services.AddIdentityCore<User>(options =>

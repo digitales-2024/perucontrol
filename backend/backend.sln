@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeruControl.Domain", "Domai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeruControl.Infrastructure", "Infrastructure\PeruControl.Infrastructure.csproj", "{835757B9-76A8-4758-ADF7-A0E86135BBB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeruControl.Application", "Application\PeruControl.Application.csproj", "{9FAD7E38-6FCB-4268-A389-455C90A1929F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,18 @@ Global
 		{835757B9-76A8-4758-ADF7-A0E86135BBB7}.Release|x64.Build.0 = Release|Any CPU
 		{835757B9-76A8-4758-ADF7-A0E86135BBB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{835757B9-76A8-4758-ADF7-A0E86135BBB7}.Release|x86.Build.0 = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|x64.Build.0 = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Debug|x86.Build.0 = Debug|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|x64.ActiveCfg = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|x64.Build.0 = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|x86.ActiveCfg = Release|Any CPU
+		{9FAD7E38-6FCB-4268-A389-455C90A1929F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
