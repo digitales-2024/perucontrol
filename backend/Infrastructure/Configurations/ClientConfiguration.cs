@@ -44,14 +44,14 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
                     .HasColumnName("TypeDocumentValue")
                     .HasMaxLength(11)
                     .IsRequired();
+
+                // Create the index on the owned type's property
+                documentInfo
+                    .HasIndex(di => di.Value)
+                    .IsUnique()
+                    .HasDatabaseName("IX_DomainClients_TypeDocumentValue");
             }
         );
-
-        // Create unique index on document value
-        builder
-            .HasIndex(c => c.DocumentInfo.Value)
-            .IsUnique()
-            .HasDatabaseName("IX_DomainClients_TypeDocumentValue");
 
         // Email value object
         builder.OwnsOne(
