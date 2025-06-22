@@ -1496,9 +1496,17 @@
           "MailKit": "[4.11.0, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.1, )",
           "Microsoft.AspNetCore.OpenApi": "[9.0.4, )",
+          "PeruControl.Application": "[1.0.0, )",
           "PeruControl.Infrastructure": "[1.0.0, )",
           "Scalar.AspNetCore": "[2.0.*, )",
           "Twilio": "[7.11.1, )"
+        }
+      },
+      "perucontrol.application": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.6, )",
+          "PeruControl.Domain": "[1.0.0, )"
         }
       },
       "perucontrol.domain": {

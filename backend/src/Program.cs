@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using PeruControl.Application;
 using PeruControl.Configuration;
 using PeruControl.Controllers;
 using PeruControl.Infrastructure;
@@ -33,8 +34,11 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(dataSource);
 });
 
-// Register Infrastructure services (repositories, Unit of Work)
+// Register Infrastructure services (repositories)
 builder.Services.AddInfrastructure();
+
+// Register Application services (Use Cases)
+builder.Services.AddApplication();
 
 // Configure Identity
 builder
