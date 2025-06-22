@@ -5,7 +5,8 @@ namespace PeruControl.Controllers.UseCases;
 
 [ApiController]
 [Route("api/v2/clients")]
-public class ClientUseCasesController(GetAllActiveClientsUseCase getAllActiveClientsUseCase) : ControllerBase
+public class ClientUseCasesController(GetAllActiveClientsUseCase getAllActiveClientsUseCase)
+    : ControllerBase
 {
     /// <summary>
     /// Get all active clients using Clean Architecture Use Case pattern

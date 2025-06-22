@@ -24,6 +24,7 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Copy files and install
 COPY Tests.E2E ./Tests.E2E
+COPY Application ./Application
 COPY Domain ./Domain
 COPY Infrastructure ./Infrastructure
 COPY src ./src
