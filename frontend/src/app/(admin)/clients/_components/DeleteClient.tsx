@@ -10,7 +10,7 @@ import { RemoveClient } from "../actions";
 interface DeleteClientProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    client: components["schemas"]["Client"];
+    client: components["schemas"]["LegacyClient"];
     showTrigger?: boolean;
 }
 

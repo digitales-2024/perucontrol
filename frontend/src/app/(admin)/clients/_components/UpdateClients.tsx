@@ -14,7 +14,7 @@ import { toastWrapper } from "@/types/toasts";
 import { components } from "@/types/api";
 
 interface UpdateClientProps {
-    client: components["schemas"]["Client"];
+    client: components["schemas"]["LegacyClient"];
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }

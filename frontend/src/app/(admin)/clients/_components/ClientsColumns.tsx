@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { components } from "@/types/api";
 import { CircleUser, CircleUserRound, Hash, Mail, Phone } from "lucide-react";
 
-export type Client = components["schemas"]["Client"]
+export type Client = components["schemas"]["LegacyClient"]
 
 export const columns: Array<ColumnDef<Client>> = [
     {

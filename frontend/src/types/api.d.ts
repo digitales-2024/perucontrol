@@ -1755,7 +1755,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all active clients */
+        /** Get all */
         get: {
             parameters: {
                 query?: never;
@@ -1771,15 +1771,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["GetAllClientsResponse"];
-                        "application/json": components["schemas"]["GetAllClientsResponse"];
-                        "text/json": components["schemas"]["GetAllClientsResponse"];
+                        "text/plain": components["schemas"]["LegacyClient"][];
+                        "application/json": components["schemas"]["LegacyClient"][];
+                        "text/json": components["schemas"]["LegacyClient"][];
                     };
                 };
             };
         };
         put?: never;
-        /** Create new client */
+        /** Create */
         post: {
             parameters: {
                 query?: never;
@@ -1789,9 +1789,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CreateClientRequest"];
-                    "text/json": components["schemas"]["CreateClientRequest"];
-                    "application/*+json": components["schemas"]["CreateClientRequest"];
+                    "application/json": components["schemas"]["ClientCreateDTO"];
+                    "text/json": components["schemas"]["ClientCreateDTO"];
+                    "application/*+json": components["schemas"]["ClientCreateDTO"];
                 };
             };
             responses: {
@@ -1801,9 +1801,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["CreateClientResponse"];
-                        "application/json": components["schemas"]["CreateClientResponse"];
-                        "text/json": components["schemas"]["CreateClientResponse"];
+                        "text/plain": components["schemas"]["LegacyClient"];
+                        "application/json": components["schemas"]["LegacyClient"];
+                        "text/json": components["schemas"]["LegacyClient"];
                     };
                 };
                 /** @description Bad Request */
@@ -1832,7 +1832,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get client by ID */
+        /** Get one by ID */
         get: {
             parameters: {
                 query?: never;
@@ -1850,9 +1850,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["GetClientByIdResponse"];
-                        "application/json": components["schemas"]["GetClientByIdResponse"];
-                        "text/json": components["schemas"]["GetClientByIdResponse"];
+                        "text/plain": components["schemas"]["LegacyClient"];
+                        "application/json": components["schemas"]["LegacyClient"];
+                        "text/json": components["schemas"]["LegacyClient"];
                     };
                 };
                 /** @description Not Found */
@@ -1870,7 +1870,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Deactivate a client */
+        /** Delete client */
         delete: {
             parameters: {
                 query?: never;
@@ -1893,7 +1893,23 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update client information */
+        patch?: never;
+        trace?: never;
+    };
+    "/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualizar cliente por ID */
         patch: {
             parameters: {
                 query?: never;
@@ -1905,9 +1921,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["UpdateClientInformationRequest"];
-                    "text/json": components["schemas"]["UpdateClientInformationRequest"];
-                    "application/*+json": components["schemas"]["UpdateClientInformationRequest"];
+                    "application/json": components["schemas"]["ClientPatchDTO"];
+                    "text/json": components["schemas"]["ClientPatchDTO"];
+                    "application/*+json": components["schemas"]["ClientPatchDTO"];
                 };
             };
             responses: {
@@ -1940,6 +1956,13 @@ export interface paths {
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         trace?: never;
@@ -1957,7 +1980,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Reactivate a client */
+        /** Reactive client by Id */
         patch: {
             parameters: {
                 query?: never;
@@ -1975,6 +1998,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
             };
         };
@@ -6291,26 +6325,17 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        ClientDto: {
-            /** Format: uuid */
-            id: string;
-            /** Format: int32 */
-            clientNumber: number;
-            documentType: string;
-            documentValue: string;
-            name: string;
+        ClientCreateDTO: {
+            typeDocument: string;
+            typeDocumentValue: string;
             razonSocial?: string | null;
             businessType?: string | null;
+            name: string;
             fiscalAddress: string;
             email: string;
+            clientLocations?: components["schemas"]["ClientLocationDTO"][] | null;
             phoneNumber: string;
             contactName?: string | null;
-            locations: components["schemas"]["ClientLocationDto"][];
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            modifiedAt: string;
-            isActive: boolean;
         };
         ClientLocation: {
             address?: components["schemas"]["Address"];
@@ -6322,10 +6347,18 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        ClientLocationDto: {
-            /** Format: uuid */
-            id?: string;
+        ClientLocationDTO: {
             address?: string;
+        };
+        ClientPatchDTO: {
+            razonSocial?: string | null;
+            businessType?: string | null;
+            name?: string | null;
+            fiscalAddress?: string | null;
+            email?: string | null;
+            phoneNumber?: string | null;
+            contactName?: string | null;
+            clientLocations?: components["schemas"]["ClientLocationDTO"][] | null;
         };
         CompleteReport: {
             /** Format: date-time */
@@ -6360,23 +6393,6 @@ export interface components {
             /** Format: int32 */
             level: number;
             sections: unknown[];
-        };
-        CreateClientRequest: {
-            documentType?: string;
-            documentValue?: string;
-            name?: string;
-            fiscalAddress?: string;
-            email?: string;
-            phoneNumber?: string;
-            razonSocial?: string | null;
-            businessType?: string | null;
-            contactName?: string | null;
-            locations?: string[] | null;
-        };
-        CreateClientResponse: {
-            /** Format: uuid */
-            clientId?: string;
-            message?: string;
         };
         DocumentInfo: {
             type?: string;
@@ -6417,11 +6433,6 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
-        GetAllClientsResponse: {
-            clients: components["schemas"]["ClientDto"][];
-            /** Format: int32 */
-            totalCount: number;
-        };
         GetCertificateForCreationOutDto: {
             /** Format: uuid */
             serviceId: string;
@@ -6443,9 +6454,6 @@ export interface components {
             /** Format: date-time */
             actualDate?: string | null;
             status: components["schemas"]["ResourceStatus"];
-        };
-        GetClientByIdResponse: {
-            client?: components["schemas"]["ClientDto"];
         };
         GetOperationSheetsForCreationOutDto: {
             /** Format: uuid */
@@ -6470,10 +6478,36 @@ export interface components {
             enterLeaveTime: string;
             status: components["schemas"]["ResourceStatus"];
         };
-        LocationUpdateDto: {
+        LegacyClient: {
             /** Format: uuid */
-            id?: string | null;
+            id?: string;
+            /** Format: int32 */
+            clientNumber?: number;
+            typeDocument: string;
+            typeDocumentValue: string;
+            razonSocial?: string | null;
+            businessType?: string | null;
+            name: string;
+            fiscalAddress: string;
+            email: string;
+            phoneNumber: string;
+            contactName?: string | null;
+            clientLocations: components["schemas"]["LegacyClientLocation"][];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+        };
+        LegacyClientLocation: {
+            /** Format: uuid */
+            id?: string;
             address?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
         };
         LoginRequest: {
             /** @default admin@admin.com */
@@ -7313,20 +7347,6 @@ export interface components {
             enterTime?: string | null;
             /** Format: time */
             leaveTime?: string | null;
-        };
-        UpdateClientInformationRequest: {
-            /** Format: uuid */
-            clientId?: string;
-            name?: string | null;
-            razonSocial?: string | null;
-            businessType?: string | null;
-            contactName?: string | null;
-            documentType?: string | null;
-            documentValue?: string | null;
-            fiscalAddress?: string | null;
-            email?: string | null;
-            phoneNumber?: string | null;
-            locations?: components["schemas"]["LocationUpdateDto"][] | null;
         };
         UpdateCompleteReportDTO: {
             /** Format: date-time */

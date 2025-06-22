@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 interface ViewClientDetailsProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    client: components["schemas"]["Client"]
+    client: components["schemas"]["LegacyClient"]
     showTrigger?: boolean
 }
 
@@ -110,7 +110,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
 }
 
 // Versión optimizada para escritorio con layout de dos columnas
-function ClientDetailsDesktop({ client }: { client: components["schemas"]["Client"] })
+function ClientDetailsDesktop({ client }: { client: components["schemas"]["LegacyClient"] })
 {
     return (
         <div className="space-y-6">
@@ -239,7 +239,7 @@ function ClientDetailsDesktop({ client }: { client: components["schemas"]["Clien
 }
 
 // Versión optimizada para móvil con layout de una columna
-function ClientDetailsMobile({ client }: { client: components["schemas"]["Client"] })
+function ClientDetailsMobile({ client }: { client: components["schemas"]["LegacyClient"] })
 {
     return (
         <div className="space-y-5 pr-4">
