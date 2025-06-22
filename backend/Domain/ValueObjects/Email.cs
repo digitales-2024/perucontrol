@@ -1,13 +1,14 @@
-using PeruControl.Domain.Common;
 using System.Text.RegularExpressions;
+using PeruControl.Domain.Common;
 
 namespace PeruControl.Domain.ValueObjects;
 
 public class Email : ValueObject
 {
     private static readonly Regex EmailRegex = new(
-        @"^[^@\s]+@[^@\s]+\.[^@\s]+$", 
-        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase
+    );
 
     public string Value { get; private set; }
 

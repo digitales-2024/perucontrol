@@ -14,7 +14,7 @@ public class Client : BaseEntity, IAggregateRoot
     public Email Email { get; private set; }
     public PhoneNumber PhoneNumber { get; private set; }
     public string? ContactName { get; private set; }
-    
+
     private readonly List<ClientLocation> _locations = [];
     public IReadOnlyList<ClientLocation> Locations => _locations.AsReadOnly();
 
@@ -31,7 +31,8 @@ public class Client : BaseEntity, IAggregateRoot
         string phoneNumber,
         string? razonSocial = null,
         string? businessType = null,
-        string? contactName = null)
+        string? contactName = null
+    )
     {
         // Business validation here
         var documentResult = DocumentInfo.Create(typeDocument, typeDocumentValue);
@@ -59,7 +60,7 @@ public class Client : BaseEntity, IAggregateRoot
             PhoneNumber = phoneResult.Value,
             RazonSocial = razonSocial,
             BusinessType = businessType,
-            ContactName = contactName
+            ContactName = contactName,
         };
 
         return Result.Success(client);
@@ -73,7 +74,7 @@ public class Client : BaseEntity, IAggregateRoot
 
         _locations.Add(locationResult.Value);
         UpdateModifiedAt();
-        
+
         return Result.Success();
     }
 
@@ -85,7 +86,7 @@ public class Client : BaseEntity, IAggregateRoot
 
         _locations.Remove(location);
         UpdateModifiedAt();
-        
+
         return Result.Success();
     }
 

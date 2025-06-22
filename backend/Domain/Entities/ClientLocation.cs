@@ -33,7 +33,7 @@ public class ClientLocation : BaseEntity
 
         Address = addressResult.Value;
         UpdateModifiedAt();
-        
+
         return Result.Success();
     }
-} 
+}

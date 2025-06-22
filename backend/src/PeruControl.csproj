@@ -9,7 +9,6 @@
     <!-- Reference to the Infra layer -->
     <ProjectReference Include="..\Infrastructure\PeruControl.Infrastructure.csproj" />
     <!-- end -->
-
     <PackageReference Include="AWSSDK.S3" Version="3.7.416.13" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />

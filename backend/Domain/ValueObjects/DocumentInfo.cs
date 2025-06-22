@@ -17,15 +17,17 @@ public class DocumentInfo : ValueObject
     {
         if (string.IsNullOrWhiteSpace(type))
             return Result.Failure<DocumentInfo>("Document type cannot be empty");
-            
+
         if (type.Length > 3)
             return Result.Failure<DocumentInfo>("Document type cannot exceed 3 characters");
 
         if (string.IsNullOrWhiteSpace(value))
             return Result.Failure<DocumentInfo>("Document value cannot be empty");
-            
+
         if (value.Length < 8 || value.Length > 11)
-            return Result.Failure<DocumentInfo>("Document value must be between 8 and 11 characters");
+            return Result.Failure<DocumentInfo>(
+                "Document value must be between 8 and 11 characters"
+            );
 
         return Result.Success(new DocumentInfo(type, value));
     }
