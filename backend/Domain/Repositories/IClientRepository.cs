@@ -29,4 +29,5 @@ public interface IClientRepository
         string documentValue,
         CancellationToken cancellationToken = default
     );
+    public Task SaveChangesAsync();
 }

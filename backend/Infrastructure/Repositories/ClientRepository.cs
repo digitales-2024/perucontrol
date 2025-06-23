@@ -122,6 +122,11 @@ public class ClientRepository(DatabaseContext context) : IClientRepository
         _clients.Update(client);
     }
 
+    public async Task SaveChangesAsync()
+    {
+        await context.SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(
         DomainClient client,
         CancellationToken cancellationToken = default

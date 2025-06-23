@@ -48,7 +48,7 @@ public class CreateClientUseCase
             if (clientResult.IsFailure)
                 return Result.Failure<CreateClientResponse>(clientResult.Error);
 
-            var client = clientResult.Value;
+            var client = clientResult.Value!;
 
             // Add locations if provided
             if (request.Locations != null && request.Locations.Any())
@@ -63,6 +63,7 @@ public class CreateClientUseCase
 
             // Save through repository
             _clientRepository.Add(client);
+            await _clientRepository.SaveChangesAsync();
 
             var response = new CreateClientResponse
             {

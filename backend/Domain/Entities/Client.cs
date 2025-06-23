@@ -78,7 +78,7 @@ public class Client : BaseEntity, IAggregateRoot
         if (locationResult.IsFailure)
             return Result.Failure(locationResult.Error);
 
-        _locations.Add(locationResult.Value);
+        _locations.Add(locationResult.Value!);
         UpdateModifiedAt();
 
         return Result.Success();
