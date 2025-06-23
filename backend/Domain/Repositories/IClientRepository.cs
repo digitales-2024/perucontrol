@@ -1,5 +1,6 @@
 using PeruControl.Domain.Common;
 using PeruControl.Domain.Entities;
+using PeruControl.Domain.ValueObjects;
 
 namespace PeruControl.Domain.Repositories;
 
@@ -22,6 +23,11 @@ public interface IClientRepository
     void Add(Client client);
     void Update(Client client);
     Task UpdateAsync(Client client, CancellationToken cancellationToken = default);
+    Task UpdateClientWithLocationsAsync(
+        Client client, 
+        List<(Guid? Id, Address Address)> locations, 
+        CancellationToken cancellationToken = default
+    );
     void Delete(Client client);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsByDocumentAsync(

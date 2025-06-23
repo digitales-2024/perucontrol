@@ -5,15 +5,8 @@ using PeruControl.Domain.ValueObjects;
 
 namespace PeruControl.Application.UseCases.Clients.UpdateClientInformation;
 
-public class UpdateClientInformationUseCase
+public class UpdateClientInformationUseCase(IClientRepository _clientRepository)
 {
-    private readonly IClientRepository _clientRepository;
-
-    public UpdateClientInformationUseCase(IClientRepository clientRepository)
-    {
-        _clientRepository = clientRepository;
-    }
-
     public async Task<Result<Unit>> ExecuteAsync(
         UpdateClientInformationRequest request,
         CancellationToken cancellationToken = default
@@ -21,8 +14,8 @@ public class UpdateClientInformationUseCase
     {
         try
         {
-            // Load client with locations
-            var clientResult = await _clientRepository.GetByIdWithLocationsAsync(
+            // Load client 
+            var clientResult = await _clientRepository.GetByIdAsync(
                 request.ClientId,
                 cancellationToken
             );
@@ -91,71 +84,34 @@ public class UpdateClientInformationUseCase
                 client.UpdatePhoneNumber(phoneResult.Value);
             }
 
-            // Handle locations update - this is where the complexity was in the original controller
+            // Handle locations - let the repository deal with this mess
             if (request.Locations != null)
             {
-                var locationsUpdateResult = await UpdateClientLocations(client, request.Locations);
-                if (locationsUpdateResult.IsFailure)
-                    return Result.Failure<Unit>(locationsUpdateResult.Error);
-            }
+                // Validate all locations first
+                var validatedLocations = new List<(Guid? Id, Address Address)>();
+                foreach (var locationDto in request.Locations)
+                {
+                    var addressResult = Address.Create(locationDto.Address);
+                    if (addressResult.IsFailure)
+                        return Result.Failure<Unit>($"Invalid address: {addressResult.Error}");
 
-            // Update the client through repository
-            await _clientRepository.UpdateAsync(client, cancellationToken);
+                    validatedLocations.Add((locationDto.Id, addressResult.Value));
+                }
+
+                // Update the client and locations atomically
+                await _clientRepository.UpdateClientWithLocationsAsync(client, validatedLocations, cancellationToken);
+            }
+            else
+            {
+                // Just update the client without touching locations
+                await _clientRepository.UpdateAsync(client, cancellationToken);
+            }
 
             return Result.Success(Unit.Value);
         }
         catch (Exception ex)
         {
             return Result.Failure<Unit>($"Error inesperado al actualizar cliente: {ex.Message}");
-        }
-    }
-
-    private async Task<Result<Unit>> UpdateClientLocations(
-        Client client,
-        List<LocationUpdateDto> locations
-    )
-    {
-        try
-        {
-            // Clear existing locations - let the domain handle this properly
-            client.ClearLocations();
-
-            // Add/update locations
-            foreach (var locationDto in locations)
-            {
-                var addressResult = Address.Create(locationDto.Address);
-                if (addressResult.IsFailure)
-                    return Result.Failure<Unit>($"Invalid address: {addressResult.Error}");
-
-                if (locationDto.Id.HasValue)
-                {
-                    // Try to update existing location or create new one with specified ID
-                    var locationResult = ClientLocation.Create(
-                        locationDto.Id.Value,
-                        addressResult.Value,
-                        client
-                    );
-                    if (locationResult.IsFailure)
-                        return Result.Failure<Unit>(locationResult.Error);
-
-                    client.AddOrUpdateLocation(locationResult.Value);
-                }
-                else
-                {
-                    // Create new location without specified ID
-                    var locationResult = ClientLocation.Create(addressResult.Value, client);
-                    if (locationResult.IsFailure)
-                        return Result.Failure<Unit>(locationResult.Error);
-
-                    client.AddOrUpdateLocation(locationResult.Value);
-                }
-            }
-
-            return Result.Success(Unit.Value);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<Unit>($"Error updating locations: {ex.Message}");
         }
     }
 }

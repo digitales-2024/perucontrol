@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PeruControl.Domain.Common;
 using PeruControl.Domain.Repositories;
+using PeruControl.Domain.ValueObjects;
 using PeruControl.Infrastructure.Model;
 using DomainClient = PeruControl.Domain.Entities.Client;
+using DomainClientLocation = PeruControl.Domain.Entities.ClientLocation;
 
 namespace PeruControl.Infrastructure.Repositories;
 
@@ -134,7 +136,23 @@ public class ClientRepository(DatabaseContext context) : IClientRepository
     {
         try
         {
-            _clients.Update(client);
+            // Simple update - load existing client and update properties
+            var existingClient = await _clients
+                .FirstOrDefaultAsync(c => c.Id == client.Id, cancellationToken);
+
+            if (existingClient == null)
+                throw new InvalidOperationException("Client not found");
+
+            // Update client properties directly on the tracked entity
+            existingClient.UpdateName(client.Name);
+            existingClient.UpdateRazonSocial(client.RazonSocial);
+            existingClient.UpdateBusinessType(client.BusinessType);
+            existingClient.UpdateContactName(client.ContactName);
+            existingClient.UpdateDocumentInfo(client.DocumentInfo);
+            existingClient.UpdateFiscalAddress(client.FiscalAddress);
+            existingClient.UpdateEmail(client.Email);
+            existingClient.UpdatePhoneNumber(client.PhoneNumber);
+
             await context.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException)
@@ -149,6 +167,67 @@ public class ClientRepository(DatabaseContext context) : IClientRepository
                 "Error al guardar los cambios en la base de datos.",
                 ex
             );
+        }
+    }
+
+    public async Task UpdateClientWithLocationsAsync(
+        DomainClient client,
+        List<(Guid? Id, Address Address)> locations,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            // Step 1: Update the client basic info
+            var existingClient = await _clients
+                .FirstOrDefaultAsync(c => c.Id == client.Id, cancellationToken);
+
+            if (existingClient == null)
+                throw new InvalidOperationException("Client not found");
+
+            // Update client properties directly on the tracked entity
+            existingClient.UpdateName(client.Name);
+            existingClient.UpdateRazonSocial(client.RazonSocial);
+            existingClient.UpdateBusinessType(client.BusinessType);
+            existingClient.UpdateContactName(client.ContactName);
+            existingClient.UpdateDocumentInfo(client.DocumentInfo);
+            existingClient.UpdateFiscalAddress(client.FiscalAddress);
+            existingClient.UpdateEmail(client.Email);
+            existingClient.UpdatePhoneNumber(client.PhoneNumber);
+
+            // Step 2: Nuclear option - delete ALL existing locations for this client
+            await context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM \"DomainClientLocations\" WHERE \"ClientId\" = {0}",
+                client.Id
+            );
+
+            // Step 3: Insert new locations using raw SQL because EF is garbage
+            foreach (var (id, address) in locations)
+            {
+                var locationId = id ?? Guid.NewGuid();
+                var now = DateTime.UtcNow;
+                
+                await context.Database.ExecuteSqlRawAsync(
+                    @"INSERT INTO ""DomainClientLocations"" 
+                      (""Id"", ""Address"", ""ClientId"", ""IsActive"", ""CreatedAt"", ""ModifiedAt"") 
+                      VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
+                    locationId,
+                    address.Value,
+                    client.Id,
+                    true,
+                    now,
+                    now
+                );
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 
