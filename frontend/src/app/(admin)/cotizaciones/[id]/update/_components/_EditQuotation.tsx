@@ -34,7 +34,6 @@ const serviceIcons: Record<string, React.ReactNode> = {
 };
 
 type Quotation = components["schemas"]["Quotation2"];
-type Clients = components["schemas"]["Client"]
 type Services = components["schemas"]["Service"]
 type Terms = components["schemas"]["TermsAndConditions"];
 
@@ -45,7 +44,7 @@ export default function EditQuotation({
     terms,
 }: {
     quotation: Quotation,
-    clients: Array<Clients>,
+    clients: Array<components["schemas"]["LegacyClient"]>,
     services: Array<Services>
     terms: Array<Terms>,
 })
@@ -192,8 +191,8 @@ export default function EditQuotation({
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "")
                     .map((location) => ({
-                        value: location.address,
-                        label: location.address,
+                        value: location.address ?? "",
+                        label: location.address ?? "",
                     })) ?? []),
             ];
             setClientAddressOptions(addressOptions);
@@ -219,8 +218,8 @@ export default function EditQuotation({
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
                     .map((location) => ({
-                        value: location.address,
-                        label: location.address,
+                        value: location.address ?? "",
+                        label: location.address ?? "",
                     })) ?? []),
             ];
             setClientAddressOptions(addressOptions);

@@ -487,8 +487,8 @@ export function RodentControlForm({
                                 open={sendOpen}
                                 setOpen={setSendOpen}
                                 documentName="Registro de Roedores"
-                                startingEmail={project.client?.email ?? ""}
-                                startingNumber={project.client?.phoneNumber ?? ""}
+                                startingEmail={project.client?.email?.value ?? ""}
+                                startingNumber={project.client?.phoneNumber?.value ?? ""}
                                 pdfLoadAction={async() => GenerateRodentsPDF(appointment.id!)}
                                 emailSendAction={async(email: string) => SendRodentPDFViaEmail(appointment.id!, email)}
                                 whatsappSendAction={async(number: string) => SendRodentPDFViaWhatsapp(appointment.id!, number)}

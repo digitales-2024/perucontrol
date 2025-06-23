@@ -363,9 +363,9 @@ export function ProjectDetails({
                                             {project.client?.name === "-" ? project.client?.razonSocial : project.client?.name}
                                         </h4>
                                         <p className="text-xs md:text-sm text-muted-foreground">
-                                            {project.client?.typeDocument.toUpperCase()}
+                                            {project.client?.documentInfo?.type?.toUpperCase()}
                                             :
-                                            {project.client?.typeDocumentValue}
+                                            {project.client?.documentInfo?.value}
                                         </p>
                                     </div>
                                     <Button

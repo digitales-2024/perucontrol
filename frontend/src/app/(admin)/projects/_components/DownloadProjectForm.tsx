@@ -1148,8 +1148,8 @@ export function DownloadProjectForm({
                             open={sendOpen}
                             setOpen={setSendOpen}
                             documentName="Ficha de Operaciones"
-                            startingEmail={project.client.email}
-                            startingNumber={project.client.phoneNumber}
+                            startingEmail={project.client?.email?.value ?? ""}
+                            startingNumber={project.client?.phoneNumber?.value ?? ""}
                             pdfLoadAction={async() => GenerateOperationSheetPDF(appointment.id!)}
                             emailSendAction={async(d) => SendOperationSheetPDFViaEmail(appointment.id!, d)}
                             whatsappSendAction={async(d) => SendOperationSheetPDFViaWhatsapp(appointment.id!, d)}

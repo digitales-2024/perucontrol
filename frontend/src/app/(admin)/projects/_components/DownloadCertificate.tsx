@@ -454,8 +454,8 @@ export function DownloadCertificateForm({
                             open={sendOpen}
                             setOpen={setSendOpen}
                             documentName="Certificado"
-                            startingEmail={project.client?.email ?? ""}
-                            startingNumber={project.client.phoneNumber}
+                            startingEmail={project.client?.email?.value ?? ""}
+                            startingNumber={project.client?.phoneNumber?.value ?? ""}
                             pdfLoadAction={async() => GenerateCertificatePDF(certificate.id!)}
                             emailSendAction={async(d) => SendCertificatePDFViaEmail(certificate.id!, d)}
                             whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(certificate.id!, d)}

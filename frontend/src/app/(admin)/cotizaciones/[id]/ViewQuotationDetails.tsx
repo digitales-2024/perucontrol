@@ -143,8 +143,8 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         open={sendOpen}
                                         setOpen={setSendOpen}
                                         documentName="Cotización"
-                                        startingEmail={quotation.client.email}
-                                        startingNumber={quotation.client.phoneNumber}
+                                        startingEmail={quotation.client?.email?.value ?? ""}
+                                        startingNumber={quotation.client?.phoneNumber?.value ?? ""}
                                         pdfLoadAction={async() =>
                                         {
                                             const [[data], err] = await GeneratePdf(quotation.id!);
@@ -240,9 +240,9 @@ export function ViewQuotationDetails({ quotation }: { quotation: components["sch
                                         {quotation.client?.name === "-" ? quotation.client?.razonSocial : quotation.client?.name}
                                     </h4>
                                     <p className="text-xs md:text-sm text-muted-foreground">
-                                        {quotation.client?.typeDocument.toUpperCase()}
+                                        {quotation.client?.documentInfo?.type?.toUpperCase()}
                                         :
-                                        {quotation.client?.typeDocumentValue}
+                                        {quotation.client?.documentInfo?.value}
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 px-4 rounded-lg">

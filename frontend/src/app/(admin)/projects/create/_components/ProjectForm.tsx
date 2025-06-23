@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 interface ProjectFormProps {
-    clients: Array<components["schemas"]["Client"]>;
+    clients: Array<components["schemas"]["LegacyClient"]>;
     services: Array<components["schemas"]["Service"]>;
     quotations: Array<components["schemas"]["Quotation2"]>;
 }

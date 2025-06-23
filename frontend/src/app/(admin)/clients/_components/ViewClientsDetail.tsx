@@ -18,10 +18,38 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 
+// Helper function to convert Client to LegacyClient format
+function clientToLegacyClient(client: components["schemas"]["Client"]): components["schemas"]["LegacyClient"]
+{
+    return {
+        id: client.id,
+        clientNumber: client.clientNumber,
+        typeDocument: client.documentInfo?.type ?? "",
+        typeDocumentValue: client.documentInfo?.value ?? "",
+        razonSocial: client.razonSocial,
+        businessType: client.businessType,
+        name: client.name ?? "",
+        fiscalAddress: client.fiscalAddress?.value ?? "",
+        email: client.email?.value ?? "",
+        phoneNumber: client.phoneNumber?.value ?? "",
+        contactName: client.contactName,
+        clientLocations: client.locations?.map((loc) => ({
+            id: loc.id,
+            address: loc.address?.value ?? "",
+            createdAt: loc.createdAt,
+            modifiedAt: loc.modifiedAt,
+            isActive: loc.isActive,
+        })) ?? [],
+        createdAt: client.createdAt,
+        modifiedAt: client.modifiedAt,
+        isActive: client.isActive,
+    };
+}
+
 interface ViewClientDetailsProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    client: components["schemas"]["LegacyClient"]
+    client: components["schemas"]["LegacyClient"] | components["schemas"]["Client"]
     showTrigger?: boolean
 }
 
@@ -29,6 +57,9 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
 {
     const [isOpen, setIsOpen] = useState(open);
     const isMobile = useIsMobile();
+
+    // Convert Client to LegacyClient if needed
+    const legacyClient = "typeDocument" in client ? client : clientToLegacyClient(client as components["schemas"]["Client"]);
 
     // Sincronizar el estado interno con el prop open
     useEffect(() =>
@@ -72,7 +103,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                             </DialogTitle>
                         </div>
                         <ScrollArea className="max-h-[calc(100vh-200px)] pr-4">
-                            <ClientDetailsDesktop client={client} />
+                            <ClientDetailsDesktop client={legacyClient} />
                         </ScrollArea>
                     </div>
                 </DialogContent>
@@ -101,7 +132,7 @@ export function ViewClientDetails({ open, onOpenChange, client, showTrigger = tr
                 </DrawerHeader>
                 <div className="px-4 pb-4 flex-1">
                     <ScrollArea className="h-[calc(100vh-330px)]">
-                        <ClientDetailsMobile client={client} />
+                        <ClientDetailsMobile client={legacyClient} />
                     </ScrollArea>
                 </div>
             </DrawerContent>

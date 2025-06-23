@@ -52,7 +52,7 @@ export const columns: Array<ColumnDef<Quotation>> = [
 
             const isActive = row.original.isActive;
             const inactiveClass = !isActive ? "line-through text-red-500" : "";
-            const name = client.typeDocument === "ruc" ? client.razonSocial : client.name;
+            const name = client.documentInfo?.type === "ruc" ? client.razonSocial : client.name;
 
             return (
                 <div className={`grid grid-cols-[1rem_auto] gap-2 items-center ${inactiveClass}`}>

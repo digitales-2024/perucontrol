@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 
 interface ClientDataProps {
-    clients: Array<components["schemas"]["Client"]>
+    clients: Array<components["schemas"]["LegacyClient"]>
     services: Array<components["schemas"]["Service"]>
     quotations: Array<components["schemas"]["Quotation2"]>
     onServicesChange: (services: Array<string>) => void;
@@ -52,7 +52,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
             value: client.id ?? "",
             label:
                 client.name !== "" && client.name !== "-"
-                    ? client.name
+                    ? client.name ?? ""
                     : client.razonSocial ?? "-",
         })) ?? [];
 
@@ -69,7 +69,7 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
         {
             setValue("clientId", selectedQuotation.client?.id ?? "");
             setValue("quotationId", selectedQuotation.id ?? null);
-            setValue("address", selectedQuotation.client?.fiscalAddress ?? "");
+            setValue("address", selectedQuotation.client?.fiscalAddress?.value ?? "");
             setValue(
                 "services",
                 selectedQuotation.services?.map((service) => service.id).filter((id): id is string => !!id) ?? [],
@@ -82,13 +82,13 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
             {
                 const addressOptions = [
                     ...(selectedClient.fiscalAddress
-                        ? [{ value: selectedClient.fiscalAddress, label: `${selectedClient.fiscalAddress}` }]
+                        ? [{ value: selectedClient.fiscalAddress, label: selectedClient.fiscalAddress }]
                         : []),
                     ...(selectedClient.clientLocations
                         ?.filter((location) => location.address?.trim() !== "") // Filtrar direcciones vacías
                         .map((location) => ({
-                            value: location.address,
-                            label: location.address,
+                            value: location.address ?? "",
+                            label: location.address ?? "",
                         })) ?? []),
                 ];
                 setClientAddressOptions(addressOptions);
@@ -115,8 +115,8 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
                     .map((location) => ({
-                        value: location.address,
-                        label: location.address,
+                        value: location.address ?? "",
+                        label: location.address ?? "",
                     })) ?? []),
             ];
             setClientAddressOptions(addressOptions);
@@ -138,8 +138,8 @@ export function ClientData({ clients, services, quotations, onServicesChange }: 
                     ? [{ value: selectedClient.fiscalAddress, label: selectedClient.fiscalAddress }]
                     : []),
                 ...(selectedClient.clientLocations?.map((location) => ({
-                    value: location.address,
-                    label: location.address,
+                    value: location.address ?? "",
+                    label: location.address ?? "",
                 })) ?? []),
             ];
 

@@ -6,7 +6,7 @@ import { components } from "@/types/api";
 interface QuotationContextProps {
   quotations: Array<components["schemas"]["Quotation2"]>;
   terms: Array<components["schemas"]["TermsAndConditions"]>;
-  clients: Array<components["schemas"]["Client"]>;
+  clients: Array<components["schemas"]["LegacyClient"]>;
   services: Array<components["schemas"]["Service"]>;
 }
 

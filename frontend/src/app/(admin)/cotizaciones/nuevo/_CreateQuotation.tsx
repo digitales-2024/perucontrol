@@ -41,7 +41,6 @@ const serviceIcons: Record<string, React.ReactNode> = {
 };
 
 type Terms = components["schemas"]["TermsAndConditions"];
-type Clients = components["schemas"]["Client"];
 type Services = paths["/api/Service"]["get"]["responses"]["200"]["content"]["application/json"];
 
 interface QuotationService {
@@ -62,7 +61,7 @@ interface Service {
 
 export function CreateQuotation({ terms, clients, services }: {
     terms: Array<Terms>,
-    clients: Array<Clients>,
+    clients: Array<components["schemas"]["LegacyClient"]>,
     services: Services,
 })
 {
@@ -76,7 +75,7 @@ export function CreateQuotation({ terms, clients, services }: {
             value: client.id ?? "",
             label:
                 client.name !== "" && client.name !== "-"
-                    ? client.name
+                    ? client.name ?? ""
                     : client.razonSocial ?? "-",
         })) ?? [];
 
@@ -130,13 +129,13 @@ export function CreateQuotation({ terms, clients, services }: {
             // Agregar la dirección fiscal como una opción adicional
             const addressOptions = [
                 ...(selectedClient.fiscalAddress
-                    ? [{ value: selectedClient.fiscalAddress, label: `${selectedClient.fiscalAddress}` }]
+                    ? [{ value: selectedClient.fiscalAddress, label: selectedClient.fiscalAddress }]
                     : []),
                 ...(selectedClient.clientLocations
                     ?.filter((location) => location.address?.trim() !== "") // Filtrando si hay direcciones vacias
                     .map((location) => ({
-                        value: location.address,
-                        label: location.address,
+                        value: location.address ?? "",
+                        label: location.address ?? "",
                     })) ?? []),
             ];
             setClientAddressOptions(addressOptions);

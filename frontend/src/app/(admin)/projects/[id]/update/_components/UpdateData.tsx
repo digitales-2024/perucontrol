@@ -20,7 +20,7 @@ import { Project } from "../../../types";
 import { toast } from "sonner";
 
 interface UpdateClientDataProps {
-    clients: Array<components["schemas"]["Client"]>
+    clients: Array<components["schemas"]["LegacyClient"]>
     services: Array<components["schemas"]["Service"]>
     project: Project
 }
@@ -84,7 +84,7 @@ export function UpdateClientData({ clients, services, project }: UpdateClientDat
             }
 
             // Agregar las direcciones de las ubicaciones del cliente
-            selectedClient.clientLocations.forEach((location) =>
+            selectedClient.clientLocations?.forEach((location) =>
             {
                 if (location.address)
                 { // Asegúrate de que la dirección no sea nula
