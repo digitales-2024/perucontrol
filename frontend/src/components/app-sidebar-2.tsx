@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+    BriefcaseBusiness,
     BugOff,
     HandCoins,
     PieChart,
@@ -40,6 +41,21 @@ const data = {
                 {
                     title: "Nuevo cliente",
                     url: "/clients/nuevo",
+                },
+            ],
+        },
+        {
+            title: "Proveedores",
+            url: "#",
+            icon: BriefcaseBusiness,
+            items: [
+                {
+                    title: "Todos los proveedores",
+                    url: "/suppliers",
+                },
+                {
+                    title: "Nuevo proveedor",
+                    url: "/suppliers/nuevo",
                 },
             ],
         },
