@@ -69,6 +69,70 @@ public class CsvExportService
         return Encoding.UTF8.GetBytes(csv.ToString());
     }
 
+    
+    public byte[] ExportSuppliersToCsv(
+        IEnumerable<Supplier> suppliers,
+        DateTime? startDate = null,
+        DateTime? endDate = null
+    )
+    {
+        // Apply date filtering if parameters are provided
+        var filteredSuppliers = suppliers.AsQueryable();
+    
+        if (startDate.HasValue)
+        {
+            filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt >= startDate.Value);
+        }
+        else
+        {
+            // If no start date, use Unix epoch start (January 1, 1970)
+            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt >= unixStart);
+        }
+    
+        if (endDate.HasValue)
+        {
+            // Include the entire end date (until end of day)
+            var endOfDay = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt <= endOfDay);
+        }
+        else
+        {
+            // If no end date, use current UTC time
+            filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt <= DateTime.UtcNow);
+        }
+    
+        var finalSuppliers = filteredSuppliers.ToList();
+    
+        var csv = new StringBuilder();
+    
+        // Header
+        csv.AppendLine(
+            "SupplierNumber,RucNumber,BusinessName,BusinessType,Name,FiscalAddress,Email,PhoneNumber,ContactName,IsActive,CreatedAt,ModifiedAt"
+        );
+    
+        // Data rows
+        foreach (var supplier in finalSuppliers)
+        {
+            csv.AppendLine(
+                $"{supplier.SupplierNumber},"
+                    + $"\"{EscapeCsvValue(supplier.RucNumber)}\","
+                    + $"\"{EscapeCsvValue(supplier.BusinessName)}\","
+                    + $"\"{EscapeCsvValue(supplier.BusinessType)}\","
+                    + $"\"{EscapeCsvValue(supplier.Name)}\","
+                    + $"\"{EscapeCsvValue(supplier.FiscalAddress)}\","
+                    + $"\"{EscapeCsvValue(supplier.Email)}\","
+                    + $"\"{EscapeCsvValue(supplier.PhoneNumber)}\","
+                    + $"\"{EscapeCsvValue(supplier.ContactName)}\","
+                    + $"{supplier.IsActive},"
+                    + $"{supplier.CreatedAt:yyyy-MM-dd HH:mm:ss},"
+                    + $"{supplier.ModifiedAt:yyyy-MM-dd HH:mm:ss}"
+            );
+        }
+    
+        return Encoding.UTF8.GetBytes(csv.ToString());
+    }
+
     public byte[] ExportQuotationsToCsv(
         IEnumerable<Quotation> quotations,
         DateTime? startDate = null,
