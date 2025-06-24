@@ -268,7 +268,9 @@ public class OperationSheetController(
             );
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
+        var scaledFileBytes = odsTemplate.ScaleOds(odsBytes, 100);
+
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(scaledFileBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, new BadRequestObjectResult(pdfErr));
