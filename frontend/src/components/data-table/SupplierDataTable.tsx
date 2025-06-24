@@ -283,10 +283,9 @@ export function SupplierTable<T extends object>({
                                             )}
                                         </TableCell>
                                     ))}
-                                    {((actionButtons?.length ?? 0) > 0 ||
-										(dropdownActions?.length ?? 0) > 0) && (
+                                    {((actionButtons?.length ?? 0) > 0 || (dropdownActions?.length ?? 0) > 0) && (
                                         <TableCell className="px-4 py-3">
-    <div
+                                            <div
                                                 className="flex items-center justify-end space-x-1"
                                                 onClick={(e) => e.stopPropagation()
                                                 }
@@ -357,26 +356,24 @@ export function SupplierTable<T extends object>({
                                                     );
                                                 })}
 
-                                                {dropdownActions &&
-													dropdownActions.length >
-														0 && (
+                                                {dropdownActions && dropdownActions.length > 0 && (
                                                     <DropdownMenu>
-    <DropdownMenuTrigger
+                                                        <DropdownMenuTrigger
                                                             asChild
                                                         >
                                                             <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-        >
-            <span className="sr-only">
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-8 w-8 p-0"
+                                                            >
+                                                                <span className="sr-only">
                                                                     Abrir
                                                                     menú
                                                                 </span>
-            <MoreHorizontal className="h-4 w-4" />
-        </Button>
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
                                                         </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
+                                                        <DropdownMenuContent align="end">
                                                             {dropdownActions.map((
                                                                 action,
                                                                 index,
@@ -418,10 +415,10 @@ export function SupplierTable<T extends object>({
                                                                 );
                                                             })}
                                                         </DropdownMenuContent>
-</DropdownMenu>
+                                                    </DropdownMenu>
                                                 )}
                                             </div>
-</TableCell>
+                                        </TableCell>
                                     )}
                                 </TableRow>
                             ))

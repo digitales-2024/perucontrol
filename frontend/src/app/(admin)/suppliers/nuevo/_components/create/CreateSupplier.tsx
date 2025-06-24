@@ -172,9 +172,7 @@ export const CreateSupplier = () =>
                                                 </div>
                                             </FormControl>
                                             <FormMessage />
-                                            {field.value &&
-												field.value.length > 0 &&
-												field.value.length !== 11 && (
+                                            {field.value && field.value.length > 0 && field.value.length !== 11 && (
                                                 <p className="text-sm text-amber-600 mt-1">
                                                     El RUC debe tener
                                                     exactamente 11 dígitos
