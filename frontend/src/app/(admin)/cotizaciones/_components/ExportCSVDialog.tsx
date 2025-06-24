@@ -17,8 +17,7 @@ import { Download, Calendar } from "lucide-react";
 import { toastWrapper } from "@/types/toasts";
 import { ExportQuotationsCSV } from "../actions";
 
-interface ExportCSVDialogProps
-{
+interface ExportCSVDialogProps {
     trigger?: React.ReactNode;
 }
 
@@ -78,7 +77,7 @@ export function ExportCSVDialog({ trigger }: ExportCSVDialogProps)
             })(),
             {
                 loading: "Exportando cotizaciones...",
-                success: "CSV exportado exitosamente",
+                success: "Excel exportado exitosamente",
             },
         );
 
@@ -91,7 +90,7 @@ export function ExportCSVDialog({ trigger }: ExportCSVDialogProps)
                 {trigger ?? (
                     <Button variant="outline" size="sm">
                         <Download className="h-4 w-4 mr-2" />
-                        Exportar CSV
+                        Exportar Excel
                     </Button>
                 )}
             </DialogTrigger>
@@ -99,7 +98,7 @@ export function ExportCSVDialog({ trigger }: ExportCSVDialogProps)
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Download className="h-5 w-5 text-primary" />
-                        Exportar Cotizaciones a CSV
+                        Exportar Cotizaciones a Excel
                     </DialogTitle>
                     <DialogDescription>
                         Selecciona un rango de fechas para filtrar las cotizaciones por fecha de creación.
@@ -162,7 +161,7 @@ export function ExportCSVDialog({ trigger }: ExportCSVDialogProps)
                         className="flex items-center gap-2"
                     >
                         <Download className="h-4 w-4" />
-                        {loading ? "Exportando..." : "Exportar CSV"}
+                        {loading ? "Exportando..." : "Exportar Excel"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

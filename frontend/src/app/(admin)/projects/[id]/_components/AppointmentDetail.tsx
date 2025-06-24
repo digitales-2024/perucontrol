@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy, Clock } from "lucide-react";
+import { Calendar, CheckIcon, Flag, Pencil, Rat, FileIcon, ListChecks, CircleOff, XCircle, Copy, Clock, Bug, Target, HelpCircle, Hash } from "lucide-react";
 import { useState } from "react";
 import { DocumentButton } from "./DocumentButton";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
@@ -12,6 +12,7 @@ import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppoi
 import { MurinoMapSection } from "./MurinoMapSection";
 import { TreatmentSummary } from "./TreatmentSummary";
 import { ReportsList } from "./ReportsList";
+import Link from "next/link";
 
 interface AppointmentDetailsProps {
     projectId: string;
@@ -254,8 +255,8 @@ export function AppointmentDetails({
                     <div className="bg-white p-4 border rounded-lg shadow-sm">
                         {/* Card Header for Horas */}
                         <div className="flex items-center gap-3 pb-3 border-b mb-4">
-                            <div className="bg-amber-100 p-2 rounded-lg">
-                                <Clock className="h-6 w-6 text-amber-600" />
+                            <div className="bg-teal-100 p-2 rounded-lg">
+                                <Clock className="h-6 w-6 text-teal-600" />
                             </div>
                             <h3 className="text-lg font-semibold text-zinc-800">
                                 Horas del servicio
@@ -304,25 +305,243 @@ export function AppointmentDetails({
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Servicios
-            <div className="space-y-2 pt-6 border-t mt-6">
-                <h3 className="text-base font-medium text-zinc-800">
-                    Servicios programados
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <div className="flex flex-col justify-center gap-2 p-2 bg-gray-50 rounded">
-                        {appointment.servicesIds.map((id) => (
-                            <Badge key={id} variant="outline" className="text-xs md:text-sm bg-blue-50 mr-1 mb-1">
-                                {servicesMap.get(id) ?? "-"}
-                            </Badge>
-                        ))}
+                    {/* Ficha de operaciones */}
+                    <div className="bg-white p-4 border rounded-lg shadow-sm">
+                        <div className="flex items-center gap-3 pb-3 border-b mb-4">
+                            <div className="bg-primary p-2 rounded-lg">
+                                <Pencil className="h-6 w-6 text-primary-foreground" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-zinc-800">
+                                Ficha de Operaciones
+                            </h3>
+                        </div>
+
+                        {/* Contenido del Resumen */}
+                        <div className="space-y-4">
+                            {/* Diagnóstico */}
+                            <div className="space-y-3">
+                                {/* Insectos */}
+                                <div className="flex gap-2 items-center">
+                                    <Bug className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Insectos:
+                                    </span>
+                                    {appointment.operationSheet.insects ? (
+                                        <span className="text-sm text-zinc-800">
+                                            {appointment.operationSheet.insects}
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Roedores */}
+                                <div className="flex gap-2 items-center">
+                                    <Rat className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Roedores:
+                                    </span>
+                                    {appointment.operationSheet.rodents ? (
+                                        <span className="text-sm text-zinc-800">
+                                            {appointment.operationSheet.rodents}
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Consumo de Roedores */}
+                                <div className="flex gap-2 items-start">
+                                    <ListChecks className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <div className="flex-1">
+                                        <span className="text-sm text-zinc-600">
+                                            Consumo de Roedores:
+                                        </span>
+                                        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-zinc-500">
+                                                    Parcial:
+                                                </span>
+                                                {appointment.operationSheet.rodentConsumptionPartial ? (
+                                                    <span className="text-zinc-800">
+                                                        {appointment.operationSheet.rodentConsumptionPartial}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-zinc-600 text-xs">
+                                                        --Sin llenar--
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-zinc-500">
+                                                    Total:
+                                                </span>
+                                                {appointment.operationSheet.rodentConsumptionTotal ? (
+                                                    <span className="text-zinc-800">
+                                                        {appointment.operationSheet.rodentConsumptionTotal}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-zinc-600 text-xs">
+                                                        --Sin llenar--
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-zinc-500">
+                                                    Deteriorado:
+                                                </span>
+                                                {appointment.operationSheet.rodentConsumptionDeteriorated ? (
+                                                    <span className="text-zinc-800">
+                                                        {appointment.operationSheet.rodentConsumptionDeteriorated}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-zinc-600 text-xs">
+                                                        --Sin llenar--
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-zinc-500">
+                                                    Ninguno:
+                                                </span>
+                                                {appointment.operationSheet.rodentConsumptionNone ? (
+                                                    <span className="text-zinc-800">
+                                                        {appointment.operationSheet.rodentConsumptionNone}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-zinc-600 text-xs">
+                                                        --Sin llenar--
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Otras plagas */}
+                                <div className="flex gap-2 items-center">
+                                    <Flag className="h-4 w-4 text-red-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Otras plagas:
+                                    </span>
+                                    {appointment.operationSheet.otherPlagues ? (
+                                        <span className="text-sm text-zinc-800">
+                                            {appointment.operationSheet.otherPlagues}
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div>
+                                <Link
+                                    href={`/projects/${projectId}/evento/${appointment.id}/ficha`}
+                                >
+                                    <Button
+                                        disabled={appointment.cancelled}
+                                        className="w-full"
+                                        size="sm"
+                                    >
+                                        Editar Ficha de Operaciones
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Registro de Roedores */}
+                    <div className="bg-white p-4 border rounded-lg shadow-sm">
+                        <div className="flex items-center gap-3 pb-3 border-b mb-4">
+                            <div className="bg-amber-200 p-2 rounded-lg">
+                                <Rat className="h-6 w-6 text-amber-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-zinc-800">
+                                Registro de Roedores
+                            </h3>
+                        </div>
+
+                        {/* Contenido del Resumen */}
+                        <div className="space-y-4">
+                            {/* Diagnóstico */}
+                            <div className="space-y-3">
+
+                                {/* Àreas */}
+                                <div className="flex gap-2 items-center">
+                                    <Hash className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Áreas controladas
+                                    </span>
+                                    {appointment.operationSheet.insects ? (
+                                        <span className="text-sm text-zinc-800">
+                                            XX áreas
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Insectos */}
+                                <div className="flex gap-2 items-center">
+                                    <Target className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Incidencias
+                                    </span>
+                                    {appointment.operationSheet.insects ? (
+                                        <span className="text-sm text-zinc-800">
+                                            Incidencias de Roedores
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Roedores */}
+                                <div className="flex gap-2 items-center">
+                                    <HelpCircle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                                    <span className="text-sm text-zinc-600">
+                                        Medidas correctivas:
+                                    </span>
+                                    {appointment.operationSheet.rodents ? (
+                                        <span className="text-sm text-zinc-800">
+                                            Medidas correctivas
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-zinc-600">
+                                            --Sin llenar--
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div>
+                                <Link
+                                    href={`/projects/${projectId}/evento/${appointment.id}/roedores`}
+                                >
+                                    <Button
+                                        disabled={appointment.cancelled}
+                                        className="w-full"
+                                        size="sm"
+                                    >
+                                        Editar Consumo de Roedores
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-*/}
 
             {/* Resumen de Productos y Áreas */}
             <TreatmentSummary
@@ -331,29 +550,20 @@ export function AppointmentDetails({
                 treatmentProducts={appointment.treatmentProducts ?? []}
             />
 
-            {/* Lista de Informes */}
-            <ReportsList
-                appointmentId={appointment.id!}
-                projectId={projectId}
-            />
-
             {/* Nueva sección: Mapa Murino */}
             <MurinoMapSection
                 murinoMapBase64={murinoMapBase64}
                 appointmentId={appointment.id!}
             />
 
+            {/* Lista de Informes */}
+            <ReportsList
+                appointmentId={appointment.id!}
+                projectId={projectId}
+            />
+
             {/* Acciones */}
             <div className="flex flex-col flex-wrap sm:flex-row justify-end gap-2 pt-4 border-t">
-                <DocumentButton
-                    href={`/projects/${projectId}/evento/${appointment.id}/roedores`}
-                    disabled={actionsDisabled}
-                    disabledTitle={actionsDisabled ? "No se puede ver el registro de roedores si no se ha completado la fecha real" : ""}
-                    icon={<Rat className="mr-2 h-4 w-4" />}
-                >
-                    Registro de roedores
-                </DocumentButton>
-
                 <DocumentButton
                     href={`/projects/${projectId}/evento/${appointment.id}/certificado`}
                     disabled={actionsDisabled}
@@ -362,25 +572,6 @@ export function AppointmentDetails({
                 >
                     Certificado
                 </DocumentButton>
-
-                <DocumentButton
-                    href={`/projects/${projectId}/evento/${appointment.id}/ficha`}
-                    disabled={actionsDisabled}
-                    disabledTitle={actionsDisabled ? "No se puede ver la ficha de operaciones si no se ha completado la fecha real" : ""}
-                    icon={<ListChecks className="mr-2 h-4 w-4" />}
-                >
-                    Ficha de Operaciones
-                </DocumentButton>
-
-                {/*
-                <Button
-                    onClick={() => setDeactivateOpen(true)}
-                    variant="destructive"
-                    className="text-xs md:text-sm"
-                >
-                    Eliminar
-                </Button>
-                */}
             </div>
 
             {/* Diálogos */}

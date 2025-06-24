@@ -41,6 +41,11 @@ public class EmailService
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
 
+        // ADD secondary perucontrol address
+#if !DEBUG
+        toAddresses.Add(_settings.SecondaryToAddress);
+#endif
+
         // Add all recipient addresses
         foreach (var address in toAddresses)
         {
@@ -49,7 +54,110 @@ public class EmailService
 
         message.Subject = subject;
 
-        var builder = new BodyBuilder { HtmlBody = htmlBody, TextBody = textBody };
+        var finalMessageHtml = $$"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                <title>{{subject}}</title>
+                <style>
+                    /* Reset styles for email clients */
+                    .email-body {
+                        margin: 0;
+                        padding: 0;
+                        min-width: 100%;
+                        background-color: #f7f7f7;
+                        font-family: Arial, sans-serif;
+                    }
+
+                    .email-container {max - width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                    }
+
+                    .content-table {width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    .column-divider {border - right: 1px solid #e0e0e0;
+                    }
+
+                    .image-container {padding: 15px;
+                        text-align: center;
+                    }
+
+                    .company-info {padding: 20px;
+                        line-height: 1.6;
+                        color: #333333;
+                    }
+
+                    .responsive-image {max - width: 100%;
+                        height: auto;
+                        display: block;
+                        margin: 0 auto;
+                    }
+
+                    /* Mobile responsiveness */
+                    @media screen and (max-width: 480px) {
+                        .column - divider {
+                            border-right: none;
+                            border-bottom: 1px solid #e0e0e0;
+                        }
+
+                        .mobile-stack {
+                            display: block !important;
+                            width: 100% !important;
+                        }
+                    }
+                </style>
+            </head>
+            <body class="email-body">
+                <div class="email-container">
+                    {{htmlBody}}
+                    <table class="content-table">
+                        <tr>
+                            <!-- LEFT COLUMN WITH IMAGES -->
+                            <td class="mobile-stack column-divider" width="40%" style="vertical-align: top;">
+                                <div class="image-container">
+                                    <img src="{{_settings.PublicEmailEndpoint}}/icons/smc_logo.jpg"
+                                        width="250"
+                                        height="153"
+                                        alt="Certificados por SMC"
+                                        class="responsive-image"
+                                        style="margin-bottom: 15px;">
+
+                                    <img src="{{_settings.PublicEmailEndpoint}}/icons/snas_logo.png"
+                                        width="250"
+                                        height="115"
+                                        alt="Certificados por SNAS"
+                                        class="responsive-image">
+                                </div>
+                            </td>
+
+                            <!-- VERTICAL DIVIDER LINE (visible only on desktop) -->
+                            <td style="width: 1px; background-color: #e0e0e0;" class="mobile-hide"></td>
+
+                            <!-- RIGHT COLUMN WITH COMPANY INFO -->
+                            <td class="mobile-stack" width="60%" style="vertical-align: top;">
+                                <div class="company-info">
+                                    <p><strong>Saludos Cordiales</strong></p>
+                                    <p><strong>Atte.</strong></p>
+                                    <p><strong>Lic. Egda Isabel Garavito Saavedra</strong></p>
+                                    <p><strong>ADMINISTRACIÓN</strong></p>
+                                    <p><strong>PERUCONTROL.COM EIRL</strong></p>
+                                    <p><strong>Email: servicios@perucontrol.com</strong></p>
+                                    <p><strong>Cel: 986951290</strong></p>
+                                    <p><strong>Web: www.perucontrol.com</strong></p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </body>
+            </html>
+            """;
+        var builder = new BodyBuilder { HtmlBody = finalMessageHtml, TextBody = textBody };
 
         // Add attachments if any
         if (attachments != null)

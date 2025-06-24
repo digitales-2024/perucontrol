@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using PeruControl.Configuration;
 using PeruControl.Controllers;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 using PeruControl.Utils;
 using Scalar.AspNetCore;
@@ -114,12 +114,16 @@ var modules = new IModule[]
     new AppointmentModule(),
     new PeruControl.Controllers.Product.ProductModule(),
     new TreatmentProductModule(),
+    new OperationSheetModule(),
     new PeruControl.Controllers.TreatmentArea.TreatmentAreaModule(),
 };
 foreach (var module in modules)
 {
     module.SetupModule(builder.Services, builder.Configuration);
 }
+builder.Services.AddScoped<RodentRegisterService>();
+builder.Services.AddScoped<CertificateService>();
+builder.Services.AddScoped<PeruControl.Controllers.QuotationService>();
 
 // Register global services
 builder.Services.AddScoped<ExcelTemplateService>();

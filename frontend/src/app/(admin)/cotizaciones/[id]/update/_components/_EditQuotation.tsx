@@ -137,7 +137,7 @@ export default function EditQuotation({
         {
             append({
                 id: null,
-                amount: 1,
+                amount: "1",
                 nameDescription: service.name,
                 price: 0,
                 accesories: "",
@@ -277,8 +277,7 @@ export default function EditQuotation({
                                                     placeholder="Selecciona un cliente"
                                                     emptyMessage="No se encontraron clientes"
                                                     value={
-                                                        clientsOptions.find((option) => option.value ===
-                                                            field.value) ?? undefined
+                                                        clientsOptions.find((option) => option.value === field.value) ?? undefined
                                                     }
                                                     onValueChange={(option) =>
                                                     {
@@ -535,11 +534,11 @@ export default function EditQuotation({
                                             render={({ field }) => (
                                                 <FormItem className="mt-4">
                                                     <FormLabel>
-                                                        Accesorios
+                                                        Equipos a utilizar
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Textarea
-                                                            placeholder="Accesorios requeridos para el servicio"
+                                                            placeholder="Equipos requeridos para el servicio"
                                                             className="resize-none"
                                                             {...field}
                                                         />
@@ -561,7 +560,7 @@ export default function EditQuotation({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Desinsectante
+                                                Insecticida
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
@@ -581,11 +580,11 @@ export default function EditQuotation({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Derodentizante
+                                                Rodenticida
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Derodentizante"
+                                                    placeholder="Rodenticida"
                                                     className="resize-none"
                                                     {...field}
                                                 />

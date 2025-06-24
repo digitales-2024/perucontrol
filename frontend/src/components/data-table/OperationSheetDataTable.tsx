@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, Calendar, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Search, X, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -9,8 +9,6 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
     flexRender,
     getCoreRowModel,
@@ -26,48 +24,39 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "../ui/badge";
 
 export type StatusOption = {
-  value: string
-  label: string
-  count: number
-}
-
-type ActionButton<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    value: string
+    label: string
+    count: number
 }
 
 type DropdownAction<T> = {
-  label: string
-  icon?: React.ReactNode
-  onClick: (row: T) => void
-  disabled?: (row: T) => boolean
-  className?: string
+    label: string
+    icon?: React.ReactNode
+    onClick: (row: T) => void
+    disabled?: (row: T) => boolean
+    className?: string
 }
 
 type DateRangeField = {
-  field: string
-  format: string
+    field: string
+    format: string
 }
 
 interface OperationSheetTableProps<T> {
-  columns: Array<ColumnDef<T>>
-  data: Array<T>
-  statusOptions?: Array<StatusOption>
-  statusField?: keyof T | string
-  statusFilter?: (data: Array<T>, status: string) => Array<T>
-  igvFilter?: (data: Array<T>, igv: string) => Array<T>,
-  stateFilter?: (data: Array<T>, state: string) => Array<T>,
-  searchFields?: Array<keyof T | string>
-  dateRangeField?: DateRangeField | null
-  actionButtons?: Array<ActionButton<T>>
-  dropdownActions?: Array<DropdownAction<T>>
-  onRowClick?: (row: T) => void
-  toolbarActions?: React.ReactNode
-  emptyMessage?: string
-  className?: string
+    columns: Array<ColumnDef<T>>
+    data: Array<T>
+    statusOptions?: Array<StatusOption>
+    statusField?: keyof T | string
+    statusFilter?: (data: Array<T>, status: string) => Array<T>
+    igvFilter?: (data: Array<T>, igv: string) => Array<T>,
+    stateFilter?: (data: Array<T>, state: string) => Array<T>,
+    searchFields?: Array<keyof T | string>
+    dateRangeField?: DateRangeField | null
+    dropdownActions?: Array<DropdownAction<T>>
+    onRowClick?: (row: T) => void
+    toolbarActions?: React.ReactNode
+    emptyMessage?: string
+    className?: string
 }
 
 export function OperationSheetTable<T extends object>({
@@ -80,7 +69,6 @@ export function OperationSheetTable<T extends object>({
     stateFilter,
     searchFields,
     dateRangeField,
-    actionButtons,
     dropdownActions,
     onRowClick,
     toolbarActions,
@@ -332,11 +320,6 @@ export function OperationSheetTable<T extends object>({
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
-                                {((actionButtons?.length ?? 0) > 0 || (dropdownActions?.length ?? 0) > 0) && (
-                                    <TableHead className="px-4 py-3 text-black text-center hover:bg-transparent font-bold text-sm md:text-base">
-                                        Acciones
-                                    </TableHead>
-                                )}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -354,82 +337,12 @@ export function OperationSheetTable<T extends object>({
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
-                                    {((actionButtons?.length ?? 0) > 0 || (dropdownActions?.length ?? 0) > 0) && (
-                                        <TableCell className="px-4 py-3">
-                                            <div className="flex items-center justify-end space-x-1" onClick={(e) => e.stopPropagation()}>
-                                                {actionButtons?.map((action, index) =>
-                                                {
-                                                    const isDisabled = action.disabled ? action.disabled(row.original) : false;
-                                                    return (
-                                                        <TooltipProvider key={index}>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className={cn("h-8 w-8 p-0 ml-2", action.className)}
-                                                                        onClick={() => !isDisabled && action.onClick(row.original)}
-                                                                        disabled={isDisabled}
-                                                                    >
-                                                                        <span className="sr-only">
-                                                                            {action.label}
-                                                                        </span>
-                                                                        {action.icon}
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p>
-                                                                        {action.label}
-                                                                    </p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
-                                                    );
-                                                })}
-
-                                                {dropdownActions && dropdownActions.length > 0 && (
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                                                <span className="sr-only">
-                                                                    Abrir menú
-                                                                </span>
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            {dropdownActions.map((action, index) =>
-                                                            {
-                                                                const isDisabled = action.disabled ? action.disabled(row.original) : false;
-                                                                return (
-                                                                    <DropdownMenuItem
-                                                                        key={index}
-                                                                        onClick={() => !isDisabled && action.onClick(row.original)}
-                                                                        disabled={isDisabled}
-                                                                        className={cn("cursor-pointer", action.className)}
-                                                                    >
-                                                                        {action.icon && (
-                                                                            <span className="mr-2">
-                                                                                {action.icon}
-                                                                            </span>)}
-                                                                        <span>
-                                                                            {action.label}
-                                                                        </span>
-                                                                    </DropdownMenuItem>
-                                                                );
-                                                            })}
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    )}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={columns.length + (actionButtons?.length || dropdownActions?.length ? 1 : 0)}
+                                    colSpan={columns.length + (dropdownActions?.length ? 1 : 0)}
                                     className="px-4 py-6 text-center text-gray-500"
                                 >
                                     {emptyMessage}

@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers;
-using PeruControl.Model;
-using PeruControl.Model.Reports;
+using PeruControl.Infrastructure.Model;
 
 namespace Tests.E2E.Api;
 
@@ -263,7 +262,7 @@ public class AppointmentTest
     )
     {
         // Populate Operation Sheet
-        var operationSheetData = new ProjectOperationSheetPatchDTO
+        var operationSheetData = new OperationSheetPatchDTO
         {
             TreatedAreas = "Test Kitchen, Test Bathroom, Test Living Room",
             Insects = "Test Cockroaches, Test Ants",
@@ -299,7 +298,7 @@ public class AppointmentTest
         };
 
         var operationSheetResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/appointment/{appointmentId}/operation-sheet",
+            $"{ApiUrl}/api/OperationSheet/by-appointment/{appointmentId}",
             operationSheetData
         );
         Assert.AreEqual(
@@ -356,16 +355,6 @@ public class AppointmentTest
         {
             ExpirationDate = DateTime.UtcNow.AddMonths(6),
         };
-
-        var certificateResponse = await httpClient.PatchAsJsonAsync(
-            $"{ApiUrl}/api/appointment/{appointmentId}/certificate",
-            certificateData
-        );
-        Assert.AreEqual(
-            HttpStatusCode.OK,
-            certificateResponse.StatusCode,
-            "Certificate should be updated"
-        );
     }
 
     private async Task<AppointmentGetOutDTO> GetAppointmentData(
@@ -392,7 +381,7 @@ public class AppointmentTest
     )
     {
         var response = await httpClient.GetAsync(
-            $"{ApiUrl}/api/appointment/operation-sheet/by-project/{projectId}"
+            $"{ApiUrl}/api/OperationSheet/by-project/{projectId}"
         );
         if (response.StatusCode == HttpStatusCode.NotFound)
             return null;

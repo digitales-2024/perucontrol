@@ -35,7 +35,7 @@ Para ejecutarlo:
 - Dentro de la carpeta `src` ejecutar (nótese que no hay parametro -d):
 
 ```sh
-docker-compose -f Deployment/docker-compose.local.yml up
+docker compose -f +devops/docker-compose.local.yml up
 ```
 
 - Esto levantará el backend, postgres y pgadmin.
@@ -75,7 +75,7 @@ Se establecen en el seeder, archivo `Model/DatabaseSeeder.cs`
 Luego de crear entitades en la carpeta `Model`, crea una migración con
 el comando:
 ```sh
-dotnet ef migrations add NombreDeLaMigracion
+dotnet ef migrations add "MigrationsName" --project Infrastructure/PeruControl.Infrastructure.csproj --startup-project src/PeruControl.csproj
 ```
 
 ## Aplicar Migraciones

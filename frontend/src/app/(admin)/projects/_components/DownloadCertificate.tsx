@@ -1,7 +1,6 @@
 "use client";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Bug,
@@ -26,9 +25,9 @@ import { useRouter } from "next/navigation";
 import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import { certificateSchema, CertificateSchema } from "../schemas";
-import { GenerateCertificateWord, GenerateCertificatePDF, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../actions";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
 import { useState } from "react";
+import { GenerateCertificatePDF, GenerateCertificateWord, SaveCertificateData, SendCertificatePDFViaEmail, SendCertificatePDFViaWhatsapp } from "../[id]/evento/[app_id]/certificado/actions";
 
 export function DownloadCertificateForm({
     onOpenChange,
@@ -91,7 +90,7 @@ export function DownloadCertificateForm({
             };
 
             const [, error] = await toastWrapper(
-                SaveCertificateData(appointment.id!, body),
+                SaveCertificateData(certificate.id!, body),
                 {
                     loading: "Guardando datos...",
                     success: "Datos guardados correctamente",
@@ -115,7 +114,7 @@ export function DownloadCertificateForm({
 
     const downloadPDF = async() =>
     {
-        const [blob, err] = await toastWrapper(GenerateCertificatePDF(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateCertificatePDF(certificate.id!), {
             loading: "Generando archivo",
             success: "PDF generado",
             error: (e) => `Error al generar el PDF: ${e.message}`,
@@ -139,7 +138,7 @@ export function DownloadCertificateForm({
     const downloadWord = async() =>
     {
         // Genera el Word
-        const [blob, err] = await toastWrapper(GenerateCertificateWord(appointment.id!), {
+        const [blob, err] = await toastWrapper(GenerateCertificateWord(certificate.id!), {
             loading: "Generando archivo",
             success: "Word generado",
             error: (e) => `Error al generar el Word: ${e.message}`,
@@ -170,7 +169,7 @@ export function DownloadCertificateForm({
             expirationDate,
         };
         const [result, error] = await toastWrapper(
-            SaveCertificateData(appointment.id!, body),
+            SaveCertificateData(certificate.id!, body),
             {
                 loading: "Guardando datos...",
                 success: "Datos guardados correctamente",
@@ -208,22 +207,15 @@ export function DownloadCertificateForm({
                             <Separator />
                             <CardContent className="pt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="certificateNumber"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <FileDigit className="h-4 w-4 text-blue-500" />
-                                                    Número de Certificado
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input disabled placeholder="Ej: 001641" {...field} className="border-gray-300" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div>
+                                        <div className="flex items-center gap-2 font-medium mb-2">
+                                            <FileDigit className="h-4 w-4 text-blue-500" />
+                                            Número de Certificado
+                                        </div>
+                                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm">
+                                            {certificateNumber || "No asignado"}
+                                        </div>
+                                    </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <FormField
@@ -302,56 +294,35 @@ export function DownloadCertificateForm({
                             <Separator />
                             <CardContent className="pt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="clientName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <Building2 className="h-4 w-4 text-blue-500" />
-                                                    Razón Social/Nombre
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Nombre del cliente" disabled {...field} className="border-gray-300" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div>
+                                        <div className="flex items-center gap-2 font-medium mb-2">
+                                            <Building2 className="h-4 w-4 text-blue-500" />
+                                            Razón Social/Nombre
+                                        </div>
+                                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm">
+                                            {project.client?.name ?? project.client?.razonSocial ?? "No especificado"}
+                                        </div>
+                                    </div>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="businessType"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <Building2 className="h-4 w-4 text-blue-500" />
-                                                    Giro del Negocio
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Giro del negocio" disabled {...field} className="border-gray-300" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div>
+                                        <div className="flex items-center gap-2 font-medium mb-2">
+                                            <Building2 className="h-4 w-4 text-blue-500" />
+                                            Giro del Negocio
+                                        </div>
+                                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm">
+                                            {project.client?.businessType ?? "No especificado"}
+                                        </div>
+                                    </div>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="location"
-                                        render={({ field }) => (
-                                            <FormItem className="md:col-span-2">
-                                                <FormLabel className="flex items-center gap-2 font-medium">
-                                                    <MapPin className="h-4 w-4 text-blue-500" />
-                                                    Ubicación
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Dirección completa" disabled {...field} className="border-gray-300" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div className="md:col-span-2">
+                                        <div className="flex items-center gap-2 font-medium mb-2">
+                                            <MapPin className="h-4 w-4 text-blue-500" />
+                                            Ubicación
+                                        </div>
+                                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm">
+                                            {project?.address ?? "No especificada"}
+                                        </div>
+                                    </div>
 
                                 </div>
                             </CardContent>
@@ -368,127 +339,73 @@ export function DownloadCertificateForm({
                             <CardContent className="pt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="services.fumigation"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Fumigación
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Fumigación")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Fumigación
+                                            </span>
+                                        </div>
 
-                                        <FormField
-                                            control={form.control}
-                                            name="services.disinsection"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Desinsectación
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Desinsectación")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Desinsectación
+                                            </span>
+                                        </div>
 
-                                        <FormField
-                                            control={form.control}
-                                            name="services.deratization"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Desratización
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Desratización")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Desratización
+                                            </span>
+                                        </div>
 
-                                        <FormField
-                                            control={form.control}
-                                            name="services.disinfection"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Desinfección
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Desinfección")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Desinfección
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="services.tankCleaning"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal text-sm">
-                                                        Limpieza y desinfección de tanques elevados y cisternas de agua
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Limpieza de tanque")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Limpieza y desinfección de tanques elevados y cisternas de agua
+                                            </span>
+                                        </div>
 
-                                        <FormField
-                                            control={form.control}
-                                            name="services.drinkingWaterTankCleaning"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-blue-500"
-                                                            disabled
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal text-sm">
-                                                        Limpieza y desinfección de tanques cisternas de agua potable
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex flex-row items-start space-x-3 space-y-0">
+                                            <Checkbox
+                                                checked={serviceNames.includes("Limpieza de tanque")}
+                                                disabled
+                                                className="data-[state=checked]:bg-blue-500"
+                                            />
+                                            <span className="font-normal text-sm">
+                                                Limpieza y desinfección de tanques cisternas de agua potable
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -539,9 +456,9 @@ export function DownloadCertificateForm({
                             documentName="Certificado"
                             startingEmail={project.client?.email ?? ""}
                             startingNumber={project.client.phoneNumber}
-                            pdfLoadAction={async() => GenerateCertificatePDF(appointment.id!)}
-                            emailSendAction={async(d) => SendCertificatePDFViaEmail(appointment.id!, d)}
-                            whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(appointment.id!, d)}
+                            pdfLoadAction={async() => GenerateCertificatePDF(certificate.id!)}
+                            emailSendAction={async(d) => SendCertificatePDFViaEmail(certificate.id!, d)}
+                            whatsappSendAction={async(d) => SendCertificatePDFViaWhatsapp(certificate.id!, d)}
                         />
                     </div>
 

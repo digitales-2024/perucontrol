@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 

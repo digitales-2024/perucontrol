@@ -1,4 +1,4 @@
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
@@ -7,8 +7,8 @@ public class AppointmentCreateDTO
     public DateTime DueDate { get; set; }
     public List<Guid> ServiceIds { get; set; } = new List<Guid>();
 
-    public TimeSpan? EnterTime { get; set; } // <-- Add this
-    public TimeSpan? LeaveTime { get; set; } // <-- Add this
+    public TimeOnly? EnterTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
 
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
@@ -19,8 +19,8 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     public int? OrderNumber { get; set; } = null;
     public DateTime? DueDate { get; set; }
     public DateTime? ActualDate { get; set; }
-    public TimeSpan? EnterTime { get; set; } // <-- Add this
-    public TimeSpan? LeaveTime { get; set; } // <-- Add this
+    public TimeOnly? EnterTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
 
@@ -43,7 +43,7 @@ public class AppointmentPatchDTO : IEntityPatcher<ProjectAppointment>
     }
 }
 
-public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
+public class AppointmentGetDTO2 : PeruControl.Infrastructure.Model.BaseModel
 {
     public int AppointmentNumber { get; set; }
     public int? CertificateNumber { get; set; }
@@ -53,8 +53,8 @@ public class AppointmentGetDTO2 : PeruControl.Model.BaseModel
     public virtual Project Project { get; set; } = null!;
     public virtual Client Client { get; set; } = null!;
 
-    public TimeSpan? EnterTime { get; set; } // <-- Add this
-    public TimeSpan? LeaveTime { get; set; } // <-- Add this
+    public TimeOnly? EnterTime { get; set; } // <-- Add this
+    public TimeOnly? LeaveTime { get; set; } // <-- Add this
 
     public string? MurinoMapKey { get; set; }
     public string? MurinoMapUrl { get; set; }
@@ -67,6 +67,6 @@ public class AppointmentCancelDTO
 
 public class UpdateAppointmentTimesDto
 {
-    public TimeSpan? EnterTime { get; set; }
-    public TimeSpan? LeaveTime { get; set; }
+    public TimeOnly? EnterTime { get; set; }
+    public TimeOnly? LeaveTime { get; set; }
 }

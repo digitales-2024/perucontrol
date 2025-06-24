@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using PeruControl.Controllers; // For ProjectCreateDTO, ProjectStatus, AppointmentCreateDTOThroughProject
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace Tests.E2E.Api;
 

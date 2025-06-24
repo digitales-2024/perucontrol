@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 using PeruControl.Utils;
 
@@ -11,6 +11,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
     {
         var appointment = await db
             .ProjectAppointments.Include(app => app.Services)
+            .Include(app => app.ProjectOperationSheet)
             .Include(app => app.Project)
             .ThenInclude(proj => proj.Services)
             .Include(app => app.TreatmentAreas)
@@ -72,8 +73,8 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             { "{empresa_autorizada}", "PeruControl" },
             { "{direccion_servicio}", project.Address },
             { "{fecha_servicio}", rodentRegister.ServiceDate.ToString("dd/MM/yyyy") },
-            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_ingreso}", appointment.EnterTime?.ToString("hh:mm tt") ?? "" },
+            { "{hora_salida}", appointment.LeaveTime?.ToString("hh:mm tt") ?? "" },
             { "{incidencias_encontradas}", rodentRegister.Incidents ?? "" },
             { "{medidas_correctivas}", rodentRegister.CorrectiveMeasures ?? "" },
             { "{contacto_empresa}", appointment.CompanyRepresentative ?? "" },
@@ -392,7 +393,6 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                     EquipmentUsed = treatmentProduct.EquipmentUsed,
                     AppliedTechnique = treatmentProduct.AppliedTechnique,
                     AppliedService = treatmentProduct.AppliedService,
-                    AppliedTime = treatmentProduct.AppliedTime,
                 };
                 db.Add(newTreatmentProduct);
             }
@@ -400,7 +400,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             // 7. Duplicate TreatmentAreas
             foreach (var treatmentArea in previousAppointment.TreatmentAreas)
             {
-                var newTreatmentArea = new PeruControl.Model.TreatmentArea
+                var newTreatmentArea = new PeruControl.Infrastructure.Model.TreatmentArea
                 {
                     ProjectAppointment = targetAppointment,
                     AreaName = treatmentArea.AreaName,
@@ -430,23 +430,25 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
         }
     }
 
-    private static PeruControl.Model.Reports.ContentSection CloneContentSection(
-        PeruControl.Model.Reports.ContentSection section
+    private static PeruControl.Infrastructure.Model.Reports.ContentSection CloneContentSection(
+        PeruControl.Infrastructure.Model.Reports.ContentSection section
     )
     {
         return section switch
         {
-            PeruControl.Model.Reports.TextBlock textBlock => new PeruControl.Model.Reports.TextBlock
-            {
-                Title = textBlock.Title,
-                Numbering = textBlock.Numbering,
-                Level = textBlock.Level,
-                Sections = textBlock.Sections.Select(CloneContentSection).ToArray(),
-            },
-            PeruControl.Model.Reports.TextArea textArea => new PeruControl.Model.Reports.TextArea
-            {
-                Content = textArea.Content,
-            },
+            PeruControl.Infrastructure.Model.Reports.TextBlock textBlock =>
+                new PeruControl.Infrastructure.Model.Reports.TextBlock
+                {
+                    Title = textBlock.Title,
+                    Numbering = textBlock.Numbering,
+                    Level = textBlock.Level,
+                    Sections = textBlock.Sections.Select(CloneContentSection).ToArray(),
+                },
+            PeruControl.Infrastructure.Model.Reports.TextArea textArea =>
+                new PeruControl.Infrastructure.Model.Reports.TextArea
+                {
+                    Content = textArea.Content,
+                },
             _ => throw new ArgumentException($"Unknown content section type: {section.GetType()}"),
         };
     }

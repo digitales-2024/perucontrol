@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PeruControl.Controllers;
 using PeruControl.Controllers.Reports; // For Report3DTO, UpdateReport3DTO
-using PeruControl.Model;
-using PeruControl.Model.Reports; // For ContentSection, TextArea
+using PeruControl.Infrastructure.Model;
+using PeruControl.Infrastructure.Model.Reports; // For ContentSection, TextArea
 
 namespace Tests.E2E.Api;
 

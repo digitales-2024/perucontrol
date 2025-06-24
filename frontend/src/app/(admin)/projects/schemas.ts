@@ -77,6 +77,8 @@ export type ProjectFormFields = {
 
 export const downloadProjectSchema = z.object({
     projectAppointmentId: z.string(),
+    enterTime: z.string().optional(),
+    leaveTime: z.string().optional(),
     operationDate: z.string(),
     razonSocial: z.string(),
     address: z.string(),
@@ -198,7 +200,6 @@ export const TreatmentProductSchema = z.object({
             equipmentUsed: z.string().nullable(),
             appliedTechnique: z.string().nullable(),
             appliedService: z.string().nullable(),
-            appliedTime: z.string().nullable(),
         }))
         .min(1, "Debe haber al menos un producto"),
 });

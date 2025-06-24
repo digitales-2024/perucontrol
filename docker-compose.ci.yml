@@ -12,6 +12,9 @@ services:
       Jwt__Issuer: "acide.win"
       Jwt__Audience: "acide.win"
       Jwt__ExpirationMinutes: 60
+      R2Config__AccountId: "your-cloudflare-account-id"
+      R2Config__AccessKey: "your-access-key"
+      R2Config__SecretKey: "your-secret-key"
     networks:
       - perucontrol-network-ci-{BUILD_NUMBER}
 

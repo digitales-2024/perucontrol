@@ -3,7 +3,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.Extensions.Options;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 
@@ -148,7 +148,11 @@ public class S3Service
 
         // Store the file in temp storage
         _dbContext.WhatsappTemps.Add(
-            new Model.Whatsapp.WhatsappTemp { FileKey = result.Key, BucketName = result.BucketName }
+            new Infrastructure.Model.Whatsapp.WhatsappTemp
+            {
+                FileKey = result.Key,
+                BucketName = result.BucketName,
+            }
         );
         await _dbContext.SaveChangesAsync();
 

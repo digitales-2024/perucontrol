@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers;
@@ -516,7 +516,11 @@ public class ProjectController(
         }
 
         // send
-        return File(excelBytes, "application/vnd.ms-excel", "schedule.xlsx");
+        return File(
+            excelBytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "schedule.xlsx"
+        );
     }
 
     [EndpointSummary("Generate Schedule PDF")]
@@ -586,7 +590,7 @@ public class ProjectController(
             return NotFound("Error generando excel");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (pdfErr != "")
         {
             return BadRequest(pdfErr);
@@ -633,9 +637,13 @@ public class ProjectController(
 
         var (ok, serviceError) = await emailService.SendEmailAsync(
             to: email,
-            subject: "Cronograma de Proyecto PDF",
-            htmlBody: "",
-            textBody: "",
+            subject: "ENVIO DE CRONOGRAMA DE PERUCONTROL.COM EIRL",
+            htmlBody: """
+                <p>¡Buen día Estimados!</p>
+                <br />
+                <p>Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo.</p>
+            """,
+            textBody: "¡Buen día Estimados! Adjuntamos lo solicitado, de tener alguna duda, no duden en comunicarse conmigo. ",
             attachments:
             [
                 new()
@@ -724,7 +732,7 @@ public class ProjectController(
             return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.convertToPdf(odsBytes, "ods");
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, $"Error convirtiendo a PDF: {pdfErr}");

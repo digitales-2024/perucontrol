@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Utils; // Needed for Result types
 
 namespace PeruControl.Controllers.Product;

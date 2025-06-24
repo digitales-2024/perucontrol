@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
-import { ViewQuotationDetails } from "../_components/ViewQuotationDetails";
+import { ViewQuotationDetails } from "./ViewQuotationDetails";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Props {

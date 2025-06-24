@@ -14,7 +14,7 @@ public class ProductGetAllOutputDTO
     public required bool IsActive { get; set; }
     public required IList<ProductAmountSolventOutputDTO> ProductAmountSolvents { get; set; }
 
-    public static ProductGetAllOutputDTO FromProduct(Model.Product p) =>
+    public static ProductGetAllOutputDTO FromProduct(Infrastructure.Model.Product p) =>
         new()
         {
             Id = p.Id,

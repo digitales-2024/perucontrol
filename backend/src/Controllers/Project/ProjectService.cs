@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 using PeruControl.Services;
 
 namespace PeruControl.Controllers;
@@ -94,14 +94,20 @@ public class ProjectService(
                     {
                         ServiceDate = app.DueDate,
                         RodentAreas = createDTO
-                            .Ambients.Select(ambientName => new Model.RodentArea
+                            .Ambients.Select(ambientName => new Infrastructure.Model.RodentArea
                             {
                                 Name = ambientName,
                                 CebaderoTrampa = 0,
-                                Frequency = Model.QuotationFrequency.Monthly,
-                                RodentConsumption = Model.RodentConsumption.NoConsumption,
-                                RodentResult = Model.RodentResult.Inactive,
-                                RodentMaterials = Model.RodentMaterials.RodenticideOrBait,
+                                Frequency = Infrastructure.Model.QuotationFrequency.Monthly,
+                                RodentConsumption = Infrastructure
+                                    .Model
+                                    .RodentConsumption
+                                    .NoConsumption,
+                                RodentResult = Infrastructure.Model.RodentResult.Inactive,
+                                RodentMaterials = Infrastructure
+                                    .Model
+                                    .RodentMaterials
+                                    .RodenticideOrBait,
                                 ProductName = "",
                                 ProductDose = "",
                             })
@@ -113,7 +119,7 @@ public class ProjectService(
                         TreatedAreas = treatmentAreasNamesString,
                     },
                     TreatmentAreas = createDTO
-                        .Ambients.Select(areaName => new Model.TreatmentArea
+                        .Ambients.Select(areaName => new Infrastructure.Model.TreatmentArea
                         {
                             AreaName = areaName,
                         })

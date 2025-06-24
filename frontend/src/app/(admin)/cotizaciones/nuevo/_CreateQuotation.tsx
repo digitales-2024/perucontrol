@@ -192,7 +192,7 @@ export function CreateQuotation({ terms, clients, services }: {
                     if (!currentServices.some((s) => s.nameDescription === service.name))
                     {
                         append({
-                            amount: 1,
+                            amount: "1",
                             nameDescription: service.name,
                             price: 0,
                             accesories: "",
@@ -546,10 +546,8 @@ export function CreateQuotation({ terms, clients, services }: {
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
-                                                    min={1}
                                                     {...field}
-                                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                                                    onChange={(e) => field.onChange(e.target.value)}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -607,11 +605,11 @@ export function CreateQuotation({ terms, clients, services }: {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Accesorios
+                                                Equipos a utilizar
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Accesorios a utilizar en el servicio"
+                                                    placeholder="Equipos a utilizar en el servicio"
                                                     className="resize-none"
                                                     {...field}
                                                 />
@@ -633,7 +631,7 @@ export function CreateQuotation({ terms, clients, services }: {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Desinsectante
+                                        Insecticida
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
@@ -653,11 +651,11 @@ export function CreateQuotation({ terms, clients, services }: {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Derodentizante
+                                        Rodenticida
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="Derodentizante"
+                                            placeholder="Rodenticida"
                                             className="resize-none"
                                             {...field}
                                         />

@@ -2,7 +2,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PeruControl.Controllers;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 
@@ -126,14 +126,25 @@ public class ExcelTemplateService
             .Where(c => c.DataType != null && c.DataType == CellValues.SharedString)
             .ToList();
 
+        // Track which shared string indices we've already processed for this worksheet
+        var processedIndices = new HashSet<int>();
+
         foreach (var cell in cells)
         {
             var stringId = int.Parse(cell.InnerText);
+
+            // Skip if we've already processed this shared string index for this worksheet
+            if (processedIndices.Contains(stringId))
+                continue;
+
             var sharedStringItem = sharedStringPart
                 .SharedStringTable.Elements<SharedStringItem>()
-                .ElementAt(stringId);
+                .ElementAtOrDefault(stringId);
 
-            // Check if this cell has placeholders by examining all text parts
+            if (sharedStringItem == null)
+                continue;
+
+            // Check if this shared string has placeholders by examining all text parts
             bool hasPlaceholder = false;
             foreach (var textElement in sharedStringItem.Descendants<Text>())
             {
@@ -146,57 +157,48 @@ public class ExcelTemplateService
 
             if (hasPlaceholder)
             {
-                // Create new inline string to replace the shared string
-                InlineString inlineString = new InlineString();
+                // Mark this index as processed
+                processedIndices.Add(stringId);
 
-                // Clone all elements from the shared string, preserving formatting
-                foreach (var element in sharedStringItem.ChildElements)
+                // Replace placeholders directly in the shared string item
+                // Handle rich text (with formatting)
+                if (sharedStringItem.Elements<Run>().Any())
                 {
-                    if (element is Run run)
+                    foreach (var run in sharedStringItem.Elements<Run>())
                     {
-                        Run newRun = (Run)run.CloneNode(true);
-
-                        // Replace placeholders in this run
-                        foreach (var textElement in newRun.Descendants<Text>())
+                        var textElement = run.Elements<Text>().FirstOrDefault();
+                        if (textElement != null)
                         {
-                            string newText = textElement.Text;
+                            string text = textElement.Text;
                             foreach (var placeholder in placeholders)
                             {
-                                if (newText.Contains(placeholder.Key))
+                                if (text.Contains(placeholder.Key))
                                 {
-                                    newText = newText.Replace(placeholder.Key, placeholder.Value);
+                                    text = text.Replace(placeholder.Key, placeholder.Value);
                                 }
                             }
-                            textElement.Text = newText;
+                            textElement.Text = text;
                         }
-
-                        inlineString.AppendChild(newRun);
-                    }
-                    else if (element is Text text)
-                    {
-                        // Handle direct text elements (rare in formatted content but possible)
-                        string newText = text.Text;
-                        foreach (var placeholder in placeholders)
-                        {
-                            if (newText.Contains(placeholder.Key))
-                            {
-                                newText = newText.Replace(placeholder.Key, placeholder.Value);
-                            }
-                        }
-
-                        Text newText2 = new Text(newText);
-                        inlineString.AppendChild(newText2);
                     }
                 }
-
-                // Replace the cell's content with our new inline string
-                cell.DataType = CellValues.InlineString;
-                cell.RemoveAllChildren();
-                cell.AppendChild(inlineString);
+                // Handle plain text
+                else if (sharedStringItem.Elements<Text>().Any())
+                {
+                    var textElement = sharedStringItem.Elements<Text>().First();
+                    string text = textElement.Text;
+                    foreach (var placeholder in placeholders)
+                    {
+                        if (text.Contains(placeholder.Key))
+                        {
+                            text = text.Replace(placeholder.Key, placeholder.Value);
+                        }
+                    }
+                    textElement.Text = text;
+                }
             }
         }
 
-        worksheetPart.Worksheet.Save();
+        // Don't save individual worksheet here - let the main method handle saving
     }
 
     private void ReplaceInRichText(
@@ -233,7 +235,7 @@ public class ExcelTemplateService
     public byte[] GenerateMultiMonthSchedule(
         string templatePath,
         Dictionary<DateTime, List<AppointmentInfo>> appointmentsByMonth,
-        Project project
+        Infrastructure.Model.Project project
     )
     {
         // Load the template excel
@@ -259,6 +261,15 @@ public class ExcelTemplateService
             (WorksheetPart)workbookPart.GetPartById(firstSheet.Id!)
             ?? throw new Exception("Couldnt load template worksheet part");
 
+        // Get the shared string part once outside the loop
+        var sharedStringPart =
+            workbookPart.SharedStringTablePart
+            ?? throw new Exception("Couldn't load shared string part");
+
+        // Get the current maximum sheet ID to avoid conflicts
+        var maxSheetId = sheets.Max(s => s.SheetId?.Value ?? 0);
+        var currentSheetId = maxSheetId;
+
         // Create a new worksheet for each month in the dictionary
         foreach (var entry in appointmentsByMonth)
         {
@@ -269,23 +280,18 @@ public class ExcelTemplateService
 
             // Set the worksheet name to the month name
             string sheetName = month.GetSpanishMonthYear();
-            var sheetId = (uint)(sheets.Count + 1); // Generate ID
+            currentSheetId++; // Increment for each new sheet
             var relationshipId = workbookPart.GetIdOfPart(clonedWorksheetPart);
 
             // Add the new sheet after the last sheet
             var sheet = new Sheet()
             {
                 Id = relationshipId,
-                SheetId = sheetId,
+                SheetId = currentSheetId,
                 Name = sheetName,
             };
 
             workbook.GetFirstChild<Sheets>()?.AppendChild(sheet);
-
-            // Replace placeholders in the cloned worksheet
-            var sharedStringPart =
-                workbookPart.SharedStringTablePart
-                ?? throw new Exception("Couldn't load shared string part");
 
             // Collect unique service combinations for this month
             var uniqueServiceCombinations = entry
@@ -369,8 +375,23 @@ public class ExcelTemplateService
             ReplaceSharedStringPlaceholders2(clonedWorksheetPart, sharedStringPart, placeholders);
         }
 
+        // Save the shared string table once after all modifications
+        sharedStringPart.SharedStringTable.Save();
+
+        // Remove the template sheet safely
+        var sheetsElement = workbook.GetFirstChild<Sheets>();
+        if (sheetsElement != null && firstSheet != null)
+        {
+            // Make sure we have other sheets before removing the template
+            if (sheetsElement.Elements<Sheet>().Count() > 1)
+            {
+                sheetsElement.RemoveChild(firstSheet);
+                // Remove the corresponding worksheet part
+                workbookPart.DeletePart(templateWorksheetPart);
+            }
+        }
+
         // Save the excel file
-        workbook.GetFirstChild<Sheets>()?.RemoveChild(firstSheet);
         document.Save();
 
         // Return the excel file as a byte array

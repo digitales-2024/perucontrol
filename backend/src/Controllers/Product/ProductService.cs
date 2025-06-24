@@ -1,4 +1,4 @@
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers.Product;
 
@@ -6,7 +6,7 @@ public class ProductService(DatabaseContext context)
 {
     public async Task CreateProduct(ProductCreateInputDTO dto)
     {
-        var product = new Model.Product
+        var product = new Infrastructure.Model.Product
         {
             Name = dto.Name,
             ActiveIngredient = dto.ActiveIngredient,

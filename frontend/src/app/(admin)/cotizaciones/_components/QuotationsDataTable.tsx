@@ -241,7 +241,7 @@ export function QuotationDataTable({ columns, data }: DataTableProps)
 
 const downloadExcel = async(id: string) =>
 {
-    const [blob, err] = await toastWrapper(GenerateExcel(id), {
+    const [[blob, filename], err] = await toastWrapper(GenerateExcel(id), {
         loading: "Generando archivo",
         success: "Excel generado",
     });
@@ -254,14 +254,14 @@ const downloadExcel = async(id: string) =>
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `cotizacion_${id}.xlsx`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
 };
 
 const downloadPdf = async(id: string) =>
 {
-    const [blob, err] = await toastWrapper(GeneratePdf(id), {
+    const [[blob, filename], err] = await toastWrapper(GeneratePdf(id), {
         loading: "Generando archivo",
         success: "Excel generado",
     });
@@ -274,7 +274,7 @@ const downloadPdf = async(id: string) =>
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `cotizacion_${id}.pdf`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
 };

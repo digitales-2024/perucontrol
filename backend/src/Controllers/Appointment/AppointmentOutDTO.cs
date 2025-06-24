@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Controllers;
 
@@ -9,14 +9,15 @@ public class AppointmentGetOutDTO
     public required Guid Id { get; init; }
     public required int AppointmentNumber { get; init; }
     public int? CertificateNumber { get; init; }
-    public TimeSpan? EnterTime { get; init; }
-    public TimeSpan? LeaveTime { get; init; }
+    public TimeOnly? EnterTime { get; init; }
+    public TimeOnly? LeaveTime { get; init; }
     public required DateTime DueDate { get; init; }
     public DateTime? ActualDate { get; init; }
     public required bool Cancelled { get; init; }
     public required DateTime CreatedAt { get; init; }
     public DateTime? ModifiedAt { get; init; }
     public required bool IsActive { get; init; }
+    public required ProjectOperationSheet OperationSheet { get; init; }
 
     // Ordered number within the project (based on due date)
     public required int OrderedNumber { get; init; }
@@ -51,6 +52,7 @@ public class AppointmentGetOutDTO
             CreatedAt = appointment.CreatedAt,
             ModifiedAt = appointment.ModifiedAt,
             OrderedNumber = orderedNumber,
+            OperationSheet = appointment.ProjectOperationSheet,
             Project = new ProjectBasicInfoDTO
             {
                 Id = appointment.Project.Id,
@@ -90,7 +92,7 @@ public class TreatmentAreaDTO
     public string? PerformedService { get; init; }
     public string? AppliedTechnique { get; init; }
 
-    public static TreatmentAreaDTO FromEntity(Model.TreatmentArea area)
+    public static TreatmentAreaDTO FromEntity(Infrastructure.Model.TreatmentArea area)
     {
         return new TreatmentAreaDTO
         {
@@ -113,7 +115,6 @@ public class TreatmentProductDTO
     public string? EquipmentUsed { get; init; }
     public string? AppliedTechnique { get; init; }
     public string? AppliedService { get; init; }
-    public string? AppliedTime { get; init; }
 
     public static TreatmentProductDTO FromEntity(TreatmentProduct product)
     {
@@ -131,7 +132,6 @@ public class TreatmentProductDTO
             EquipmentUsed = product.EquipmentUsed,
             AppliedTechnique = product.AppliedTechnique,
             AppliedService = product.AppliedService,
-            AppliedTime = product.AppliedTime,
         };
     }
 }

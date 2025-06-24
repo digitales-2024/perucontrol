@@ -1,5 +1,5 @@
 using System.Text;
-using PeruControl.Model;
+using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 
@@ -113,13 +113,15 @@ public class CsvExportService
         // Data rows
         foreach (var quotation in finalQuotations)
         {
-            var servicesString = quotation.Services != null 
-                ? string.Join("; ", quotation.Services.Select(s => s.Name))
-                : "";
+            var servicesString =
+                quotation.Services != null
+                    ? string.Join("; ", quotation.Services.Select(s => s.Name))
+                    : "";
 
-            var termsAndConditionsString = quotation.TermsAndConditions != null
-                ? string.Join("; ", quotation.TermsAndConditions)
-                : "";
+            var termsAndConditionsString =
+                quotation.TermsAndConditions != null
+                    ? string.Join("; ", quotation.TermsAndConditions)
+                    : "";
 
             csv.AppendLine(
                 $"{quotation.QuotationNumber},"
@@ -191,13 +193,13 @@ public class CsvExportService
         // Data rows
         foreach (var project in finalProjects)
         {
-            var servicesString = project.Services != null 
-                ? string.Join("; ", project.Services.Select(s => s.Name))
-                : "";
+            var servicesString =
+                project.Services != null
+                    ? string.Join("; ", project.Services.Select(s => s.Name))
+                    : "";
 
-            var ambientsString = project.Ambients != null
-                ? string.Join("; ", project.Ambients)
-                : "";
+            var ambientsString =
+                project.Ambients != null ? string.Join("; ", project.Ambients) : "";
 
             var appointmentsCount = project.Appointments?.Count ?? 0;
 

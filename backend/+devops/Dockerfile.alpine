@@ -1,0 +1,42 @@
+# Dockerfile para produccion
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine
+WORKDIR /app
+
+# Static operations
+# Install fontconfig
+RUN apk add --no-cache fontconfig
+# Copy fonts
+COPY src/Fonts /usr/local/share/fonts/
+# Update font cache
+RUN fc-cache -f -v
+
+# Install LibreOffice headless
+RUN apk add --no-cache libreoffice libreoffice-lang-en_us libreoffice-lang-es
+
+# Create symlink to ensure 'soffice' command works
+RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+
+# Create directory for LibreOffice user profile to avoid permissions issues
+RUN mkdir -p /tmp/.config && chmod 777 /tmp/.config
+
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Copy files and install
+COPY Tests.E2E ./Tests.E2E
+COPY Domain ./Domain
+COPY Infrastructure ./Infrastructure
+COPY src ./src
+COPY backend.sln .
+RUN HUSKY=0 dotnet restore --locked-mode
+
+
+# Build binary
+RUN HUSKY=0 dotnet publish src/PeruControl.csproj -c Release -r linux-musl-x64 -o out
+# Create a EF bundle for migrating the db
+RUN HUSKY=0 dotnet-ef migrations bundle --project src/PeruControl.csproj -r linux-musl-x64
+
+COPY +devops/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY src/Templates ./Templates
+
+CMD ["./docker-entrypoint.sh"]
