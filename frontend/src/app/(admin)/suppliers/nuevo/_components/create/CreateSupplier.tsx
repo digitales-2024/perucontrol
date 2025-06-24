@@ -178,7 +178,7 @@ export const CreateSupplier = () =>
                                                 <p className="text-sm text-amber-600 mt-1">
                                                     El RUC debe tener
                                                     exactamente 11 dígitos
-												</p>
+                                                </p>
                                             )}
                                         </FormItem>
                                     )}

@@ -21,9 +21,9 @@ export function DeleteSupplier({ open, onOpenChange, supplier, showTrigger = tru
     const onDeleteSuppliersHandler = async() =>
     {
         const [, err] = await toastWrapper(RemoveSupplier(supplier.id!), {
-			loading: "Eliminando proveedor...",
-			success: "Proveedor eliminado exitosamente!",
-		});
+            loading: "Eliminando proveedor...",
+            success: "Proveedor eliminado exitosamente!",
+        });
         if (err !== null)
         {
             return;

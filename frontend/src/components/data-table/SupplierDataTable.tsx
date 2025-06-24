@@ -286,7 +286,7 @@ export function SupplierTable<T extends object>({
                                     {((actionButtons?.length ?? 0) > 0 ||
 										(dropdownActions?.length ?? 0) > 0) && (
                                         <TableCell className="px-4 py-3">
-    																				<div
+    <div
                                                 className="flex items-center justify-end space-x-1"
                                                 onClick={(e) => e.stopPropagation()
                                                 }

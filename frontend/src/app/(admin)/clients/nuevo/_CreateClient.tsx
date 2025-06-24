@@ -215,12 +215,12 @@ export const CreateClient = () =>
 															0 &&
 														field.value.length !==
 															11 && (
-                                                            <p className="text-sm text-amber-600 mt-1">
-                                                                El RUC debe
-                                                                tener
-                                                                exactamente 11
-                                                                dígitos
-															</p>
+                                                        <p className="text-sm text-amber-600 mt-1">
+                                                            El RUC debe
+                                                            tener
+                                                            exactamente 11
+                                                            dígitos
+                                                        </p>
                                                     )}
                                                 </FormItem>
                                             )}
