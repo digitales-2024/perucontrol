@@ -11,9 +11,6 @@ export const supplierSchema = z.object({
     email: z.string().min(1, "El email es requerido")
         .email("El email no es válido"),
     contactName: z.string(),
-    supplierLocations: z.array(z.object({
-        address: z.string().nonempty("La dirección es requerida"),
-    })),
     phoneNumber: z.string().nonempty("El número de teléfono es requerido"),
 });
 

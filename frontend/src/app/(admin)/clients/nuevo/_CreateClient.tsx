@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader, Plus, Search, Trash2 } from "lucide-react";
+import { FileText, Loader, Plus, Search, Trash2 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +13,7 @@ import { clientSchema, type CreateClientSchema } from "../schemas";
 import { RegisterClient, SearchClientByRuc } from "../actions";
 import { toastWrapper } from "@/types/toasts";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const CreateClient = () =>
 {
@@ -50,12 +51,18 @@ export const CreateClient = () =>
     const handleSearchByRuc = async(ruc: string) =>
     {
         setLoading(true);
-        const [data, error] = await SearchClientByRuc(ruc);
+
+        const [data, error] = await toastWrapper(SearchClientByRuc(ruc), {
+            loading: "Buscando información del RUC...",
+            success: "Información encontrada y cargada exitosamente",
+        });
+
         if (error !== null)
         {
             console.error("Error searching client by RUC:", error);
+            setLoading(false);
+            return;
         }
-
         // Actualiza los campos del formulario con los datos obtenidos
         setValue("razonSocial", data.razonSocial ?? "");
         setValue("name", data.name ?? "");
@@ -83,7 +90,10 @@ export const CreateClient = () =>
     return (
         <div className="mt-5">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-2"
+                >
                     <div className="mx-4 grid gap-3">
                         <h3 className="text-lg font-bold mt-4">
                             Información del Cliente
@@ -131,34 +141,92 @@ export const CreateClient = () =>
                         {/* Campos condicionales */}
                         {typeDocument === "ruc" && (
                             <>
-                                <FormField
-                                    control={form.control}
-                                    name="typeDocumentValue"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-base">
-                                                RUC
-                                                <span className="text-red-500">
-                                                    *
-                                                </span>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="flex gap-2">
-                                                    <Input placeholder="Ingrese el RUC" {...field} />
-                                                    <Button
-                                                        type="button"
-                                                        className="px-3"
-                                                        onClick={() => handleSearchByRuc(field.value)}
-                                                        disabled={loading || !field.value}
-                                                    >
-                                                        {loading ? <Loader className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                                                    </Button>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <Card className="border-2 border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/30">
+                                    <CardHeader className="pb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-2 bg-blue-100 rounded-lg">
+                                                <Search className="h-5 w-5 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <CardTitle className="text-lg font-semibold text-blue-900">
+                                                    Búsqueda por RUC
+                                                </CardTitle>
+                                                <p className="text-sm text-blue-700 mt-1">
+                                                    Ingrese el RUC para
+                                                    autocompletar la información
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <FormField
+                                            control={form.control}
+                                            name="typeDocumentValue"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-base">
+                                                        RUC
+                                                        {" "}
+                                                        <span className="text-red-500">
+                                                            *
+                                                        </span>
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="flex gap-3">
+                                                            <div className="relative flex-1">
+                                                                <Input
+                                                                    placeholder="Ingrese el RUC (11 dígitos)"
+                                                                    {...field}
+                                                                    className="pl-10 h-12 text-base border-2 focus:border-blue-400"
+                                                                />
+                                                                <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                size="lg"
+                                                                className="px-6 h-12 bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200"
+                                                                onClick={() => handleSearchByRuc(field.value)
+                                                                }
+                                                                disabled={
+                                                                    loading ||
+																	!field.value ||
+																	field.value
+																	    .length !==
+																		11
+                                                                }
+                                                            >
+                                                                {loading ? (
+                                                                    <>
+                                                                        <Loader className="h-4 w-4 animate-spin mr-2" />
+                                                                        Buscando...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Search className="h-4 w-4 mr-2" />
+                                                                        Buscar
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                    {field.value &&
+														field.value.length >
+															0 &&
+														field.value.length !==
+															11 && (
+                                                            <p className="text-sm text-amber-600 mt-1">
+                                                                El RUC debe
+                                                                tener
+                                                                exactamente 11
+                                                                dígitos
+															</p>
+                                                    )}
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </CardContent>
+                                </Card>
                                 <FormField
                                     control={form.control}
                                     name="razonSocial"
@@ -171,7 +239,10 @@ export const CreateClient = () =>
                                                 </span>
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ingrese la razón social" {...field} />
+                                                <Input
+                                                    placeholder="Ingrese la razón social"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -187,7 +258,10 @@ export const CreateClient = () =>
                                                 Giro del Negocio
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Giro del Negocio" {...field} />
+                                                <Input
+                                                    placeholder="Giro del Negocio"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -205,7 +279,10 @@ export const CreateClient = () =>
                                                 </span>
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ingrese el nombre comercial" {...field} />
+                                                <Input
+                                                    placeholder="Ingrese el nombre comercial"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -220,7 +297,10 @@ export const CreateClient = () =>
                                                 Nombre de Contacto
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ingrese el nombre de contacto" {...field} />
+                                                <Input
+                                                    placeholder="Ingrese el nombre de contacto"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -244,7 +324,10 @@ export const CreateClient = () =>
                                                 </span>
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ingrese el DNI" {...field} />
+                                                <Input
+                                                    placeholder="Ingrese el DNI"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -264,7 +347,10 @@ export const CreateClient = () =>
                                                 </span>
                                             </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ingrese los nombres y apellidos" {...field} />
+                                                <Input
+                                                    placeholder="Ingrese los nombres y apellidos"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -295,7 +381,10 @@ export const CreateClient = () =>
                                         Dirección fiscal o principal del cliente
                                     </FormDescription>
                                     <FormControl>
-                                        <Input placeholder="Av. / Jr. / Calle Nro. Lt." {...field} />
+                                        <Input
+                                            placeholder="Av. / Jr. / Calle Nro. Lt."
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -316,7 +405,10 @@ export const CreateClient = () =>
                                             </span>
                                         </FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Ingrese el número de teléfono" {...field} />
+                                            <Input
+                                                placeholder="Ingrese el número de teléfono"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -336,7 +428,10 @@ export const CreateClient = () =>
                                             </span>
                                         </FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Ingrese el correo electrónico" {...field} />
+                                            <Input
+                                                placeholder="Ingrese el correo electrónico"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -351,7 +446,8 @@ export const CreateClient = () =>
                         </h3>
 
                         <FormDescription>
-                            Agregue direcciones adicionales donde el cliente pueda recibir servicios
+                            Agregue direcciones adicionales donde el cliente
+                            pueda recibir servicios
                         </FormDescription>
 
                         <Button
@@ -375,7 +471,10 @@ export const CreateClient = () =>
                                             render={({ field }) => (
                                                 <FormItem className="flex-1">
                                                     <FormControl>
-                                                        <Input placeholder={`Dirección adicional ${index}`} {...field} />
+                                                        <Input
+                                                            placeholder={`Dirección adicional ${index}`}
+                                                            {...field}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -397,7 +496,10 @@ export const CreateClient = () =>
                     </div>
 
                     <SheetFooter>
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                        <Button
+                            type="submit"
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                        >
                             Guardar
                         </Button>
                     </SheetFooter>

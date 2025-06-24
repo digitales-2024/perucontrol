@@ -7681,7 +7681,6 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            supplierLocations: components["schemas"]["SupplierLocation"][];
             phoneNumber: string;
             contactName?: string | null;
             /** Format: uuid */
@@ -7699,24 +7698,8 @@ export interface components {
             name: string;
             fiscalAddress: string;
             email: string;
-            supplierLocations?: components["schemas"]["SupplierLocationDTO"][] | null;
             phoneNumber: string;
             contactName?: string | null;
-        };
-        SupplierLocation: {
-            address: string;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
-        SupplierLocationDTO: {
-            /** Format: uuid */
-            id?: string | null;
-            address: string;
         };
         SupplierPatchDTO: {
             businessName?: string | null;
@@ -7726,7 +7709,6 @@ export interface components {
             email?: string | null;
             phoneNumber?: string | null;
             contactName?: string | null;
-            supplierLocations?: components["schemas"]["SupplierLocationDTO"][] | null;
         };
         TermsAndConditions: {
             name: string;

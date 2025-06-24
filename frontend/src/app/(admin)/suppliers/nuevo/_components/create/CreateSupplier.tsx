@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
     Loader,
-    Plus,
     Search,
-    Trash2,
     Building2,
     Phone,
     Mail,
@@ -14,7 +12,7 @@ import {
     User,
     FileText,
 } from "lucide-react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -26,7 +24,6 @@ import {
 } from "@/components/ui/form";
 import { SheetFooter } from "@/components/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,20 +51,10 @@ export const CreateSupplier = () =>
             fiscalAddress: "",
             email: "",
             contactName: "",
-            supplierLocations: [
-                {
-                    address: "",
-                },
-            ],
             phoneNumber: "",
         },
     });
     const { reset, setValue } = form;
-
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "supplierLocations",
-    });
 
     const handleSearchByRuc = async(ruc: string) =>
     {
@@ -188,10 +175,10 @@ export const CreateSupplier = () =>
                                             {field.value &&
 												field.value.length > 0 &&
 												field.value.length !== 11 && (
-<p className="text-sm text-amber-600 mt-1">
+                                                <p className="text-sm text-amber-600 mt-1">
                                                     El RUC debe tener
                                                     exactamente 11 dígitos
-													</p>
+												</p>
                                             )}
                                         </FormItem>
                                     )}
@@ -403,101 +390,6 @@ export const CreateSupplier = () =>
                                         )}
                                     />
                                 </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* DIRECCIONES ADICIONALES */}
-                        <Card className="shadow-sm">
-                            <CardHeader className="pb-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="h-5 w-5 text-gray-600" />
-                                        <div>
-                                            <CardTitle className="text-lg font-bold">
-                                                Direcciones Adicionales
-                                            </CardTitle>
-                                            <FormDescription className="mt-1">
-                                                Agregue direcciones adicionales
-                                                donde el proveedor pueda recibir
-                                                correspondencia
-                                            </FormDescription>
-                                        </div>
-                                    </div>
-                                    {fields.length > 0 && (
-                                        <Badge
-                                            variant="secondary"
-                                            className="ml-2"
-                                        >
-                                            {fields.length}
-                                            {" "}
-                                            {fields.length === 1
-                                                ? "dirección"
-                                                : "direcciones"}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="lg"
-                                    className="w-full h-12 border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-colors"
-                                    onClick={() => append({ address: "" })}
-                                >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Agregar nueva dirección
-                                </Button>
-
-                                {fields.length > 0 && (
-                                    <div className="space-y-3 mt-4">
-                                        {fields.map((field, index) => (
-                                            <div
-                                                key={field.id}
-                                                className="relative"
-                                            >
-                                                <div className="flex gap-3 items-start p-4 bg-gray-50 rounded-lg border">
-                                                    <div className="flex-shrink-0 mt-2">
-                                                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                                            <span className="text-xs font-medium text-blue-600">
-                                                                {index + 1}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`supplierLocations.${index}.address`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="flex-1">
-                                                                <FormControl>
-                                                                    <Input
-                                                                        placeholder={`Dirección adicional ${
-                                                                            index +
-																			1
-                                                                        }`}
-                                                                        {...field}
-                                                                        className="bg-white h-11 border-gray-200"
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-11 w-11 text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                                                        onClick={() => remove(index)
-                                                        }
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
                             </CardContent>
                         </Card>
                     </div>

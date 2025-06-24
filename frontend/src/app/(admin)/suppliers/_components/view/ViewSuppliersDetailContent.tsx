@@ -124,18 +124,7 @@ export default function ViewSuppliersDetailContent({supplier}: ViewSuppliersDeta
                                     <MapPin className="h-4 w-4 text-orange-600" />
                                 </div>
                                 Direcciones
-                                {supplier.supplierLocations &&
-									supplier.supplierLocations.length > 0 && (
-                                    <Badge
-                                        variant="secondary"
-                                        className="ml-2 text-xs"
-                                    >
-                                        {supplier.supplierLocations.length +
-												1}
-                                        {" "}
-                                        ubicaciones
-                                    </Badge>
-                                )}
+
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-0 space-y-3">
@@ -147,21 +136,6 @@ export default function ViewSuppliersDetailContent({supplier}: ViewSuppliersDeta
                                     {supplier.fiscalAddress}
                                 </p>
                             </div>
-                            {supplier.supplierLocations?.map((location, index) => (
-                                <div
-                                    key={index}
-                                    className="p-3 bg-gray-50 rounded-lg border-l-4 border-l-gray-300"
-                                >
-                                    <p className="text-xs text-gray-500 uppercase tracking-wide">
-                                        Adicional
-                                        {" "}
-                                        {index + 1}
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                        {location.address}
-                                    </p>
-                                </div>
-                            ))}
                         </CardContent>
                     </Card>
 

@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2 } from "lucide-react";
-import { useFieldArray,  UseFormReturn } from "react-hook-form";
+import {  UseFormReturn } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -32,12 +31,6 @@ export default function UpdateSuppliersForm({
     onSubmit,
 }: UpdateSuppliersFormProps)
 {
-    // Add this after your existing form fields, before the SheetFooter
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "supplierLocations",
-    });
-
     return (
         <Form {...form}>
             <form
@@ -206,53 +199,6 @@ export default function UpdateSuppliersForm({
                             </FormItem>
                         )}
                     />
-
-                    {/* Direcciones Adicionales */}
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="mt-2 w-full"
-                                onClick={() => append({ address: "" })}
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Agregar dirección
-                            </Button>
-                        </div>
-
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="flex gap-2">
-                                <FormField
-                                    control={form.control}
-                                    name={`supplierLocations.${index}.address`}
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Input
-                                                    placeholder={`Dirección secundaria ${
-                                                        index + 1
-                                                    }`}
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-10 w-10"
-                                    onClick={() => remove(index)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
                 </div>
 
                 {children}

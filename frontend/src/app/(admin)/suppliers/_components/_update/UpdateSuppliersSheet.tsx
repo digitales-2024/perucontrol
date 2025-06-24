@@ -42,7 +42,6 @@ export function UpdateSupplierSheet({
             fiscalAddress: supplier?.fiscalAddress ?? "",
             email: supplier?.email ?? "",
             contactName: supplier?.contactName ?? "",
-            supplierLocations: supplier?.supplierLocations ?? [{ address: "" }],
             phoneNumber: supplier?.phoneNumber ?? "",
         },
     });
@@ -60,9 +59,6 @@ export function UpdateSupplierSheet({
                 fiscalAddress: supplier?.fiscalAddress ?? "",
                 email: supplier?.email ?? "",
                 contactName: supplier?.contactName ?? "",
-                supplierLocations: supplier?.supplierLocations ?? [
-                    { address: "" },
-                ],
                 phoneNumber: supplier?.phoneNumber ?? "",
             });
         }
