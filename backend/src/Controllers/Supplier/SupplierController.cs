@@ -18,7 +18,7 @@ public class SupplierController(
     public override async Task<ActionResult<IEnumerable<Supplier>>> GetAll()
     {
         return await _context
-            .Suppliers.Include(s => s.SupplierLocations)
+            .Suppliers
             .OrderByDescending(s => s.SupplierNumber)
             .ToListAsync();
     }
@@ -30,7 +30,7 @@ public class SupplierController(
     public override async Task<ActionResult<Supplier>> GetById(Guid id)
     {
         var entity = await _context
-            .Suppliers.Include(s => s.SupplierLocations)
+            .Suppliers
             .FirstOrDefaultAsync(s => s.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
@@ -75,7 +75,6 @@ public class SupplierController(
             // Load supplier WITHOUT tracking to avoid concurrency issues
             var supplier = await _dbSet
                 .AsNoTracking()
-                .Include(s => s.SupplierLocations)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (supplier == null)
@@ -86,70 +85,6 @@ public class SupplierController(
 
             // Apply basic supplier property updates
             patchDTO.ApplyPatch(supplier);
-
-            // Handle locations separately
-            if (patchDTO.SupplierLocations is not null)
-            {
-                // Get IDs of existing locations
-                var existingLocationIds = supplier.SupplierLocations.Select(l => l.Id).ToHashSet();
-                var processedIds = new HashSet<Guid>();
-
-                foreach (var patchLocation in patchDTO.SupplierLocations)
-                {
-                    if (patchLocation.Id is not null)
-                    {
-                        var locationId = patchLocation.Id.Value;
-
-                        if (existingLocationIds.Contains(locationId))
-                        {
-                            // Get the location directly from the database
-                            var existingLocation = await _context
-                                .Set<SupplierLocation>()
-                                .FindAsync(locationId);
-
-                            if (existingLocation != null)
-                            {
-                                // Update properties
-                                existingLocation.Address = patchLocation.Address;
-                                processedIds.Add(locationId);
-                            }
-                        }
-                        else
-                        {
-                            // ID provided but not found, create new with supplier reference
-                            var newLocation = new SupplierLocation
-                            {
-                                Id = locationId,
-                                Address = patchLocation.Address,
-                                Supplier = supplier,
-                            };
-                            await _context.Set<SupplierLocation>().AddAsync(newLocation);
-                            processedIds.Add(locationId);
-                        }
-                    }
-                    else
-                    {
-                        // Create new location without specified ID
-                        var newLocation = new SupplierLocation
-                        {
-                            Address = patchLocation.Address,
-                            Supplier = supplier,
-                        };
-                        await _context.Set<SupplierLocation>().AddAsync(newLocation);
-                    }
-                }
-
-                // Delete any locations not included in the update
-                var locationsToDelete = await _context
-                    .Set<SupplierLocation>()
-                    .Where(l => l.Supplier.Id == id && !processedIds.Contains(l.Id))
-                    .ToListAsync();
-
-                if (locationsToDelete.Any())
-                {
-                    _context.Set<SupplierLocation>().RemoveRange(locationsToDelete);
-                }
-            }
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -189,7 +124,6 @@ public class SupplierController(
         }
 
         // Aquí puedes agregar validaciones adicionales según sea necesario
-        // Por ejemplo, verificar si el proveedor está relacionado con alguna compra
 
         entity.IsActive = false;
         await _context.SaveChangesAsync();

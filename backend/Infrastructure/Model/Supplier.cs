@@ -36,9 +36,6 @@ public class Supplier : BaseModel
     [MaxLength(50)]
     public required string Email { get; set; }
 
-    public required ICollection<SupplierLocation> SupplierLocations { get; set; } =
-        new List<SupplierLocation>();
-
     [MinLength(6)]
     [MaxLength(24)]
     public required string PhoneNumber { get; set; }
@@ -75,8 +72,6 @@ public class SupplierCreateDTO : IMapToEntity<Supplier>
     [MaxLength(50, ErrorMessage = "Email must have a maximum of 50 characters")]
     public required string Email { get; set; }
 
-    public ICollection<SupplierLocationDTO>? SupplierLocations { get; set; }
-
     [MinLength(6, ErrorMessage = "Phone number must have at least 6 characters")]
     [MaxLength(24, ErrorMessage = "Phone number must have a maximum of 24 characters")]
     public required string PhoneNumber { get; set; }
@@ -96,14 +91,7 @@ public class SupplierCreateDTO : IMapToEntity<Supplier>
             FiscalAddress = FiscalAddress,
             Email = Email,
             PhoneNumber = PhoneNumber,
-            ContactName = ContactName,
-            SupplierLocations =
-                SupplierLocations != null && SupplierLocations.Any()
-                    ? SupplierLocations
-                        .Where(c => !string.IsNullOrWhiteSpace(c.Address))
-                        .Select(c => c.MapToEntity())
-                        .ToList()
-                    : new List<SupplierLocation>(),
+            ContactName = ContactName
         };
     }
 }
@@ -137,8 +125,6 @@ public class SupplierPatchDTO : IEntityPatcher<Supplier>
     [MinLength(0)]
     [MaxLength(100)]
     public string? ContactName { get; set; }
-
-    public ICollection<SupplierLocationDTO>? SupplierLocations { get; set; }
 
     public void ApplyPatch(Supplier entity)
     {

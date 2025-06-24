@@ -12,7 +12,6 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public required DbSet<Business> Businesses { get; set; }
     public required DbSet<Client> Clients { get; set; }
     public required DbSet<Supplier> Suppliers { get; set; }
-    public required DbSet<SupplierLocation> SupplierLocations { get; set; }
     public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<CompleteReport> CompleteReports { get; set; }
@@ -43,7 +42,6 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Infrastructure.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Infrastructure.Model.ClientLocation.SetUp<ClientLocation>(builder);
         PeruControl.Infrastructure.Model.Supplier.SetUp<Supplier>(builder);
-        PeruControl.Infrastructure.Model.SupplierLocation.SetUp<SupplierLocation>(builder);
         PeruControl.Infrastructure.Model.Reports.CompleteReport.SetUp<CompleteReport>(builder);
         PeruControl.Infrastructure.Model.Reports.Report1.SetUp<Report1>(builder);
         PeruControl.Infrastructure.Model.Reports.Report2.SetUp<Report2>(builder);
