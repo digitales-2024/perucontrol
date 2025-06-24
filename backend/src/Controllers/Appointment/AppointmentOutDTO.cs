@@ -115,7 +115,6 @@ public class TreatmentProductDTO
     public string? EquipmentUsed { get; init; }
     public string? AppliedTechnique { get; init; }
     public string? AppliedService { get; init; }
-    public string? AppliedTime { get; init; }
 
     public static TreatmentProductDTO FromEntity(TreatmentProduct product)
     {
@@ -133,7 +132,6 @@ public class TreatmentProductDTO
             EquipmentUsed = product.EquipmentUsed,
             AppliedTechnique = product.AppliedTechnique,
             AppliedService = product.AppliedService,
-            AppliedTime = product.AppliedTime,
         };
     }
 }

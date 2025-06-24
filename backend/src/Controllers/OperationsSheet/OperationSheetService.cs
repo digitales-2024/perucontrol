@@ -8,7 +8,7 @@ public class OperationSheetService(DatabaseContext db)
     public async Task<IList<GetOperationSheetsForTableOutDto>> GetOperationSheetsForTable()
     {
         var sheets = await db
-            .ProjectOperationSheet.Where(sheet => sheet.Status != OperationSheetStatus.Created)
+            .ProjectOperationSheet.Where(sheet => sheet.Status != ResourceStatus.Created)
             .Include(sheet => sheet.ProjectAppointment)
             .ThenInclude(appt => appt.Project)
             .ThenInclude(proj => proj.Client)
@@ -52,7 +52,7 @@ public class OperationSheetService(DatabaseContext db)
             .ThenInclude(appt => appt.ProjectOperationSheet)
             .Where(proj =>
                 proj.Appointments.Any(appt =>
-                    appt.ProjectOperationSheet.Status == OperationSheetStatus.Created
+                    appt.ProjectOperationSheet.Status == ResourceStatus.Created
                 )
             )
             .ToListAsync();
@@ -65,7 +65,7 @@ public class OperationSheetService(DatabaseContext db)
                 ServiceNumber = service.ProjectNumber,
                 AvailableSheets = service
                     .Appointments.Where(s =>
-                        s.ProjectOperationSheet.Status == OperationSheetStatus.Created
+                        s.ProjectOperationSheet.Status == ResourceStatus.Created
                     )
                     .OrderBy(s => s.DueDate)
                     .Select(appt => new GetOperationSheetsForCreationOutDto.OperationSheetAvailable
@@ -89,7 +89,7 @@ public class OperationSheetService(DatabaseContext db)
             throw new Exception("No encontrado");
         }
 
-        sheet.Status = OperationSheetStatus.Started;
+        sheet.Status = ResourceStatus.Started;
         await db.SaveChangesAsync();
 
         return;

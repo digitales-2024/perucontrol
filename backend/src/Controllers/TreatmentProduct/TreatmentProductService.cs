@@ -70,7 +70,6 @@ public class TreatmentProductService(DatabaseContext db)
                     freshTp.EquipmentUsed = tpDto.EquipmentUsed;
                     freshTp.AppliedTechnique = tpDto.AppliedTechnique;
                     freshTp.AppliedService = tpDto.AppliedService;
-                    freshTp.AppliedTime = tpDto.AppliedTime;
 
                     // Update relationships if they changed
                     if (freshTp.Product.Id != tpDto.ProductId)
@@ -130,7 +129,6 @@ public class TreatmentProductService(DatabaseContext db)
                     EquipmentUsed = tpDto.EquipmentUsed,
                     AppliedTechnique = tpDto.AppliedTechnique,
                     AppliedService = tpDto.AppliedService,
-                    AppliedTime = tpDto.AppliedTime,
                     ProjectAppointment = appointment,
                 };
 

@@ -12,6 +12,9 @@ public class Certificate : BaseModel
     public Guid ProjectAppointmentId { get; set; }
 
     public DateTime? ExpirationDate { get; set; } = null;
+
+    [Required]
+    public ResourceStatus Status { get; set; } = ResourceStatus.Created;
 }
 
 public class CertificateGet : PeruControl.Infrastructure.Model.BaseModel

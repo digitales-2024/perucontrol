@@ -1,17 +1,23 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { backend, wrapper } from "@/types/backend";
-import { columns } from "./_components/CertificateColumns";
 import CertificationList from "./_components/ViewCertificate";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetail()
 {
-    // Obtener todos los certificados
-    const [ProjectsOperationSheet, err] = await wrapper((auth) => backend.GET("/api/Appointment/allCertificates", auth));
-    if (err)
+    // Get certificates in table
+    const [certificatesForTable, certificatesForTableErr] = await wrapper((auth) => backend.GET("/api/Certificate/for-table", auth));
+    if (certificatesForTableErr)
     {
-        console.error(`error ${err.message}`);
-        throw err;
+        console.error(`error ${certificatesForTableErr.message}`);
+        throw certificatesForTableErr;
+    }
+
+    const [certificatesForCreation, certificatesForCreationErr] = await wrapper((auth) => backend.GET("/api/Certificate/for-creation", auth));
+    if (certificatesForCreationErr)
+    {
+        console.error(`error ${certificatesForCreationErr.message}`);
+        throw certificatesForCreationErr;
     }
 
     return (
@@ -30,7 +36,7 @@ export default async function ProjectDetail()
                     </Breadcrumb>
                 )}
             />
-            <CertificationList columns={columns} data={ProjectsOperationSheet} />
+            <CertificationList data={certificatesForTable} availableForCreation={certificatesForCreation} />
         </>
     );
 }

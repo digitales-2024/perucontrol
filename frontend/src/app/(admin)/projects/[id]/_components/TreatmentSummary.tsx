@@ -57,20 +57,6 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
                                     key={product.id}
                                     className="p-4 bg-white rounded-lg border shadow-sm"
                                 >
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h4 className="font-medium text-base text-gray-800">
-                                                {product.product.name}
-                                            </h4>
-                                        </div>
-                                        <Badge
-                                            variant="outline"
-                                            className="bg-blue-50 border-blue-200 text-blue-700 px-2 py-1 text-xs"
-                                        >
-                                            {product.appliedTime}
-                                        </Badge>
-                                    </div>
-
                                     <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <span className="text-gray-500">

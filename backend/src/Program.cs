@@ -122,6 +122,7 @@ foreach (var module in modules)
     module.SetupModule(builder.Services, builder.Configuration);
 }
 builder.Services.AddScoped<RodentRegisterService>();
+builder.Services.AddScoped<CertificateService>();
 builder.Services.AddScoped<PeruControl.Controllers.QuotationService>();
 
 // Register global services

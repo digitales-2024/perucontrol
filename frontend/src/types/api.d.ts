@@ -164,386 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Appointment/{appointmentid}/certificate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Certificate of an appointment */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    appointmentid: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Certificate"];
-                        "application/json": components["schemas"]["Certificate"];
-                        "text/json": components["schemas"]["Certificate"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update a certificate */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    appointmentid: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AppointmentCertificatePatchDTO"];
-                    "text/json": components["schemas"]["AppointmentCertificatePatchDTO"];
-                    "application/*+json": components["schemas"]["AppointmentCertificatePatchDTO"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProjectOperationSheet"];
-                        "application/json": components["schemas"]["ProjectOperationSheet"];
-                        "text/json": components["schemas"]["ProjectOperationSheet"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Appointment/{id}/certificate/word": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Generate Certificate Word */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileContentResult"];
-                        "application/json": components["schemas"]["FileContentResult"];
-                        "text/json": components["schemas"]["FileContentResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Appointment/{id}/certificate/pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Generate Certificate PDF
-         * @description Generates the Certificate in PDF format for an Appointment. The id parameter is the Appointment ID.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FileResult"];
-                        "application/json": components["schemas"]["FileResult"];
-                        "text/json": components["schemas"]["FileResult"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Appointment/{id}/certificate/email-pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Send Certificate PDF via Email */
-        post: {
-            parameters: {
-                query: {
-                    email: string;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Appointment/{id}/certificate/whatsapp-pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Send Certificate PDF via WhatsApp */
-        post: {
-            parameters: {
-                query: {
-                    phoneNumber: string;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Appointment/allCertificates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all certificates */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["CertificateGet"]>;
-                        "application/json": Array<components["schemas"]["CertificateGet"]>;
-                        "text/json": Array<components["schemas"]["CertificateGet"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Appointment/{id}/rodents/excel": {
         parameters: {
             query?: never;
@@ -1589,6 +1209,545 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/Certificate/for-table": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Certificates for table
+         * @description This endpoint returns a list of Certificates, sorted by most recent, and only ones with status != Created
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["GetCertificateForTableOutDto"]>;
+                        "application/json": Array<components["schemas"]["GetCertificateForTableOutDto"]>;
+                        "text/json": Array<components["schemas"]["GetCertificateForTableOutDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/for-creation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Certificates for creation
+         * @description Returns a list of certificates and their appointments for creation, where the certificate has status == Created
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["GetCertificateForCreationOutDto"]>;
+                        "application/json": Array<components["schemas"]["GetCertificateForCreationOutDto"]>;
+                        "text/json": Array<components["schemas"]["GetCertificateForCreationOutDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}/mark-started": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark a Certificate as 'Started'
+         * @description Marks the selected certificate as 'Started', thus showing it in its table UI
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all certificates */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["CertificateGet"]>;
+                        "application/json": Array<components["schemas"]["CertificateGet"]>;
+                        "text/json": Array<components["schemas"]["CertificateGet"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Appointment/{appointmentId}/Certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Certificate by appointment ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    appointmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Certificate"];
+                        "application/json": components["schemas"]["Certificate"];
+                        "text/json": components["schemas"]["Certificate"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a certificate */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "text/json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                    "application/*+json": components["schemas"]["AppointmentCertificatePatchDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Certificate"];
+                        "application/json": components["schemas"]["Certificate"];
+                        "text/json": components["schemas"]["Certificate"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}/word": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Certificate Word */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileContentResult"];
+                        "application/json": components["schemas"]["FileContentResult"];
+                        "text/json": components["schemas"]["FileContentResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Certificate PDF
+         * @description Generates the Certificate in PDF format for an Appointment. The appointmentId parameter is the Appointment ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}/email-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Certificate PDF via Email */
+        post: {
+            parameters: {
+                query: {
+                    email: string;
+                };
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Certificate/{certificateId}/whatsapp-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Certificate PDF via WhatsApp */
+        post: {
+            parameters: {
+                query: {
+                    phoneNumber: string;
+                };
+                header?: never;
+                path: {
+                    certificateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Client": {
         parameters: {
             query?: never;
@@ -2153,7 +2312,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Operation Sheets by table
+         * Get Operation Sheets for table
          * @description This endpoint returns a list of Appointments, sorted by most recent, and only ones with status != Created
          */
         get: {
@@ -6173,6 +6332,7 @@ export interface components {
             projectAppointmentId: string;
             /** Format: date-time */
             expirationDate?: string | null;
+            status: components["schemas"]["ResourceStatus"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -6180,6 +6340,15 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
+        };
+        CertificateAvailable: {
+            /** Format: uuid */
+            appoinmentId: string;
+            /** Format: uuid */
+            certificateId: string;
+            /** Format: date-time */
+            dueDate: string;
+            status: components["schemas"]["ResourceStatus"];
         };
         CertificateGet: {
             projectAppointment?: components["schemas"]["ProjectAppointment"];
@@ -6322,6 +6491,28 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        GetCertificateForCreationOutDto: {
+            /** Format: uuid */
+            serviceId: string;
+            clientName: string;
+            /** Format: int32 */
+            serviceNumber: number;
+            availableCerts: Array<components["schemas"]["CertificateAvailable"]>;
+        };
+        GetCertificateForTableOutDto: {
+            /** Format: uuid */
+            projectId: string;
+            /** Format: uuid */
+            certificateId: string;
+            /** Format: uuid */
+            appointmentId: string;
+            /** Format: int32 */
+            number: number;
+            clientName: string;
+            /** Format: date-time */
+            actualDate?: string | null;
+            status: components["schemas"]["ResourceStatus"];
+        };
         GetOperationSheetsForCreationOutDto: {
             /** Format: uuid */
             serviceId: string;
@@ -6343,7 +6534,7 @@ export interface components {
             /** Format: date-time */
             actualDate?: string | null;
             enterLeaveTime: string;
-            status: components["schemas"]["OperationSheetStatus"];
+            status: components["schemas"]["ResourceStatus"];
         };
         LoginRequest: {
             /** @default admin@admin.com */
@@ -6376,7 +6567,7 @@ export interface components {
             operationSheetId: string;
             /** Format: date-time */
             dueDate: string;
-            status: components["schemas"]["OperationSheetStatus"];
+            status: components["schemas"]["ResourceStatus"];
         };
         OperationSheetCreateDTO: {
             /** Format: uuid */
@@ -6460,8 +6651,6 @@ export interface components {
             observations?: string | null;
             recommendations?: string | null;
         };
-        /** @enum {unknown} */
-        OperationSheetStatus: "Created" | "Started" | "Completed";
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -6645,7 +6834,7 @@ export interface components {
             staff4: string;
             observations: string;
             recommendations: string;
-            status: components["schemas"]["OperationSheetStatus"];
+            status: components["schemas"]["ResourceStatus"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -6994,6 +7183,8 @@ export interface components {
             signingDate?: string | null;
             content?: Array<components["schemas"]["ContentSection"]>;
         };
+        /** @enum {unknown} */
+        ResourceStatus: "Created" | "Started" | "Completed";
         RodentArea: {
             name: string;
             /** Format: int32 */
@@ -7037,6 +7228,7 @@ export interface components {
             rodentAreas?: Array<components["schemas"]["RodentArea"]>;
             incidents?: string | null;
             correctiveMeasures?: string | null;
+            status: components["schemas"]["ResourceStatus"];
             /** Format: uuid */
             id?: string;
             isActive?: boolean;
@@ -7162,7 +7354,6 @@ export interface components {
             equipmentUsed?: string | null;
             appliedTechnique?: string | null;
             appliedService?: string | null;
-            appliedTime?: string | null;
         };
         TreatmentProductInDTO: {
             /** Format: uuid */
@@ -7174,7 +7365,6 @@ export interface components {
             equipmentUsed?: string | null;
             appliedTechnique?: string | null;
             appliedService?: string | null;
-            appliedTime?: string | null;
         };
         UpdateAppointmentTimesDto: {
             /** Format: time */
