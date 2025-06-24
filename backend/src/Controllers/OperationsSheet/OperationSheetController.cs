@@ -188,8 +188,8 @@ public class OperationSheetController(
         var placeholders = new Dictionary<string, string>
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
-            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm tt") ?? "" },
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm tt") ?? "" },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },
@@ -371,7 +371,7 @@ public class OperationSheetController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendOperationsSheetPdfViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
         var (pdfBytes, errorResult) = GenerateOperationsSheetPdfBytes(id);
