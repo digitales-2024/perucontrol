@@ -27,7 +27,7 @@ pipeline {
     stages {
         stage("Build & push image") {
             steps {
-                dir("backend/src") {
+                dir("backend") {
                     script {
                         withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
                             def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_REF}", "-f +devops/Dockerfile.alpine .")
