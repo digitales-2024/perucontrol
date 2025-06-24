@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PeruControl.Infrastructure.Model;
@@ -13,9 +14,11 @@ using PeruControl.Infrastructure.Model.Reports;
 namespace PeruControl.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250624142022_Suppliers")]
+    partial class Suppliers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1213,9 +1216,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -1231,9 +1232,7 @@ namespace PeruControl.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1262,6 +1261,35 @@ namespace PeruControl.Migrations
                         .IsUnique();
 
                     b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.SupplierLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("SupplierLocations");
                 });
 
             modelBuilder.Entity("PeruControl.Infrastructure.Model.TermsAndConditions", b =>
@@ -1746,6 +1774,17 @@ namespace PeruControl.Migrations
                     b.Navigation("ProjectAppointment");
                 });
 
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.SupplierLocation", b =>
+                {
+                    b.HasOne("PeruControl.Infrastructure.Model.Supplier", "Supplier")
+                        .WithMany("SupplierLocations")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
+                });
+
             modelBuilder.Entity("PeruControl.Infrastructure.Model.TreatmentArea", b =>
                 {
                     b.HasOne("PeruControl.Infrastructure.Model.ProjectAppointment", "ProjectAppointment")
@@ -1885,6 +1924,11 @@ namespace PeruControl.Migrations
             modelBuilder.Entity("PeruControl.Infrastructure.Model.RodentRegister", b =>
                 {
                     b.Navigation("RodentAreas");
+                });
+
+            modelBuilder.Entity("PeruControl.Infrastructure.Model.Supplier", b =>
+                {
+                    b.Navigation("SupplierLocations");
                 });
 #pragma warning restore 612, 618
         }
