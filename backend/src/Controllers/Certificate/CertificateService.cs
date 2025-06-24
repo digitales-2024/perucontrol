@@ -324,17 +324,27 @@ public class CertificateService(
         var clientAddress = project.Address.ToUpper();
         var clientGiro = (client.BusinessType ?? "").ToUpper();
         var clientTreatedAreas = (sheetTreatedAreas ?? "").ToUpper();
-        var certServiceDate = (projectAppointment.ActualDate?.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-PE")) ?? "").ToUpper();
-        var certExpirationDate = (certificate.ExpirationDate?.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-PE")) ?? "").ToUpper();
+        var certServiceDate = (
+            projectAppointment.ActualDate?.ToString(
+                "dd 'de' MMMM 'de' yyyy",
+                new System.Globalization.CultureInfo("es-PE")
+            ) ?? ""
+        ).ToUpper();
+        var certExpirationDate = (
+            certificate.ExpirationDate?.ToString(
+                "dd 'de' MMMM 'de' yyyy",
+                new System.Globalization.CultureInfo("es-PE")
+            ) ?? ""
+        ).ToUpper();
 
         var placeholders = new Dictionary<string, string>
         {
             { "{nombre_cliente}", clientName },
             { "{direccion_cliente}", clientAddress },
-            { "{giro_cliente}", clientGiro},
-            { "{servicio_area}", clientTreatedAreas},
-            { "{fecha_servicio}", certServiceDate},
-            { "{fecha_vencimiento}", certExpirationDate},
+            { "{giro_cliente}", clientGiro },
+            { "{servicio_area}", clientTreatedAreas },
+            { "{fecha_servicio}", certServiceDate },
+            { "{fecha_vencimiento}", certExpirationDate },
             { "{cert_n}", projectAppointment.CertificateNumber?.ToString("D6") ?? "" },
             { "{fum}", fum },
             { "{inse}", inse },

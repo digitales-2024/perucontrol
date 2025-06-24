@@ -11,8 +11,7 @@ namespace PeruControl.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "SupplierLocations");
+            migrationBuilder.DropTable(name: "SupplierLocations");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "ModifiedAt",
@@ -21,7 +20,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 defaultValueSql: "NOW()",
                 oldClrType: typeof(DateTime),
-                oldType: "timestamp with time zone");
+                oldType: "timestamp with time zone"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
@@ -30,7 +30,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 defaultValueSql: "NOW()",
                 oldClrType: typeof(DateTime),
-                oldType: "timestamp with time zone");
+                oldType: "timestamp with time zone"
+            );
         }
 
         /// <inheritdoc />
@@ -43,7 +44,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValueSql: "NOW()");
+                oldDefaultValueSql: "NOW()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
@@ -52,7 +54,8 @@ namespace PeruControl.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValueSql: "NOW()");
+                oldDefaultValueSql: "NOW()"
+            );
 
             migrationBuilder.CreateTable(
                 name: "SupplierLocations",
@@ -61,9 +64,15 @@ namespace PeruControl.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SupplierId = table.Column<Guid>(type: "uuid", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ModifiedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -73,13 +82,16 @@ namespace PeruControl.Migrations
                         column: x => x.SupplierId,
                         principalTable: "Suppliers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupplierLocations_SupplierId",
                 table: "SupplierLocations",
-                column: "SupplierId");
+                column: "SupplierId"
+            );
         }
     }
 }

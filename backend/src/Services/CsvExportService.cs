@@ -69,7 +69,6 @@ public class CsvExportService
         return Encoding.UTF8.GetBytes(csv.ToString());
     }
 
-    
     public byte[] ExportSuppliersToCsv(
         IEnumerable<Supplier> suppliers,
         DateTime? startDate = null,
@@ -78,7 +77,7 @@ public class CsvExportService
     {
         // Apply date filtering if parameters are provided
         var filteredSuppliers = suppliers.AsQueryable();
-    
+
         if (startDate.HasValue)
         {
             filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt >= startDate.Value);
@@ -89,7 +88,7 @@ public class CsvExportService
             var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt >= unixStart);
         }
-    
+
         if (endDate.HasValue)
         {
             // Include the entire end date (until end of day)
@@ -101,16 +100,16 @@ public class CsvExportService
             // If no end date, use current UTC time
             filteredSuppliers = filteredSuppliers.Where(s => s.CreatedAt <= DateTime.UtcNow);
         }
-    
+
         var finalSuppliers = filteredSuppliers.ToList();
-    
+
         var csv = new StringBuilder();
-    
+
         // Header
         csv.AppendLine(
             "SupplierNumber,RucNumber,BusinessName,BusinessType,Name,FiscalAddress,Email,PhoneNumber,ContactName,IsActive,CreatedAt,ModifiedAt"
         );
-    
+
         // Data rows
         foreach (var supplier in finalSuppliers)
         {
@@ -129,7 +128,7 @@ public class CsvExportService
                     + $"{supplier.ModifiedAt:yyyy-MM-dd HH:mm:ss}"
             );
         }
-    
+
         return Encoding.UTF8.GetBytes(csv.ToString());
     }
 
