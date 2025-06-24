@@ -43,12 +43,6 @@ export default async function SuppliersPage()
         ...supplier,
         id: supplier.id ?? "-", // Si no hay id convertir el null a un string vacio
         rucNumber: supplier.rucNumber ?? "-", // Si no hay RUC convertir el null a un string vacio
-        supplierLocations:
-			supplier.supplierLocations
-			    ?.filter((location) => location.address)
-			    .map((location) => ({
-			        address: location.address,
-			    })) || [],
         businessType: supplier.businessType ?? "-", // Si no hay razon social, convertir el null a un string vacio
         contactName: supplier.contactName ?? "-", // Si no hay nombre de contacto, convertir el null a un string vacio
     }));
