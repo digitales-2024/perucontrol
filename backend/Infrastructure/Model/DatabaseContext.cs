@@ -11,6 +11,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
 {
     public required DbSet<Business> Businesses { get; set; }
     public required DbSet<Client> Clients { get; set; }
+    public required DbSet<Supplier> Suppliers { get; set; }
+    public required DbSet<SupplierLocation> SupplierLocations { get; set; }
     public required DbSet<Certificate> Certificates { get; set; }
     public required DbSet<ClientLocation> ClientLocations { get; set; }
     public required DbSet<CompleteReport> CompleteReports { get; set; }
