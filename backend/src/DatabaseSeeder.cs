@@ -13,7 +13,6 @@ public static class DatabaseSeeder
         >();
 
         // Create admin role if it doesn't exist
-        // FIXME: get credentials for appsettings, set secure ones in prod
         var adminRoleName = "Admin";
         if (!await roleManager.RoleExistsAsync(adminRoleName))
         {
@@ -136,22 +135,22 @@ public static class DatabaseSeeder
 
         var business = new Business
         {
-            DigesaNumber = "62-2023",
-            Address = "Urb. Villa Manuelito A-16, J.L.B. y Rivero, Arequipa",
+            DigesaNumber = "95-2024",
+            Address = "Urb. Villa Manuelito A-16, J.L.B. y Rivero - Arequipa - Arequipa.",
             Email = "servicios@perucontrol.com",
             RUC = "20539641922",
-            Phones = "979716629 - 986951290",
+            Phones = " 986951290 - 979716629",
             DirectorName = "Sr. William Moreyra A.",
-            BankName = "Crédito del Perú",
+            BankName = "BCP",
             BankAccount = "215-20391810-0-04",
             BankCCI = "002-21500203918100429",
             Deductions = "00-101-385558",
-            ThechnicalDirectorName = "",
-            ThechnicalDirectorPosition = "",
-            ThechnicalDirectorCIP = "",
-            ResponsibleName = "",
-            ResponsiblePosition = "",
-            ResponsibleCIP = "",
+            ThechnicalDirectorName = "Carlos Ubaldo Torreblanca Paez",
+            ThechnicalDirectorPosition = "Ingeniero Industrial",
+            ThechnicalDirectorCIP = "Nº 145693",
+            ResponsibleName = "William Moreyra Auris",
+            ResponsiblePosition = "Gerente",
+            ResponsibleCIP = "-",
         };
         await context.Businesses.AddAsync(business);
         await context.SaveChangesAsync();
