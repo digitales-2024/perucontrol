@@ -758,7 +758,10 @@ public class OdsTemplateService
         return (outputMs.ToArray(), null);
     }
 
-    public byte[] ScaleOds(byte[] odsBytes, int scalePercentage)
+    /// <summary>
+    /// Sets a ODS file's dimensions to A4 vertical, and sets the document scale size.
+    /// </summary>
+    public byte[] ScaleOds(byte[] odsBytes, int scalePercentage = 100)
     {
         using var inputMs = new MemoryStream(odsBytes);
         using var outputMs = new MemoryStream();
@@ -825,4 +828,5 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Documents
-) { }
+)
+{ }

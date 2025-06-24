@@ -41,7 +41,7 @@ public class QuotationService(
         var (odsBytes, odsError) = odsTemplateService.GenerateQuotation(
             quotation,
             business,
-            "Templates/cotizacion_plantilla.pdf.ods"
+            "Templates/cotizacion_plantilla.ods"
         );
         if (!string.IsNullOrEmpty(odsError))
         {
@@ -49,7 +49,7 @@ public class QuotationService(
         }
 
         // Scale the ODS before converting to PDF to fix layout issues
-        var scaledFileBytes = odsTemplateService.ScaleOds(odsBytes, 105);
+        var scaledFileBytes = odsTemplateService.ScaleOds(odsBytes, 100);
 
         var (pdfBytes, pdfError) = libreOfficeConverterService.ConvertToPdf(scaledFileBytes, "ods");
         if (!string.IsNullOrEmpty(pdfError))
@@ -96,7 +96,7 @@ public class QuotationService(
         var (odsBytes, error) = odsTemplateService.GenerateQuotation(
             quotation,
             business,
-            "Templates/cotizacion_plantilla.excel.ods"
+            "Templates/cotizacion_plantilla.ods"
         );
         if (!string.IsNullOrEmpty(error))
         {
