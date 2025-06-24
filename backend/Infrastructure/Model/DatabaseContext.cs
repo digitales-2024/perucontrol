@@ -42,6 +42,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         PeruControl.Infrastructure.Model.Client.SetUp<Client>(builder);
         PeruControl.Infrastructure.Model.Certificate.SetUp<Certificate>(builder);
         PeruControl.Infrastructure.Model.ClientLocation.SetUp<ClientLocation>(builder);
+        PeruControl.Infrastructure.Model.Supplier.SetUp<Supplier>(builder);
+        PeruControl.Infrastructure.Model.SupplierLocation.SetUp<SupplierLocation>(builder);
         PeruControl.Infrastructure.Model.Reports.CompleteReport.SetUp<CompleteReport>(builder);
         PeruControl.Infrastructure.Model.Reports.Report1.SetUp<Report1>(builder);
         PeruControl.Infrastructure.Model.Reports.Report2.SetUp<Report2>(builder);
