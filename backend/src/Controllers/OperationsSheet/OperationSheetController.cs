@@ -238,6 +238,7 @@ public class OperationSheetController(
             { "{direccion_perucontrol}", business.Address },
             { "{celulares_perucontrol}", business.Phones },
             { "{correo_perucontrol}", business.Email },
+            { "{serial}", sheet.OperationSheetNumber.ToString("D6") },
         };
         var fileBytes = odsTemplate.GenerateOdsFromTemplate(
             placeholders,

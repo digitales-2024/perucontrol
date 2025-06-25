@@ -394,10 +394,10 @@ public class OdsTemplateService
                     XNamespace stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
                     XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
 
-        var footer_placeholders = new Dictionary<string, string>
-        {
-            { "{footer_contact}", quotation.FooterContact ?? "" },
-        };
+                    var footer_placeholders = new Dictionary<string, string>
+                    {
+                        { "{footer_contact}", quotation.FooterContact ?? "" },
+                    };
 
                     // Find all text elements in headers and footers and replace placeholders
                     var textSpans = xmlDoc.Descendants(textns + "span").ToList();
@@ -860,5 +860,4 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Documents
-)
-{ }
+) { }
