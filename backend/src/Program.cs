@@ -134,6 +134,7 @@ builder.Services.AddScoped<LibreOfficeConverterService>();
 builder.Services.AddScoped<SvgTemplateService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<S3Service>();
+builder.Services.AddScoped<ScheduleGeneratorService>();
 builder.Services.AddScoped<WhatsappService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<CsvExportService>();
