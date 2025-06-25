@@ -21,21 +21,24 @@ import { ScrollArea } from "./scroll-area";
 import { Skeleton } from "./skeleton";
 
 export type Option = {
-    value: string;
-    label: string;
-    [key: string]: string;
+	value: string;
+	label: string;
+	[key: string]: string;
 };
 
 type AutoCompleteProps = {
-    options: Array<Option>;
-    emptyMessage: string;
-    value?: Option;
-    onValueChange?: (value: Option) => void;
-    isLoading?: boolean;
-    disabled?: boolean;
-    placeholder?: string;
-    className?: string;
-    showClearButton?: boolean; // Nuevo prop
+	options: Array<Option>;
+	emptyMessage: string;
+	value?: Option;
+	onValueChange?: (value: Option) => void;
+	isLoading?: boolean;
+	disabled?: boolean;
+	placeholder?: string;
+	className?: string;
+	showClearButton?: boolean;
+	renderOption?: (option: Option, isSelected: boolean) => React.ReactNode;
+	searchKeys?: Array<string>;
+    inputBordered?: boolean; // <-- Nuevo prop opcional
 };
 
 const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
@@ -48,7 +51,10 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
         disabled,
         isLoading = false,
         className,
-        showClearButton = true, // Nuevo prop
+        showClearButton = true,
+        renderOption,
+        searchKeys = ["label"], // <-- Por defecto solo label
+        inputBordered = false,
     },
     ref,
 ) =>
@@ -66,6 +72,11 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
         setInputValue(value?.label ?? "");
     }, [value]);
 
+    // Filtrado flexible por searchKeys
+    const filteredOptions = options.filter((option) => searchKeys.some((key) => (option[key] ?? "")
+        .toLowerCase()
+        .includes(inputValue.trim().toLowerCase())));
+
     const handleKeyDown = useCallback(
         (event: KeyboardEvent<HTMLDivElement>) =>
         {
@@ -82,9 +93,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
 
             if (event.key === "Enter" && input.value.trim() !== "")
             {
-                // Buscar coincidencias exactas basadas en el label
-                const exactMatches = options.filter((option) => option.label.toLowerCase() ===
-                    input.value.trim().toLowerCase());
+                // Buscar coincidencias exactas en searchKeys
+                const exactMatches = options.filter((option) => searchKeys.some((key) => (option[key] ?? "").toLowerCase() ===
+								input.value.trim().toLowerCase()));
 
                 if (exactMatches.length === 1)
                 {
@@ -94,14 +105,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
                 }
                 else if (exactMatches.length > 1)
                 {
-                    // Seleccionar la primera coincidencia o manejar múltiples según se requiera
                     setSelected(exactMatches[0]);
                     onValueChange?.(exactMatches[0]);
                     setOpen(false);
-                }
-                else
-                {
-                    // Opcional: manejar caso donde no hay coincidencias
                 }
             }
 
@@ -110,7 +116,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
                 input.blur();
             }
         },
-        [isOpen, options, onValueChange],
+        [isOpen, options, onValueChange, searchKeys],
     );
 
     const handleBlur = useCallback(() =>
@@ -155,13 +161,13 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
                 <CommandInput
                     ref={ref}
                     value={inputValue}
-                    onValueChange={isLoading ? undefined : setInputValue}
+                    onValueChange={setInputValue}
                     onBlur={handleBlur}
-                    // onFocus={() => setOpen(true)}
                     onClick={handleInputClick}
                     placeholder={placeholder}
                     disabled={disabled}
                     className={cn(className, "pr-8 capitalize")}
+                    bordered={inputBordered}
                 />
                 {selected && showClearButton && (
                     <button
@@ -196,18 +202,19 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
                                     </div>
                                 </CommandPrimitive.Loading>
                             )}
-                            {!isLoading && options.length > 0 && (
+                            {!isLoading && filteredOptions.length > 0 && (
                                 <CommandGroup>
-                                    {options.map((option) =>
+                                    {filteredOptions.map((option) =>
                                     {
                                         const isSelected =
-                                            selected?.value ===
-                                            option.value;
+												selected?.value ===
+												option.value;
                                         return (
                                             <CommandItem
-                                                // Cambia el valor a option.value para asegurar unicidad
                                                 key={option.value}
-                                                value={option.label}
+                                                value={searchKeys
+                                                    .map((key) => option[key])
+                                                    .join(" ")}
                                                 onMouseDown={(event) =>
                                                 {
                                                     event.preventDefault();
@@ -217,22 +224,28 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
                                                 }
                                                 className={cn(
                                                     "flex w-full items-center gap-2",
-                                                    !isSelected
-                                                        ? "pl-8"
-                                                        : null,
+                                                    !isSelected ? "pl-8" : null,
                                                 )}
                                             >
-                                                {isSelected && (
-                                                    <Check className="w-4" />
+                                                {renderOption ? (
+                                                    renderOption(
+                                                        option,
+                                                        isSelected,
+                                                    )
+                                                ) : (
+                                                    <>
+                                                        {isSelected && (
+                                                            <Check className="w-4" />
+                                                        )}
+                                                        {option.label}
+                                                    </>
                                                 )}
-                                                {/* Muestra la etiqueta dentro del CommandItem */}
-                                                {option.label}
                                             </CommandItem>
                                         );
                                     })}
                                 </CommandGroup>
                             )}
-                            {!isLoading && options.length === 0 && (
+                            {!isLoading && filteredOptions.length === 0 && (
                                 <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
                                     {emptyMessage}
                                 </CommandPrimitive.Empty>
