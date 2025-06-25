@@ -14,7 +14,6 @@ public class ProjectController(
     EmailService emailService,
     WhatsappService whatsappService,
     ScheduleGeneratorService scheduleGeneratorService,
-    LibreOfficeConverterService libreOfficeConverterService,
     CsvExportService csvExportService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
@@ -507,22 +506,12 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateScheduleExcel(Guid id)
     {
-        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(id);
-        if (error is not null)
+        var (odsBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Sheet(id);
+        if (odsBytes == null)
         {
-            return BadRequest(error);
+            return BadRequest(errorMsg);
         }
-        if (excelBytes is null)
-        {
-            return NotFound("Error generando excel");
-        }
-
-        // send
-        return File(
-            excelBytes,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "schedule.xlsx"
-        );
+        return File(odsBytes, "application/vnd.oasis.opendocument.spreadsheet", "cronograma.ods");
     }
 
     [EndpointSummary("Generate Schedule PDF")]
@@ -533,13 +522,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
-        var (odsBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Sheet(id);
-        if (odsBytes == null)
-        {
-            return BadRequest(errorMsg);
-        }
-
-        var (pdfBytes, pdfError) = libreOfficeConverterService.convertTo(odsBytes, "ods", "pdf");
+        var (pdfBytes, pdfError) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
         if (pdfError == null || pdfBytes == null)
         {
             return BadRequest(pdfError);
@@ -613,21 +596,10 @@ public class ProjectController(
             string email
     )
     {
-        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
-
+        var (pdfBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
         if (pdfBytes == null)
         {
-            if (
-                errorMsg != null
-                && (
-                    errorMsg.Contains("no encontrado", StringComparison.CurrentCultureIgnoreCase)
-                    || errorMsg.ToLower().Contains("not found")
-                )
-            )
-            {
-                return NotFound(errorMsg);
-            }
-            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+            return BadRequest(errorMsg);
         }
 
         var (ok, serviceError) = await emailService.SendEmailAsync(
@@ -666,78 +638,24 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> SendSchedulePDFViaWhatsapp(
         Guid id,
-        [FromQuery] [System.ComponentModel.DataAnnotations.Required] string phoneNumber
+        [FromQuery][System.ComponentModel.DataAnnotations.Required] string phoneNumber
     )
     {
-        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
-
+        var (pdfBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
         if (pdfBytes == null)
         {
-            if (
-                errorMsg != null
-                && (
-                    errorMsg.ToLower().Contains("no encontrado")
-                    || errorMsg.ToLower().Contains("not found")
-                )
-            )
-            {
-                return NotFound(errorMsg);
-            }
-            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+            return BadRequest(errorMsg);
         }
 
         await whatsappService.SendWhatsappServiceMessageAsync(
             fileBytes: pdfBytes,
+            // FIXME: set valid whatsapp SID
             contentSid: "HXc9bee467c02d529435b97f7694ad3b87", // Assuming this SID is generic for document sending
             fileName: "ficha_operaciones.pdf",
             phoneNumber: phoneNumber
         );
 
         return Ok();
-    }
-
-    private async Task<(byte[]? PdfBytes, string? ErrorMessage)> GenerateSchedulePdfBytesAsync(
-        Guid id
-    )
-    {
-        var (excelBytes, error) = await projectService.GenerateAppointmentScheduleExcel(
-            id,
-            isPdf: true
-        );
-
-        if (error != null)
-        {
-            return (null, error);
-        }
-        if (excelBytes == null)
-        {
-            return (
-                null,
-                "Error generando los datos base (Excel) para el cronograma del proyecto."
-            );
-        }
-
-        var (odsBytes, odsErr) = pdfConverterService.convertTo(excelBytes, "xlsx", "ods");
-        if (!string.IsNullOrEmpty(odsErr))
-        {
-            return (null, $"Error convirtiendo a ODS: {odsErr}");
-        }
-        if (odsBytes == null)
-        {
-            return (null, "Error generando el archivo ODS intermedio para el PDF del cronograma.");
-        }
-
-        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
-        if (!string.IsNullOrEmpty(pdfErr))
-        {
-            return (null, $"Error convirtiendo a PDF: {pdfErr}");
-        }
-        if (pdfBytes == null)
-        {
-            return (null, "Error final generando el archivo PDF del cronograma.");
-        }
-
-        return (pdfBytes, null);
     }
 
     [EndpointSummary("Export all projects to CSV with optional date range filtering")]

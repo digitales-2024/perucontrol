@@ -8,8 +8,27 @@ using PeruControl.Infrastructure.Model;
 
 namespace PeruControl.Services;
 
-public class ScheduleGeneratorService(DatabaseContext db)
+public class ScheduleGeneratorService(
+    DatabaseContext db,
+    LibreOfficeConverterService libreOfficeConverterService
+)
 {
+    public async Task<(byte[] pdfBytes, string? ErrorMessage)> GenerateSchedule01Pdf(Guid id)
+    {
+        var (odsBytes, errorMsg) = await GenerateSchedule01Sheet(id);
+        if (odsBytes == null)
+        {
+            return ([], errorMsg);
+        }
+
+        var (pdfBytes, pdfError) = libreOfficeConverterService.convertTo(odsBytes, "ods", "pdf");
+        if (pdfError == null || pdfBytes == null)
+        {
+            return ([], pdfError);
+        }
+        return (pdfBytes, null);
+    }
+
     public async Task<(byte[] odsBytes, string? ErrorMessage)> GenerateSchedule01Sheet(Guid id)
     {
         var project = await db
