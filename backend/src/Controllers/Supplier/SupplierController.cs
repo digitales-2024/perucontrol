@@ -17,10 +17,7 @@ public class SupplierController(
     [HttpGet]
     public override async Task<ActionResult<IEnumerable<Supplier>>> GetAll()
     {
-        return await _context
-            .Suppliers
-            .OrderByDescending(s => s.SupplierNumber)
-            .ToListAsync();
+        return await _context.Suppliers.OrderByDescending(s => s.SupplierNumber).ToListAsync();
     }
 
     [EndpointSummary("Get one by ID")]
@@ -29,9 +26,7 @@ public class SupplierController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public override async Task<ActionResult<Supplier>> GetById(Guid id)
     {
-        var entity = await _context
-            .Suppliers
-            .FirstOrDefaultAsync(s => s.Id == id);
+        var entity = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id);
         return entity == null ? NotFound() : Ok(entity);
     }
 
@@ -39,7 +34,9 @@ public class SupplierController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public override async Task<ActionResult<Supplier>> Create([FromBody] SupplierCreateDTO createDTO)
+    public override async Task<ActionResult<Supplier>> Create(
+        [FromBody] SupplierCreateDTO createDTO
+    )
     {
         var duplicateExists = await _context.Suppliers.AnyAsync(s =>
             s.RucNumber == createDTO.RucNumber
@@ -73,9 +70,7 @@ public class SupplierController(
         try
         {
             // Load supplier WITHOUT tracking to avoid concurrency issues
-            var supplier = await _dbSet
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var supplier = await _dbSet.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
 
             if (supplier == null)
                 return NotFound("Proveedor no encontrado");
@@ -159,7 +154,9 @@ public class SupplierController(
         [FromQuery] DateTime? endDate = null
     )
     {
-        var suppliers = await _context.Suppliers.OrderByDescending(s => s.SupplierNumber).ToListAsync();
+        var suppliers = await _context
+            .Suppliers.OrderByDescending(s => s.SupplierNumber)
+            .ToListAsync();
 
         var csvBytes = csvExportService.ExportSuppliersToCsv(suppliers, startDate, endDate);
 
@@ -176,5 +173,17 @@ public class SupplierController(
         fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
 
         return File(csvBytes, "text/csv", fileName);
+    }
+
+    [EndpointSummary("Get all active suppliers")]
+    [HttpGet("active")]
+    public async Task<ActionResult<IEnumerable<Supplier>>> GetActiveSuppliers()
+    {
+        var activeSuppliers = await _context
+            .Suppliers.Where(s => s.IsActive)
+            .OrderByDescending(s => s.SupplierNumber)
+            .ToListAsync();
+
+        return Ok(activeSuppliers);
     }
 }
