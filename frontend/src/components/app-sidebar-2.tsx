@@ -4,6 +4,7 @@ import * as React from "react";
 import {
     BriefcaseBusiness,
     BugOff,
+    FileText,
     HandCoins,
     PieChart,
     Settings2,
@@ -98,6 +99,21 @@ const data = {
                 {
                     title: "Certificados",
                     url: "/projects/tablas/certificado",
+                },
+            ],
+        },
+        {
+            title: "Ordenes de Compra",
+            url: "#",
+            icon: FileText,
+            items: [
+                {
+                    title: "Todas las ordenes",
+                    url: "/purchase-orders",
+                },
+                {
+                    title: "Nueva orden de compra",
+                    url: "/purchase-orders/nuevo",
                 },
             ],
         },
