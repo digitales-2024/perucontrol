@@ -26,11 +26,12 @@ import {
 import { ViewClientDetails } from "@/app/(admin)/clients/_components/ViewClientsDetail";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { DesactivateAppointment, EditAppointment, GenerateSchedule2Excel, GenerateScheduleExcel, GenerateSchedulePDF, SendSchedulePDFViaEmail, SendSchedulePDFViaWhatsapp } from "../../actions";
+import { DesactivateAppointment, EditAppointment, GenerateSchedule2ExcelWithFilename, GenerateScheduleExcelWithFilename, GenerateSchedulePDF, GenerateSchedulePDFWithFilename, SendSchedulePDFViaEmail, SendSchedulePDFViaWhatsapp } from "../../actions";
 import { EditAppointmentDialog } from "./EditAppointmentDialog";
 import { DesactiveAppointmentDialog } from "./DesactiveAppointmentDialog";
 import { toastWrapper } from "@/types/toasts";
 import { cn } from "@/lib/utils";
+import { downloadBlobWithServerFilename } from "@/utils/file-download";
 import { AppointmentsDataTable } from "./AppointmentsDataTable";
 import { columns } from "./AppointmentsColumns";
 import { DocumentSenderDialog } from "@/components/DocumentSenderDialog";
@@ -247,7 +248,7 @@ export function ProjectDetails({
     const downloadExcel = async() =>
     {
         // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateScheduleExcel(projectId), {
+        const [fileResponse, err] = await toastWrapper(GenerateScheduleExcelWithFilename(projectId), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -259,40 +260,40 @@ export function ProjectDetails({
             return;
         }
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `cronograma-${projectId.substring(0, 4)}.xlsx`;
-        a.click();
-        URL.revokeObjectURL(url);
+        // Download with server-extracted filename
+        downloadBlobWithServerFilename(
+            fileResponse.blob,
+            fileResponse.filename,
+            `cronograma-${projectId.substring(0, 4)}.ods`,
+        );
     };
 
     const downloadPDF = async() =>
     {
-        const [blob, err] = await toastWrapper(GenerateSchedulePDF(projectId), {
+        const [fileResponse, err] = await toastWrapper(GenerateSchedulePDFWithFilename(projectId), {
             loading: "Generando archivo",
-            success: "Excel generado",
-            error: (e) => `Error al generar el Excel: ${e.message}`,
+            success: "PDF generado",
+            error: (e) => `Error al generar el PDF: ${e.message}`,
         });
 
         if (err)
         {
-            console.error("Error al generar el Excel:", err);
+            console.error("Error al generar el PDF:", err);
             return;
         }
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `cronograma_${projectId.substring(0, 4)}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        // Download with server-extracted filename
+        downloadBlobWithServerFilename(
+            fileResponse.blob,
+            fileResponse.filename,
+            `cronograma_${projectId.substring(0, 4)}.pdf`,
+        );
     };
 
     const downloadExcel2 = async() =>
     {
         // Genera el Excel
-        const [blob, err] = await toastWrapper(GenerateSchedule2Excel(projectId), {
+        const [fileResponse, err] = await toastWrapper(GenerateSchedule2ExcelWithFilename(projectId), {
             loading: "Generando archivo",
             success: "Excel generado",
             error: (e) => `Error al generar el Excel: ${e.message}`,
@@ -304,12 +305,12 @@ export function ProjectDetails({
             return;
         }
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `cronograma-${projectId.substring(0, 4)}.xlsx`;
-        a.click();
-        URL.revokeObjectURL(url);
+        // Download with server-extracted filename
+        downloadBlobWithServerFilename(
+            fileResponse.blob,
+            fileResponse.filename,
+            `cronograma-${projectId.substring(0, 4)}.ods`,
+        );
     };
 
     return (
