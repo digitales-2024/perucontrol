@@ -2347,7 +2347,7 @@
    id="image1"
    x="3193.4016"
    y="5067.2095"
-   xlink:href="%7Bimagen_firma_1%7D"
+   xlink:href="{imagen_firma_1}"
    inkscape:label="imagen_firma_ink" />
 <image
    width="889.82056"
@@ -2356,7 +2356,7 @@
    id="image2"
    x="5834.8813"
    y="5075.187"
-   xlink:href="%7Bimagen_firma_2%7D"
+   xlink:href="{imagen_firma_2}"
    inkscape:label="imagen_firma_ink" />
 <path
    d="m 331.45851,695.15548 c -19.03155,0 -36.59912,-1.3868 -54.1667,-5.54706 V 6017.5191 c 17.56758,-2.7736 35.13515,-5.547 54.1667,-5.547 h 4.39189 c 16.10361,0 33.67118,1.3868 49.77479,5.547 V 689.60842 c -16.10361,2.77346 -32.20722,4.16026 -49.77479,5.54706 z"
