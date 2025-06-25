@@ -122,3 +122,19 @@ export async function ExportSuppliersCSV(
 
     return DownloadFile(url, "GET");
 }
+
+export async function GetActiveSuppliers(): Promise<
+	Result<Array<components["schemas"]["Supplier"]>, FetchError>
+	>
+{
+    const [data, error] = await wrapper((auth) => backend.GET("/api/Supplier/active", {
+        ...auth,
+    }));
+
+    if (error)
+    {
+        console.log("Error fetching active suppliers:", error);
+        return err(error);
+    }
+    return ok(data ?? []);
+}
