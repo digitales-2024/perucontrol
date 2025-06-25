@@ -507,7 +507,7 @@ public class ProjectController(
     public async Task<IActionResult> GenerateScheduleExcel(Guid id)
     {
         var (odsBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Sheet(id);
-        if (odsBytes == null)
+        if (errorMsg != null)
         {
             return BadRequest(errorMsg);
         }
@@ -523,7 +523,7 @@ public class ProjectController(
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
         var (pdfBytes, pdfError) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
-        if (pdfError == null || pdfBytes == null)
+        if (pdfError != null)
         {
             return BadRequest(pdfError);
         }
@@ -597,7 +597,7 @@ public class ProjectController(
     )
     {
         var (pdfBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
-        if (pdfBytes == null)
+        if (errorMsg != null)
         {
             return BadRequest(errorMsg);
         }
@@ -642,7 +642,7 @@ public class ProjectController(
     )
     {
         var (pdfBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Pdf(id);
-        if (pdfBytes == null)
+        if (errorMsg != null)
         {
             return BadRequest(errorMsg);
         }

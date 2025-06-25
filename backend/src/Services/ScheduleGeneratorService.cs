@@ -16,13 +16,13 @@ public class ScheduleGeneratorService(
     public async Task<(byte[] pdfBytes, string? ErrorMessage)> GenerateSchedule01Pdf(Guid id)
     {
         var (odsBytes, errorMsg) = await GenerateSchedule01Sheet(id);
-        if (odsBytes == null)
+        if (errorMsg != null)
         {
             return ([], errorMsg);
         }
 
         var (pdfBytes, pdfError) = libreOfficeConverterService.convertTo(odsBytes, "ods", "pdf");
-        if (pdfError == null || pdfBytes == null)
+        if (pdfError != null)
         {
             return ([], pdfError);
         }
