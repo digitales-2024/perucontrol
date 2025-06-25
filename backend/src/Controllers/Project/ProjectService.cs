@@ -4,11 +4,7 @@ using PeruControl.Services;
 
 namespace PeruControl.Controllers;
 
-public class ProjectService(
-    DatabaseContext db,
-    ExcelTemplateService excelTemplateService,
-    OdsTemplateService odsTemplateService
-)
+public class ProjectService(DatabaseContext db, OdsTemplateService odsTemplateService)
 {
     public async Task<(int, string)> CreateProject(ProjectCreateDTO createDTO)
     {
