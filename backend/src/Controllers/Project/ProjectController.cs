@@ -13,6 +13,8 @@ public class ProjectController(
     LibreOfficeConverterService pdfConverterService,
     EmailService emailService,
     WhatsappService whatsappService,
+    ScheduleGeneratorService scheduleGeneratorService,
+    LibreOfficeConverterService libreOfficeConverterService,
     CsvExportService csvExportService
 ) : AbstractCrudController<Project, ProjectCreateDTO, ProjectPatchDTO>(db)
 {
@@ -531,24 +533,17 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GenerateSchedulePDF(Guid id)
     {
-        var (pdfBytes, errorMsg) = await GenerateSchedulePdfBytesAsync(id);
-
-        if (pdfBytes == null)
+        var (odsBytes, errorMsg) = await scheduleGeneratorService.GenerateSchedule01Sheet(id);
+        if (odsBytes == null)
         {
-            if (
-                errorMsg != null
-                && (
-                    errorMsg.ToLower().Contains("no encontrado")
-                    || errorMsg.ToLower().Contains("not found")
-                )
-            )
-            {
-                return NotFound(errorMsg);
-            }
-            return BadRequest(errorMsg ?? "Error desconocido generando el PDF del cronograma.");
+            return BadRequest(errorMsg);
         }
 
-        // send
+        var (pdfBytes, pdfError) = libreOfficeConverterService.convertTo(odsBytes, "ods", "pdf");
+        if (pdfError == null || pdfBytes == null)
+        {
+            return BadRequest(pdfError);
+        }
         return File(pdfBytes, "application/pdf", "ficha_operaciones.pdf");
     }
 

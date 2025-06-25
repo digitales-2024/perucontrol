@@ -10,7 +10,7 @@ namespace PeruControl.Services;
 
 public class ScheduleGeneratorService(DatabaseContext db)
 {
-    public async Task<(byte[] PdfBytes, string? ErrorMessage)> GenerateSchedule01Sheet(Guid id)
+    public async Task<(byte[] odsBytes, string? ErrorMessage)> GenerateSchedule01Sheet(Guid id)
     {
         var project = await db
             .Projects.Include(p => p.Client)
@@ -204,7 +204,7 @@ public class ScheduleGeneratorService(DatabaseContext db)
             // Join all labels for the service_labels placeholder
             var labelsText = string.Join("; ", labelsList);
 
-            var placeholders = new Dictionary<string, string>()
+            var globalPlaceholders = new Dictionary<string, string>()
             {
                 { "{empresa_contratante}", project.Client.RazonSocial ?? project.Client.Name },
                 { "{direccion}", project.Address },
@@ -212,55 +212,124 @@ public class ScheduleGeneratorService(DatabaseContext db)
                 { "{service_labels}", labelsText },
             };
 
-            // Fill Ambients, up to 8
-            var projectAmbients = project.Ambients;
-            var projectAmbientsCount = projectAmbients.Count();
-            for (var i = 1; i <= 8; i += 1)
-            {
-                if (i > projectAmbientsCount)
-                {
-                    placeholders[$"{{ambiente_{i}}}"] = "";
-                }
-                else
-                {
-                    var ambient = projectAmbients[i - 1];
-                    placeholders[$"{{ambiente_{i}}}"] = ambient;
-                }
-            }
-
-            // Generate placeholders for every day available on the list (1-31 days, 1-8 environments)
-            for (var i = 1; i <= 8; i += 1)
-            {
-                for (var j = 1; j <= 31; j += 1)
-                {
-                    placeholders[$"{{{i}_{j}}}"] = "";
-                }
-            }
-
-            // Fill in the actual appointment data
-            foreach (var appointment in appointments)
-            {
-                var day = appointment.DateTime.Day.ToString();
-                var serviceNames = appointment.ServiceNames.OrderBy(s => s).ToList();
-
-                // Find the label for this service combination
-                var combinationKey = string.Join("|", serviceNames);
-                var combinationLabel = combinationLabels[combinationKey];
-
-                for (var i = 1; i <= projectAmbientsCount; i += 1)
-                {
-                    placeholders[$"{{{i}_{day}}}"] = combinationLabel;
-                }
-            }
-
-            // Replace placeholders in this table
-            ReplaceTablePlaceholders(monthTable, placeholders, textns);
+            // Process dynamic ambient rows (row 10 is the template)
+            ProcessDynamicAmbientRows(
+                monthTable,
+                tablens,
+                textns,
+                project.Ambients,
+                appointments,
+                combinationLabels,
+                globalPlaceholders
+            );
 
             // Add the completed table to the spreadsheet
             spreadsheet.Add(monthTable);
         }
 
         return newDoc;
+    }
+
+    private static void ProcessDynamicAmbientRows(
+        XElement table,
+        XNamespace tablens,
+        XNamespace textns,
+        IList<string> ambients,
+        List<AppointmentInfo> appointments,
+        Dictionary<string, string> combinationLabels,
+        Dictionary<string, string> globalPlaceholders
+    )
+    {
+        // First, replace global placeholders
+        ReplaceTablePlaceholders(table, globalPlaceholders, textns);
+
+        // Find all rows in the table
+        var allRows = table.Elements(tablens + "table-row").ToList();
+
+        // Row 10 (index 9) is our template row
+        const int templateRowIndex = 9;
+        if (allRows.Count <= templateRowIndex)
+        {
+            throw new Exception(
+                $"La plantilla debe tener al menos {templateRowIndex + 1} filas. Fila {templateRowIndex + 1} es la plantilla para ambientes."
+            );
+        }
+
+        var templateRow = allRows[templateRowIndex];
+        var templateRowClone = new XElement(templateRow);
+
+        // Create appointment lookup by day and ambient
+        var appointmentsByDayAndAmbient = new Dictionary<(int day, string ambient), string>();
+
+        foreach (var appointment in appointments)
+        {
+            var day = appointment.DateTime.Day;
+            var serviceNames = appointment.ServiceNames.OrderBy(s => s).ToList();
+            var combinationKey = string.Join("|", serviceNames);
+            var combinationLabel = combinationLabels.TryGetValue(combinationKey, out var label)
+                ? label
+                : "X";
+
+            // Apply to all ambients for this appointment
+            foreach (var ambient in ambients)
+            {
+                appointmentsByDayAndAmbient[(day, ambient)] = combinationLabel;
+            }
+        }
+
+        // Generate rows for each ambient
+        XElement lastInsertedRow = templateRow;
+        foreach (var ambient in ambients)
+        {
+            // Clone the template row
+            var ambientRow = new XElement(templateRowClone);
+
+            // Create placeholders for this ambient
+            var ambientPlaceholders = new Dictionary<string, string> { { "{ambiente}", ambient } };
+
+            // Add day placeholders (c1 to c31)
+            for (int day = 1; day <= 31; day++)
+            {
+                var dayPlaceholder = $"{{c{day}}}";
+                var appointmentLabel = appointmentsByDayAndAmbient.TryGetValue(
+                    (day, ambient),
+                    out var label
+                )
+                    ? label
+                    : "";
+                ambientPlaceholders[dayPlaceholder] = appointmentLabel;
+            }
+
+            // Replace placeholders in this row
+            ReplaceRowPlaceholders(ambientRow, ambientPlaceholders, textns);
+
+            // Insert the new row after the last inserted row
+            lastInsertedRow.AddAfterSelf(ambientRow);
+            lastInsertedRow = ambientRow;
+        }
+
+        // Remove the original template row
+        templateRow.Remove();
+    }
+
+    private static void ReplaceRowPlaceholders(
+        XElement row,
+        Dictionary<string, string> placeholders,
+        XNamespace textns
+    )
+    {
+        // Find all text spans and paragraphs in this row
+        var textSpans = row.Descendants(textns + "span").ToList();
+        foreach (var span in textSpans)
+        {
+            ReplaceInTextSpan(span, placeholders);
+        }
+
+        var paragraphs = row.Descendants(textns + "p").ToList();
+        foreach (var paragraph in paragraphs)
+        {
+            ReplacePlaceholdersInElement(paragraph, placeholders);
+        }
     }
 
     private static void ReplaceTablePlaceholders(
