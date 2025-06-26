@@ -187,4 +187,3 @@ public class SupplierController(
         return Ok(activeSuppliers);
     }
 }
-
