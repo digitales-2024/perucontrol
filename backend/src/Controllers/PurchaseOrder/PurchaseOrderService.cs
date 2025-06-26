@@ -55,40 +55,49 @@ public class PurchaseOrderService(
     private static (byte[], string?) GenerateSheet(PurchaseOrder purchaseOrder, Business business)
     {
         var templateFile = "Templates/orden_de_compra_plantilla.ods";
-        
+        var supplier = purchaseOrder.Supplier;
+
         var purchaseOrderNumber = purchaseOrder.CreatedAt.ToString("yy") + "-" + purchaseOrder.Number.ToString("D4");
         var totalCost = purchaseOrder.Products.Sum(p => p.Quantity * p.UnitPrice);
         var currencySymbol = purchaseOrder.Currency == PurchaseOrderCurrency.PEN ? "S/." : "US$";
         var paymentMethodString = purchaseOrder.PaymentMethod == PurchaseOrderPaymentMethod.Transfer ? "Transferencia" : "Efectivo";
 
+        // Compute subtotal, taxes, total
+        decimal subtotal = 0;
+        foreach (var product in purchaseOrder.Products)
+        {
+            subtotal += product.UnitPrice * product.Quantity;
+        }
+
+        var taxes = subtotal * 0.18m;
+        var total = subtotal + taxes;
+
         var placeholders = new Dictionary<string, string>
         {
-            { "{{digesa_habilitacion}}", business.DigesaNumber },
+            // Top Der.
             { "{{direccion_perucontrol}}", business.Address },
             { "{{ruc_perucontrol}}", business.RUC },
             { "{{celulares_perucontrol}}", business.Phones },
-            { "{{gerente_perucontrol}}", business.DirectorName },
-            { "{{fecha_emision}}", purchaseOrder.IssueDate.ToString("dd/MM/yyyy") },
-            { "{{cod_orden_compra}}", purchaseOrderNumber },
-            { "{{nro_proveedor}}", purchaseOrder.Supplier.SupplierNumber.ToString("D4") },
-            { "{{fecha_vencimiento}}", purchaseOrder.ExpirationDate.ToString("dd/MM/yyyy") },
-            { "{{nombre_proveedor}}", purchaseOrder.Supplier.BusinessName ?? purchaseOrder.Supplier.Name },
-            { "{{direccion_fiscal_proveedor}}", purchaseOrder.Supplier.FiscalAddress },
-            { "{{contacto_proveedor}}", purchaseOrder.Supplier.ContactName ?? "" },
-            { "{{telefono_proveedor}}", purchaseOrder.Supplier.PhoneNumber },
-            { "{{email_proveedor}}", purchaseOrder.Supplier.Email },
-            { "{{ruc_proveedor}}", purchaseOrder.Supplier.RucNumber },
-            { "{{banco_perucontrol}}", business.BankName },
-            { "{{cuenta_banco_perucontrol}}", business.BankAccount },
-            { "{{cci_perucontrol}}", business.BankCCI },
-            { "{{detracciones_perucontrol}}", business.Deductions },
-            { "{{forma_pago}}", paymentMethodString },
-            { "{{duracion_dias}}", purchaseOrder.DurationDays.ToString() },
-            { "{{moneda}}", currencySymbol },
-            { "{{subtotal}}", $"{currencySymbol} {purchaseOrder.Subtotal:0.00}" },
-            { "{{igv}}", $"{currencySymbol} {purchaseOrder.VAT:0.00}" },
-            { "{{total}}", $"{currencySymbol} {purchaseOrder.Total:0.00}" },
-            { "{{terminos_condiciones}}", purchaseOrder.TermsAndConditions },
+            { "{{correo_perucontrol}}", business.Email },
+
+            // Top Izq.
+            { "{fecha_orden}", purchaseOrder.IssueDate.ToString("dd/MM/yyyy") },
+            { "{expiracion_orden}", purchaseOrder.ExpirationDate.ToString("dd/MM/yyyy") },
+            { "{nro_orden}", purchaseOrder.Number.ToString("D6") },
+
+            // Supplier
+            { "{nombre_proveedor}", supplier.Name },
+            { "{ruc_proveedor}", supplier.RucNumber },
+            { "{direccion_proveedor}", supplier.FiscalAddress },
+            { "{moneda}", purchaseOrder.Currency == PurchaseOrderCurrency.PEN ? "Soles" : "Dólares" },
+
+            // Other
+            { "{subtotal}", currencySymbol + " " + subtotal.ToString("F2") },
+            { "{igv}", currencySymbol + " " + taxes.ToString("F2") },
+            { "{total}",currencySymbol + " " + total.ToString("F2") },
+            // FIXME: bring logic from Trazo
+            { "{total_letras}", "// TODO" },
+            { "{terms}", purchaseOrder.TermsAndConditions },
         };
 
         using var ms = new MemoryStream();
@@ -141,12 +150,13 @@ public class PurchaseOrderService(
                             .Elements(tablens + "table-row")
                             .FirstOrDefault(r =>
                                 r.Descendants(textns + "p")
-                                    .Any(p => p.Value.Contains("{producto_cantidad}"))
+                                    .Any(p => p.Value.Contains("{descripcion_producto}"))
                             );
 
                         if (templateRow != null)
                         {
                             XElement lastInserted = templateRow;
+                            var i = 1;
                             foreach (var product in purchaseOrder.Products)
                             {
                                 var newRow = new XElement(templateRow);
@@ -156,15 +166,18 @@ public class PurchaseOrderService(
                                 foreach (var cell in newRow.Descendants(textns + "p"))
                                 {
                                     cell.Value = cell
-                                        .Value.Replace("{producto_cantidad}", product.Quantity.ToString("0.00"))
-                                        .Replace("{producto_nombre}", product.Name)
-                                        .Replace("{producto_descripcion}", product.Description ?? "")
-                                        .Replace("{producto_precio_unitario}", $"{currencySymbol} {unitPrice}")
-                                        .Replace("{producto_precio_total}", $"{currencySymbol} {totalPrice}");
+                                        .Value
+                                        .Replace("{nro_item_producto}", i.ToString())
+                                        .Replace("{descripcion_producto}", product.Name + "\n" + product.Description)
+                                        .Replace("{cantidad_producto}", product.Quantity.ToString())
+                                        .Replace("{precio_unit_producto}", product.UnitPrice.ToString())
+                                        .Replace("{total_producto}", $"{currencySymbol} {totalPrice}");
                                 }
 
                                 lastInserted.AddAfterSelf(newRow);
                                 lastInserted = newRow;
+
+                                i += 1;
                             }
                             templateRow.Remove();
                         }
