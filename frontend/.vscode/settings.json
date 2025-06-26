@@ -1,5 +1,9 @@
 {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "always"
-    }
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "always"
+	},
+	"editor.defaultFormatter": null,
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	}
 }

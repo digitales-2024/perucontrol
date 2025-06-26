@@ -7,18 +7,28 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface DatePickerProps {
-  value: Date | undefined
-  onChange: (date: Date | undefined) => void
-  iconColor?: string
-  className?: string
-  placeholder?: string
+	value: Date | undefined;
+	onChange: (date: Date | undefined) => void;
+	iconColor?: string;
+	className?: string;
+	placeholder?: string;
 }
 
 export default function DatePicker({
@@ -31,7 +41,7 @@ export default function DatePicker({
 {
     const [month, setMonth] = React.useState<number>(value ? value.getMonth() : new Date().getMonth());
     const [year, setYear] = React.useState<number>(value ? value.getFullYear() : new Date().getFullYear());
-    const isMobile = useIsMobile();
+    const isDesktop = useMediaQuery("(min-width: 1400px)");
 
     const years = Array.from({ length: 21 }, (_, i) => year - 10 + i);
     const months = [
@@ -71,10 +81,16 @@ export default function DatePicker({
                     )}
                     tabIndex={0}
                 >
-                    <CalendarIcon className={`mr-2 h-4 w-4 flex-shrink-0 ${iconColor ? `${iconColor}` : ""}`} />
+                    <CalendarIcon
+                        className={`mr-2 h-4 w-4 flex-shrink-0 ${
+                            iconColor ? `${iconColor}` : ""
+                        }`}
+                    />
                     {value ? (
                         <span className="truncate text-ellipsis">
-                            {format(value, isMobile ? "dd/MM/yyyy" : "PPP", { locale: es })}
+                            {format(value, isDesktop ? "PPP" : "dd/MM/yyyy", {
+                                locale: es,
+                            })}
                         </span>
                     ) : (
                         <span className="truncate">
@@ -84,26 +100,51 @@ export default function DatePicker({
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className={cn("p-0", isMobile ? "w-[calc(100vw-2rem)] max-w-[350px]" : "w-auto")}
+                className={cn(
+                    "p-0",
+                    isDesktop
+                        ? "w-auto"
+                        : "w-[calc(100vw-2rem)] max-w-[350px] overflow-y-auto max-h-[300px]",
+                )}
                 align="center"
                 side="bottom"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
-                <div className={cn("p-3", isMobile ? "flex flex-col space-y-2" : "flex items-center justify-between")}>
-                    <Select value={month.toString()} onValueChange={handleMonthChange}>
-                        <SelectTrigger className={isMobile ? "w-full" : "w-[140px]"}>
+                <div
+                    className={cn(
+                        "",
+                        isDesktop
+                            ? "flex items-center justify-between p-3 pb-0"
+                            : "flex flex-row space-y-2 p-1 gap-2 pb-0",
+                    )}
+                >
+                    <Select
+                        value={month.toString()}
+                        onValueChange={handleMonthChange}
+                    >
+                        <SelectTrigger
+                            className={isDesktop ? "w-[140px]" : "w-full"}
+                        >
                             <SelectValue placeholder="Mes" />
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px]">
                             {months.map((month, index) => (
-                                <SelectItem key={month} value={index.toString()}>
+                                <SelectItem
+                                    key={month}
+                                    value={index.toString()}
+                                >
                                     {month}
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <Select value={year.toString()} onValueChange={handleYearChange}>
-                        <SelectTrigger className={isMobile ? "w-full" : "w-[100px]"}>
+                    <Select
+                        value={year.toString()}
+                        onValueChange={handleYearChange}
+                    >
+                        <SelectTrigger
+                            className={isDesktop ? "w-[100px]" : "w-full"}
+                        >
                             <SelectValue placeholder="Año" />
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -115,7 +156,7 @@ export default function DatePicker({
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="p-2">
+                <div className={cn(isDesktop ? "p-2" : "p-1")}>
                     <Calendar
                         mode="single"
                         selected={value}
@@ -128,32 +169,41 @@ export default function DatePicker({
                         }}
                         initialFocus
                         locale={es}
-                        className={cn("capitalize", isMobile && "text-sm")}
+                        className={cn("capitalize", isDesktop ? "" : "text-sm px-0 flex justify-center")}
                         classNames={{
-
                             day_selected:
-                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+								"bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
 
                             day_today: "bg-accent text-accent-foreground",
-                            day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100", isMobile && "h-8 w-8"),
+                            day: cn(
+                                "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+                                !isDesktop && "h-8 w-8",
+                            ),
 
                             head_cell: cn(
-                                "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                                isMobile && "w-8 text-[0.7rem]",
+                                "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+                                !isDesktop && "w-7 text-[0.7rem]",
                             ),
                             cell: cn(
-                                "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                                isMobile && "h-8 w-8",
+                                "h-7 w-8 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                !isDesktop && "h-7 w-7",
                             ),
 
-                            nav_button: cn("[&:hover]:bg-accent [&:hover]:text-accent-foreground", isMobile && "h-7 w-7"),
+                            nav_button: cn(
+                                "[&:hover]:bg-accent [&:hover]:text-accent-foreground",
+                                !isDesktop && "h-7 w-7",
+                            ),
                             table: "border-collapse space-y-1",
                         }}
                     />
                 </div>
-                {isMobile && (
+                {!isDesktop && (
                     <div className="p-3 border-t">
-                        <Button variant="outline" className="w-full" onClick={() => onChange(undefined)}>
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => onChange(undefined)}
+                        >
                             Limpiar selección
                         </Button>
                     </div>

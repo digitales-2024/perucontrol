@@ -111,6 +111,7 @@ var modules = new IModule[]
     new AuthModule(),
     new ClientModule(),
     new SupplierModule(),
+    new PurchaseOrderModule(),
     new ProjectModule(),
     new AppointmentModule(),
     new PeruControl.Controllers.Product.ProductModule(),
