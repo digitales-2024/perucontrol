@@ -5387,44 +5387,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Supplier/active": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all active suppliers */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Supplier"][];
-                        "application/json": components["schemas"]["Supplier"][];
-                        "text/json": components["schemas"]["Supplier"][];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/TermsAndConditions": {
         parameters: {
             query?: never;
@@ -7423,6 +7385,8 @@ export interface components {
         ProjectOperationSheet: {
             /** Format: uuid */
             projectAppointmentId: string;
+            /** Format: int32 */
+            operationSheetNumber?: number;
             /** Format: date-time */
             operationDate: string;
             treatedAreas: string;
@@ -7560,7 +7524,7 @@ export interface components {
         };
         PurchaseOrder: {
             /** Format: int32 */
-            number?: number;
+            number: number;
             /** Format: uuid */
             supplierId: string;
             supplier?: components["schemas"]["Supplier"];
