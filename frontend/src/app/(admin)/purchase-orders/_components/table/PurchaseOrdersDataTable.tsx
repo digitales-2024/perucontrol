@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { BookPlus, CheckCheck, Pencil, Trash2, Filter } from "lucide-react";
+import { BookPlus, Pencil, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import  { type PurchaseOrder, PurchaseOrderStatus } from "../../_types/PurchaseOrders";
@@ -10,6 +10,7 @@ import { PurchaseOrderTable } from "@/components/data-table/PurchaseOrderDataTab
 import { PurchaseOrderFilters } from "./PurchaseOrderFilters";
 import { useRouter } from "next/navigation";
 import { PurchaseOrderViewDialog } from "../view/PurchaseOrderViewDialog";
+import { Badge } from "@/components/ui/badge";
 
 interface DataTableProps<TData, TValue> {
 	columns: Array<ColumnDef<TData, TValue>>;
@@ -29,10 +30,10 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
     currentFilters = {},
 }: DataTableProps<TData, unknown>)
 {
-    const [showUpdateOrder, setShowUpdateOrder] = useState(false);
-    const [showDeleteOrder, setShowDeleteOrder] = useState(false);
-    const [showReactiveOrder, setShowReactiveOrder] = useState(false);
     const [showDetailOrder, setShowDetailOrder] = useState(false);
+    const [showPDFPreview, setShowPDFPreview] = useState(false);
+
+    console.log("PurchaseOrdersDataTable data:", showPDFPreview);
     const [showFilters, setShowFilters] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<TData | null>(null);
 
@@ -84,24 +85,18 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
             disabled: (row: TData) => row.status === PurchaseOrderStatus.Cancelled,
         },
         {
-            label: "Cancelar",
-            icon: <Trash2 className="h-4 w-4" />,
-            onClick: (row: TData) =>
+            label: "Descargar",
+            icon: (
+                <Badge variant="pdf">
+                    PDF
+                </Badge>),
+            onClick: (row: PurchaseOrder) =>
             {
-                setSelectedOrder(row);
-                setShowDeleteOrder(true);
+                // Aquí puedes implementar la lógica para descargar el PDF
+                console.log("Descargando PDF de la orden:", row.id);
+                setShowPDFPreview(true);
             },
-            disabled: (row: TData) => row.status === PurchaseOrderStatus.Cancelled, // Ya canceladas
-        },
-        {
-            label: "Reactivar",
-            icon: <CheckCheck className="h-4 w-4" />,
-            onClick: (row: TData) =>
-            {
-                setSelectedOrder(row);
-                setShowReactiveOrder(true);
-            },
-            disabled: (row: TData) => row.status !== PurchaseOrderStatus.Cancelled, // Solo canceladas
+            disabled: (row: TData) => row.status === PurchaseOrderStatus.Cancelled,
         },
     ];
 

@@ -113,6 +113,31 @@ export const columns: Array<ColumnDef<PurchaseOrder>> = [
             );
         },
     },
+
+    {
+        accessorKey: "expirationDate",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="p-0 text-zinc-800 hover:text-black font-bold hover:bg-transparent text-xs md:text-sm whitespace-normal text-center transition-colors w-full"
+            >
+                FECHA DE VENCIMIENTO
+            </Button>
+        ),
+        cell: ({ row }) =>
+        {
+            const date = row.original.expirationDate;
+            // Formatea en UTC
+            const formatted = formatInTimeZone(date, "UTC", "dd/MM/yyyy");
+            return (
+                <div className="flex items-center justify-center text-center text-xs md:text-sm">
+                    <Calendar className="mr-1 h-4 w-4" />
+                    {formatted}
+                </div>
+            );
+        },
+    },
     {
         accessorKey: "products",
         header: ({ column }) => (

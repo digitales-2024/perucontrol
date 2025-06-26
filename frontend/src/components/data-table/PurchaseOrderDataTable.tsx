@@ -343,11 +343,8 @@ export function PurchaseOrderTable<T extends object>({
                                                     // Determinar si el botón debe ser mostrado
                                                     const showButton =
 															(action.label ===
-																"Eliminar" &&
+																"Descargar" &&
 																!isDisabled) ||
-															(action.label ===
-																"Reactivar" &&
-																isDisabled) ||
 															(action.label ===
 																"Editar" &&
 																!isDisabled);
