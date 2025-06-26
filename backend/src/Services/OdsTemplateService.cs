@@ -631,7 +631,6 @@ public class OdsTemplateService
                             }
                             // Else: style palette row not found, styling won't be applied. Consider logging.
 
-
                             XElement lastInsertedElement = originalTemplateRow;
                             var newRowElements = new List<XElement>();
                             int currentRowNumber = 1; // For {idx} placeholder, 1-based

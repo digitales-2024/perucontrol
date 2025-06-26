@@ -10,27 +10,25 @@ namespace PeruControl.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_PurchaseOrders",
-                table: "PurchaseOrders");
+            migrationBuilder.DropPrimaryKey(name: "PK_PurchaseOrders", table: "PurchaseOrders");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_PurchaseOrders",
                 table: "PurchaseOrders",
-                column: "Id");
+                column: "Id"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_PurchaseOrders",
-                table: "PurchaseOrders");
+            migrationBuilder.DropPrimaryKey(name: "PK_PurchaseOrders", table: "PurchaseOrders");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_PurchaseOrders",
                 table: "PurchaseOrders",
-                column: "Number");
+                column: "Number"
+            );
         }
     }
 }
