@@ -41,7 +41,7 @@ public class PurchaseOrderProduct
 [Index(nameof(Number), IsUnique = true)]
 public class PurchaseOrder : BaseModel
 {
-    [Key]
+    [Required]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Number { get; set; }
 

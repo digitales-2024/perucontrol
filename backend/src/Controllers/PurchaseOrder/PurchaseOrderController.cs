@@ -64,13 +64,51 @@ public class PurchaseOrderController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] PurchaseOrderPatchDTO dto)
     {
+        if (dto == null)
+            return BadRequest("Request body is required.");
+
+        // Si el PATCH permite actualizar productos, puedes validar aquí si es necesario
+        if (dto.Products != null && !dto.Products.Any())
+            return BadRequest("At least one product is required.");
+
+        if (dto.TermsAndConditions != null && string.IsNullOrWhiteSpace(dto.TermsAndConditions))
+            return BadRequest("Terms and conditions are required.");
+
         var entity = await _context.PurchaseOrders.FindAsync(id);
         if (entity == null)
-            return NotFound();
+            return NotFound("Purchase order not found.");
 
-        dto.ApplyPatch(entity);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        // Si el PATCH permite cambiar el proveedor, valida que exista
+        if (dto.SupplierId.HasValue)
+        {
+            var supplierExists = await _context.Suppliers.AnyAsync(s =>
+                s.Id == dto.SupplierId.Value
+            );
+            if (!supplierExists)
+                return BadRequest("Supplier does not exist.");
+        }
+
+        // Si el PATCH permite cambiar fechas, asegúrate que sean UTC
+        if (dto.IssueDate.HasValue)
+            dto.IssueDate = DateTime.SpecifyKind(dto.IssueDate.Value, DateTimeKind.Utc);
+
+        if (dto.ExpirationDate.HasValue)
+            dto.ExpirationDate = DateTime.SpecifyKind(dto.ExpirationDate.Value, DateTimeKind.Utc);
+
+        try
+        {
+            dto.ApplyPatch(entity);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating purchase order");
+            return StatusCode(
+                500,
+                "An unexpected error occurred while updating the purchase order."
+            );
+        }
     }
 
     // Get by Id
@@ -100,10 +138,16 @@ public class PurchaseOrderController : ControllerBase
         var query = _context.PurchaseOrders.Include(po => po.Supplier).AsQueryable();
 
         if (startDate.HasValue)
-            query = query.Where(po => po.IssueDate >= startDate.Value);
+        {
+            var startUtc = DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc);
+            query = query.Where(po => po.IssueDate >= startUtc);
+        }
 
         if (endDate.HasValue)
-            query = query.Where(po => po.IssueDate <= endDate.Value);
+        {
+            var endUtc = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
+            query = query.Where(po => po.IssueDate <= endUtc);
+        }
 
         if (supplierId.HasValue)
             query = query.Where(po => po.SupplierId == supplierId.Value);
