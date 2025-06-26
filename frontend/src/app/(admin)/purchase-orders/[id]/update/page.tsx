@@ -5,12 +5,13 @@ import ErrorPage from "@/components/ErrorPage";
 import UpdatePurchaseOrderComponent from "./_components/UpdatePurchaseOrder";
 
 interface UpdatePurchaseOrderPageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }
 
 export default async function UpdatePurchaseOrderPage({ params }: UpdatePurchaseOrderPageProps)
 {
-    const [purchaseOrder, error] = await GetPurchaseOrderById(params.id);
+    const { id } = await params;
+    const [purchaseOrder, error] = await GetPurchaseOrderById(id);
     if (error)
     {
         console.error("Error getting purchase orders:", error);
@@ -64,7 +65,7 @@ export default async function UpdatePurchaseOrderPage({ params }: UpdatePurchase
                     </Breadcrumb>
                 )}
             />
-            <UpdatePurchaseOrderComponent purchaseOrder={purchaseOrder} purchaseOrderId={params.id} />
+            <UpdatePurchaseOrderComponent purchaseOrder={purchaseOrder} purchaseOrderId={id} />
         </>
     );
 }
