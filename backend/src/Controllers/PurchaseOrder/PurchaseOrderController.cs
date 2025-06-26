@@ -8,17 +8,12 @@ namespace PeruControl.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class PurchaseOrderController : ControllerBase
+public class PurchaseOrderController(
+    PurchaseOrderService purchaseOrderService,
+    DatabaseContext context,
+    ILogger<PurchaseOrderController> logger
+) : ControllerBase
 {
-    private readonly DatabaseContext _context;
-    private readonly ILogger<PurchaseOrderController> _logger;
-
-    public PurchaseOrderController(DatabaseContext context, ILogger<PurchaseOrderController> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
-
     // Create
     [HttpPost]
     public async Task<ActionResult<PurchaseOrder>> Create([FromBody] PurchaseOrderCreateDTO dto)
@@ -32,7 +27,7 @@ public class PurchaseOrderController : ControllerBase
         if (string.IsNullOrWhiteSpace(dto.TermsAndConditions))
             return BadRequest("Terms and conditions are required.");
 
-        var supplierExists = await _context.Suppliers.AnyAsync(s => s.Id == dto.SupplierId);
+        var supplierExists = await context.Suppliers.AnyAsync(s => s.Id == dto.SupplierId);
         if (!supplierExists)
             return BadRequest("Supplier does not exist.");
 
@@ -46,13 +41,13 @@ public class PurchaseOrderController : ControllerBase
             if (entity.Id == Guid.Empty)
                 entity.Id = Guid.NewGuid();
 
-            _context.PurchaseOrders.Add(entity);
-            await _context.SaveChangesAsync();
+            context.PurchaseOrders.Add(entity);
+            await context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating purchase order");
+            logger.LogError(ex, "Error creating purchase order");
             return StatusCode(
                 500,
                 "An unexpected error occurred while creating the purchase order."
@@ -74,14 +69,14 @@ public class PurchaseOrderController : ControllerBase
         if (dto.TermsAndConditions != null && string.IsNullOrWhiteSpace(dto.TermsAndConditions))
             return BadRequest("Terms and conditions are required.");
 
-        var entity = await _context.PurchaseOrders.FindAsync(id);
+        var entity = await context.PurchaseOrders.FindAsync(id);
         if (entity == null)
             return NotFound("Purchase order not found.");
 
         // Si el PATCH permite cambiar el proveedor, valida que exista
         if (dto.SupplierId.HasValue)
         {
-            var supplierExists = await _context.Suppliers.AnyAsync(s =>
+            var supplierExists = await context.Suppliers.AnyAsync(s =>
                 s.Id == dto.SupplierId.Value
             );
             if (!supplierExists)
@@ -98,12 +93,12 @@ public class PurchaseOrderController : ControllerBase
         try
         {
             dto.ApplyPatch(entity);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating purchase order");
+            logger.LogError(ex, "Error updating purchase order");
             return StatusCode(
                 500,
                 "An unexpected error occurred while updating the purchase order."
@@ -115,7 +110,7 @@ public class PurchaseOrderController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<PurchaseOrder>> GetById(Guid id)
     {
-        var entity = await _context
+        var entity = await context
             .PurchaseOrders.Include(po => po.Supplier)
             .FirstOrDefaultAsync(po => po.Id == id);
 
@@ -135,7 +130,7 @@ public class PurchaseOrderController : ControllerBase
         [FromQuery] PurchaseOrderStatus? status = null
     )
     {
-        var query = _context.PurchaseOrders.Include(po => po.Supplier).AsQueryable();
+        var query = context.PurchaseOrders.Include(po => po.Supplier).AsQueryable();
 
         if (startDate.HasValue)
         {
@@ -166,26 +161,26 @@ public class PurchaseOrderController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> ChangeStatus(Guid id, [FromQuery] PurchaseOrderStatus status)
     {
-        var entity = await _context.PurchaseOrders.FindAsync(id);
+        var entity = await context.PurchaseOrders.FindAsync(id);
         if (entity == null)
             return NotFound();
 
         entity.Status = status;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return NoContent();
     }
 
-    // Export to Excel (structure only)
-    [HttpGet("export/excel")]
-    public IActionResult ExportToExcel(
-        [FromQuery] DateTime? startDate = null,
-        [FromQuery] DateTime? endDate = null,
-        [FromQuery] Guid? supplierId = null,
-        [FromQuery] PurchaseOrderCurrency? currency = null,
-        [FromQuery] PurchaseOrderStatus? status = null
+    // Export to PDF
+    [HttpGet("{id:guid}/pdf")]
+    public async Task<IActionResult> ExportToExcel(
+            Guid id
     )
     {
-        // TODO: Implement Excel export logic
-        return Ok("Excel export not implemented yet.");
+        var (pdfBytes, pdfError) = await purchaseOrderService.GeneratePdf(id);
+        if (pdfError != null)
+        {
+            return BadRequest(pdfError);
+        }
+        return File(pdfBytes, "application/pdf", "orden_de_compra.pdf");
     }
 }

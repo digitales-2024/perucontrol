@@ -5,23 +5,26 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { BookPlus, Pencil, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import  { type PurchaseOrder, PurchaseOrderStatus } from "../../_types/PurchaseOrders";
+import { type PurchaseOrder, PurchaseOrderStatus } from "../../_types/PurchaseOrders";
 import { PurchaseOrderTable } from "@/components/data-table/PurchaseOrderDataTable";
 import { PurchaseOrderFilters } from "./PurchaseOrderFilters";
 import { useRouter } from "next/navigation";
 import { PurchaseOrderViewDialog } from "../view/PurchaseOrderViewDialog";
 import { Badge } from "@/components/ui/badge";
+import { GeneratePurchaseOrderPdf } from "../../_actions/PurchaseOrdersActions";
+import { toastWrapper } from "@/types/toasts";
+import { downloadBlobWithServerFilename } from "@/utils/file-download";
 
 interface DataTableProps<TData, TValue> {
-	columns: Array<ColumnDef<TData, TValue>>;
-	data: Array<TData>;
-	currentFilters?: {
-		startDate?: string;
-		endDate?: string;
-		supplierId?: string;
-		currency?: string;
-		status?: string;
-	};
+    columns: Array<ColumnDef<TData, TValue>>;
+    data: Array<TData>;
+    currentFilters?: {
+        startDate?: string;
+        endDate?: string;
+        supplierId?: string;
+        currency?: string;
+        status?: string;
+    };
 }
 
 export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
@@ -93,8 +96,8 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
             onClick: (row: PurchaseOrder) =>
             {
                 // Aquí puedes implementar la lógica para descargar el PDF
-                console.log("Descargando PDF de la orden:", row.id);
-                setShowPDFPreview(true);
+                DownloadPurchaseOrderPdf(row.id!);
+                // setShowPDFPreview(true);
             },
             disabled: (row: TData) => row.status === PurchaseOrderStatus.Cancelled,
         },
@@ -124,7 +127,7 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
     const filterByStatus = (data: Array<TData>, status: string) =>
     {
         if (status === "activo") return data.filter((order) => order.status !== PurchaseOrderStatus.Cancelled &&
-					order.isActive);
+            order.isActive);
         if (status === "cancelado") return data.filter((order) => order.status === PurchaseOrderStatus.Cancelled);
         if (status === "pendiente") return data.filter((order) => order.status === PurchaseOrderStatus.Pending);
         if (status === "aceptado") return data.filter((order) => order.status === PurchaseOrderStatus.Accepted);
@@ -172,3 +175,26 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
         </>
     );
 }
+
+async function DownloadPurchaseOrderPdf(id: string)
+{
+    const [fileResponse, err] = await toastWrapper(GeneratePurchaseOrderPdf(id), {
+        loading: "Generando archivo",
+        success: "PDF generado",
+        error: (e) => `Error al generar el PDF: ${e.message}`,
+    });
+
+    if (err)
+    {
+        console.error("Error al generar el PDF:", err);
+        return;
+    }
+
+    // Download with server-extracted filename
+    downloadBlobWithServerFilename(
+        fileResponse.blob,
+        fileResponse.filename,
+        `orden_compra_${id.substring(0, 4)}.pdf`,
+    );
+}
+

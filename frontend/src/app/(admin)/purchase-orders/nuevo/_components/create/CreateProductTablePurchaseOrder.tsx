@@ -12,8 +12,8 @@ import { CreatePurchaseOrderSchema } from "../../../_schemas/createPurchaseOrdes
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 
 interface CreateProductTablePurchaseOrderProps {
-	form: UseFormReturn<CreatePurchaseOrderSchema>;
-	watchedCurrency: "PEN" | "USD";
+    form: UseFormReturn<CreatePurchaseOrderSchema>;
+    watchedCurrency: "PEN" | "USD";
 }
 
 export default function CreateProductTablePurchaseOrder({
@@ -73,12 +73,10 @@ export default function CreateProductTablePurchaseOrder({
                         <div key={field.id}>
                             {/* Enhanced Desktop Layout */}
                             <div
-                                className={`hidden lg:grid grid-cols-12 gap-6 items-center p-3 ${
-                                    index % 2 === 0 ? "bg-transparent" : "bg-transparent"
-                                } ${
-                                    index !== fields.length - 1
-                                        ? "border-b border-gray-200"
-                                        : ""
+                                className={`hidden lg:grid grid-cols-12 gap-6 items-center p-3 ${index % 2 === 0 ? "bg-transparent" : "bg-transparent"
+                                } ${index !== fields.length - 1
+                                    ? "border-b border-gray-200"
+                                    : ""
                                 } hover:bg-primary/5 transition-colors duration-200`}
                             >
                                 <div className="col-span-1 text-center flex items-center justify-center">
@@ -158,7 +156,7 @@ export default function CreateProductTablePurchaseOrder({
                                                     <div className="relative">
                                                         <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-semibold">
                                                             {watchedCurrency ===
-															"PEN"
+                                                                "PEN"
                                                                 ? "S/."
                                                                 : "US$"}
                                                         </span>
@@ -210,12 +208,10 @@ export default function CreateProductTablePurchaseOrder({
 
                             {/* Enhanced Mobile Layout */}
                             <div
-                                className={`lg:hidden p-6 ${
-                                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                                } ${
-                                    index !== fields.length - 1
-                                        ? "border-b border-gray-200"
-                                        : ""
+                                className={`lg:hidden p-6 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                } ${index !== fields.length - 1
+                                    ? "border-b border-gray-200"
+                                    : ""
                                 }`}
                             >
                                 <div className="flex items-center justify-between mb-6">
@@ -319,7 +315,7 @@ export default function CreateProductTablePurchaseOrder({
                                                     <FormLabel className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                                                         Precio (
                                                         {watchedCurrency ===
-														"PEN"
+                                                            "PEN"
                                                             ? "S/."
                                                             : "US$"}
                                                         )
@@ -361,7 +357,7 @@ export default function CreateProductTablePurchaseOrder({
                             className="w-full border-2 border-dashed border-gray-400 text-gray-600 hover:bg-white hover:border-primary hover:text-primary transition-all duration-200 rounded-xl font-semibold"
                         >
                             <Plus className="h-4 w-4 mr-3" />
-                            Agregar Producto Químico
+                            Agregar Producto
                         </Button>
                     </div>
                 </div>

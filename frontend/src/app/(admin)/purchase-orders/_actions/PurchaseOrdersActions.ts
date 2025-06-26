@@ -1,6 +1,6 @@
 "use server";
 
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFileWithFilename, FetchError, ServerFileDownloadResponse, wrapper } from "@/types/backend";
 import { ok, err, Result } from "@/utils/result";
 import { components } from "@/types/api";
 import { revalidatePath } from "next/cache";
@@ -63,11 +63,11 @@ export async function GetPurchaseOrderById(id: string): Promise<Result<component
 
 // LIST & FILTER Purchase Orders
 export async function GetPurchaseOrders(params?: {
-	startDate?: string;
-	endDate?: string;
-	supplierId?: string;
-	currency?: number;
-	status?: number;
+    startDate?: string;
+    endDate?: string;
+    supplierId?: string;
+    currency?: number;
+    status?: number;
 }): Promise<Result<Array<components["schemas"]["PurchaseOrder"]>, FetchError>>
 {
     const [data, error] = await wrapper((auth) => backend.GET("/api/PurchaseOrder", {
@@ -119,4 +119,9 @@ export async function ChangePurchaseOrderStatus(
         return err(error);
     }
     return ok(null);
+}
+
+export async function GeneratePurchaseOrderPdf(id: string): Promise<Result<ServerFileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithFilename(`/api/PurchaseOrder/${id}/pdf`, "GET");
 }
