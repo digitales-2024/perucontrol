@@ -34,7 +34,7 @@ export function PurchaseOrdersDataTable<TData extends PurchaseOrder>({
 }: DataTableProps<TData, unknown>)
 {
     const [showDetailOrder, setShowDetailOrder] = useState(false);
-    const [showPDFPreview, setShowPDFPreview] = useState(false);
+    const [showPDFPreview] = useState(false);
 
     console.log("PurchaseOrdersDataTable data:", showPDFPreview);
     const [showFilters, setShowFilters] = useState(false);
