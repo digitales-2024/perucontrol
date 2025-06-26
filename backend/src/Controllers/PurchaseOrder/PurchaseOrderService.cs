@@ -60,6 +60,7 @@ public class PurchaseOrderService(
         var purchaseOrderNumber = purchaseOrder.CreatedAt.ToString("yy") + "-" + purchaseOrder.Number.ToString("D4");
         var totalCost = purchaseOrder.Products.Sum(p => p.Quantity * p.UnitPrice);
         var currencySymbol = purchaseOrder.Currency == PurchaseOrderCurrency.PEN ? "S/." : "US$";
+        var currencyLongname = purchaseOrder.Currency == PurchaseOrderCurrency.PEN ? "NUEVOS SOLES" : "DÓLARES AMERICANOS";
         var paymentMethodString = purchaseOrder.PaymentMethod == PurchaseOrderPaymentMethod.Transfer ? "Transferencia" : "Efectivo";
 
         // Compute subtotal, taxes, total
@@ -89,14 +90,13 @@ public class PurchaseOrderService(
             { "{nombre_proveedor}", supplier.Name },
             { "{ruc_proveedor}", supplier.RucNumber },
             { "{direccion_proveedor}", supplier.FiscalAddress },
-            { "{moneda}", purchaseOrder.Currency == PurchaseOrderCurrency.PEN ? "Soles" : "Dólares" },
+            { "{moneda}", currencyLongname },
 
             // Other
             { "{subtotal}", currencySymbol + " " + subtotal.ToString("F2") },
             { "{igv}", currencySymbol + " " + taxes.ToString("F2") },
             { "{total}",currencySymbol + " " + total.ToString("F2") },
-            // FIXME: bring logic from Trazo
-            { "{total_letras}", "// TODO" },
+            { "{total_letras}", SpanishPriceSpellingService.SpellPricingWithTaxes(total) + " " + currencyLongname },
             { "{terms}", purchaseOrder.TermsAndConditions },
         };
 
