@@ -188,8 +188,8 @@ public class OperationSheetController(
         var placeholders = new Dictionary<string, string>
         {
             { "{fecha}", sheet.OperationDate.ToString("dd/MM/yyyy") },
-            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm") ?? "" },
-            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm") ?? "" },
+            { "{hora_ingreso}", appointment.EnterTime?.ToString(@"hh\:mm tt") ?? "" },
+            { "{hora_salida}", appointment.LeaveTime?.ToString(@"hh\:mm tt") ?? "" },
             { "{razon_social}", client.RazonSocial ?? client.Name },
             { "{direccion}", project.Address },
             { "{giro}", client.BusinessType ?? "" },
@@ -238,6 +238,7 @@ public class OperationSheetController(
             { "{direccion_perucontrol}", business.Address },
             { "{celulares_perucontrol}", business.Phones },
             { "{correo_perucontrol}", business.Email },
+            { "{serial}", sheet.OperationSheetNumber.ToString("D6") },
         };
         var fileBytes = odsTemplate.GenerateOdsFromTemplate(
             placeholders,
@@ -268,7 +269,9 @@ public class OperationSheetController(
             );
         }
 
-        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(odsBytes, "ods");
+        var scaledFileBytes = odsTemplate.ScaleOds(odsBytes, 100);
+
+        var (pdfBytes, pdfErr) = pdfConverterService.ConvertToPdf(scaledFileBytes, "ods");
         if (!string.IsNullOrEmpty(pdfErr))
         {
             return (null, new BadRequestObjectResult(pdfErr));

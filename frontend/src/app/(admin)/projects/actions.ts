@@ -1,7 +1,7 @@
 "use server";
 
 import { components } from "@/types/api";
-import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, DownloadFileWithHeaders, DownloadFileWithFilename, FetchError, wrapper, type FileDownloadResponse, type ServerFileDownloadResponse } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
 
@@ -100,6 +100,11 @@ export async function UpdateStatus(id: string, newStatus: StatesQuotation): Prom
 export async function GenerateOperationSheetExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/OperationSheet/${id}/excel`, "GET", null);
+}
+
+export async function GenerateOperationSheetExcelWithHeaders(id: string): Promise<Result<FileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithHeaders(`/api/OperationSheet/${id}/excel`, "GET", null);
 }
 
 export async function GenerateOperationSheetPDF(id: string): Promise<Result<Blob, FetchError>>
@@ -354,9 +359,29 @@ export async function GenerateSchedulePDF(id: string): Promise<Result<Blob, Fetc
     return DownloadFile(`/api/Project/${id}/schedule/pdf`, "POST", "");
 }
 
+export async function GenerateSchedulePDFWithHeaders(id: string): Promise<Result<FileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithHeaders(`/api/Project/${id}/schedule/pdf`, "POST", "");
+}
+
+export async function GenerateSchedulePDFWithFilename(id: string): Promise<Result<ServerFileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithFilename(`/api/Project/${id}/schedule/pdf`, "POST", "");
+}
+
 export async function GenerateScheduleExcel(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Project/${id}/schedule/excel`, "POST", "");
+}
+
+export async function GenerateScheduleExcelWithHeaders(id: string): Promise<Result<FileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithHeaders(`/api/Project/${id}/schedule/excel`, "POST", "");
+}
+
+export async function GenerateScheduleExcelWithFilename(id: string): Promise<Result<ServerFileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithFilename(`/api/Project/${id}/schedule/excel`, "POST", "");
 }
 
 export async function GenerateSchedule2PDF(id: string): Promise<Result<Blob, FetchError>>
@@ -367,6 +392,16 @@ export async function GenerateSchedule2PDF(id: string): Promise<Result<Blob, Fet
 export async function GenerateSchedule2Excel(id: string): Promise<Result<Blob, FetchError>>
 {
     return DownloadFile(`/api/Project/${id}/schedule2/excel`, "POST", "");
+}
+
+export async function GenerateSchedule2ExcelWithHeaders(id: string): Promise<Result<FileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithHeaders(`/api/Project/${id}/schedule2/excel`, "POST", "");
+}
+
+export async function GenerateSchedule2ExcelWithFilename(id: string): Promise<Result<ServerFileDownloadResponse, FetchError>>
+{
+    return DownloadFileWithFilename(`/api/Project/${id}/schedule2/excel`, "POST", "");
 }
 
 export async function Generate(

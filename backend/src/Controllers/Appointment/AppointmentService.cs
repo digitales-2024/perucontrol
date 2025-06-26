@@ -171,6 +171,9 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             return ([], "Failed to generate ODS file for an unknown reason.");
         }
 
+        // Fix ods scale
+        odsBytes = odsTemplate.ScaleOds(odsBytes);
+
         return (odsBytes, null);
     }
 

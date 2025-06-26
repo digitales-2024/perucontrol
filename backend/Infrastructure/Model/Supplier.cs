@@ -91,7 +91,7 @@ public class SupplierCreateDTO : IMapToEntity<Supplier>
             FiscalAddress = FiscalAddress,
             Email = Email,
             PhoneNumber = PhoneNumber,
-            ContactName = ContactName
+            ContactName = ContactName,
         };
     }
 }

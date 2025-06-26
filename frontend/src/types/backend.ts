@@ -3,6 +3,16 @@ import type { paths } from "./api";
 import { err, ok, Result } from "@/utils/result";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_KEY } from "@/variables";
+import { type FileDownloadResponse } from "@/utils/file-download";
+
+// Re-export for convenience
+export type { FileDownloadResponse };
+
+// Server-side file download response with extracted filename
+export type ServerFileDownloadResponse = {
+    blob: Blob;
+    filename: string | null;
+};
 
 /**
  * Client for connecting with the backend
@@ -126,12 +136,12 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     }
 }
 
-/// File downloader
-export async function DownloadFile(
+/// File downloader - returns blob with response headers for filename extraction
+export async function DownloadFileWithHeaders(
     url: string,
     method: RequestInit["method"],
     body?: RequestInit["body"],
-): Promise<Result<Blob, FetchError>>
+): Promise<Result<FileDownloadResponse, FetchError>>
 {
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
@@ -170,7 +180,10 @@ export async function DownloadFile(
         }
 
         const blob = await response.blob();
-        return ok(blob);
+        return ok({
+            blob,
+            headers: response.headers,
+        });
     }
     catch (e)
     {
@@ -181,4 +194,72 @@ export async function DownloadFile(
             error: null,
         });
     }
+}
+
+/// File downloader with server-side filename extraction
+export async function DownloadFileWithFilename(
+    url: string,
+    method: RequestInit["method"],
+    body?: RequestInit["body"],
+): Promise<Result<ServerFileDownloadResponse, FetchError>>
+{
+    const [data, error] = await DownloadFileWithHeaders(url, method, body);
+    if (error)
+    {
+        return err(error);
+    }
+
+    // Extract filename on server side
+    let filename: string | null = null;
+    const contentDisposition = data.headers.get("content-disposition");
+    if (contentDisposition)
+    {
+        // Handle both filename and filename* patterns
+        const filenameStarRegex = /filename\*[^;=\n]*=UTF-8''([^;\n]*)/;
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+
+        // Try filename* first (RFC 5987 encoded)
+        const starMatch = contentDisposition.match(filenameStarRegex);
+        if (starMatch)
+        {
+            try
+            {
+                filename = decodeURIComponent(starMatch[1]);
+            }
+            catch
+            {
+                // If decoding fails, fall through to regular filename
+            }
+        }
+
+        // Try regular filename if filename* didn't work
+        if (!filename)
+        {
+            const match = contentDisposition.match(filenameRegex);
+            if (match)
+            {
+                filename = match[1].replace(/['"]/g, "");
+            }
+        }
+    }
+
+    return ok({
+        blob: data.blob,
+        filename,
+    });
+}
+
+/// File downloader - legacy version for backward compatibility
+export async function DownloadFile(
+    url: string,
+    method: RequestInit["method"],
+    body?: RequestInit["body"],
+): Promise<Result<Blob, FetchError>>
+{
+    const [data, error] = await DownloadFileWithHeaders(url, method, body);
+    if (error)
+    {
+        return err(error);
+    }
+    return ok(data.blob);
 }

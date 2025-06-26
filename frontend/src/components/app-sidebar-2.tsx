@@ -110,10 +110,6 @@ const data = {
                     title: "Datos de la empresa",
                     url: "/business",
                 },
-                {
-                    title: "Productos",
-                    url: "/products",
-                },
             ],
         },
     ],

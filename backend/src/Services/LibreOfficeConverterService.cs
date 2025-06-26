@@ -4,7 +4,7 @@ public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> lo
 {
     // writes to a temp file, invokes soffice on it, returns the
     // converted bytes, and cleans up
-    public (byte[]?, string) ConvertToPdf(byte[] inputBytes, string extension)
+    public (byte[], string?) ConvertToPdf(byte[] inputBytes, string extension)
     {
         var unixms = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var tempDir = Path.Combine(Path.GetTempPath(), "gen_files");
@@ -38,18 +38,18 @@ public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> lo
                 logger.LogError(process.ExitCode, "Error generating PDF");
                 logger.LogError(process.StandardError.ReadToEnd(), "Error generating PDF (stderr)");
                 var error = process.StandardError.ReadToEnd();
-                return (null, $"Error generating PDF: {error}");
+                return ([], $"Error generating PDF: {error}");
             }
 
             // read pdf file
             var pdfBytes = File.ReadAllBytes(pdfFilePath);
 
-            return (pdfBytes, "");
+            return (pdfBytes, null);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Exception during conversion");
-            return (null, $"Exception during conversion: {ex.Message}");
+            return ([], $"Exception during conversion: {ex.Message}");
         }
         finally
         {
@@ -60,7 +60,7 @@ public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> lo
         }
     }
 
-    public (byte[]?, string) convertTo(
+    public (byte[], string?) convertTo(
         byte[] inputBytes,
         string extension,
         string outputType = "pdf"
@@ -96,17 +96,17 @@ public class LibreOfficeConverterService(ILogger<LibreOfficeConverterService> lo
             if (process.ExitCode != 0)
             {
                 var error = process.StandardError.ReadToEnd();
-                return (null, $"Error converting to {outputType}: {error}");
+                return ([], $"Error converting to {outputType}: {error}");
             }
 
             // Read the converted file
             var outputBytes = System.IO.File.ReadAllBytes(outputFilePath);
 
-            return (outputBytes, "");
+            return (outputBytes, null);
         }
         catch (Exception ex)
         {
-            return (null, $"Exception during conversion: {ex.Message}");
+            return ([], $"Exception during conversion: {ex.Message}");
         }
         finally
         {

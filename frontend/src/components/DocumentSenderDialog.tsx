@@ -39,6 +39,15 @@ export function DocumentSenderDialog({ open, setOpen, documentName, startingEmai
     const [openGmail, setOpenGmail] = useState(false);
     const isMobile = useIsMobile();
 
+    // on open, clean any previous PDF
+    useEffect(
+        () =>
+        {
+            if (open === true) setPdfUrl(null);
+        },
+        [open],
+    );
+
     useEffect(() =>
     {
         if (!open) return;

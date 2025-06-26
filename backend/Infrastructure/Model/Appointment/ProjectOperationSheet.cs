@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PeruControl.Infrastructure.Model;
@@ -7,6 +8,9 @@ public class ProjectOperationSheet : BaseModel
 {
     [Required]
     public Guid ProjectAppointmentId { get; set; }
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int OperationSheetNumber { get; set; }
 
     [JsonIgnore]
     public ProjectAppointment ProjectAppointment { get; set; } = null!;
