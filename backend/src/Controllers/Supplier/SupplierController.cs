@@ -174,16 +174,4 @@ public class SupplierController(
 
         return File(csvBytes, "text/csv", fileName);
     }
-
-    [EndpointSummary("Get all active suppliers")]
-    [HttpGet("active")]
-    public async Task<ActionResult<IEnumerable<Supplier>>> GetActiveSuppliers()
-    {
-        var activeSuppliers = await _context
-            .Suppliers.Where(s => s.IsActive)
-            .OrderByDescending(s => s.SupplierNumber)
-            .ToListAsync();
-
-        return Ok(activeSuppliers);
-    }
 }

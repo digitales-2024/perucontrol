@@ -362,7 +362,6 @@ public class OdsTemplateService
             { "{productos_desinsectacion}", quotation.Desinsectant ?? "" },
             { "{productos_desratizacion}", quotation.Derodent ?? "" },
             { "{productos_desinfeccion}", quotation.Disinfectant ?? "" },
-            { "{footer_contact}", quotation.FooterContact ?? "" },
         };
 
         using var ms = new MemoryStream();
@@ -378,14 +377,47 @@ public class OdsTemplateService
         {
             foreach (var entry in inputArchive.Entries)
             {
-                if (entry.FullName != "content.xml")
+                if (entry.FullName != "content.xml" && entry.FullName != "styles.xml")
                 {
                     var newEntry = outputArchive.CreateEntry(entry.FullName);
                     using var entryStream = entry.Open();
                     using var newEntryStream = newEntry.Open();
                     entryStream.CopyTo(newEntryStream);
                 }
-                else
+                else if (entry.FullName == "styles.xml")
+                {
+                    // Process styles.xml for header/footer content
+                    var stylesEntry = outputArchive.CreateEntry("styles.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                    var footer_placeholders = new Dictionary<string, string>
+                    {
+                        { "{footer_contact}", quotation.FooterContact ?? "" },
+                    };
+
+                    // Find all text elements in headers and footers and replace placeholders
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, footer_placeholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, footer_placeholders);
+                    }
+
+                    // Write the modified styles.xml back to the entry
+                    using var newEntryStream = stylesEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+                else // entry.FullName == "content.xml"
                 {
                     var contentEntry = outputArchive.CreateEntry("content.xml");
                     using var entryStream = entry.Open();
@@ -758,7 +790,10 @@ public class OdsTemplateService
         return (outputMs.ToArray(), null);
     }
 
-    public byte[] ScaleOds(byte[] odsBytes, int scalePercentage)
+    /// <summary>
+    /// Sets a ODS file's dimensions to A4 vertical, and sets the document scale size.
+    /// </summary>
+    public byte[] ScaleOds(byte[] odsBytes, int scalePercentage = 100)
     {
         using var inputMs = new MemoryStream(odsBytes);
         using var outputMs = new MemoryStream();

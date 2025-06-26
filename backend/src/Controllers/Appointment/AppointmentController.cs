@@ -110,8 +110,6 @@ public class AppointmentController(
         return Ok(result);
     }
 
-    // Certificate endpoints have been moved to CertificateController
-
     [EndpointSummary("Generate Rodents Excel")]
     [EndpointDescription(
         "Generates the Rodents Template in Ods format for an Appointment. The id parameter is the Appointment ID."
