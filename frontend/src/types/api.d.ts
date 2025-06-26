@@ -4131,7 +4131,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/PurchaseOrder/export/excel": {
+    "/api/PurchaseOrder/{id}/pdf": {
         parameters: {
             query?: never;
             header?: never;
@@ -4140,15 +4140,11 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: {
-                    startDate?: string;
-                    endDate?: string;
-                    supplierId?: string;
-                    currency?: string;
-                    status?: string;
-                };
+                query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
