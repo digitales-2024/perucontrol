@@ -166,7 +166,7 @@ export default function CreatePurchaseOrder()
                                         RESUMEN
                                     </h3>
                                 </div>
-                                <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border-2 border-gray-200">
+                                <div className="bg-gradient-to-br from-transparent to-gray-100 p-6 rounded-2xl border-2 border-gray-200">
                                     <div className="space-y-4">
                                         <div className="flex justify-between items-center text-gray-600">
                                             <span>

@@ -41,7 +41,7 @@ export default function CreateProductTablePurchaseOrder({
             </div>
 
             {/* Enhanced Responsive Products Table */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-transparent border border-gray-200 rounded-2xl overflow-hidden">
                 {/* Enhanced Desktop Table Header */}
                 <div className="hidden lg:block bg-gradient-to-r from-slate-800 to-slate-700 text-white p-3">
                     <div className="grid grid-cols-12 gap-6 items-center font-semibold text-sm uppercase tracking-wide">
@@ -51,14 +51,15 @@ export default function CreateProductTablePurchaseOrder({
                         <div className="col-span-4">
                             PRODUCTO
                         </div>
-                        <div className="col-span-3">
-                            DESCRIPCIÓN
-                        </div>
-                        <div className="col-span-1 text-center">
+
+                        <div className="col-span-2 text-center">
                             CANT.
                         </div>
                         <div className="col-span-2 text-center">
                             PRECIO UNIT.
+                        </div>
+                        <div className="col-span-2 text-center">
+                            SUBTOTAL
                         </div>
                         <div className="col-span-1 text-center">
                             ACCIONES
@@ -73,20 +74,20 @@ export default function CreateProductTablePurchaseOrder({
                             {/* Enhanced Desktop Layout */}
                             <div
                                 className={`hidden lg:grid grid-cols-12 gap-6 items-center p-3 ${
-                                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                    index % 2 === 0 ? "bg-transparent" : "bg-transparent"
                                 } ${
                                     index !== fields.length - 1
                                         ? "border-b border-gray-200"
                                         : ""
                                 } hover:bg-primary/5 transition-colors duration-200`}
                             >
-                                <div className="col-span-1 text-center">
+                                <div className="col-span-1 text-center flex items-center justify-center">
                                     <div className="w-7 h-7 bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-lg">
                                         {index + 1}
                                     </div>
                                 </div>
 
-                                <div className="col-span-4">
+                                <div className="col-span-4 flex flex-col gap-2">
                                     <FormField
                                         control={form.control}
                                         name={`products.${index}.name`}
@@ -103,9 +104,6 @@ export default function CreateProductTablePurchaseOrder({
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-
-                                <div className="col-span-3">
                                     <FormField
                                         control={form.control}
                                         name={`products.${index}.description`}
@@ -124,7 +122,7 @@ export default function CreateProductTablePurchaseOrder({
                                     />
                                 </div>
 
-                                <div className="col-span-1">
+                                <div className="col-span-2">
                                     <FormField
                                         control={form.control}
                                         name={`products.${index}.quantity`}
@@ -182,6 +180,19 @@ export default function CreateProductTablePurchaseOrder({
                                     />
                                 </div>
 
+                                <div className="col-span-2 text-center">
+                                    {form.watch(`products.${index}.quantity`) && form.watch(`products.${index}.unitPrice`)
+                                        ? (
+                                            <>
+                                                {watchedCurrency === "PEN" ? "S/." : "US$"}
+                                                {" "}
+                                                {((form.watch(`products.${index}.quantity`) || 0) * (form.watch(`products.${index}.unitPrice`) || 0)
+                                                ).toFixed(2)}
+                                            </>
+                                        )
+                                        : "0"}
+                                </div>
+
                                 <div className="col-span-1 text-center">
                                     {fields.length > 1 && (
                                         <Button
@@ -189,7 +200,7 @@ export default function CreateProductTablePurchaseOrder({
                                             variant="outline"
                                             size="icon"
                                             onClick={() => remove(index)}
-                                            className="border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
+                                            className="border-red-200 text-red-500 hover:text-red-500 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -336,7 +347,7 @@ export default function CreateProductTablePurchaseOrder({
                     ))}
 
                     {/* Enhanced Add Product Row */}
-                    <div className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-t-2 border-gray-200">
+                    <div className="p-6 bg-gradient-to-r from-transparent to-gray-100 border-t-2 border-gray-200">
                         <Button
                             type="button"
                             variant="outline"

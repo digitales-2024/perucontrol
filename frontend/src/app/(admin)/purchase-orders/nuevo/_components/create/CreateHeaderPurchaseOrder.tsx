@@ -118,7 +118,7 @@ export default function CreateHeaderPurchaseOrder({
             </div>
 
             {/* Enhanced Single Card */}
-            <Card className="border border-gray-200">
+            <Card className="border border-gray-200 bg-transparent">
                 <CardContent className="p-6">
                     <div className="grid grid-cols-1 gap-2">
                         {/* Enhanced Supplier Section */}
@@ -305,7 +305,7 @@ export default function CreateHeaderPurchaseOrder({
                                         </FormLabel>
                                     </div>
 
-                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                    <div className="bg-gradient-to-r from-transparent to-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
                                         {expirationDate ? (
                                             <div className="space-y-2">
                                                 <div className="font-medium text-gray-900">
