@@ -109,9 +109,9 @@ public class TreatmentAreaDTO
 public class TreatmentProductDTO
 {
     public required Guid Id { get; init; }
-    public required ProductDTO Product { get; init; } = null!;
-    public required Guid ProductAmountSolventId { get; init; }
-    public required string ProductAmountSolvent { get; init; } = null!;
+    public required string ProductName { get; init; }
+    public required string AmountAndSolvent { get; init; }
+    public required string ActiveIngredient { get; init; }
     public string? EquipmentUsed { get; init; }
     public string? AppliedTechnique { get; init; }
     public string? AppliedService { get; init; }
@@ -121,14 +121,9 @@ public class TreatmentProductDTO
         return new TreatmentProductDTO
         {
             Id = product.Id,
-            Product = new()
-            {
-                Id = product.Product.Id,
-                Name = product.Product.Name,
-                ActiveIngredient = product.Product.ActiveIngredient,
-            },
-            ProductAmountSolventId = product.ProductAmountSolvent.Id,
-            ProductAmountSolvent = product.ProductAmountSolvent.AmountAndSolvent,
+            ProductName = product.ProductName,
+            AmountAndSolvent = product.AmountAndSolvent,
+            ActiveIngredient = product.ActiveIngredient,
             EquipmentUsed = product.EquipmentUsed,
             AppliedTechnique = product.AppliedTechnique,
             AppliedService = product.AppliedService,

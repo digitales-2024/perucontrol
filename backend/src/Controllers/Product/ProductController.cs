@@ -197,7 +197,7 @@ public class ProductController(DatabaseContext context, ProductService productSe
 
         // Verificar si el producto está siendo utilizado en algún tratamiento de alguna cita
         var isProductInUse = await context.TreatmentProducts.AnyAsync(tp =>
-            tp.Product.Id == id && tp.IsActive
+            tp.ProductName == product.Name && tp.IsActive
         );
 
         if (isProductInUse)

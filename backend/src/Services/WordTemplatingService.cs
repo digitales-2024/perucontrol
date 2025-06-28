@@ -348,7 +348,7 @@ public class WordTemplateService
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
                     },
-                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" },
+                    { "{used_products}", $"{tp.ProductName}\n{tp.ActiveIngredient}" },
                     { "{performed_by}", "Sr. William Moreyra Auris" },
                     { "{supervisor}", appointment.CompanyRepresentative ?? "-" },
                 }),
@@ -388,7 +388,7 @@ public class WordTemplateService
                             (ta.TreatmentProducts != null && ta.TreatmentProducts.Any())
                                 ? string.Join(
                                     "\n",
-                                    ta.TreatmentProducts.Select(tp => tp.Product.Name)
+                                    ta.TreatmentProducts.Select(tp => tp.ProductName)
                                 )
                                 : "-"
                         },
@@ -403,9 +403,9 @@ public class WordTemplateService
             [
                 .. appointment.TreatmentProducts.Select(tp => new Dictionary<string, string>
                 {
-                    { "{product.name}", tp.Product.Name },
-                    { "{product.ingredient}", tp.Product.ActiveIngredient },
-                    { "{product.amount}", tp.ProductAmountSolvent.AmountAndSolvent },
+                    { "{product.name}", tp.ProductName },
+                    { "{product.ingredient}", tp.ActiveIngredient },
+                    { "{product.amount}", tp.AmountAndSolvent },
                     { "{product.equipment}", tp.EquipmentUsed ?? "-" },
                 }),
             ];
@@ -528,7 +528,7 @@ public class WordTemplateService
                         "{treatment_type}",
                         $"{tp.AppliedService ?? "-"}\n{tp.AppliedTechnique ?? "-"}"
                     },
-                    { "{used_products}", $"{tp.Product.Name}\n{tp.Product.ActiveIngredient}" },
+                    { "{used_products}", $"{tp.ProductName}\n{tp.ActiveIngredient}" },
                     { "{performed_by}", "Sr. William Moreyra Auris" },
                     { "{supervisor}", appointment.CompanyRepresentative ?? "-" },
                 }),

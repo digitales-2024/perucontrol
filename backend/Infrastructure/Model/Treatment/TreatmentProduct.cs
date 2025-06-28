@@ -5,8 +5,9 @@ public class TreatmentProduct : BaseModel
     //
     // Plain properties
     //
-    public required Product Product { get; set; }
-    public required ProductAmountSolvent ProductAmountSolvent { get; set; }
+    public required string ProductName { get; set; }
+    public required string AmountAndSolvent { get; set; }
+    public required string ActiveIngredient { get; set; }
     public string? EquipmentUsed { get; set; }
 
     // "Pulverizado", "Nebulizado en Frio", etc. To be used in the first table

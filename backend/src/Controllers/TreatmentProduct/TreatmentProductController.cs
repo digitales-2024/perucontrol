@@ -22,9 +22,6 @@ public class TreatmentProductController(
     {
         var appointment = await db
             .ProjectAppointments.Include(pa => pa.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(pa => pa.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .FirstOrDefaultAsync(x => x.Id == appointmentid);
 
         if (appointment is null)
@@ -48,5 +45,105 @@ public class TreatmentProductController(
             Utils.NotFoundResult error => NotFound(error.Message),
             _ => throw new Exception("Unexpected result type"),
         };
+    }
+
+    [EndpointSummary(
+        "Get all product names (from OperationSheet fields) used in a specific Appointment. Optionally include a TreatmentProduct's ProductName by id."
+    )]
+    [HttpGet("/api/Appointment/{appointmentId}/SheetProductNames")]
+    public async Task<
+        ActionResult<IEnumerable<ProductSimpleDTO>>
+    > GetSheetProductNamesByAppointment(
+        Guid appointmentId,
+        [FromQuery] Guid? treatmentProductId = null
+    )
+    {
+        var appointment = await db
+            .ProjectAppointments.Where(pa => pa.Id == appointmentId)
+            .Select(pa => pa.ProjectOperationSheet)
+            .FirstOrDefaultAsync();
+
+        if (appointment == null)
+        {
+            return Ok(new List<ProductSimpleDTO>());
+        }
+
+        var productList = new List<ProductSimpleDTO>();
+
+        if (!string.IsNullOrEmpty(appointment.Insecticide))
+            productList.Add(
+                new ProductSimpleDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = appointment.Insecticide,
+                    Concentration = appointment.InsecticideAmount ?? "",
+                }
+            );
+        if (!string.IsNullOrEmpty(appointment.Insecticide2))
+            productList.Add(
+                new ProductSimpleDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = appointment.Insecticide2,
+                    Concentration = appointment.InsecticideAmount2 ?? "",
+                }
+            );
+        if (!string.IsNullOrEmpty(appointment.Rodenticide))
+            productList.Add(
+                new ProductSimpleDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = appointment.Rodenticide,
+                    Concentration = appointment.RodenticideAmount ?? "",
+                }
+            );
+        if (!string.IsNullOrEmpty(appointment.Desinfectant))
+            productList.Add(
+                new ProductSimpleDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = appointment.Desinfectant,
+                    Concentration = appointment.DesinfectantAmount ?? "",
+                }
+            );
+        if (!string.IsNullOrEmpty(appointment.OtherProducts))
+            productList.Add(
+                new ProductSimpleDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = appointment.OtherProducts,
+                    Concentration = appointment.OtherProductsAmount ?? "",
+                }
+            );
+
+        productList = productList
+            .GroupBy(p => new { p.Name, p.Concentration })
+            .Select(g => g.First())
+            .ToList();
+
+        if (treatmentProductId.HasValue)
+        {
+            var extraProduct = await db
+                .TreatmentProducts.Where(tp => tp.Id == treatmentProductId.Value)
+                .Select(tp => new ProductSimpleDTO
+                {
+                    Id = tp.Id,
+                    Name = tp.ProductName,
+                    Concentration = tp.AmountAndSolvent,
+                })
+                .FirstOrDefaultAsync();
+
+            if (
+                extraProduct != null
+                && !productList.Any(p =>
+                    p.Name == extraProduct.Name && p.Concentration == extraProduct.Concentration
+                )
+            )
+            {
+                productList.Add(extraProduct);
+            }
+        }
+
+        return Ok(productList);
     }
 }

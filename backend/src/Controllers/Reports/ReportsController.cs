@@ -70,12 +70,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-            .ThenInclude(ta => ta.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
             .Include(a => a.CompleteReport)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
@@ -165,13 +160,8 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-            .ThenInclude(ta => ta.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.Report1) // Include Report1
+            .Include(a => a.Report1)
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
             .AsNoTracking()
@@ -183,7 +173,6 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
         byte[] fileBytes;
         try
         {
-            // Use the specific method for Report1
             fileBytes = _wordTemplateService.GenerateReport1(
                 appointment,
                 "Templates/nuevos_informes/informe_desinfeccion_desinsectacion.docx"
@@ -257,12 +246,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-            .ThenInclude(ta => ta.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
             .Include(a => a.Report2) // Include Report2
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
@@ -348,12 +332,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-            .ThenInclude(ta => ta.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
             .Include(a => a.Report3) // Include Report3
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)
@@ -436,12 +415,7 @@ public class ReportsController(DatabaseContext db, WordTemplateService wordTempl
     {
         var appointment = await db
             .ProjectAppointments.Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
-            .ThenInclude(ta => ta.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
             .Include(a => a.Report4) // Include Report4
             .Include(a => a.Project)
             .ThenInclude(p => p.Client)

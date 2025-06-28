@@ -15,10 +15,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             .Include(app => app.Project)
             .ThenInclude(proj => proj.Services)
             .Include(app => app.TreatmentAreas)
-            .Include(app => app.TreatmentProducts)
-            .ThenInclude(treatmentArea => treatmentArea.Product)
-            .Include(app => app.TreatmentProducts)
-            .ThenInclude(treatmentArea => treatmentArea.ProductAmountSolvent)
+            .Include(app => app.TreatmentProducts) // Solo esto, sin ThenInclude
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (appointment is null)
@@ -188,9 +185,6 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             .ThenInclude(r => r.RodentAreas)
             .Include(a => a.Certificate)
             .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
             .FirstOrDefaultAsync(a => a.Id == appointmentId);
 
@@ -205,9 +199,6 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
             .ThenInclude(r => r.RodentAreas)
             .Include(a => a.Certificate)
             .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.Product)
-            .Include(a => a.TreatmentProducts)
-            .ThenInclude(tp => tp.ProductAmountSolvent)
             .Include(a => a.TreatmentAreas)
             .Include(a => a.CompleteReport)
             .Include(a => a.Report1)
@@ -274,7 +265,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                 var newOperationSheet = new ProjectOperationSheet
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    OperationDate = previousAppointment.ProjectOperationSheet.OperationDate, // Keep original date
+                    OperationDate = previousAppointment.ProjectOperationSheet.OperationDate,
                     TreatedAreas = previousAppointment.ProjectOperationSheet.TreatedAreas,
                     Insects = previousAppointment.ProjectOperationSheet.Insects,
                     Rodents = previousAppointment.ProjectOperationSheet.Rodents,
@@ -347,7 +338,7 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                 var newRodentRegister = new RodentRegister
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    ServiceDate = previousAppointment.RodentRegister.ServiceDate, // Keep original date
+                    ServiceDate = previousAppointment.RodentRegister.ServiceDate,
                     Incidents = previousAppointment.RodentRegister.Incidents,
                     CorrectiveMeasures = previousAppointment.RodentRegister.CorrectiveMeasures,
                 };
@@ -379,20 +370,21 @@ public class AppointmentService(DatabaseContext db, OdsTemplateService odsTempla
                 var newCertificate = new Certificate
                 {
                     ProjectAppointmentId = targetAppointment.Id,
-                    ExpirationDate = previousAppointment.Certificate.ExpirationDate, // Keep original expiration date
+                    ExpirationDate = previousAppointment.Certificate.ExpirationDate,
                 };
 
                 db.Add(newCertificate);
             }
 
-            // 6. Duplicate TreatmentProducts
+            // 6. Duplicate TreatmentProducts (nuevo modelo: solo strings)
             foreach (var treatmentProduct in previousAppointment.TreatmentProducts)
             {
                 var newTreatmentProduct = new TreatmentProduct
                 {
                     ProjectAppointment = targetAppointment,
-                    Product = treatmentProduct.Product,
-                    ProductAmountSolvent = treatmentProduct.ProductAmountSolvent,
+                    ProductName = treatmentProduct.ProductName,
+                    ActiveIngredient = treatmentProduct.ActiveIngredient,
+                    AmountAndSolvent = treatmentProduct.AmountAndSolvent,
                     EquipmentUsed = treatmentProduct.EquipmentUsed,
                     AppliedTechnique = treatmentProduct.AppliedTechnique,
                     AppliedService = treatmentProduct.AppliedService,
