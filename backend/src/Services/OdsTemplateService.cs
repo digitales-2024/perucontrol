@@ -544,6 +544,235 @@ public class OdsTemplateService
         return (outputMs.ToArray(), null);
     }
 
+    public (byte[], string?) GenerateReceipt(
+        Quotation quotation,
+        Business business,
+        string templatePath
+    )
+    {
+        var areAddressesDifferent = quotation.Client.FiscalAddress != quotation.ServiceAddress;
+        var quotationNumber =
+            quotation.CreatedAt.ToString("yy") + "-" + quotation.QuotationNumber.ToString("D4");
+        var totalCost = quotation.QuotationServices.Sum(s => s.Price ?? 0);
+
+        var subtotalPreTax = 0m;
+        foreach (var service in quotation.QuotationServices)
+        {
+            subtotalPreTax += service.Price ?? 0m;
+        }
+        var subtotal = (quotation.HasTaxes) ? subtotalPreTax *= 0.82m : subtotalPreTax;
+        var taxes = subtotalPreTax * 0.18m;
+
+        var total = subtotal + taxes;
+
+        var placeholders = new Dictionary<string, string>
+        {
+            { "{{digesa_habilitacion}}", business.DigesaNumber },
+            { "{{direccion_perucontrol}}", business.Address },
+            { "{{ruc_perucontrol}}", business.RUC },
+            { "{{celulares_perucontrol}}", business.Phones },
+            { "{{gerente_perucontrol}}", business.DirectorName },
+            //
+            { "{{fecha_cotizacion}}", quotation.CreationDate.ToString("dd/MM/yyyy") },
+            { "{{cod_cotizacion}}", quotationNumber },
+            { "{{nro_cliente}}", quotation.Client.ClientNumber.ToString("D4") },
+            //
+            { "{{nombre_cliente}}", quotation.Client.RazonSocial ?? quotation.Client.Name },
+            { "{{direccion_fiscal_cliente}}", quotation.Client.FiscalAddress },
+            { "{{trabajos_realizar_en}}", areAddressesDifferent ? "Trabajos a realizar en:" : "" },
+            {
+                "{{direccion_servicio_cliente}}",
+                areAddressesDifferent ? quotation.ServiceAddress : ""
+            },
+            { "{{contacto_cliente}}", quotation.Client.ContactName ?? "" },
+            //
+            { "{servicio_impuestos}", quotation.HasTaxes ? "Si" : "No" },
+            //
+            { "{servicio_subtotal}", subtotal.ToString("F2")},
+            { "{servicio_igv}", taxes.ToString("F2")},
+            { "{servicio_total}", total.ToString("F2")},
+        };
+
+        using var ms = new MemoryStream();
+        using (var fs = new FileStream(templatePath, FileMode.Open, FileAccess.Read))
+        {
+            fs.CopyTo(ms);
+        }
+        ms.Position = 0;
+        using var outputMs = new MemoryStream();
+
+        using (var inputArchive = new ZipArchive(ms, ZipArchiveMode.Read))
+        using (var outputArchive = new ZipArchive(outputMs, ZipArchiveMode.Create))
+        {
+            foreach (var entry in inputArchive.Entries)
+            {
+                if (entry.FullName != "content.xml" && entry.FullName != "styles.xml")
+                {
+                    var newEntry = outputArchive.CreateEntry(entry.FullName);
+                    using var entryStream = entry.Open();
+                    using var newEntryStream = newEntry.Open();
+                    entryStream.CopyTo(newEntryStream);
+                }
+                else if (entry.FullName == "styles.xml")
+                {
+                    // Process styles.xml for header/footer content
+                    var stylesEntry = outputArchive.CreateEntry("styles.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                    var footer_placeholders = new Dictionary<string, string>
+                    {
+                        { "{footer_contact}", quotation.FooterContact ?? "" },
+                    };
+
+                    // Find all text elements in headers and footers and replace placeholders
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, footer_placeholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, footer_placeholders);
+                    }
+
+                    // Write the modified styles.xml back to the entry
+                    using var newEntryStream = stylesEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+                else // entry.FullName == "content.xml"
+                {
+                    var contentEntry = outputArchive.CreateEntry("content.xml");
+                    using var entryStream = entry.Open();
+                    var xmlDoc = XDocument.Load(entryStream);
+
+                    XNamespace tablens = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
+                    XNamespace textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
+
+                    // Replace global placeholders as before
+                    var textSpans = xmlDoc.Descendants(textns + "span").ToList();
+                    foreach (var span in textSpans)
+                    {
+                        ReplaceInTextSpan(span, placeholders);
+                    }
+                    var paragraphs = xmlDoc.Descendants(textns + "p").ToList();
+                    foreach (var paragraph in paragraphs)
+                    {
+                        ReplacePlaceholdersInElement(paragraph, placeholders);
+                    }
+
+                    // Find the first table in the document
+                    var table = xmlDoc.Descendants(tablens + "table").FirstOrDefault();
+                    if (table != null)
+                    {
+                        // 1. Generate TermsAndConditions rows at row 31 (index 30, before service rows are added)
+                        var rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 30)
+                        {
+                            var termsRow = table
+                                .Elements(tablens + "table-row")
+                                .FirstOrDefault(r =>
+                                    r.Descendants(textns + "p")
+                                        .Any(p => p.Value.Contains("{terms}"))
+                                );
+
+                            if (termsRow != null && quotation.TermsAndConditions != null)
+                            {
+                                XElement lastInserted = termsRow;
+                                for (int i = 0; i < quotation.TermsAndConditions.Count; i++)
+                                {
+                                    var term = quotation.TermsAndConditions[i];
+                                    if (term == null || term == "")
+                                    {
+                                        continue;
+                                    }
+
+                                    var newRow = new XElement(termsRow);
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell
+                                            .Value.Replace("{terms}", term)
+                                            .Replace("{idx}", (i + 2).ToString());
+                                    }
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                termsRow.Remove();
+                            }
+                        }
+
+                        // ...now continue with your service row generation as before...
+                        // (your existing code for finding and replacing the service row template)
+                        rows = table.Elements(tablens + "table-row").ToList();
+                        if (rows.Count > 20)
+                        {
+                            var templateRow = table
+                                .Elements(tablens + "table-row")
+                                .FirstOrDefault(r =>
+                                    r.Descendants(textns + "p")
+                                        .Any(p => p.Value.Contains("{servicio_cantidad}"))
+                                );
+
+                            if (templateRow != null)
+                            {
+                                XElement lastInserted = templateRow;
+                                foreach (var service in quotation.QuotationServices)
+                                {
+                                    var newRow = new XElement(templateRow);
+                                    var price = "";
+                                    if (service.Price == null || service.Price == 0.0m)
+                                    {
+                                        price = "plus";
+                                    }
+                                    else
+                                    {
+                                        price = service.Price?.ToString("0.00") ?? "plus";
+                                    }
+
+                                    foreach (var cell in newRow.Descendants(textns + "p"))
+                                    {
+                                        cell.Value = cell
+                                            .Value.Replace(
+                                                "{servicio_cantidad}",
+                                                service.Amount.ToString()
+                                            )
+                                            .Replace(
+                                                "{servicio_descripcion}",
+                                                service.NameDescription
+                                            )
+                                            .Replace("{servicio_costo}", $"S/. {price}")
+                                            .Replace(
+                                                "{servicio_accesorios}",
+                                                service.Accesories ?? ""
+                                            );
+                                    }
+
+                                    lastInserted.AddAfterSelf(newRow);
+                                    lastInserted = newRow;
+                                }
+                                templateRow.Remove();
+                            }
+                        }
+                    }
+
+                    // Write the modified XML back to the entry
+                    using var newEntryStream = contentEntry.Open();
+                    using var writer = new XmlTextWriter(newEntryStream, Encoding.UTF8);
+                    writer.Formatting = Formatting.None;
+                    xmlDoc.Save(writer);
+                }
+            }
+        }
+
+        return (outputMs.ToArray(), null);
+    }
+
     public (byte[]?, string?) GenerateOdsWithRepeatedRows(
         Dictionary<string, string> globalPlaceholders,
         List<Dictionary<string, string>> rowDataList,
@@ -860,4 +1089,5 @@ public record Schedule2Data(
     string ServiceDayName,
     string Service,
     string Documents
-) { }
+)
+{ }
