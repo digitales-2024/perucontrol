@@ -198,7 +198,7 @@ public class SpanishPriceSpellingService
 
     /// <summary>
     /// Transforms a number into its spelling using words.
-    /// 320000 -> "TRES CIENTOS VEINTE MIL CON 00/100 NUEVOS SOLES NO INCLUYE IGV"
+    /// 320000 -> "TRES CIENTOS VEINTE MIL CON 00/100"
     /// </summary>
     public static string SpellPricing(decimal price)
     {
@@ -212,7 +212,7 @@ public class SpanishPriceSpellingService
 
     /// <summary>
     /// Transforms a number into its spelling using words, including taxes.
-    /// 320000 -> "TRES CIENTOS VEINTE MIL CON 00/100 NUEVOS SOLES"
+    /// 320000 -> "TRES CIENTOS VEINTE MIL CON 00/100"
     /// </summary>
     public static string SpellPricingWithTaxes(decimal price)
     {

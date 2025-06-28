@@ -308,7 +308,7 @@ public class QuotationController(
     [HttpPost("{id:guid}/email-pdf")]
     public async Task<ActionResult> SendPDFViaEmail(
         Guid id,
-        [FromQuery] [Required] [EmailAddress] string email
+        [FromQuery][Required][EmailAddress] string email
     )
     {
         var (pdfBytes, generationError) = await quotationService.GeneratePdfAsync(id);
@@ -351,7 +351,7 @@ public class QuotationController(
     [HttpPost("{id}/whatsapp-pdf")]
     public async Task<ActionResult> SendPDFViaWhatsapp(
         Guid id,
-        [FromQuery] [Required] string phoneNumber
+        [FromQuery][Required] string phoneNumber
     )
     {
         var (pdfBytes, error) = await quotationService.GeneratePdfAsync(id);
@@ -463,5 +463,19 @@ public class QuotationController(
         fileName += $"_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
 
         return File(csvBytes, "text/csv", fileName);
+    }
+
+    [EndpointSummary("Generate Quotation Receipt PDF")]
+    [HttpGet("{id:guid}/receipt/pdf")]
+    public async Task<IActionResult> GenerateReceiptPDF(Guid id)
+    {
+        var (pdfBytes, error) = await quotationService.GenerateReceiptPdfAsync(id);
+
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(error);
+        }
+
+        return File(pdfBytes!, "application/pdf", "quotation.pdf");
     }
 }
