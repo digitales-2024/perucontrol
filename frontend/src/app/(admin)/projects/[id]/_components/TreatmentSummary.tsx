@@ -63,7 +63,7 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
                                                 Concentración:
                                             </span>
                                             <span className="font-medium text-gray-700">
-                                                {product.productAmountSolvent}
+                                                {product.amountAndSolvent}
                                             </span>
                                         </div>
 

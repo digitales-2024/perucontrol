@@ -195,8 +195,9 @@ export const TreatmentProductSchema = z.object({
         .array(z.object({
             id: z.string().uuid()
                 .nullable(),
-            productId: z.string().uuid(),
-            productAmountSolventId: z.string().uuid(),
+            productName: z.string().min(1, "El nombre del producto es requerido"),
+            amountAndSolvent: z.string().min(1, "La cantidad y solvente es requerida"),
+            activeIngredient: z.string().min(1, "El ingrediente activo es requerido"),
             equipmentUsed: z.string().nullable(),
             appliedTechnique: z.string().nullable(),
             appliedService: z.string().nullable(),

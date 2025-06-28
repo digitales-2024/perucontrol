@@ -13,7 +13,13 @@ export default async function ProjectsPage({ params }: Props)
 {
     const { app_id: appointmentId } = await params;
 
-    const [products, error] = await wrapper((auth) => backend.GET("/api/Product", auth));
+    const [products, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentId}/SheetProductNames", {
+        ...auth,
+        params: {
+            path: { appointmentId },
+        },
+    }));
+
     const [appointment, appointmentError] = await wrapper((auth) => backend.GET("/api/Appointment/{id}", {
         ...auth,
         params: {
