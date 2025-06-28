@@ -42,7 +42,7 @@ export function TreatmentAreasForm({ treatmentAreas, treatmentProducts, appointm
                     const treatmentProduct = treatmentProducts.find((tp) => tp.id === productId);
                     return {
                         id: productId,
-                        name: treatmentProduct?.product.name ?? productId,
+                        name: treatmentProduct?.productName ?? productId,
                     };
                 });
             }
@@ -274,7 +274,7 @@ export function TreatmentAreasForm({ treatmentAreas, treatmentProducts, appointm
                                                                         key={product.id}
                                                                         onSelect={() => setTimeout(() => handleProductSelect(index, {
                                                                             id: product.id,
-                                                                            name: product.product.name,
+                                                                            name: product.productName,
                                                                         }), 0)}
                                                                     >
                                                                         <Check
@@ -285,7 +285,7 @@ export function TreatmentAreasForm({ treatmentAreas, treatmentProducts, appointm
                                                                                     : "opacity-0",
                                                                             )}
                                                                         />
-                                                                        {product.product.name}
+                                                                        {product.productName}
                                                                     </CommandItem>
                                                                 ))}
                                                             </CommandGroup>

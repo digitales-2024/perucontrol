@@ -2,16 +2,18 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { backend, wrapper } from "@/types/backend";
 import { TreatmentAreasForm } from "./_components/TreatmentAreas";
+import { reportTitles } from "../types/reports";
 
 interface Props {
     params: Promise<{
-        app_id: string
+        app_id: string,
+        report_id: string,
     }>
 }
 
 export default async function ProjectsPage({ params }: Props)
 {
-    const { app_id: appointmentId } = await params;
+    const { app_id: appointmentId, report_id: reportId } = await params;
 
     const [treatmentAreas, error] = await wrapper((auth) => backend.GET("/api/Appointment/{appointmentid}/TreatmentArea", {
         ...auth,
@@ -79,6 +81,12 @@ export default async function ProjectsPage({ params }: Props)
                                 <BreadcrumbLink href={`/projects/${appointment.project.id}/${appointmentId}`}>
                                     Fecha #
                                     {appointment.appointmentNumber}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/projects/${appointment.project.id}/evento/${appointmentId}/informes/${reportId}`}>
+                                    {reportTitles[reportId] ?? "Informe"}
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />

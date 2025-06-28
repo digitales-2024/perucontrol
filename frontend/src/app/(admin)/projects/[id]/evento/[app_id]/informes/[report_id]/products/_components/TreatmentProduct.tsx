@@ -37,6 +37,8 @@ export function TreatmentProductForm({
     treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
 })
 {
+
+    console.log("TreatmentProductForm",  JSON.stringify(treatmentProducts, null, 2));
     const [customOptions, setCustomOptions] = useState<Array<string>>([]);
     // Creando opciones para AutoComplete
     const productsOptions: Array<Option> =
@@ -194,23 +196,6 @@ export function TreatmentProductForm({
                                         </Badge>
                                     </div>
                                     <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-4">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => append({
-                                                id: null,
-                                                productName: "",
-                                                amountAndSolvent: "",
-                                                activeIngredient: "",
-                                                equipmentUsed: "",
-                                                appliedTechnique: "",
-                                                appliedService: "",
-                                            })}
-                                        >
-                                            <PlusCircle className="h-4 w-4" />
-                                            Agregar
-                                        </Button>
                                         {fields.length > 1 && (
                                             <Button
                                                 type="button"

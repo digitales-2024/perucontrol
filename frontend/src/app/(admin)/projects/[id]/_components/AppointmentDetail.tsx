@@ -10,7 +10,6 @@ import { components } from "@/types/api";
 import { toastWrapper } from "@/types/toasts";
 import { CancelAppointment, DesactivateAppointment, EditAppointment, UpdateAppointmentTimes, DuplicateFromPreviousAppointment } from "../../actions";
 import { MurinoMapSection } from "./MurinoMapSection";
-import { TreatmentSummary } from "./TreatmentSummary";
 import { ReportsList } from "./ReportsList";
 import Link from "next/link";
 
@@ -542,13 +541,6 @@ export function AppointmentDetails({
                     </div>
                 </div>
             </div>
-
-            {/* Resumen de Productos y Áreas */}
-            <TreatmentSummary
-                appointmentId={appointment.id!}
-                treatmentAreas={appointment.treatmentAreas ?? []}
-                treatmentProducts={appointment.treatmentProducts ?? []}
-            />
 
             {/* Nueva sección: Mapa Murino */}
             <MurinoMapSection

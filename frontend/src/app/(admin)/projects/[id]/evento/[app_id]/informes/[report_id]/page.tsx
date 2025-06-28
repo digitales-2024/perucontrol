@@ -5,6 +5,7 @@ import { DisinfectionDesinsectForm } from "../_components/DisinfectionDesinsectF
 import { RatExterminationSubstForm } from "../_components/RatExterminationSubstForm";
 import { DesratizacionForm } from "../_components/DesratizacionForm";
 import { backend, wrapper } from "@/types/backend";
+import { reportEndpoints, reportTitles } from "./types/reports";
 
 interface Props {
     params: Promise<{
@@ -13,23 +14,6 @@ interface Props {
         report_id: string;
     }>;
 }
-
-const reportTitles: Record<string, string> = {
-    "desinsectacion-desratizacion-desinfeccion": "Informe de Desinfección, Desratización y Desinsectación",
-    "desinfeccion-desinsectacion": "Informe de Desinfección y Desinsectación",
-    "desratizacion": "Informe de Desratización",
-    "sostenimiento-desratizacion": "Informe de Sostenimiento de Desratización",
-    "sostenimiento-desinsectacion-desratizacion": "Informe de Sostenimiento de Desinsectación y Desratización",
-};
-
-// Map report IDs to their corresponding API endpoints
-const reportEndpoints: Record<string, string> = {
-    "desinsectacion-desratizacion-desinfeccion": "/api/Appointment/{appointmentid}/CompleteReport",
-    "desinfeccion-desinsectacion": "/api/Appointment/{appointmentid}/Disinfection-Desinsect",
-    "desratizacion": "/api/Appointment/{appointmentid}/RodenticideReport",
-    "sostenimiento-desratizacion": "/api/Appointment/{appointmentid}/RatExterminationSubst",
-    "sostenimiento-desinsectacion-desratizacion": "/api/Appointment/{appointmentid}/RatExterminationSubst",
-};
 
 export default async function ReportPage({ params }: Props)
 {
@@ -93,6 +77,7 @@ export default async function ReportPage({ params }: Props)
                     reportId={reportId as any}
                     reportTitle={reportTitles[reportId]}
                     report={report}
+                    appointment={appointment}
                 />
             );
         case "desinfeccion-desinsectacion":
@@ -100,8 +85,10 @@ export default async function ReportPage({ params }: Props)
                 <DisinfectionDesinsectForm
                     projectId={projectId}
                     appointmentId={appointmentId}
+                    reportId={reportId}
                     reportTitle={reportTitles[reportId]}
                     report={report}
+                    appointment={appointment}
                 />
             );
         case "desratizacion":
@@ -109,8 +96,10 @@ export default async function ReportPage({ params }: Props)
                 <DesratizacionForm
                     projectId={projectId}
                     appointmentId={appointmentId}
+                    reportId={reportId}
                     reportTitle={reportTitles[reportId]}
                     report={report}
+                    appointment={appointment}
                 />
             );
         case "sostenimiento-desratizacion":
@@ -118,8 +107,10 @@ export default async function ReportPage({ params }: Props)
                 <RatExterminationSubstForm
                     projectId={projectId}
                     appointmentId={appointmentId}
+                    reportId={reportId}
                     reportTitle={reportTitles[reportId]}
                     report={report}
+                    appointment={appointment}
                 />
             );
         default:

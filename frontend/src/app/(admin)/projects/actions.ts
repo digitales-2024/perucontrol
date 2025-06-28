@@ -437,6 +437,8 @@ export async function CreateTreatmentProduct(appointmentId: string, body: Array<
         },
     }));
 
+    revalidatePath("/(admin)/projects/[id]/evento/[app_id]/products", "page");
+
     if (error)
     {
         return err(error);

@@ -11,9 +11,10 @@ interface TreatmentSummaryProps {
     appointmentId: string;
     treatmentAreas: Array<components["schemas"]["TreatmentAreaDTO"]>;
     treatmentProducts: Array<components["schemas"]["TreatmentProductDTO"]>;
+    reportId: string;
 }
 
-export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProducts }: TreatmentSummaryProps)
+export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProducts, reportId }: TreatmentSummaryProps)
 {
     const router = useRouter();
 
@@ -34,7 +35,7 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => router.push(`/projects/${appointmentId}/evento/${appointmentId}/products`)}
+                            onClick={() => router.push(`/projects/${appointmentId}/evento/${appointmentId}/informes/${reportId}/products`)}
                             className="text-blue-600 hover:bg-blue-50/50 group"
                         >
                             <Edit className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
@@ -119,7 +120,7 @@ export function TreatmentSummary({ appointmentId, treatmentAreas, treatmentProdu
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => router.push(`/projects/${appointmentId}/evento/${appointmentId}/treatment-areas`)}
+                            onClick={() => router.push(`/projects/${appointmentId}/evento/${appointmentId}/informes/${reportId}/treatment-areas`)}
                             className="text-green-600 hover:bg-green-50/50 group"
                         >
                             <Edit className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
